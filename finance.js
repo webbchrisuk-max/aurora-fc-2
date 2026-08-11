@@ -224,7 +224,8 @@
           <div class="finance-item-title"><strong>${esc(p.name)}</strong><span>${esc(priorityLabel(p))}</span></div>
           <div class="finance-item-meta">${money(p.balance)} available • ${money(fundedAmount)} funded of ${money(target)}${spentNote}</div>
           <div class="progress-mini"><i style="width:${pct.toFixed(1)}%"></i></div>
-          <div class="finance-item-meta">Gap ${money(gap)} • Payday funding ${money(Math.min(gap,Number(p.fundingPerPayday)||0))}</div>
+          <div class="finance-item-meta">Gap ${money(gap)} • <b class="good">Next payday ${money(Math.min(gap,Number(p.fundingPerPayday)||0))}</b>${p.deadline?` • Complete by ${esc(p.deadline)}`:''}</div>
+          <div class="finance-item-meta">${esc(p.fundingReason||'Funding engine waiting')}</div>
         </div>
         <div class="finance-item-actions">
           <button class="btn secondary" data-pot-edit="${esc(p.id)}">Edit</button>
@@ -236,7 +237,7 @@
 
   function resetPotEditor(){
     setValue('potId',''); setValue('potName',''); setValue('potBalance',''); setValue('potTarget','');
-    setValue('potFunding',''); setValue('potPriority','2'); setValue('potGoalMode','balance'); setValue('potSpent','');
+    setValue('potFunding',''); setValue('potDeadline',''); setValue('potPriority','2'); setValue('potGoalMode','balance'); setValue('potSpent','');
     updatePotSpentVisibility();
     A().ui.text('potEditorTitle','Add Pot');
   }
@@ -247,7 +248,7 @@
   function editPot(id){
     const p=(A().core.read().finance?.pots||[]).find(x=>x.id===id); if(!p)return;
     setValue('potId',p.id); setValue('potName',p.name); setValue('potBalance',p.balance); setValue('potTarget',p.target);
-    setValue('potFunding',p.fundingPerPayday); setValue('potPriority',p.priority); setValue('potGoalMode',p.goalMode); setValue('potSpent',p.spent);
+    setValue('potFunding',p.fundingOverride||0); setValue('potDeadline',p.deadline||''); setValue('potPriority',p.priority); setValue('potGoalMode',p.goalMode); setValue('potSpent',p.spent);
     updatePotSpentVisibility();
     A().ui.text('potEditorTitle','Edit Pot');
     $('potEditor')?.scrollIntoView({behavior:'smooth',block:'center'});
@@ -260,7 +261,8 @@
       const pot={
         ...(existing||{}),id,name,
         balance:numValue('potBalance'),target:numValue('potTarget'),
-        fundingPerPayday:numValue('potFunding'),priority:Number(value('potPriority')||2),
+        fundingOverride:numValue('potFunding'),deadline:value('potDeadline'),
+        fundingPerPayday:Number(existing?.fundingPerPayday)||0,priority:Number(value('potPriority')||2),
         goalMode:value('potGoalMode')==='funded-progress'?'funded-progress':'balance',
         spent:value('potGoalMode')==='funded-progress'?numValue('potSpent'):0,
         archived:Boolean(existing?.archived),createdAt:existing?.createdAt||isoNow(),updatedAt:isoNow()

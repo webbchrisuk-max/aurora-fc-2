@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=2;
+  const VERSION=3;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -26,6 +26,14 @@
       pots:[],
       bills:[],
       payments:[],
+      fundingPolicy:{
+        goalPotBudget:0,
+        strategy:'priority',
+        source:'AURORA2',
+        legacyImported:false,
+        lastCalculatedAt:null,
+        lastPlan:null
+      },
       lastCalculatedAt:null,
       lastReleasedAt:null
     },
@@ -43,9 +51,14 @@
       balance:Math.max(0,Number(r.balance)||0),
       target:Math.max(0,Number(r.target)||0),
       fundingPerPayday:Math.max(0,Number(r.fundingPerPayday)||0),
+      fundingOverride:Math.max(0,Number(r.fundingOverride)||0),
+      fundingReason:String(r.fundingReason||''),
+      fundingRequired:Math.max(0,Number(r.fundingRequired)||0),
       priority:[1,2,3].includes(Number(r.priority))?Number(r.priority):2,
       goalMode:r.goalMode==='funded-progress'?'funded-progress':'balance',
       spent:Math.max(0,Number(r.spent)||0),
+      deadline:String(r.deadline||r.completeBy||r.targetDate||''),
+      note:String(r.note||''),
       archived:Boolean(r.archived),
       createdAt:r.createdAt||now(),
       updatedAt:r.updatedAt||now()
@@ -101,7 +114,13 @@
         plan:{...d.finance.plan,...object(rf.plan)},
         pots:Array.isArray(rf.pots)?rf.pots.map(normalizePot):[],
         bills:Array.isArray(rf.bills)?rf.bills.map(normalizeBill):[],
-        payments:Array.isArray(rf.payments)?rf.payments.map(normalizePayment):[]
+        payments:Array.isArray(rf.payments)?rf.payments.map(normalizePayment):[],
+        fundingPolicy:{
+          ...d.finance.fundingPolicy,
+          ...object(rf.fundingPolicy),
+          goalPotBudget:Math.max(0,Number(rf.fundingPolicy?.goalPotBudget)||0),
+          strategy:['priority','balanced','critical'].includes(rf.fundingPolicy?.strategy)?rf.fundingPolicy.strategy:'priority'
+        }
       },
       alerts:Array.isArray(r.alerts)?r.alerts:[]
     };

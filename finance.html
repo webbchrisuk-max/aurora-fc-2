@@ -46,10 +46,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Pots & Bills v0.2.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Funding Engine v0.3.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">POTS & BILLS v0.2</span>
+  <span class="status">FUNDING ENGINE v0.3</span>
 </header>
 
 <div class="tabs card">
@@ -119,6 +119,20 @@
       <div class="section-head"><h2>Finance Rule</h2><span class="good">Single source</span></div>
       <div class="notice good"><b>Finance owns the approved amount.</b><br>Pots and bills now feed this calculation themselves. Transfer receives the released mission but cannot replace its budget.</div>
       <div class="split-line"></div>
+      <div class="section-head"><h2 style="font-size:15px">Payday Funding Engine</h2><span class="cyan">AUTO</span></div>
+      <div class="field-grid">
+        <div class="field"><label for="goalPotBudget">Goal-pot budget</label><div class="money-wrap"><input id="goalPotBudget" type="number" min="0" step="0.01"></div><small>Migrated from Aurora 1 where available.</small></div>
+        <div class="field"><label for="fundingStrategy">Funding strategy</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced</option><option value="critical">Critical P1 only</option></select><small>Deadlines are always protected first.</small></div>
+      </div>
+      <div class="grid grid-2" style="margin-top:10px">
+        <div class="auto-chip"><small>Goal-pot budget</small><strong id="fundingBudgetValue">£0.00</strong><span>Available to allocate this payday</span></div>
+        <div class="auto-chip"><small>Allocated</small><strong id="fundingAllocatedValue">£0.00</strong><span>Automatically routed to pots</span></div>
+        <div class="auto-chip"><small>Deadline protected</small><strong id="fundingDeadlineValue">£0.00</strong><span>Minimum date-aware funding</span></div>
+        <div class="auto-chip"><small>Unallocated</small><strong id="fundingUnallocatedValue">£0.00</strong><span>Budget left after target gaps</span></div>
+      </div>
+      <div id="fundingEngineNote" class="notice" style="margin-top:10px">Funding engine calculating…</div>
+      <div class="action-row"><button class="btn secondary" id="saveFundingPolicy">Save Funding Rule</button></div>
+      <div class="split-line"></div>
       <p class="muted" style="font-size:9px;line-height:1.7">A bill funded from a named pot does not hit the payday Current Account total again. Completing it deducts the actual payment from that pot. This prevents double-counting money already set aside.</p>
     </article>
   </section>
@@ -134,7 +148,7 @@
 
   <section class="section pots-bills-layout">
     <article class="card card-pad">
-      <div class="section-head"><h2>Pots</h2><span class="muted">Fund goals without duplication</span></div>
+      <div class="section-head"><h2>Pots</h2><span class="muted">Deadline first, then P1 → P2 → P3</span></div>
       <div id="potList"></div>
     </article>
 
@@ -145,7 +159,8 @@
         <div class="field"><label>Pot name</label><input id="potName" placeholder="e.g. Coventry City Tickets / Travel"></div>
         <div class="field"><label>Current balance</label><div class="money-wrap"><input id="potBalance" type="number" min="0" step="0.01"></div></div>
         <div class="field"><label>Target</label><div class="money-wrap"><input id="potTarget" type="number" min="0" step="0.01"></div></div>
-        <div class="field"><label>Funding each payday</label><div class="money-wrap"><input id="potFunding" type="number" min="0" step="0.01"></div><small>Finance protects up to the remaining gap.</small></div>
+        <div class="field"><label>Manual funding override</label><div class="money-wrap"><input id="potFunding" type="number" min="0" step="0.01"></div><small>Leave £0 for automatic deadline + priority funding.</small></div>
+        <div class="field"><label>Complete by</label><input id="potDeadline" type="date"><small>A dated pot gets its minimum required amount first.</small></div>
         <div class="field"><label>Priority</label><select id="potPriority"><option value="1">P1 Critical</option><option value="2">P2 Important</option><option value="3">P3 Flexible</option></select></div>
         <div class="field"><label>Goal type</label><select id="potGoalMode"><option value="balance">Balance target</option><option value="funded-progress">Funded progress</option></select><small>Funded progress = current balance + qualifying spend.</small></div>
         <div class="field" id="potSpentField"><label>Spent so far</label><div class="money-wrap"><input id="potSpent" type="number" min="0" step="0.01"></div><small>Use only for progress goals such as season tickets/travel.</small></div>
@@ -199,6 +214,7 @@
 
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js"></script>
+<script src="finance-funding.js"></script>
 <script src="finance.js"></script>
 </body>
 </html>
