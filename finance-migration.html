@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050b16">
+<title>Finance Migration — Aurora FC 2.0</title>
+<link rel="stylesheet" href="aurora.css">
+<style>
+.migrate-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}
+.migrate-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.migrate-kpi{padding:14px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.025)}
+.migrate-kpi small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:900;letter-spacing:.06em}
+.migrate-kpi strong{display:block;margin-top:6px;font-size:24px}.migrate-kpi span{display:block;margin-top:4px;color:var(--muted);font-size:8px}
+.step-card{position:relative}.step-no{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:10px;background:rgba(67,217,255,.10);border:1px solid rgba(67,217,255,.25);color:var(--cyan);font-weight:1000;font-size:11px;margin-right:8px}
+.source-row,.option-row,.warning-row,.receipt-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.source-row:last-child,.option-row:last-child,.warning-row:last-child,.receipt-row:last-child{border-bottom:0}
+.source-row strong,.option-row strong,.receipt-row strong{display:block;font-size:10px}.source-row span,.option-row span,.receipt-row span{display:block;color:var(--muted);font-size:8px;margin-top:3px;line-height:1.45}
+.source-pill{white-space:nowrap;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:6px 8px;font-size:8px;font-weight:900;color:var(--muted)}
+.source-pill.good{color:var(--green);border-color:rgba(88,233,155,.28);background:rgba(88,233,155,.06)}
+.source-pill.red{color:#ff7d96;border-color:rgba(255,125,150,.28);background:rgba(255,125,150,.06)}
+.option-row label{display:flex;gap:9px;align-items:flex-start;cursor:pointer}.option-row input{margin-top:2px}
+.preview-table{width:100%;border-collapse:collapse;font-size:9px}.preview-table th{color:var(--muted);font-size:7px;text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:8px 7px;border-bottom:1px solid rgba(255,255,255,.08)}.preview-table td{padding:9px 7px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top}.preview-table tr:last-child td{border-bottom:0}.preview-table input{width:auto}
+.preview-wrap{overflow-x:auto}.preview-table{min-width:680px}
+.preview-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:0 0 8px}.preview-title h3{font-size:12px;margin:0}.preview-title button{font-size:8px}
+.warning-row{justify-content:flex-start}.warning-dot{width:8px;height:8px;border-radius:50%;background:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,.35);margin-top:4px;flex:0 0 auto}.warning-row.good .warning-dot{background:var(--green);box-shadow:0 0 10px rgba(88,233,155,.35)}.warning-row span{color:var(--muted);font-size:9px;line-height:1.5}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode-option{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:11px;background:rgba(255,255,255,.02)}.mode-option label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}.mode-option strong{display:block;font-size:10px}.mode-option span{display:block;color:var(--muted);font-size:8px;margin-top:3px;line-height:1.45}
+.fallback{margin-top:10px}.fallback textarea{width:100%;min-height:110px;resize:vertical;border-radius:13px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.74);color:var(--text);padding:10px;font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+.import-lock{padding:12px;border-radius:14px;border:1px solid rgba(88,233,155,.18);background:rgba(88,233,155,.045);font-size:9px;color:var(--muted);line-height:1.55}.import-lock b{color:var(--green)}
+.house-hold{border-color:rgba(251,191,36,.20)!important;background:rgba(251,191,36,.035)!important}.house-hold strong{color:#fbbf24}
+#receiptPanel{display:none}.hidden{display:none!important}
+@media(max-width:1000px){.migrate-grid{grid-template-columns:1fr}.migrate-kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.migrate-kpis,.mode-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
+  <nav class="nav">
+    <a href="index.html">🏟 Aurora HQ</a>
+    <a href="finance.html">💷 Finance</a>
+    <a class="active" href="finance-migration.html">🧳 Finance Migration</a>
+    <a href="#" data-soon="Transfer">🔄 Transfer</a>
+    <a href="#" data-soon="Squad">⚽ Squad</a>
+    <a href="#" data-soon="Scouting">🔎 Scouting</a>
+    <a href="#" data-soon="Income">💰 Income</a>
+    <a href="#" data-soon="Club Control">⚙ Club Control</a>
+  </nav>
+  <div class="sidebar-foot"><b>One-time bridge</b><br>Read Aurora 1, preview the records, then migrate only what you choose.</div>
+</aside>
+
+<main class="main"><div class="content">
+<div class="notice good" style="margin-bottom:14px"><b>Safe migration mode.</b> This page only reads Aurora 1. It never deletes or changes Aurora 1 storage. Before any Aurora 2 write, it creates a full Aurora 2 rollback backup.</div>
+<header class="page-head">
+  <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Migration</h1><p>Scan the old Finance planner, preview the clean records, merge them into Finance 2.0, then verify the result.</p></div>
+  <span class="status">MIGRATION v0.1</span>
+</header>
+
+<section class="section migrate-grid">
+  <article class="card card-pad step-card">
+    <div class="section-head"><h2><span class="step-no">1</span>Scan Aurora 1</h2><span id="scanBadge" class="muted">NOT SCANNED</span></div>
+    <p class="muted" style="font-size:9px;line-height:1.6">Aurora 1 and Aurora 2 use the same GitHub Pages origin, so the old Finance planner can normally be read directly from this browser.</p>
+    <div id="sourceList"></div>
+    <div class="action-row"><button class="btn primary" id="scanBtn">Scan Aurora 1</button></div>
+    <details class="fallback">
+      <summary class="muted" style="font-size:9px;cursor:pointer">Fallback: use a pasted Aurora 1 planner backup</summary>
+      <textarea id="pasteSource" placeholder="Paste the Aurora 1 planner JSON here only if the browser scan cannot find it."></textarea>
+      <div class="action-row"><button class="btn secondary" id="usePasteBtn">Use Pasted Backup</button></div>
+    </details>
+  </article>
+
+  <article class="card card-pad step-card">
+    <div class="section-head"><h2><span class="step-no">2</span>Source Selected</h2><span id="sourceBadge" class="muted">WAITING</span></div>
+    <div class="receipt-row"><div><strong>Source</strong><span id="selectedSource">No source selected</span></div><div class="source-pill" id="selectedSourceKey">—</div></div>
+    <div class="receipt-row"><div><strong>Last saved</strong><span id="selectedSaved">—</span></div></div>
+    <div class="receipt-row"><div><strong>Aurora 2 now</strong><span id="currentA2Summary">Loading…</span></div></div>
+    <div class="import-lock"><b>Nothing is imported by scanning.</b> The next section is a dry-run preview only.</div>
+  </article>
+</section>
+
+<section class="section migrate-kpis">
+  <article class="migrate-kpi"><small>Legacy Pots</small><strong id="kpiPots">0</strong><span>Detected savings pots</span></article>
+  <article class="migrate-kpi"><small>Active Bills</small><strong id="kpiBills">0</strong><span>Open / planned records</span></article>
+  <article class="migrate-kpi"><small>History</small><strong id="kpiHistory">0</strong><span>Paid / archived records</span></article>
+  <article class="migrate-kpi"><small>Holding Pot</small><strong id="kpiHolding">£0.00</strong><span>Legacy protected balance</span></article>
+</section>
+
+<section class="section card card-pad step-card" id="previewSection">
+  <div class="section-head"><h2><span class="step-no">3</span>Preview & Select</h2><span id="previewBadge" class="muted">SCAN FIRST</span></div>
+  <div class="migrate-grid">
+    <div>
+      <div class="preview-title"><h3>Pots</h3><button class="btn secondary" id="togglePotsBtn" type="button">Select all</button></div>
+      <div class="preview-wrap"><table class="preview-table"><thead><tr><th>Use</th><th>Pot</th><th>Balance</th><th>Target</th><th>Priority</th><th>Goal type</th></tr></thead><tbody id="potPreviewBody"><tr><td colspan="6" class="muted">Scan Aurora 1 first.</td></tr></tbody></table></div>
+    </div>
+    <div>
+      <div class="preview-title"><h3>Active bills</h3><button class="btn secondary" id="toggleBillsBtn" type="button">Select all</button></div>
+      <div class="preview-wrap"><table class="preview-table"><thead><tr><th>Use</th><th>Bill</th><th>Amount</th><th>Due</th><th>Frequency</th><th>Funding</th></tr></thead><tbody id="billPreviewBody"><tr><td colspan="6" class="muted">Scan Aurora 1 first.</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="split-line"></div>
+  <div class="preview-title"><h3>Optional history</h3><button class="btn secondary" id="toggleHistoryBtn" type="button">Select all</button></div>
+  <div class="preview-wrap"><table class="preview-table"><thead><tr><th>Use</th><th>Record</th><th>Actual</th><th>Due</th><th>Status</th><th>Funding</th></tr></thead><tbody id="historyPreviewBody"><tr><td colspan="6" class="muted">Historical records are optional.</td></tr></tbody></table></div>
+
+  <div class="split-line"></div>
+  <div class="option-row"><label><input id="includeHolding" type="checkbox" checked><span><strong>Import legacy Holding Pot</strong><span>Creates/updates a named “Holding Pot” using Aurora 1’s protected balance, so bills already assigned to it stay pot-funded rather than becoming Current Account bills.</span></span></label></div>
+</section>
+
+<section class="section migrate-grid">
+  <article class="card card-pad step-card">
+    <div class="section-head"><h2><span class="step-no">4</span>Import Method</h2><span class="good">MERGE RECOMMENDED</span></div>
+    <div class="mode-grid">
+      <div class="mode-option"><label><input type="radio" name="mode" value="merge" checked><span><strong>Merge safely</strong><span>Update matching old records and keep any Finance 2.0 records you have already created.</span></span></label></div>
+      <div class="mode-option"><label><input type="radio" name="mode" value="replace"><span><strong>Replace Finance records</strong><span>Replace only Finance pots, bills and payment history. Payday plan, mission, HQ and other departments are preserved.</span></span></label></div>
+    </div>
+    <div class="split-line"></div>
+    <div id="warningList"></div>
+  </article>
+
+  <article class="card card-pad house-hold">
+    <div class="section-head"><h2>🏠 House Project</h2><span id="houseBadge" class="muted">SEPARATE PASS</span></div>
+    <strong>House project records are deliberately not migrated by this first tool.</strong>
+    <p class="muted" style="font-size:9px;line-height:1.6">The House Fund pot can come across now. Room-by-room estimates, actual spend, reserved work and funded-progress history will move in the next House Project migration so none of that specialist logic is flattened or guessed.</p>
+    <div id="houseKeys" class="muted" style="font-size:8px;line-height:1.5"></div>
+  </article>
+</section>
+
+<section class="section card card-pad step-card">
+  <div class="section-head"><h2><span class="step-no">5</span>Import & Verify</h2><span id="importBadge" class="muted">READY AFTER SCAN</span></div>
+  <div class="import-lock"><b>Automatic rollback protection:</b> immediately before import, Aurora stores a full snapshot of the current <code>aurora2:state:v1</code>. You can restore it from this page if the result is not right.</div>
+  <div class="action-row"><button class="btn primary" id="importBtn" disabled>Import Selected Records</button><button class="btn secondary" id="restoreBtn" disabled>Restore Pre-Migration Backup</button><a class="btn secondary" href="finance.html">Open Finance 2.0</a></div>
+</section>
+
+<section class="section card card-pad" id="receiptPanel">
+  <div class="section-head"><h2>✅ Migration Receipt</h2><span class="good">VERIFIED</span></div>
+  <div id="receiptList"></div>
+  <div class="action-row"><a class="btn primary" href="finance.html">Check Pots & Bills in Finance</a><a class="btn secondary" href="index.html">Return to Aurora HQ</a></div>
+</section>
+
+<div class="notice" style="margin-top:14px"><b>Aurora 1 remains untouched.</b> After this pass is verified, the next migration will handle the House Project Ledger separately.</div>
+</div></main>
+</div>
+<script src="aurora-core.js"></script>
+<script src="finance-migration.js"></script>
+</body>
+</html>
