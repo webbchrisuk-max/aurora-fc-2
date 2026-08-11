@@ -197,6 +197,47 @@
     map.set(pot.id,old);
   }
 
+
+  function reconcileFundingPennies(pots,targetAllocated,state){
+    const targetCents=Math.max(0,Math.round(num(targetAllocated)*100));
+    let currentCents=pots.reduce((s,p)=>s+Math.round(Math.max(0,num(p.fundingPerPayday))*100),0);
+    let delta=targetCents-currentCents;
+    if(!delta)return pots;
+
+    const next=pots.map(p=>({...p}));
+    const fundedIndexes=next
+      .map((p,i)=>({p,i}))
+      .filter(x=>num(x.p.fundingPerPayday)>0)
+      .map(x=>x.i);
+
+    // Rounding can make the visible pot rows a penny or two above/below the
+    // exact funding budget. Correct that at row level so Payday and Funding
+    // Engine always reconcile to the same penny.
+    if(delta<0){
+      let cents=-delta;
+      for(const i of [...fundedIndexes].reverse()){
+        if(cents<=0)break;
+        const have=Math.round(num(next[i].fundingPerPayday)*100);
+        const take=Math.min(cents,have);
+        next[i].fundingPerPayday=(have-take)/100;
+        cents-=take;
+      }
+    }else{
+      let cents=delta;
+      const indexes=[...fundedIndexes].reverse();
+      for(const i of indexes){
+        if(cents<=0)break;
+        const gapCents=Math.max(0,Math.round(potGap(next[i],state)*100));
+        const have=Math.round(num(next[i].fundingPerPayday)*100);
+        const spare=Math.max(0,gapCents-have);
+        const add=Math.min(cents,spare);
+        next[i].fundingPerPayday=(have+add)/100;
+        cents-=add;
+      }
+    }
+    return next;
+  }
+
   function buildPlan(state){
     const f=obj(state.finance), plan=obj(f.plan), policy=obj(f.fundingPolicy);
     const budget=Math.max(0,num(policy.goalPotBudget));
@@ -244,7 +285,7 @@
     // 3) Remaining flexible budget follows priority P1 -> P2 -> P3.
     remaining=allocatePriority(candidates,remaining,allocations,strategy);
 
-    const nextPots=pots.map(p=>{
+    let nextPots=pots.map(p=>{
       const a=allocations.get(p.id);
       const nextFunding=a?Math.min(potGap(p,state),a.amount):0;
       const reason=a?a.reasons.join(' • '):(potGap(p,A()?.core?.read?.())<=.009?'Target funded':excludedFromGoalFunding(p)?'Excluded from goal-pot funding':'Waiting behind higher-priority pots');
@@ -257,10 +298,12 @@
       };
     });
 
-    const allocated=budget-remaining;
+    const targetAllocated=Number((budget-remaining).toFixed(2));
+    nextPots=reconcileFundingPennies(nextPots,targetAllocated,state);
+    const allocated=Number(nextPots.reduce((s,p)=>s+Math.max(0,num(p.fundingPerPayday)),0).toFixed(2));
     const shortfall=Math.max(0,deadlineRequired-deadlineAllocated);
     const rows=nextPots.filter(p=>num(p.fundingPerPayday)>0).map(p=>({
-      id:p.id,name:p.name,amount:p.fundingPerPayday,reason:p.fundingReason,deadline:p.deadline||''
+      id:p.id,name:p.name,amount:Number(num(p.fundingPerPayday).toFixed(2)),reason:p.fundingReason,deadline:p.deadline||''
     }));
 
     return {
@@ -274,7 +317,7 @@
           paydayDate:payday,
           budget:Number(budget.toFixed(2)),
           allocated:Number(allocated.toFixed(2)),
-          unallocated:Number(Math.max(0,remaining).toFixed(2)),
+          unallocated:Number(Math.max(0,budget-allocated).toFixed(2)),
           deadlineRequired:Number(deadlineRequired.toFixed(2)),
           deadlineAllocated:Number(deadlineAllocated.toFixed(2)),
           deadlineShortfall:Number(shortfall.toFixed(2)),
@@ -380,5 +423,5 @@
   });
 
   w.Aurora2=w.Aurora2||{};
-  w.Aurora2.funding={recalc,buildPlan,readLegacy,initialiseDefaultBudgetIfNeeded};
+  w.Aurora2.funding={recalc,buildPlan,readLegacy,initialiseDefaultBudgetIfNeeded,reconcileFundingPennies};
 })(window);

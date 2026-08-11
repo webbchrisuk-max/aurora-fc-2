@@ -49,10 +49,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Payday Lifecycle v0.4.3.</b> Next-payday funding and the current released mission are now shown separately. Pot funding auto-initialises when migrated pots still need funding.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Holding Pot Protection v0.4.5.</b> Finance now projects recurring bills across the whole payday cycle, calculates the Holding Pot balance required, and reserves only the top-up shortfall before shares.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">PAYDAY LIFECYCLE v0.4.3</span>
+  <span class="status">HOLDING POT v0.4.5</span>
 </header>
 
 <div class="tabs card">
@@ -66,7 +66,7 @@
   <section class="grid grid-5">
     <article class="card card-pad metric"><small>Opening Cash</small><strong id="mOpening">£0.00</strong><span>Before payday</span></article>
     <article class="card card-pad metric"><small>Net Pay</small><strong id="mPay">£0.00</strong><span>Actual payday input</span></article>
-    <article class="card card-pad metric"><small>Commitments</small><strong id="mCommitments">£0.00</strong><span>Live bills + pot funding + planned</span></article>
+    <article class="card card-pad metric"><small>Commitments</small><strong id="mCommitments">£0.00</strong><span>Current Account bills + Holding Pot top-up + goal pots + planned</span></article>
     <article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article>
     <article class="card card-pad metric"><small>Next Safe Release</small><strong class="good" id="mAvailable">£0.00</strong><span>Current payday forecast</span></article>
   </section>
@@ -86,8 +86,9 @@
       <div class="section-head"><h2>Next Payday Forecast</h2><span class="muted">Automatic commitments</span></div>
       <div class="calc-list">
         <div class="calc-row"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div>
-        <div class="calc-row"><span>Bills due from Current Account</span><strong id="breakBills">− £0.00</strong></div>
-        <div class="calc-row"><span>Pot funding due</span><strong id="breakPots">− £0.00</strong></div>
+        <div class="calc-row"><span>Current Account bills</span><strong id="breakBills">− £0.00</strong></div>
+        <div class="calc-row"><span>Holding Pot top-up</span><strong id="breakHoldingTopUp">− £0.00</strong></div>
+        <div class="calc-row"><span>Goal-pot funding due</span><strong id="breakPots">− £0.00</strong></div>
         <div class="calc-row"><span>Other planned spending</span><strong id="breakOther">− £0.00</strong></div>
         <div class="calc-row"><span>Protected cash floor</span><strong id="breakProtected">− £0.00</strong></div>
         <div class="calc-row total"><span>Safe surplus</span><strong class="good" id="breakAvailable">£0.00</strong></div>
@@ -109,7 +110,7 @@
     <article class="card card-pad">
       <div class="section-head"><h2>Actual Payday Planner</h2><span class="good">Live commitments</span></div>
       <div class="field-grid">
-        <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small>Bills due on or before this date are protected.</small></div>
+        <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small id="paydayWindowHelp">Finance protects the full payday cycle: Current Account bills directly, plus any Holding Pot shortfall.</small></div>
         <div class="field"><label for="openingCash">Opening cash</label><div class="money-wrap"><input id="openingCash" type="number" min="0" step="0.01"></div><small>Cash available before the wage lands.</small></div>
         <div class="field"><label for="netPay">Actual net pay</label><div class="money-wrap"><input id="netPay" type="number" min="0" step="0.01"></div><small>Use the real wage received.</small></div>
         <div class="field"><label for="extraCash">Extra / one-off cash</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Optional cash intentionally included this payday.</small></div>
@@ -119,9 +120,10 @@
       </div>
 
       <div class="split-line"></div>
-      <div class="grid grid-2">
-        <div class="auto-chip"><small>Bills protected automatically</small><strong id="autoBillsDue">£0.00</strong><span id="autoBillsCount">0 bills due by payday</span></div>
-        <div class="auto-chip"><small>Pot funding automatically</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
+      <div class="grid grid-3">
+        <div class="auto-chip"><small>Current Account bills</small><strong id="autoBillsDue">£0.00</strong><span id="autoBillsCount">0 bill occurrences in payday cycle</span></div>
+        <div class="auto-chip"><small>Holding Pot top-up</small><strong id="autoHoldingTopUp">£0.00</strong><span id="autoHoldingMeta">No Holding Pot requirement</span></div>
+        <div class="auto-chip"><small>Goal-pot funding</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
       </div>
       <div class="split-line"></div>
       <div id="releaseGuard" class="notice">Enter the amount you want Finance to release to Transfer.</div>
@@ -146,7 +148,17 @@
       <div id="fundingEngineNote" class="notice" style="margin-top:10px">Funding engine calculating…</div>
       <div class="action-row"><button class="btn secondary" id="saveFundingPolicy">Save Funding Rule</button></div>
       <div class="split-line"></div>
-      <p class="muted" style="font-size:9px;line-height:1.7">A bill funded from a named pot does not hit the payday Current Account total again. Completing it deducts the actual payment from that pot. This prevents double-counting money already set aside.</p>
+
+      <div class="section-head"><h2 style="font-size:15px">Holding Pot Protection</h2><span class="good">AUTO</span></div>
+      <div class="grid grid-3">
+        <div class="auto-chip"><small>Bills required in cycle</small><strong id="holdingRequired">£0.00</strong><span id="holdingRequiredMeta">0 projected occurrences</span></div>
+        <div class="auto-chip"><small>Already in Holding Pot</small><strong id="holdingBalance">£0.00</strong><span>Existing protected cash</span></div>
+        <div class="auto-chip"><small>Top-up from payday</small><strong id="holdingTopUp">£0.00</strong><span id="holdingTopUpMeta">Only the shortfall is reserved</span></div>
+      </div>
+      <div id="holdingPotBreakdown" class="notice" style="margin-top:10px">No Holding Pot-funded bills in this payday cycle.</div>
+
+      <div class="split-line"></div>
+      <p class="muted" style="font-size:9px;line-height:1.7">Current Account bills are protected directly. Holding Pot-funded bills are projected across the full payday cycle, compared with the cash already in Holding Pot, and only the shortfall is reserved from this payday. Other named pots are not double-counted.</p>
     </article>
   </section>
 </section>

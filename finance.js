@@ -56,31 +56,147 @@
   function activePots(state){return (state.finance?.pots||[]).filter(p=>!p.archived)}
   function activeBills(state){return (state.finance?.bills||[]).filter(b=>!b.archived)}
 
-  function autoCommitments(state,plan){
-    const payday=parseLocalDate(plan.paydayDate);
-    const bills=activeBills(state).filter(b=>{
-      if(b.paid||b.included===false||b.fundingSource!=='Current Account')return false;
-      const due=parseLocalDate(b.due);
-      if(!due||!payday)return false;
-      return due.getTime()<=payday.getTime();
-    });
-    const billsDue=bills.reduce((s,b)=>s+Math.max(0,Number(b.amount)||0),0);
 
-    const pots=activePots(state);
-    const potsDue=pots.reduce((s,p)=>{
-      const gap=potGap(p);
-      return s+Math.min(gap,Math.max(0,Number(p.fundingPerPayday)||0));
-    },0);
+  function cleanName(v){return String(v??'').trim().toLowerCase().replace(/\s+/g,' ')}
+  function isHoldingPotName(v){return cleanName(v)==='holding pot'}
+  function holdingPot(state){return activePots(state).find(p=>isHoldingPotName(p.name))||null}
 
-    return {billsDue,potsDue,bills};
+  function occurrenceCountForUndatedBill(bill,payday,nextPayday){
+    if(!payday||!nextPayday)return 0;
+    const days=Math.max(1,Math.round((nextPayday-payday)/86400000));
+    const frequency=String(bill.frequency||'one-off');
+    if(frequency==='weekly')return Math.max(1,Math.ceil(days/7));
+    if(frequency==='4-weeks'||frequency==='5-weeks'||frequency==='monthly')return 1;
+    // Annual and one-off bills need a real due date before Finance can know
+    // which payday cycle owns them.
+    return 0;
   }
 
+  function projectBillOccurrences(bill,payday,nextPayday){
+    if(!bill||bill.paid||bill.archived||bill.included===false||!payday||!nextPayday)return [];
+    const amount=Math.max(0,Number(bill.amount)||0);
+    if(amount<=0)return [];
+    const frequency=String(bill.frequency||'one-off');
+    const due=parseLocalDate(bill.due);
+    const out=[];
+
+    if(!due){
+      const count=occurrenceCountForUndatedBill(bill,payday,nextPayday);
+      for(let i=0;i<count;i++){
+        out.push({
+          billId:bill.id,billName:bill.name,amount,date:'',
+          fundingSource:bill.fundingSource,frequency,estimated:true,overdue:false
+        });
+      }
+      return out;
+    }
+
+    if(frequency==='one-off'){
+      if(due.getTime()<nextPayday.getTime()){
+        out.push({
+          billId:bill.id,billName:bill.name,amount,date:dateISO(due),
+          fundingSource:bill.fundingSource,frequency,estimated:false,
+          overdue:due.getTime()<payday.getTime()
+        });
+      }
+      return out;
+    }
+
+    let cursor=new Date(due.getTime()), guard=0;
+
+    // Protect one overdue occurrence, then fast-forward to the current
+    // payday cycle rather than inventing months of old missed payments.
+    if(cursor.getTime()<payday.getTime()){
+      out.push({
+        billId:bill.id,billName:bill.name,amount,date:dateISO(cursor),
+        fundingSource:bill.fundingSource,frequency,estimated:false,overdue:true
+      });
+      let next=parseLocalDate(nextDue(dateISO(cursor),frequency));
+      while(next&&next.getTime()<payday.getTime()&&guard++<120){
+        const after=parseLocalDate(nextDue(dateISO(next),frequency));
+        if(!after||after.getTime()===next.getTime())break;
+        next=after;
+      }
+      cursor=next;
+    }
+
+    guard=0;
+    while(cursor&&cursor.getTime()<nextPayday.getTime()&&guard++<120){
+      if(!(out.length&&out[0].overdue&&out[0].date===dateISO(cursor))){
+        out.push({
+          billId:bill.id,billName:bill.name,amount,date:dateISO(cursor),
+          fundingSource:bill.fundingSource,frequency,estimated:false,overdue:false
+        });
+      }
+      const next=parseLocalDate(nextDue(dateISO(cursor),frequency));
+      if(!next||next.getTime()===cursor.getTime())break;
+      cursor=next;
+    }
+    return out;
+  }
+
+  function summarizeOccurrences(occurrences){
+    const map=new Map();
+    occurrences.forEach(o=>{
+      const x=map.get(o.billId)||{billId:o.billId,name:o.billName,count:0,total:0,estimated:false,overdue:false};
+      x.count+=1;
+      x.total+=Number(o.amount)||0;
+      x.estimated=x.estimated||!!o.estimated;
+      x.overdue=x.overdue||!!o.overdue;
+      map.set(o.billId,x);
+    });
+    return [...map.values()].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
+  }
+
+  function autoCommitments(state,plan){
+    const payday=parseLocalDate(plan.paydayDate);
+    const nextPayday=payday?addMonthsClamped(payday,1):null;
+    const bills=activeBills(state).filter(b=>!b.paid&&b.included!==false);
+
+    const allOccurrences=[];
+    bills.forEach(b=>allOccurrences.push(...projectBillOccurrences(b,payday,nextPayday)));
+
+    const currentAccountOccurrences=allOccurrences.filter(o=>o.fundingSource==='Current Account');
+    const currentAccountBills=[...new Set(currentAccountOccurrences.map(o=>o.billId))]
+      .map(id=>bills.find(b=>b.id===id)).filter(Boolean);
+    const billsDue=Number(currentAccountOccurrences.reduce((s,o)=>s+Math.max(0,Number(o.amount)||0),0).toFixed(2));
+
+    const hp=holdingPot(state);
+    const holdingOccurrences=allOccurrences.filter(o=>isHoldingPotName(o.fundingSource));
+    const holdingRequired=Number(holdingOccurrences.reduce((s,o)=>s+Math.max(0,Number(o.amount)||0),0).toFixed(2));
+    const holdingBalance=Number(Math.max(0,Number(hp?.balance)||0).toFixed(2));
+    const holdingTopUp=Number(Math.max(0,holdingRequired-holdingBalance).toFixed(2));
+    const holdingSurplus=Number(Math.max(0,holdingBalance-holdingRequired).toFixed(2));
+
+    const pots=activePots(state);
+    const potsDue=Number(pots.reduce((s,p)=>{
+      const gap=potGap(p);
+      return s+Math.min(gap,Math.max(0,Number(p.fundingPerPayday)||0));
+    },0).toFixed(2));
+
+    return {
+      billsDue,potsDue,bills:currentAccountBills,
+      billOccurrences:currentAccountOccurrences,
+      allOccurrences,
+      payday:payday?dateISO(payday):'',
+      nextPayday:nextPayday?dateISO(nextPayday):'',
+      holdingPot:hp,
+      holdingOccurrences,
+      holdingSummary:summarizeOccurrences(holdingOccurrences),
+      holdingRequired,holdingBalance,holdingTopUp,holdingSurplus
+    };
+  }
   function calc(plan,state=A().core.read()){
     const auto=autoCommitments(state,plan);
-    const normalized={...plan,billsDue:auto.billsDue,potsDue:auto.potsDue};
-    const totalCash=(Number(normalized.openingCash)||0)+(Number(normalized.netPay)||0)+(Number(normalized.extraCash)||0);
-    const commitments=auto.billsDue+auto.potsDue+(Number(normalized.otherPlanned)||0);
-    const safeSurplus=Math.max(0,totalCash-commitments-(Number(normalized.protectedCash)||0));
+    const normalized={
+      ...plan,
+      billsDue:auto.billsDue,
+      potsDue:auto.potsDue,
+      holdingPotTopUp:auto.holdingTopUp
+    };
+    const totalCash=Number(((Number(normalized.openingCash)||0)+(Number(normalized.netPay)||0)+(Number(normalized.extraCash)||0)).toFixed(2));
+    const commitments=Number((auto.billsDue+auto.holdingTopUp+auto.potsDue+(Number(normalized.otherPlanned)||0)).toFixed(2));
+    const safeSurplus=Number(Math.max(0,totalCash-commitments-(Number(normalized.protectedCash)||0)).toFixed(2));
     return {totalCash,commitments,safeSurplus,auto,plan:normalized};
   }
 
@@ -116,14 +232,46 @@
     ui.text('mAvailable',money(c.safeSurplus));
     ui.text('breakTotal',money(c.totalCash));
     ui.text('breakBills',`− ${money(c.auto.billsDue)}`);
+    ui.text('breakHoldingTopUp',`− ${money(c.auto.holdingTopUp)}`);
     ui.text('breakPots',`− ${money(c.auto.potsDue)}`);
     ui.text('breakOther',`− ${money(plan.otherPlanned)}`);
     ui.text('breakProtected',`− ${money(plan.protectedCash)}`);
     ui.text('breakAvailable',money(c.safeSurplus));
     ui.text('autoBillsDue',money(c.auto.billsDue));
+    ui.text('autoHoldingTopUp',money(c.auto.holdingTopUp));
     ui.text('autoPotsDue',money(c.auto.potsDue));
-    ui.text('autoBillsCount',`${c.auto.bills.length} current-account bill${c.auto.bills.length===1?'':'s'} due by payday`);
+    ui.text('autoBillsCount',`${c.auto.billOccurrences.length} occurrence${c.auto.billOccurrences.length===1?'':'s'} across ${c.auto.bills.length} Current Account bill${c.auto.bills.length===1?'':'s'}`);
+    ui.text('autoHoldingMeta',c.auto.holdingOccurrences.length
+      ?`${c.auto.holdingOccurrences.length} occurrence${c.auto.holdingOccurrences.length===1?'':'s'} • ${money(c.auto.holdingBalance)} already protected`
+      :'No Holding Pot-funded bills in this cycle');
     ui.text('autoPotsCount',`${activePots(state).filter(p=>Math.min(potGap(p),Number(p.fundingPerPayday)||0)>.009).length} pot contribution${activePots(state).filter(p=>Math.min(potGap(p),Number(p.fundingPerPayday)||0)>.009).length===1?'':'s'} scheduled`);
+    ui.text('paydayWindowHelp',c.auto.payday&&c.auto.nextPayday
+      ?`Protection window: ${c.auto.payday} to before ${c.auto.nextPayday}. Recurring bills are projected through the whole cycle.`
+      :'Choose the payday date to calculate the monthly bill-protection window.');
+
+    ui.text('holdingRequired',money(c.auto.holdingRequired));
+    ui.text('holdingBalance',money(c.auto.holdingBalance));
+    ui.text('holdingTopUp',money(c.auto.holdingTopUp));
+    ui.text('holdingRequiredMeta',`${c.auto.holdingOccurrences.length} projected occurrence${c.auto.holdingOccurrences.length===1?'':'s'}`);
+    ui.text('holdingTopUpMeta',c.auto.holdingTopUp>0
+      ?`${money(c.auto.holdingTopUp)} must be protected from this payday`
+      :c.auto.holdingRequired>0
+        ?`${money(c.auto.holdingSurplus)} remains after this cycle's protected bills`
+        :'No top-up required');
+
+    const hpBox=$('holdingPotBreakdown');
+    if(hpBox){
+      if(!c.auto.holdingPot&&c.auto.holdingOccurrences.length){
+        hpBox.className='notice red';
+        hpBox.textContent=`Holding Pot-funded bills exist, but the Holding Pot record is missing. Finance is conservatively reserving the full ${money(c.auto.holdingRequired)} requirement.`;
+      }else if(!c.auto.holdingSummary.length){
+        hpBox.className='notice good';
+        hpBox.textContent='No Holding Pot-funded bills are projected in this payday cycle.';
+      }else{
+        hpBox.className='notice';
+        hpBox.innerHTML='<b>Protected bill plan:</b> '+c.auto.holdingSummary.map(x=>`${esc(x.name)} ×${x.count} = ${money(x.total)}${x.estimated?' (date estimate)':''}${x.overdue?' (includes overdue)':''}`).join(' • ');
+      }
+    }
 
     const release=$('releaseAmount');
     if(release&&document.activeElement!==release&&(!release.value||Number(release.value)>c.safeSurplus)){
@@ -184,6 +332,10 @@
         totalCash:Number(c.totalCash.toFixed(2)),
         commitments:Number(c.commitments.toFixed(2)),
         billsDue:Number(c.auto.billsDue.toFixed(2)),
+        holdingPotRequired:Number(c.auto.holdingRequired.toFixed(2)),
+        holdingPotBalance:Number(c.auto.holdingBalance.toFixed(2)),
+        holdingPotTopUp:Number(c.auto.holdingTopUp.toFixed(2)),
+        holdingPotOccurrences:c.auto.holdingOccurrences.length,
         potsDue:Number(c.auto.potsDue.toFixed(2)),
         protectedCash:Number(plan.protectedCash.toFixed(2)),
         safeSurplus:Number(c.safeSurplus.toFixed(2))
