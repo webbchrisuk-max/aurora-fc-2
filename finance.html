@@ -49,10 +49,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — House Projects v0.4.1.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — House Projects v0.4.2.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">HOUSE PROJECTS v0.4.1</span>
+  <span class="status">HOUSE PROJECTS v0.4.2</span>
 </header>
 
 <div class="tabs card">
@@ -272,9 +272,11 @@
       <div class="section-head"><h2>House Setup</h2><span class="muted">Project controls</span></div>
       <div class="field-grid">
         <div class="field"><label>Project target</label><div class="money-wrap"><input id="houseProjectTarget" type="number" min="0" step="0.01"></div></div>
+        <div class="field"><label>Current House Fund balance</label><div class="money-wrap"><input id="houseCurrentBalance" type="number" min="0" step="0.01"></div><small>Use this to reconcile the real cash currently available in your House Fund.</small></div>
         <div class="field"><label>Opening historical spend</label><div class="money-wrap"><input id="houseOpeningSpent" type="number" min="0" step="0.01"></div><small>Legacy spend not represented by an individual ledger entry.</small></div>
       </div>
-      <div class="action-row"><button class="btn secondary" id="houseSaveSetup">Save House Setup</button></div>
+      <div class="notice" style="margin-top:10px"><b>Balance changes are cash corrections, not spending.</b><br>Changing the current House Fund balance updates available cash and funded progress, but does not create a paid House Ledger item.</div>
+      <div class="action-row"><button class="btn secondary" id="houseSaveSetup">Save House Setup & Balance</button></div>
     </article>
     <article class="card card-pad">
       <div class="section-head"><h2>House Action History</h2><span class="muted">Payments & undo trail</span></div>

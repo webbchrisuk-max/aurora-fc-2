@@ -94,7 +94,12 @@
     host.innerHTML=rows.map(e=>`<article class="house-entry"><div class="house-entry-head"><div><strong>${esc(e.name)}</strong><div class="house-entry-meta">${esc(e.room)} • ${esc(e.category)} • ${esc(e.due||'No date')}<br>Estimated ${money(e.estimated)} • Actual ${money(e.actual)}${e.notes?` • ${esc(e.notes)}`:''}</div></div>${statusPill(e)}</div><div class="house-entry-actions">${e.status==='reserved'?`<div class="house-actual"><label>Actual</label><input type="number" min="0" step="0.01" value="${num(e.actual).toFixed(2)}" data-house-actual="${esc(e.id)}"></div><button class="btn primary" data-house-pay="${esc(e.id)}">Mark Paid</button>`:''}<button class="btn secondary" data-house-edit="${esc(e.id)}">Edit</button>${e.status==='paid'&&e.deducted?`<button class="btn secondary" data-house-undo="${esc(e.id)}">Undo</button>`:''}<button class="btn secondary" data-house-delete="${esc(e.id)}">Delete</button></div></article>`).join('');
   }
 
-  function renderSetup(m){setValue('houseProjectTarget',m.target||'');setValue('houseOpeningSpent',m.hp.openingHistoricalSpend||0)}
+  function renderSetup(m){
+    const target=$('houseProjectTarget'), balance=$('houseCurrentBalance'), opening=$('houseOpeningSpent');
+    if(target&&document.activeElement!==target)target.value=m.target||'';
+    if(balance&&document.activeElement!==balance)balance.value=num(m.cash).toFixed(2);
+    if(opening&&document.activeElement!==opening)opening.value=m.hp.openingHistoricalSpend||0;
+  }
   function renderRoomSelect(m){const sel=$('houseEntryRoom');if(!sel)return;const current=sel.value;sel.innerHTML=m.hp.rooms.map(r=>`<option>${esc(r)}</option>`).join('');if(m.hp.rooms.includes(current))sel.value=current}
   function renderActions(m){const host=$('houseActionHistory');if(!host)return;const actions=arr(m.hp.actions).slice(0,20);if(!actions.length){host.innerHTML='<div class="house-empty">No Aurora 2 House actions yet.</div>';return}host.innerHTML=actions.map(a=>`<div class="house-history-row"><div><strong>${esc(a.label)}</strong><span>${money(a.amount)} • ${new Date(a.at).toLocaleString('en-GB')}${a.reversed?' • UNDONE':''}</span></div></div>`).join('')}
 
@@ -181,9 +186,42 @@
   }
 
   function saveSetup(){
-    const target=num(value('houseProjectTarget')), opening=num(value('houseOpeningSpent'));
-    A().core.update(s=>syncHousePotDraft({...s,finance:{...s.finance,houseProject:{...s.finance.houseProject,target,openingHistoricalSpend:opening,updatedAt:now()}}}));
-    showStatus('House setup saved.');renderAll();
+    const target=num(value('houseProjectTarget')), opening=num(value('houseOpeningSpent')), requestedBalance=num(value('houseCurrentBalance'));
+    let balanceChanged=false, beforeBalance=0, afterBalance=requestedBalance;
+    A().core.update(s=>{
+      const hp={
+        ...s.finance.houseProject,
+        target,
+        openingHistoricalSpend:opening,
+        actions:[...arr(s.finance.houseProject?.actions)],
+        updatedAt:now()
+      };
+      const pots=[...arr(s.finance.pots)], pot=housePot(s), pi=pots.findIndex(p=>p.id===pot?.id);
+      if(pi>=0){
+        beforeBalance=num(pots[pi].balance);
+        balanceChanged=Math.abs(beforeBalance-requestedBalance)>.005;
+        if(balanceChanged){
+          pots[pi]={...pots[pi],balance:requestedBalance,updatedAt:now()};
+          hp.actions.unshift({
+            id:A().core.uid('HOUSEACT'),
+            type:'balance-adjustment',
+            entryId:'',
+            label:`House Fund balance changed ${money(beforeBalance)} → ${money(requestedBalance)}`,
+            amount:Math.abs(requestedBalance-beforeBalance),
+            at:now(),
+            reversed:false,
+            reversedAt:null,
+            beforeEntry:null,
+            beforePot:{...pot}
+          });
+        }
+      }
+      return syncHousePotDraft({...s,finance:{...s.finance,pots,houseProject:hp}});
+    });
+    showStatus(balanceChanged
+      ? `House Fund balance updated from ${money(beforeBalance)} to ${money(afterBalance)}. No spending entry was created.`
+      : 'House setup saved.');
+    renderAll();
   }
 
   function addRoom(){const name=prompt('New room name:','').trim();if(!name)return;A().core.update(s=>{const rooms=[...arr(s.finance.houseProject?.rooms)];if(!rooms.some(r=>norm(r)===norm(name)))rooms.push(name);return {...s,finance:{...s.finance,houseProject:{...s.finance.houseProject,rooms,updatedAt:now()}}}});renderAll()}
