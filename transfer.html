@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050b16">
+<title>Transfer Centre — Aurora FC 2.0</title>
+<link rel="stylesheet" href="aurora.css">
+<style>
+:root{--transfer:#ff7a59;--transfer2:#f5b84b;--transfer-rgb:255,122,89}
+.transfer-notice{border-color:rgba(var(--transfer-rgb),.24)!important;background:linear-gradient(90deg,rgba(var(--transfer-rgb),.07),rgba(245,184,75,.04))!important;color:#ffd0c4!important}
+.transfer-hero{position:relative;overflow:hidden;padding:24px;border-radius:26px;border:1px solid rgba(var(--transfer-rgb),.25);background:radial-gradient(circle at 0 0,rgba(var(--transfer-rgb),.18),transparent 34%),radial-gradient(circle at 100% 0,rgba(245,184,75,.13),transparent 32%),linear-gradient(145deg,rgba(35,16,20,.96),rgba(8,15,27,.98));box-shadow:var(--shadow)}
+.transfer-hero:after{content:"DEADLINE DAY";position:absolute;right:18px;bottom:-12px;font-size:72px;font-weight:1000;letter-spacing:-4px;color:rgba(255,255,255,.025);pointer-events:none}
+.transfer-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.transfer-hero h2{font-size:clamp(28px,3.3vw,46px);margin:7px 0 0;letter-spacing:-1.5px}.transfer-hero p{color:var(--muted);font-size:11px;line-height:1.6;max-width:760px}
+.transfer-badge{display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(var(--transfer-rgb),.28);background:rgba(var(--transfer-rgb),.08);color:#ffc2b2;font-size:9px;font-weight:1000}
+.mission-command{padding:17px;border-radius:18px;border:1px solid rgba(88,233,155,.18);background:rgba(88,233,155,.045)}.mission-command .budget{font-size:38px;font-weight:1000;letter-spacing:-1.5px;margin:5px 0}.mission-command small{color:#8ff2b7;font-size:8px;font-weight:1000;text-transform:uppercase;letter-spacing:.9px}.mission-command span{display:block;color:var(--muted);font-size:9px;line-height:1.5}
+.transfer-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.transfer-kpi{padding:15px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.024)}.transfer-kpi small{display:block;color:var(--muted);font-size:8px;font-weight:950;text-transform:uppercase;letter-spacing:.8px}.transfer-kpi strong{display:block;font-size:23px;margin-top:7px}.transfer-kpi span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
+.transfer-tabs .tab.active{border-color:rgba(var(--transfer-rgb),.28);background:rgba(var(--transfer-rgb),.08);color:#fff2ed}
+.strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.strategy-card{position:relative;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;background:rgba(255,255,255,.02);cursor:pointer}.strategy-card.active{border-color:rgba(var(--transfer-rgb),.34);background:rgba(var(--transfer-rgb),.07)}.strategy-card input{position:absolute;opacity:0}.strategy-card strong{display:block;font-size:13px}.strategy-card span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}.strategy-card em{display:block;color:#ffc6b7;font-style:normal;font-size:8px;font-weight:900;margin-top:7px}
+.target-list,.route-list,.draft-list{display:grid;gap:8px}.target-row,.route-row,.draft-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.target-main strong,.route-main strong,.draft-main strong{display:block;font-size:12px}.target-main span,.route-main span,.draft-main span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:4px}.target-side,.route-side{text-align:right}.target-side strong,.route-side strong{font-size:14px}.target-side span,.route-side span{color:var(--muted);font-size:8px}
+.status-pill{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);font-size:7px;font-weight:1000;text-transform:uppercase;letter-spacing:.6px}.status-pill.pass{color:#9df0ba;border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.status-pill.caution{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05)}.status-pill.block{color:#ffb6c2;border-color:rgba(255,112,137,.25);background:rgba(255,112,137,.05)}
+.route-input{width:110px;min-height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px;font:inherit;font-size:11px;text-align:right}.route-input:focus{outline:none;border-color:rgba(var(--transfer-rgb),.45)}
+.broker-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.broker-card{padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(255,255,255,.02)}.broker-card small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:950}.broker-card strong{display:block;font-size:24px;margin-top:6px}.broker-card span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
+.weights{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.weight{padding:9px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018);text-align:center}.weight small{display:block;color:var(--muted);font-size:7px}.weight strong{display:block;font-size:13px;margin-top:4px;color:#ffd1c5}
+.route-progress{height:8px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.06);margin-top:10px}.route-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--transfer),var(--transfer2));border-radius:999px}
+.migration-card{border-color:rgba(169,139,255,.18)!important;background:rgba(169,139,255,.035)!important}.migration-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.055)}.migration-row:last-child{border-bottom:0}.migration-row strong{font-size:10px}.migration-row span{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.registration-preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.registration-stat{padding:11px;border-radius:13px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)}.registration-stat small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.registration-stat strong{display:block;font-size:14px;margin-top:5px}
+.offer-rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.offer-rule{padding:16px;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(255,255,255,.022)}.offer-rule strong{display:block;font-size:17px}.offer-rule span{display:block;color:var(--muted);font-size:9px;line-height:1.6;margin-top:6px}
+@media(max-width:1100px){.transfer-kpis{grid-template-columns:repeat(3,1fr)}.weights{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.transfer-hero-grid,.strategy-grid{grid-template-columns:1fr}.offer-rules{grid-template-columns:1fr}.broker-strip{grid-template-columns:1fr}}
+@media(max-width:680px){.transfer-kpis{grid-template-columns:1fr 1fr}.target-row,.route-row,.draft-row{grid-template-columns:1fr}.target-side,.route-side{text-align:left}.registration-preview{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
+  <nav class="nav">
+    <a href="index.html">🏟 Aurora HQ</a>
+    <a href="finance.html">💷 Finance</a>
+    <a href="transfer.html">🔄 Transfer</a>
+    <a href="#" data-soon="Squad">⚽ Squad</a>
+    <a href="#" data-soon="Scouting">🔎 Scouting</a>
+    <a href="#" data-soon="Income">💰 Income</a>
+    <a href="#" data-soon="Club Control">⚙ Club Control</a>
+  </nav>
+  <div class="sidebar-foot"><b>Transfer owns deployment</b><br>Finance sets the amount. Scouting sets the targets. Transfer builds and locks the route.</div>
+</aside>
+
+<main class="main"><div class="content">
+<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Mission & Route v0.1.</b> Finance budget is read-only here. Registration remains local-only until AuroraData 2 is connected.</div>
+<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">MISSION & ROUTE v0.1</span></header>
+
+<section class="transfer-hero">
+  <div class="transfer-hero-grid">
+    <div><span class="eyebrow" style="color:#ffb29f">Deadline Day Command</span><h2>Finance owns the money.<br>Transfer owns the deployment.</h2><p>The Transfer Centre can choose strategy, broker route and allocation sizes, but the authorised Finance amount cannot be increased or replaced here.</p>
+      <div class="action-row"><button class="btn primary" id="openAllocation">Build / Review Route</button><a class="btn secondary" href="finance.html">Open Finance</a></div>
+    </div>
+    <article class="mission-command"><small>Finance-authorised mission</small><div class="budget" id="missionBudget">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong><span id="missionMeta">Release an investment mission from Finance first.</span><div class="lock" style="margin-top:10px" id="missionLock">Budget is locked to Finance.</div></article>
+  </div>
+</section>
+
+<section class="section transfer-kpis">
+  <article class="transfer-kpi"><small>Finance Budget</small><strong id="kFinanceBudget">£0.00</strong><span>Authoritative ceiling</span></article>
+  <article class="transfer-kpi"><small>Allocated</small><strong id="kAllocated">£0.00</strong><span>Current deal sheet</span></article>
+  <article class="transfer-kpi"><small>Holdback</small><strong id="kHoldback">£0.00</strong><span>Untransferred cash</span></article>
+  <article class="transfer-kpi"><small>Projected Income</small><strong id="kIncome">£0.00</strong><span>Annual from route</span></article>
+  <article class="transfer-kpi"><small>Targets</small><strong id="kTargets">0</strong><span>Scouting-approved list</span></article>
+</section>
+
+<div class="tabs card transfer-tabs section">
+  <button class="tab active" data-tab="overviewPanel">Mission</button>
+  <button class="tab" data-tab="allocationPanel">Allocation Room</button>
+  <button class="tab" data-tab="registrationPanel">Registration</button>
+  <button class="tab" data-tab="offersPanel">Chairman Offers</button>
+</div>
+
+<section id="overviewPanel" class="tab-panel active">
+  <section class="grid grid-2">
+    <article class="card card-pad">
+      <div class="section-head"><h2>Mission Handoff</h2><span class="good" id="handoffState">WAITING</span></div>
+      <div class="calc-list">
+        <div class="calc-row"><span>Mission ID</span><strong id="handoffMissionId">—</strong></div>
+        <div class="calc-row"><span>Payday</span><strong id="handoffPayday">—</strong></div>
+        <div class="calc-row"><span>Finance safe surplus</span><strong id="handoffSafe">—</strong></div>
+        <div class="calc-row"><span>Finance commitments</span><strong id="handoffCommitments">—</strong></div>
+        <div class="calc-row total"><span>Transfer ceiling</span><strong id="handoffBudget">£0.00</strong></div>
+      </div>
+      <div class="notice good" style="margin-top:12px"><b>Authority rule:</b> Transfer reads <code>mission.approvedBudget</code>. There is no editable transfer-budget field.</div>
+    </article>
+
+    <article class="card card-pad migration-card">
+      <div class="section-head"><h2>Scouting Handoff</h2><span id="scoutingState" class="muted">CHECKING</span></div>
+      <p class="muted" style="font-size:9px;line-height:1.6">Transfer does not create investment research. Until Scouting 2.0 is built, this one-time bridge can migrate the latest approved Aurora 1 shortlist into the shared Scouting target store.</p>
+      <div id="legacyScoutingSummary"><div class="notice">Scanning legacy shortlist…</div></div>
+      <div class="action-row"><button class="btn secondary" id="importLegacyScouting" disabled>Import Aurora 1 Shortlist</button></div>
+    </article>
+  </section>
+
+  <section class="section card card-pad">
+    <div class="section-head"><h2>Approved Scouting Targets</h2><span class="muted" id="targetSource">Awaiting Scouting</span></div>
+    <div class="target-list" id="targetList"></div>
+  </section>
+</section>
+
+<section id="allocationPanel" class="tab-panel">
+  <section class="grid grid-2">
+    <article class="card card-pad">
+      <div class="section-head"><h2>Route Strategy</h2><span class="muted">Transfer-owned</span></div>
+      <div class="strategy-grid">
+        <label class="strategy-card" id="strategySustainable"><input type="radio" name="strategy" value="sustainable"><strong>Sustainable Income</strong><span>Safety-first route using the Scouting evidence supplied to Transfer.</span><em>DEFAULT ROUTE</em></label>
+        <label class="strategy-card" id="strategyMaximum"><input type="radio" name="strategy" value="maximum"><strong>Maximum Income</strong><span>Ranks permitted targets primarily by expected dividend yield.</span><em>INCOME-FIRST</em></label>
+      </div>
+      <div class="split-line"></div>
+      <div class="weights">
+        <div class="weight"><small>Dividend safety</small><strong>25%</strong></div>
+        <div class="weight"><small>Income</small><strong>20%</strong></div>
+        <div class="weight"><small>Valuation</small><strong>20%</strong></div>
+        <div class="weight"><small>Portfolio fit</small><strong>15%</strong></div>
+        <div class="weight"><small>Dividend growth</small><strong>10%</strong></div>
+        <div class="weight"><small>Business quality</small><strong>10%</strong></div>
+      </div>
+    </article>
+
+    <article class="card card-pad">
+      <div class="section-head"><h2>Route Controls</h2><span class="cyan">BUDGET LOCKED</span></div>
+      <div class="field-grid">
+        <div class="field"><label>Broker route</label><select id="brokerScope"><option value="both">Both brokers</option><option value="IG">IG ISA only</option><option value="T212">Trading 212 ISA only</option></select></div>
+        <div class="field"><label>Minimum meaningful allocation</label><div class="money-wrap"><input id="minAllocation" type="number" min="25" step="25"></div><small>Stops token-sized buys.</small></div>
+        <div class="field"><label>Allocation increment</label><div class="money-wrap"><input id="allocationIncrement" type="number" min="1" step="1"></div><small>Default £25 steps.</small></div>
+      </div>
+      <div class="action-row"><button class="btn primary" id="autoBuildRoute">Auto Build Route</button><button class="btn secondary" id="resetRoute">Reset Draft</button></div>
+      <div id="routeGuard" class="notice" style="margin-top:10px">Waiting for a Finance mission and Scouting targets.</div>
+    </article>
+  </section>
+
+  <section class="section card card-pad">
+    <div class="section-head"><h2>Final Deal Sheet</h2><span id="routeStatus" class="muted">NO ROUTE</span></div>
+    <div class="broker-strip">
+      <div class="broker-card"><small>IG ISA</small><strong id="brokerIg">£0.00</strong><span>Cash to transfer</span></div>
+      <div class="broker-card"><small>Trading 212 ISA</small><strong id="brokerT212">£0.00</strong><span>Cash to transfer</span></div>
+      <div class="broker-card"><small>Keep Untransferred</small><strong id="brokerHold">£0.00</strong><span>Mission holdback</span></div>
+    </div>
+    <div class="route-progress"><i id="routeProgress" style="width:0%"></i></div>
+    <div class="route-list section" id="routeList"></div>
+    <div class="action-row"><button class="btn primary" id="approveRoute" disabled>Approve Final Route</button><button class="btn secondary" id="unlockRoute" hidden>Unlock Route</button><button class="btn secondary" id="copyBrokerInstructions">Copy Broker Instructions</button></div>
+  </section>
+</section>
+
+<section id="registrationPanel" class="tab-panel">
+  <section class="grid grid-2">
+    <article class="card card-pad">
+      <div class="section-head"><h2>Purchase Registration Draft</h2><span class="muted">LOCAL ONLY</span></div>
+      <div class="notice"><b>No fake success.</b> Aurora 2.0 will not call a purchase “registered” until AuroraData 2 accepts the transaction and the exact record is read back.</div>
+      <div class="field-grid" style="margin-top:12px">
+        <div class="field"><label>Route purchase</label><select id="regAllocation"></select></div>
+        <div class="field"><label>Trade date</label><input id="regDate" type="date"></div>
+        <div class="field"><label>Account</label><select id="regAccount"><option>IG ISA</option><option>Trading 212 ISA</option></select></div>
+        <div class="field"><label>Ticker</label><input id="regTicker" readonly></div>
+        <div class="field"><label>Shares</label><input id="regShares" type="number" min="0" step="0.000001"></div>
+        <div class="field"><label>Execution price</label><input id="regPrice" type="number" min="0" step="0.0001"></div>
+        <div class="field"><label>Price unit</label><select id="regPriceUnit"><option value="GBP">GBP / share</option><option value="PENCE">Pence / share</option></select></div>
+        <div class="field"><label>Currency</label><input id="regCurrency" value="GBP"></div>
+        <div class="field"><label>FX to GBP</label><input id="regFx" type="number" min="0" step="0.000001" value="1"></div>
+        <div class="field"><label>Fees</label><input id="regFees" type="number" min="0" step="0.01" value="0"></div>
+      </div>
+      <div class="registration-preview section">
+        <div class="registration-stat"><small>Planned</small><strong id="regPlanned">£0.00</strong></div>
+        <div class="registration-stat"><small>Total GBP</small><strong id="regTotal">£0.00</strong></div>
+        <div class="registration-stat"><small>Difference</small><strong id="regDifference">£0.00</strong></div>
+        <div class="registration-stat"><small>Pre-check</small><strong id="regPrecheck">WAITING</strong></div>
+      </div>
+      <div class="action-row"><button class="btn primary" id="saveRegistrationDraft">Save Registration Draft</button><button class="btn secondary" id="clearRegistration">Clear</button></div>
+    </article>
+
+    <article class="card card-pad">
+      <div class="section-head"><h2>Registration Queue</h2><span id="registrationCount" class="muted">0 drafts</span></div>
+      <div id="registrationDraftList" class="draft-list"></div>
+      <div class="notice" style="margin-top:12px">Backend registration will be switched on only after AuroraData 2 and the canonical Squad holdings engine are ready.</div>
+    </article>
+  </section>
+</section>
+
+<section id="offersPanel" class="tab-panel">
+  <section class="card card-pad">
+    <div class="section-head"><h2>Chairman Offers 2.0</h2><span class="muted">HOLDINGS CONNECTION REQUIRED</span></div>
+    <div class="offer-rules">
+      <article class="offer-rule"><strong>+6% = Review</strong><span>Reaching the activation level opens a manager review. It is not an automatic sell instruction.</span></article>
+      <article class="offer-rule"><strong>+10% = Rotation Case</strong><span>A larger gain can become an attractive rotation, but replacement income and payback still decide the verdict.</span></article>
+      <article class="offer-rule"><strong>Income Before Exit</strong><span>Compare sale gain, income surrendered, replacement income and payback. Dividend/ex-date locks remain part of the decision.</span></article>
+    </div>
+    <div class="notice section"><b>Not active yet:</b> Chairman Offers needs canonical Squad holdings, account-scoped book costs and live prices. We will connect it after Squad 2.0 rather than recreate those calculations here.</div>
+  </section>
+</section>
+
+<p class="muted" style="font-size:8px;margin:14px 2px 0">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
+</div></main></div>
+
+<div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#28130f;border:1px solid rgba(255,122,89,.28);color:#ffd1c5;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
+<script src="aurora-core.js"></script>
+<script src="transfer.js"></script>
+</body>
+</html>

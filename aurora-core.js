@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=4;
+  const VERSION=5;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -47,6 +47,27 @@
       },
       lastCalculatedAt:null,
       lastReleasedAt:null
+    },
+    scouting:{
+      status:'NOT_BUILT',
+      targets:[],
+      importedFromLegacy:false,
+      source:null,
+      updatedAt:null
+    },
+    transfer:{
+      version:1,
+      settings:{
+        strategy:'sustainable',
+        brokerScope:'both',
+        minAllocation:250,
+        increment:25
+      },
+      route:null,
+      registrationDrafts:[],
+      offers:[],
+      migration:null,
+      updatedAt:null
     },
     mission:null,
     alerts:[]
@@ -148,6 +169,99 @@
     };
   }
 
+  function normalizeScoutingTarget(t){
+    const r=object(t);
+    const allowedStatus=['pass','caution','block'];
+    const account=String(r.preferredAccount||r.account||r.platform||r.broker||'CHECK');
+    return {
+      id:String(r.id||''),
+      ticker:String(r.ticker||r.symbol||'').toUpperCase(),
+      name:String(r.name||r.company||r.companyName||r.ticker||'Target'),
+      preferredAccount:account,
+      status:allowedStatus.includes(String(r.status||'').toLowerCase())?String(r.status).toLowerCase():'pass',
+      reason:String(r.reason||r.note||''),
+      rank:Math.max(0,Number(r.rank)||0),
+      yieldPct:Math.max(0,Number(r.yieldPct)||0),
+      sustainableScore:Math.max(0,Math.min(100,Number(r.sustainableScore)||0)),
+      confidence:Math.max(0,Math.min(100,Number(r.confidence)||0)),
+      dividendSafety:Math.max(0,Math.min(100,Number(r.dividendSafety)||0)),
+      incomeScore:Math.max(0,Math.min(100,Number(r.incomeScore)||0)),
+      valuationScore:Math.max(0,Math.min(100,Number(r.valuationScore)||0)),
+      portfolioFit:Math.max(0,Math.min(100,Number(r.portfolioFit)||0)),
+      dividendGrowth:Math.max(0,Math.min(100,Number(r.dividendGrowth)||0)),
+      businessQuality:Math.max(0,Math.min(100,Number(r.businessQuality)||0)),
+      source:String(r.source||'SCOUTING'),
+      createdAt:r.createdAt||now(),
+      updatedAt:r.updatedAt||now()
+    };
+  }
+  function normalizeTransferAllocation(a){
+    const r=object(a);
+    return {
+      id:String(r.id||''),
+      targetId:String(r.targetId||''),
+      ticker:String(r.ticker||'').toUpperCase(),
+      name:String(r.name||r.ticker||'Target'),
+      account:String(r.account||r.preferredAccount||'CHECK'),
+      amount:Math.max(0,Number(r.amount)||0),
+      yieldPct:Math.max(0,Number(r.yieldPct)||0),
+      expectedAnnualIncome:Math.max(0,Number(r.expectedAnnualIncome)||0),
+      score:Math.max(0,Number(r.score)||0),
+      reason:String(r.reason||''),
+      status:String(r.status||'PLANNED')
+    };
+  }
+  function normalizeTransferRoute(route){
+    if(!route||typeof route!=='object')return null;
+    const r=object(route);
+    return {
+      id:String(r.id||''),
+      missionId:String(r.missionId||''),
+      financeBudget:Math.max(0,Number(r.financeBudget)||0),
+      strategy:['sustainable','maximum'].includes(r.strategy)?r.strategy:'sustainable',
+      brokerScope:['both','IG','T212'].includes(r.brokerScope)?r.brokerScope:'both',
+      minAllocation:Math.max(25,Number(r.minAllocation)||250),
+      increment:Math.max(1,Number(r.increment)||25),
+      allocations:Array.isArray(r.allocations)?r.allocations.map(normalizeTransferAllocation):[],
+      allocated:Math.max(0,Number(r.allocated)||0),
+      remaining:Math.max(0,Number(r.remaining)||0),
+      expectedAnnualIncome:Math.max(0,Number(r.expectedAnnualIncome)||0),
+      status:String(r.status||'DRAFT'),
+      locked:Boolean(r.locked),
+      createdAt:r.createdAt||now(),
+      updatedAt:r.updatedAt||now()
+    };
+  }
+  function normalizeRegistrationDraft(d){
+    const r=object(d);
+    return {
+      id:String(r.id||''),
+      routeId:String(r.routeId||''),
+      missionId:String(r.missionId||''),
+      allocationId:String(r.allocationId||''),
+      transactionId:String(r.transactionId||''),
+      tradeDate:String(r.tradeDate||''),
+      account:String(r.account||''),
+      ticker:String(r.ticker||'').toUpperCase(),
+      name:String(r.name||r.ticker||''),
+      side:String(r.side||'BUY').toUpperCase(),
+      shares:Math.max(0,Number(r.shares)||0),
+      priceInput:Math.max(0,Number(r.priceInput)||0),
+      priceUnit:['GBP','PENCE'].includes(r.priceUnit)?r.priceUnit:'GBP',
+      currency:String(r.currency||'GBP').toUpperCase(),
+      fxRateToGbp:Math.max(0,Number(r.fxRateToGbp)||0),
+      grossCostNative:Math.max(0,Number(r.grossCostNative)||0),
+      feesNative:Math.max(0,Number(r.feesNative)||0),
+      totalCostNative:Math.max(0,Number(r.totalCostNative)||0),
+      totalCostGbp:Math.max(0,Number(r.totalCostGbp)||0),
+      plannedAmount:Math.max(0,Number(r.plannedAmount)||0),
+      differenceGbp:Number(r.differenceGbp)||0,
+      status:String(r.status||'READY_FOR_BACKEND'),
+      createdAt:r.createdAt||now(),
+      updatedAt:r.updatedAt||now()
+    };
+  }
+
   function normalize(raw){
     const d=defaultState(), r=object(raw), rf=object(r.finance);
     return {
@@ -157,6 +271,26 @@
       portfolio:{...d.portfolio,...object(r.portfolio)},
       income:{...d.income,...object(r.income)},
       decision:{...d.decision,...object(r.decision)},
+      scouting:{
+        ...d.scouting,
+        ...object(r.scouting),
+        targets:Array.isArray(r.scouting?.targets)?r.scouting.targets.map(normalizeScoutingTarget):[]
+      },
+      transfer:{
+        ...d.transfer,
+        ...object(r.transfer),
+        settings:{
+          ...d.transfer.settings,
+          ...object(r.transfer?.settings),
+          strategy:['sustainable','maximum'].includes(r.transfer?.settings?.strategy)?r.transfer.settings.strategy:'sustainable',
+          brokerScope:['both','IG','T212'].includes(r.transfer?.settings?.brokerScope)?r.transfer.settings.brokerScope:'both',
+          minAllocation:Math.max(25,Number(r.transfer?.settings?.minAllocation)||250),
+          increment:Math.max(1,Number(r.transfer?.settings?.increment)||25)
+        },
+        route:normalizeTransferRoute(r.transfer?.route),
+        registrationDrafts:Array.isArray(r.transfer?.registrationDrafts)?r.transfer.registrationDrafts.map(normalizeRegistrationDraft):[],
+        offers:Array.isArray(r.transfer?.offers)?r.transfer.offers:[]
+      },
       finance:{
         ...d.finance,...rf,
         plan:{...d.finance.plan,...object(rf.plan)},
@@ -219,6 +353,12 @@
       a.classList.toggle('active',href===path);
     });
   }
+  function activateBuiltDepartments(){
+    document.querySelectorAll('[data-soon="Transfer"]').forEach(a=>{
+      a.setAttribute('href','transfer.html');
+      a.removeAttribute('data-soon');
+    });
+  }
   function wireSoon(){
     document.addEventListener('click',e=>{
       const a=e.target.closest('[data-soon]');
@@ -231,5 +371,5 @@
   w.Aurora2=w.Aurora2||{};
   w.Aurora2.core={KEY,VERSION,read,write,update,defaultState,normalize,uid};
   w.Aurora2.ui={money,text,escape};
-  document.addEventListener('DOMContentLoaded',()=>{setActiveNav();wireSoon();});
+  document.addEventListener('DOMContentLoaded',()=>{activateBuiltDepartments();setActiveNav();wireSoon();});
 })(window);
