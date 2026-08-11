@@ -1,27 +1,204 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050b16"><title>Finance — Aurora FC 2.0</title><link rel="stylesheet" href="aurora.css"></head><body>
-<div class="app"><aside class="sidebar"><div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div><nav class="nav"><a href="index.html">🏟 Aurora HQ</a><a href="finance.html">💷 Finance</a><a href="#" data-soon="Transfer">🔄 Transfer</a><a href="#" data-soon="Squad">⚽ Squad</a><a href="#" data-soon="Scouting">🔎 Scouting</a><a href="#" data-soon="Income">💰 Income</a><a href="#" data-soon="Club Control">⚙ Club Control</a></nav><div class="sidebar-foot"><b>Finance owns the money</b><br>Transfer can read an approved mission, but it cannot change Finance's budget.</div></aside>
-<main class="main"><div class="content"><div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Foundation v0.1.</b> This page uses a new Aurora 2 state model only. It does not read or write Aurora 1 or AuroraData yet.</div><header class="page-head"><div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div><span class="status">FOUNDATION v0.1</span></header>
-<div class="tabs card"><button class="tab active" data-tab="overviewPanel">Overview</button><button class="tab" data-tab="paydayPanel">Payday</button><button class="tab" data-tab="potsPanel">Pots & Bills</button><button class="tab" data-tab="housePanel">House Projects</button></div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050b16">
+<title>Finance — Aurora FC 2.0</title>
+<link rel="stylesheet" href="aurora.css">
+<style>
+.finance-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.finance-item{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:13px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.025)}
+.finance-item+.finance-item{margin-top:8px}.finance-item.is-archived{opacity:.55}
+.finance-item-main{min-width:0;flex:1}.finance-item-title{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.finance-item-title strong{font-size:12px}.finance-item-title span{font-size:8px;color:var(--muted);font-weight:900}
+.finance-item-meta{margin-top:5px;color:var(--muted);font-size:9px;line-height:1.45}
+.finance-item-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.progress-mini{height:7px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:8px;max-width:420px}
+.progress-mini i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--green))}
+.editor-card{border:1px solid rgba(67,217,255,.16);background:rgba(67,217,255,.025)}
+.editor-title{font-size:14px;margin:0 0 11px}.check-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px}
+.check-line input{width:auto}.mini-actual{display:grid;gap:3px}.mini-actual label{font-size:7px;color:var(--muted);text-transform:uppercase;font-weight:900}
+.mini-actual input{width:92px;min-height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px}
+.history-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.history-row:last-child{border-bottom:0}.history-row strong{display:block;font-size:10px}.history-row span{display:block;margin-top:3px;color:var(--muted);font-size:8px}.history-row.is-reversed{opacity:.45;text-decoration:line-through}
+.empty-state.compact{padding:18px}.pots-bills-layout{display:grid;grid-template-columns:1fr 1fr;gap:12px}.subtabs{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.auto-chip{padding:12px;border-radius:14px;border:1px solid rgba(88,233,155,.15);background:rgba(88,233,155,.045)}
+.auto-chip small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:900}.auto-chip strong{display:block;margin-top:5px;font-size:22px}.auto-chip span{display:block;margin-top:4px;color:var(--muted);font-size:8px}
+@media(max-width:1050px){.finance-kpis,.pots-bills-layout{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.finance-kpis,.pots-bills-layout{grid-template-columns:1fr}.finance-item{align-items:flex-start;flex-direction:column}.finance-item-actions{justify-content:flex-start;width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
+  <nav class="nav">
+    <a href="index.html">🏟 Aurora HQ</a>
+    <a href="finance.html">💷 Finance</a>
+    <a href="#" data-soon="Transfer">🔄 Transfer</a>
+    <a href="#" data-soon="Squad">⚽ Squad</a>
+    <a href="#" data-soon="Scouting">🔎 Scouting</a>
+    <a href="#" data-soon="Income">💰 Income</a>
+    <a href="#" data-soon="Club Control">⚙ Club Control</a>
+  </nav>
+  <div class="sidebar-foot"><b>Finance owns the money</b><br>Pots and bills now feed the payday calculation automatically.</div>
+</aside>
+
+<main class="main"><div class="content">
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Pots & Bills v0.2.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
+<header class="page-head">
+  <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
+  <span class="status">POTS & BILLS v0.2</span>
+</header>
+
+<div class="tabs card">
+  <button class="tab active" data-tab="overviewPanel">Overview</button>
+  <button class="tab" data-tab="paydayPanel">Payday</button>
+  <button class="tab" data-tab="potsPanel">Pots & Bills</button>
+  <button class="tab" data-tab="housePanel">House Projects</button>
+</div>
+
 <section id="overviewPanel" class="tab-panel active">
-  <section class="grid grid-5"><article class="card card-pad metric"><small>Opening Cash</small><strong id="mOpening">£0.00</strong><span>Before payday</span></article><article class="card card-pad metric"><small>Net Pay</small><strong id="mPay">£0.00</strong><span>Actual payday input</span></article><article class="card card-pad metric"><small>Commitments</small><strong id="mCommitments">£0.00</strong><span>Bills + pots + planned</span></article><article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article><article class="card card-pad metric"><small>Available for Shares</small><strong class="good" id="mAvailable">£0.00</strong><span>Calculated safe surplus</span></article></section>
-  <section class="section grid grid-2"><article class="card card-pad"><div class="section-head"><h2>Payday Position</h2><span class="muted">Finance calculation</span></div><div class="calc-list"><div class="calc-row"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div><div class="calc-row"><span>Bills due</span><strong id="breakBills">− £0.00</strong></div><div class="calc-row"><span>Pot funding due</span><strong id="breakPots">− £0.00</strong></div><div class="calc-row"><span>Other planned spending</span><strong id="breakOther">− £0.00</strong></div><div class="calc-row"><span>Protected cash floor</span><strong id="breakProtected">− £0.00</strong></div><div class="calc-row total"><span>Safe surplus</span><strong class="good" id="breakAvailable">£0.00</strong></div></div><div class="action-row"><button class="btn" data-tab-jump="paydayPanel" onclick="document.querySelector('[data-tab=paydayPanel]').click()">Edit Payday Plan</button></div></article>
-  <article class="mission-box"><span class="eyebrow">Investment Mission</span><div class="big" id="missionAmount">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong><p class="meta" id="missionMeta">Nothing has been released to Transfer yet.</p><div class="lock" id="missionLock">Finance owns the investment budget.</div><div class="action-row"><a class="btn secondary" href="index.html">View on Aurora HQ</a></div></article></section>
+  <section class="grid grid-5">
+    <article class="card card-pad metric"><small>Opening Cash</small><strong id="mOpening">£0.00</strong><span>Before payday</span></article>
+    <article class="card card-pad metric"><small>Net Pay</small><strong id="mPay">£0.00</strong><span>Actual payday input</span></article>
+    <article class="card card-pad metric"><small>Commitments</small><strong id="mCommitments">£0.00</strong><span>Live bills + pot funding + planned</span></article>
+    <article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article>
+    <article class="card card-pad metric"><small>Available for Shares</small><strong class="good" id="mAvailable">£0.00</strong><span>Calculated safe surplus</span></article>
+  </section>
+
+  <section class="section grid grid-2">
+    <article class="card card-pad">
+      <div class="section-head"><h2>Payday Position</h2><span class="muted">Automatic commitments</span></div>
+      <div class="calc-list">
+        <div class="calc-row"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div>
+        <div class="calc-row"><span>Bills due from Current Account</span><strong id="breakBills">− £0.00</strong></div>
+        <div class="calc-row"><span>Pot funding due</span><strong id="breakPots">− £0.00</strong></div>
+        <div class="calc-row"><span>Other planned spending</span><strong id="breakOther">− £0.00</strong></div>
+        <div class="calc-row"><span>Protected cash floor</span><strong id="breakProtected">− £0.00</strong></div>
+        <div class="calc-row total"><span>Safe surplus</span><strong class="good" id="breakAvailable">£0.00</strong></div>
+      </div>
+      <div class="action-row"><button class="btn" onclick="document.querySelector('[data-tab=paydayPanel]').click()">Edit Payday Plan</button><button class="btn secondary" onclick="document.querySelector('[data-tab=potsPanel]').click()">Manage Pots & Bills</button></div>
+    </article>
+
+    <article class="mission-box">
+      <span class="eyebrow">Investment Mission</span><div class="big" id="missionAmount">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong>
+      <p class="meta" id="missionMeta">Nothing has been released to Transfer yet.</p>
+      <div class="lock" id="missionLock">Finance owns the investment budget.</div>
+      <div class="action-row"><a class="btn secondary" href="index.html">View on Aurora HQ</a></div>
+    </article>
+  </section>
 </section>
+
 <section id="paydayPanel" class="tab-panel">
-  <section class="grid grid-2"><article class="card card-pad"><div class="section-head"><h2>Actual Payday Planner</h2><span class="muted">Manual foundation inputs</span></div><div class="field-grid">
-    <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small>The mission carries this payday date.</small></div>
-    <div class="field"><label for="openingCash">Opening cash</label><div class="money-wrap"><input id="openingCash" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Cash available before the wage lands.</small></div>
-    <div class="field"><label for="netPay">Actual net pay</label><div class="money-wrap"><input id="netPay" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Use the real wage received.</small></div>
-    <div class="field"><label for="extraCash">Extra / one-off cash</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Optional cash intentionally included this payday.</small></div>
-    <div class="field"><label for="billsDue">Bills due</label><div class="money-wrap"><input id="billsDue" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Temporary manual total until Bills 2.0 is migrated.</small></div>
-    <div class="field"><label for="potsDue">Pot funding due</label><div class="money-wrap"><input id="potsDue" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Temporary manual total until Pots 2.0 is migrated.</small></div>
-    <div class="field"><label for="otherPlanned">Other planned spending</label><div class="money-wrap"><input id="otherPlanned" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Any known spend not already included above.</small></div>
-    <div class="field"><label for="protectedCash">Protected cash floor</label><div class="money-wrap"><input id="protectedCash" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Cash Finance must leave untouched.</small></div>
-    <div class="field"><label for="releaseAmount">Investment amount to release</label><div class="money-wrap"><input id="releaseAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><small>Can be less than safe surplus, never more.</small></div>
-  </div><div class="split-line"></div><div id="releaseGuard" class="notice">Enter the amount you want Finance to release to Transfer.</div><div class="action-row"><button class="btn secondary" id="savePlan">Save Payday Plan</button><button class="btn primary" id="releaseMission" disabled>Release Investment Mission</button></div></article>
-  <article class="card card-pad"><div class="section-head"><h2>Why this stays simple</h2><span class="good">Single source</span></div><div class="notice good"><b>Finance owns the approved amount.</b><br>When this mission is released, Aurora HQ immediately sees the same figure. Transfer 2.0 will be allowed to deploy it, but not replace it with another budget.</div><div class="split-line"></div><div class="calc-list"><div class="calc-row"><span>Total cash available</span><strong id="breakTotal2">See Overview</strong></div><div class="calc-row"><span>Current safe surplus</span><strong class="good">Updates live above</strong></div></div><p class="muted" style="font-size:9px;line-height:1.6;margin-top:14px">Bills, pots and house commitments will later feed this calculation automatically from their own canonical records. We are not copying the old Finance code into this page.</p></article></section>
+  <section class="grid grid-2">
+    <article class="card card-pad">
+      <div class="section-head"><h2>Actual Payday Planner</h2><span class="good">Live commitments</span></div>
+      <div class="field-grid">
+        <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small>Bills due on or before this date are protected.</small></div>
+        <div class="field"><label for="openingCash">Opening cash</label><div class="money-wrap"><input id="openingCash" type="number" min="0" step="0.01"></div><small>Cash available before the wage lands.</small></div>
+        <div class="field"><label for="netPay">Actual net pay</label><div class="money-wrap"><input id="netPay" type="number" min="0" step="0.01"></div><small>Use the real wage received.</small></div>
+        <div class="field"><label for="extraCash">Extra / one-off cash</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Optional cash intentionally included this payday.</small></div>
+        <div class="field"><label for="otherPlanned">Other planned spending</label><div class="money-wrap"><input id="otherPlanned" type="number" min="0" step="0.01"></div><small>Known spend not already represented by a bill or pot.</small></div>
+        <div class="field"><label for="protectedCash">Protected cash floor</label><div class="money-wrap"><input id="protectedCash" type="number" min="0" step="0.01"></div><small>Cash Finance must leave untouched.</small></div>
+        <div class="field"><label for="releaseAmount">Investment amount to release</label><div class="money-wrap"><input id="releaseAmount" type="number" min="0" step="0.01"></div><small>Can be less than safe surplus, never more.</small></div>
+      </div>
+
+      <div class="split-line"></div>
+      <div class="grid grid-2">
+        <div class="auto-chip"><small>Bills protected automatically</small><strong id="autoBillsDue">£0.00</strong><span id="autoBillsCount">0 bills due by payday</span></div>
+        <div class="auto-chip"><small>Pot funding automatically</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
+      </div>
+      <div class="split-line"></div>
+      <div id="releaseGuard" class="notice">Enter the amount you want Finance to release to Transfer.</div>
+      <div class="action-row"><button class="btn secondary" id="savePlan">Save Payday Plan</button><button class="btn primary" id="releaseMission" disabled>Release Investment Mission</button></div>
+    </article>
+
+    <article class="card card-pad">
+      <div class="section-head"><h2>Finance Rule</h2><span class="good">Single source</span></div>
+      <div class="notice good"><b>Finance owns the approved amount.</b><br>Pots and bills now feed this calculation themselves. Transfer receives the released mission but cannot replace its budget.</div>
+      <div class="split-line"></div>
+      <p class="muted" style="font-size:9px;line-height:1.7">A bill funded from a named pot does not hit the payday Current Account total again. Completing it deducts the actual payment from that pot. This prevents double-counting money already set aside.</p>
+    </article>
+  </section>
 </section>
-<section id="potsPanel" class="tab-panel"><article class="card card-pad empty-state"><strong>🪙 Pots & Bills 2.0 comes next</strong><p>We will migrate only the essential pot balances, targets, recurring bills, one-off bills, completion/undo and funded-progress logic. The old Pot Radar, duplicate dashboards and overlapping bill sections will not be copied.</p></article></section>
-<section id="housePanel" class="tab-panel"><article class="card card-pad empty-state"><strong>🏠 House Projects stays in Finance</strong><p>The renovation ledger will keep rooms, estimated and actual cost, paid/reserved work, House Pot funding and historical payments. It will be rebuilt on the new Finance data model rather than pasted from Aurora 1.</p></article></section>
-<p class="muted" style="font-size:8px;margin:14px 2px 0">Last Aurora 2 state update: <span id="lastUpdated">—</span></p></div></main></div><div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
-<script src="aurora-core.js"></script><script src="finance.js"></script></body></html>
+
+<section id="potsPanel" class="tab-panel">
+  <section class="finance-kpis">
+    <article class="card card-pad metric"><small>Pot Cash</small><strong id="potBalanceTotal">£0.00</strong><span>Available across active pots</span></article>
+    <article class="card card-pad metric"><small>Pot Targets</small><strong id="potTargetTotal">£0.00</strong><span>Combined active targets</span></article>
+    <article class="card card-pad metric"><small>Funding Gap</small><strong id="potGapTotal">£0.00</strong><span>Remaining target gap</span></article>
+    <article class="card card-pad metric"><small>Next Payday Funding</small><strong class="good" id="potFundingTotal">£0.00</strong><span>Automatically protected</span></article>
+  </section>
+
+  <section class="section pots-bills-layout">
+    <article class="card card-pad">
+      <div class="section-head"><h2>Pots</h2><span class="muted">Fund goals without duplication</span></div>
+      <div id="potList"></div>
+    </article>
+
+    <article class="card card-pad editor-card" id="potEditor">
+      <h3 class="editor-title" id="potEditorTitle">Add Pot</h3>
+      <input id="potId" type="hidden">
+      <div class="field-grid">
+        <div class="field"><label>Pot name</label><input id="potName" placeholder="e.g. Coventry City Tickets / Travel"></div>
+        <div class="field"><label>Current balance</label><div class="money-wrap"><input id="potBalance" type="number" min="0" step="0.01"></div></div>
+        <div class="field"><label>Target</label><div class="money-wrap"><input id="potTarget" type="number" min="0" step="0.01"></div></div>
+        <div class="field"><label>Funding each payday</label><div class="money-wrap"><input id="potFunding" type="number" min="0" step="0.01"></div><small>Finance protects up to the remaining gap.</small></div>
+        <div class="field"><label>Priority</label><select id="potPriority"><option value="1">P1 Critical</option><option value="2">P2 Important</option><option value="3">P3 Flexible</option></select></div>
+        <div class="field"><label>Goal type</label><select id="potGoalMode"><option value="balance">Balance target</option><option value="funded-progress">Funded progress</option></select><small>Funded progress = current balance + qualifying spend.</small></div>
+        <div class="field" id="potSpentField"><label>Spent so far</label><div class="money-wrap"><input id="potSpent" type="number" min="0" step="0.01"></div><small>Use only for progress goals such as season tickets/travel.</small></div>
+      </div>
+      <div class="action-row"><button class="btn primary" id="savePot">Save Pot</button><button class="btn secondary" id="cancelPot">Clear</button></div>
+    </article>
+  </section>
+
+  <section class="section finance-kpis">
+    <article class="card card-pad metric"><small>Due By Payday</small><strong id="billDuePayday">£0.00</strong><span>Current Account impact only</span></article>
+    <article class="card card-pad metric"><small>Next 7 Days</small><strong id="billNext7">£0.00</strong><span>All included bills</span></article>
+    <article class="card card-pad metric"><small>Overdue</small><strong id="billOverdueCount">0</strong><span>Needs attention</span></article>
+    <article class="card card-pad metric"><small>Active Bills</small><strong id="billActiveCount">0</strong><span>Unpaid and included</span></article>
+  </section>
+
+  <section class="section pots-bills-layout">
+    <article class="card card-pad">
+      <div class="section-head"><h2>Bills</h2><span class="muted">Complete to roll recurring dates</span></div>
+      <div id="billList"></div>
+    </article>
+
+    <article class="card card-pad editor-card" id="billEditor">
+      <h3 class="editor-title" id="billEditorTitle">Add Bill</h3>
+      <input id="billId" type="hidden">
+      <div class="field-grid">
+        <div class="field"><label>Bill name</label><input id="billName" placeholder="e.g. Grocery shop"></div>
+        <div class="field"><label>Planned amount</label><div class="money-wrap"><input id="billAmount" type="number" min="0" step="0.01"></div></div>
+        <div class="field"><label>Due date</label><input id="billDue" type="date"></div>
+        <div class="field"><label>Frequency</label><select id="billFrequency"><option value="one-off">One-off</option><option value="weekly">Weekly</option><option value="4-weeks">Every 4 weeks</option><option value="5-weeks">Every 5 weeks</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+        <div class="field"><label>Funding source</label><select id="billFundingSource"><option>Current Account</option></select><small>Named pots are deducted when payment completes.</small></div>
+        <div class="field"><label>Category</label><input id="billCategory" value="Other"></div>
+      </div>
+      <div class="split-line"></div>
+      <label class="check-line"><input id="billIncluded" type="checkbox" checked> Include this bill in Finance planning</label>
+      <div class="action-row"><button class="btn primary" id="saveBill">Save Bill</button><button class="btn secondary" id="cancelBill">Clear</button></div>
+    </article>
+  </section>
+
+  <section class="section card card-pad">
+    <div class="section-head"><h2>Payment History</h2><span class="muted">Safe undo trail</span></div>
+    <div id="paymentHistory"></div>
+  </section>
+</section>
+
+<section id="housePanel" class="tab-panel">
+  <article class="card card-pad empty-state"><strong>🏠 House Projects stays in Finance</strong><p>The renovation ledger is the next Finance migration after Pots & Bills. Rooms, estimated/actual costs, paid/reserved work and House Pot funded progress will be rebuilt on this same clean data model.</p></article>
+</section>
+
+<p class="muted" style="font-size:8px;margin:14px 2px 0">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
+</div></main></div>
+
+<div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
+<script src="aurora-core.js"></script>
+<script src="finance.js"></script>
+</body>
+</html>
