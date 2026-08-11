@@ -430,9 +430,19 @@
       alert((a.getAttribute('data-soon')||'Department')+' 2.0 is reserved and will be built after the audit.');
     });
   }
+  function wireNavigationFallback(){
+    document.addEventListener('click',e=>{
+      const a=e.target.closest('.nav a');
+      if(!a)return;
+      const href=a.getAttribute('href')||'';
+      if(!href||href==='#'||a.hasAttribute('data-soon'))return;
+      e.preventDefault();
+      window.location.assign(href);
+    },true);
+  }
 
   w.Aurora2=w.Aurora2||{};
   w.Aurora2.core={KEY,VERSION,read,write,update,defaultState,normalize,uid};
   w.Aurora2.ui={money,text,escape};
-  document.addEventListener('DOMContentLoaded',()=>{activateBuiltDepartments();setActiveNav();wireSoon();});
+  document.addEventListener('DOMContentLoaded',()=>{activateBuiltDepartments();setActiveNav();wireSoon();wireNavigationFallback();});
 })(window);
