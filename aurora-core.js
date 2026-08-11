@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=5;
+  const VERSION=6;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -67,6 +67,13 @@
       registrationDrafts:[],
       offers:[],
       migration:null,
+      updatedAt:null
+    },
+    squad:{
+      version:1,
+      holdings:[],
+      migration:null,
+      source:'AURORA2',
       updatedAt:null
     },
     mission:null,
@@ -262,6 +269,52 @@
     };
   }
 
+  function normalizeHolding(h){
+    const r=object(h);
+    const allowedStatus=['ACTIVE','LOCKED','SOLD','ARCHIVED'];
+    const shares=Math.max(0,Number(r.shares)||0);
+    const bookCostGbp=Math.max(0,Number(r.bookCostGbp)||0);
+    const avgCostGbp=shares>0
+      ? Math.max(0,Number(r.avgCostGbp)||(bookCostGbp/shares)||0)
+      : Math.max(0,Number(r.avgCostGbp)||0);
+    const marketValueGbp=Math.max(0,Number(r.marketValueGbp)||0);
+    const livePriceGbp=shares>0
+      ? Math.max(0,Number(r.livePriceGbp)||(marketValueGbp/shares)||0)
+      : Math.max(0,Number(r.livePriceGbp)||0);
+    const annualIncomeGbp=Math.max(0,Number(r.annualIncomeGbp)||0);
+    const annualDpsGbp=shares>0
+      ? Math.max(0,Number(r.annualDpsGbp)||(annualIncomeGbp/shares)||0)
+      : Math.max(0,Number(r.annualDpsGbp)||0);
+    return {
+      id:String(r.id||''),
+      ticker:String(r.ticker||'').toUpperCase(),
+      name:String(r.name||r.ticker||'Holding'),
+      account:String(r.account||'ACCOUNT REVIEW'),
+      shares,
+      bookCostGbp,
+      avgCostGbp,
+      livePriceGbp,
+      marketValueGbp:marketValueGbp||(shares*livePriceGbp),
+      profitLossGbp:Number.isFinite(Number(r.profitLossGbp))
+        ? Number(r.profitLossGbp)
+        : ((marketValueGbp||(shares*livePriceGbp))-bookCostGbp),
+      annualDpsGbp,
+      annualIncomeGbp:annualIncomeGbp||(shares*annualDpsGbp),
+      sector:String(r.sector||''),
+      role:String(r.role||''),
+      status:allowedStatus.includes(String(r.status||'').toUpperCase())
+        ? String(r.status).toUpperCase()
+        : (shares>0?'ACTIVE':'ARCHIVED'),
+      locked:Boolean(r.locked),
+      lockReason:String(r.lockReason||''),
+      source:String(r.source||'AURORA2'),
+      sourceKey:String(r.sourceKey||''),
+      sourceUpdatedAt:r.sourceUpdatedAt||null,
+      createdAt:r.createdAt||now(),
+      updatedAt:r.updatedAt||now()
+    };
+  }
+
   function normalize(raw){
     const d=defaultState(), r=object(raw), rf=object(r.finance);
     return {
@@ -290,6 +343,12 @@
         route:normalizeTransferRoute(r.transfer?.route),
         registrationDrafts:Array.isArray(r.transfer?.registrationDrafts)?r.transfer.registrationDrafts.map(normalizeRegistrationDraft):[],
         offers:Array.isArray(r.transfer?.offers)?r.transfer.offers:[]
+      },
+      squad:{
+        ...d.squad,
+        ...object(r.squad),
+        version:1,
+        holdings:Array.isArray(r.squad?.holdings)?r.squad.holdings.map(normalizeHolding):[]
       },
       finance:{
         ...d.finance,...rf,
@@ -356,6 +415,10 @@
   function activateBuiltDepartments(){
     document.querySelectorAll('[data-soon="Transfer"]').forEach(a=>{
       a.setAttribute('href','transfer.html');
+      a.removeAttribute('data-soon');
+    });
+    document.querySelectorAll('[data-soon="Squad"]').forEach(a=>{
+      a.setAttribute('href','squad.html');
       a.removeAttribute('data-soon');
     });
   }
