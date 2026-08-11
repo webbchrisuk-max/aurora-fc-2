@@ -10,7 +10,9 @@
   const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
   const num=v=>{const n=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?Math.max(0,n):0};
   const norm=v=>String(v??'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-  const LEGACY_KEYS=['aurora_wealth_centre','aurora_wealth_centre_backup_v3'];
+  const LEGACY_KEYS=[['local','aurora_wealth_centre'],['local','aurora_wealth_centre_backup_v3'],['session','aurora_wealth_centre_session_v3']];
+  const DEFAULT_ROOMS=['Games Room','Living Room','Hallway','Kitchen','Whole House'];
+  let syncingDerived=false;
   const HOUSE_BACKUP='aurora2:pre-house-migration:latest';
   let legacySource=null;
 
@@ -42,11 +44,30 @@
   function value(id){return $(id)?.value||''}
   function showStatus(msg,bad=false){const el=$('houseStatus');if(!el)return;el.textContent=msg;el.className=bad?'notice red':'notice good'}
 
+  function ensureHouseDefaults(state){
+    const finance=obj(state.finance), hp={...obj(finance.houseProject)}, pot=housePot(state);
+    let changed=false;
+    if(!arr(hp.rooms).length){hp.rooms=[...DEFAULT_ROOMS];changed=true;}
+    else{
+      const rooms=[...new Set(arr(hp.rooms).map(x=>String(x).trim()).filter(Boolean))];
+      DEFAULT_ROOMS.forEach(room=>{if(!rooms.includes(room))rooms.push(room)});
+      if(JSON.stringify(rooms)!==JSON.stringify(hp.rooms)){hp.rooms=rooms;changed=true;}
+    }
+    if(num(hp.target)<=0&&num(pot?.target)>0){hp.target=num(pot.target);changed=true;}
+    if(!Array.isArray(hp.entries)){hp.entries=[];changed=true;}
+    if(!Array.isArray(hp.actions)){hp.actions=[];changed=true;}
+    if(!changed)return state;
+    hp.updatedAt=now();
+    return {...state,finance:{...finance,houseProject:hp}};
+  }
+
   function syncHousePotDraft(state){
     const hp=house(state), pots=[...arr(state.finance?.pots)], pi=pots.findIndex(p=>String(p.id||'').toLowerCase().includes('house')||/house/.test(norm(p.name)));
     if(pi<0)return state;
     const spent=num(hp.openingHistoricalSpend)+arr(hp.entries).filter(e=>e.status==='paid'||e.status==='historical').reduce((s,e)=>s+num(e.actual),0);
-    pots[pi]={...pots[pi],target:num(hp.target||pots[pi].target),goalMode:'funded-progress',spent,updatedAt:now()};
+    const current=pots[pi], target=num(hp.target||current.target), mode='funded-progress';
+    if(Math.abs(num(current.target)-target)<.005 && current.goalMode===mode && Math.abs(num(current.spent)-spent)<.005)return state;
+    pots[pi]={...current,target,goalMode:mode,spent,updatedAt:now()};
     return {...state,finance:{...state.finance,pots}};
   }
 
@@ -79,8 +100,14 @@
 
   function renderAll(){
     if(!A()?.core)return;
-    const state=A().core.read(), synced=syncHousePotDraft(state);
-    if(JSON.stringify(synced.finance?.pots)!==JSON.stringify(state.finance?.pots)){A().core.write(synced);return}
+    let state=A().core.read();
+    let next=ensureHouseDefaults(state);
+    next=syncHousePotDraft(next);
+    const changed=JSON.stringify(next.finance?.houseProject)!==JSON.stringify(state.finance?.houseProject) || JSON.stringify(next.finance?.pots)!==JSON.stringify(state.finance?.pots);
+    if(changed&&!syncingDerived){
+      syncingDerived=true;
+      try{state=A().core.write(next);}finally{syncingDerived=false;}
+    }else state=next;
     const m=metrics(state);renderKpis(m);renderRooms(m);renderLedger(m);renderRoomSelect(m);renderActions(m);renderSetup(m);renderMigration();
   }
 
@@ -165,7 +192,16 @@
 
   function unwrap(v){if(v?.houseProjectLedger||Array.isArray(v?.editablePots))return v;for(const k of ['plannerState','state','data','planner'])if(v?.[k]?.houseProjectLedger)return v[k];return null}
   function scanLegacy(){
-    const found=[];for(const key of LEGACY_KEYS){try{const raw=localStorage.getItem(key), state=unwrap(JSON.parse(raw||'null'));if(!state?.houseProjectLedger)continue;const saved=Date.parse(state?._persistence?.savedAt||state?.updatedAt||'')||0;found.push({key,state,saved})}catch(_){}}
+    const found=[];
+    for(const [area,key] of LEGACY_KEYS){
+      try{
+        const store=area==='session'?sessionStorage:localStorage;
+        const raw=store.getItem(key), state=unwrap(JSON.parse(raw||'null'));
+        if(!state?.houseProjectLedger)continue;
+        const saved=Date.parse(state?._persistence?.savedAt||state?.updatedAt||'')||Number(state?._persistence?.savedAt)||0;
+        found.push({area,key,state,saved});
+      }catch(_){ }
+    }
     found.sort((a,b)=>b.saved-a.saved);legacySource=found[0]||null;return legacySource;
   }
   function legacyHousePot(state){return arr(state?.editablePots).find(p=>String(p.id||'')==='house_fund'||/house/.test(norm(p.name)))||null}
@@ -198,6 +234,6 @@
   }
 
   document.addEventListener('DOMContentLoaded',()=>{resetEditor();renderAll();wire()});
-  w.addEventListener('aurora2:state',renderAll);
+  w.addEventListener('aurora2:state',()=>{if(!syncingDerived)renderAll()});
   w.Aurora2=w.Aurora2||{};w.Aurora2.house={metrics,renderAll,importLegacy};
 })(window);
