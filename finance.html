@@ -49,10 +49,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — House Projects v0.4.2.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Payday Lifecycle v0.4.3.</b> Next-payday funding and the current released mission are now shown separately. Pot funding auto-initialises when migrated pots still need funding.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">HOUSE PROJECTS v0.4.2</span>
+  <span class="status">PAYDAY LIFECYCLE v0.4.3</span>
 </header>
 
 <div class="tabs card">
@@ -68,12 +68,22 @@
     <article class="card card-pad metric"><small>Net Pay</small><strong id="mPay">£0.00</strong><span>Actual payday input</span></article>
     <article class="card card-pad metric"><small>Commitments</small><strong id="mCommitments">£0.00</strong><span>Live bills + pot funding + planned</span></article>
     <article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article>
-    <article class="card card-pad metric"><small>Available for Shares</small><strong class="good" id="mAvailable">£0.00</strong><span>Calculated safe surplus</span></article>
+    <article class="card card-pad metric"><small>Next Safe Release</small><strong class="good" id="mAvailable">£0.00</strong><span>Current payday forecast</span></article>
+  </section>
+
+  <section class="section card card-pad">
+    <div class="section-head"><h2>Payday Reconciliation</h2><span class="muted">Current mission vs next forecast</span></div>
+    <div class="grid grid-3">
+      <div class="metric"><small>Next Safe Release</small><strong class="good" id="reconNextSafe">£0.00</strong><span>Recalculates from live payday inputs</span></div>
+      <div class="metric"><small>Current Released Mission</small><strong id="reconMission">£0.00</strong><span id="reconMissionStatus">No active mission</span></div>
+      <div class="metric"><small>Difference</small><strong id="reconDifference">£0.00</strong><span id="reconDifferenceMeta">No released mission to compare</span></div>
+    </div>
+    <div id="missionForecastNotice" class="notice" style="margin-top:12px">Finance will keep the released mission frozen while calculating the next safe release independently.</div>
   </section>
 
   <section class="section grid grid-2">
     <article class="card card-pad">
-      <div class="section-head"><h2>Payday Position</h2><span class="muted">Automatic commitments</span></div>
+      <div class="section-head"><h2>Next Payday Forecast</h2><span class="muted">Automatic commitments</span></div>
       <div class="calc-list">
         <div class="calc-row"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div>
         <div class="calc-row"><span>Bills due from Current Account</span><strong id="breakBills">− £0.00</strong></div>
@@ -86,9 +96,9 @@
     </article>
 
     <article class="mission-box">
-      <span class="eyebrow">Investment Mission</span><div class="big" id="missionAmount">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong>
-      <p class="meta" id="missionMeta">Nothing has been released to Transfer yet.</p>
-      <div class="lock" id="missionLock">Finance owns the investment budget.</div>
+      <span class="eyebrow">Current Released Mission</span><div class="big" id="missionAmount">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong>
+      <p class="meta" id="missionMeta">No released mission is active.</p>
+      <div class="lock" id="missionLock">Released missions stay frozen while the next payday forecast continues updating.</div>
       <div class="action-row"><a class="btn secondary" href="index.html">View on Aurora HQ</a></div>
     </article>
   </section>
@@ -124,7 +134,7 @@
       <div class="split-line"></div>
       <div class="section-head"><h2 style="font-size:15px">Payday Funding Engine</h2><span class="cyan">AUTO</span></div>
       <div class="field-grid">
-        <div class="field"><label for="goalPotBudget">Goal-pot budget</label><div class="money-wrap"><input id="goalPotBudget" type="number" min="0" step="0.01"></div><small>Migrated from Aurora 1 where available.</small></div>
+        <div class="field"><label for="goalPotBudget">Goal-pot budget</label><div class="money-wrap"><input id="goalPotBudget" type="number" min="0" step="0.01"></div><small>Auto-migrated from Aurora 1; if no legacy value exists, Aurora starts at £250 while goal pots still have gaps.</small></div>
         <div class="field"><label for="fundingStrategy">Funding strategy</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced</option><option value="critical">Critical P1 only</option></select><small>Deadlines are always protected first.</small></div>
       </div>
       <div class="grid grid-2" style="margin-top:10px">

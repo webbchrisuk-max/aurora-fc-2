@@ -122,6 +122,23 @@
     return {state:{...state2,finance:{...f,pots,fundingPolicy:policy}},changed:true,legacy};
   }
 
+
+  function initialiseDefaultBudgetIfNeeded(state){
+    const f=obj(state?.finance), policy={...obj(f.fundingPolicy)}, pots=arr(f.pots);
+    const hasEligibleGap=pots.some(p=>!excludedFromGoalFunding(p));
+    const explicitlySaved=policy.legacyImported===true && policy.source==='AURORA2';
+
+    // Aurora 1 used £250 when no payday goal-pot amount was available.
+    // Only untouched/foundation state is auto-initialised. An explicitly
+    // saved £0 remains £0.
+    if(hasEligibleGap && num(policy.goalPotBudget)<=.009 && !explicitlySaved){
+      policy.goalPotBudget=250;
+      policy.source='AURORA2_AUTO_DEFAULT';
+      return {state:{...state,finance:{...f,fundingPolicy:policy}},changed:true};
+    }
+    return {state,changed:false};
+  }
+
   function deadlineInfo(p,payday){
     const gap=potGap(p,A()?.core?.read?.()), deadline=parseDate(p?.deadline), pd=parseDate(payday);
     if(!deadline||!pd||gap<=.009)return {hasDeadline:!!deadline,gap,required:0,paydays:0,deadline};
@@ -285,6 +302,8 @@
       let state=A().core.read();
       const imported=importLegacyMetadata(state);
       state=imported.state;
+      const initialised=initialiseDefaultBudgetIfNeeded(state);
+      state=initialised.state;
       const result=buildPlan(state);
       const oldPots=arr(state.finance?.pots);
       const oldPolicy=obj(state.finance?.fundingPolicy);
@@ -294,7 +313,7 @@
         oldPolicy.legacyImported!==result.policy.legacyImported ||
         oldPolicy.source!==result.policy.source;
 
-      if(imported.changed||materiallyChanged(oldPots,result.pots)||planChanged){
+      if(imported.changed||initialised.changed||materiallyChanged(oldPots,result.pots)||planChanged){
         A().core.write({
           ...state,
           finance:{
@@ -361,5 +380,5 @@
   });
 
   w.Aurora2=w.Aurora2||{};
-  w.Aurora2.funding={recalc,buildPlan,readLegacy};
+  w.Aurora2.funding={recalc,buildPlan,readLegacy,initialiseDefaultBudgetIfNeeded};
 })(window);

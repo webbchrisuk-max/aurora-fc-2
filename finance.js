@@ -132,9 +132,22 @@
     renderReleaseGuard(c.safeSurplus);
   }
 
+  function terminalMission(m){
+    return !m || ['REGISTERED','COMPLETED','CANCELLED'].includes(String(m.status||''));
+  }
+  function missionIsInFlight(m){
+    return !!(m&&m.status&&!terminalMission(m));
+  }
+
   function renderReleaseGuard(safe){
     const requested=numValue('releaseAmount'), msg=$('releaseGuard'), btn=$('releaseMission');
     if(!msg||!btn)return;
+    const m=A().core.read().mission;
+    if(missionIsInFlight(m)&&m.status!=='FINANCE_APPROVED'){
+      msg.className='notice';
+      msg.textContent=`Current mission ${money(m.approvedBudget||0)} is ${m.status}. This screen is calculating the next payday forecast; release is locked until that mission is completed/registered or cancelled.`;
+      btn.disabled=true; return;
+    }
     if(requested<=0){
       msg.className='notice';
       msg.textContent='Enter the amount you want Finance to release to Transfer. It can be lower than the safe surplus.';
@@ -154,10 +167,11 @@
     const {plan,c}=savePlan(), amount=numValue('releaseAmount');
     if(amount<=0||amount>c.safeSurplus+0.005)return;
     const current=A().core.read();
-    if(current.mission&&current.mission.status&&!['FINANCE_APPROVED','CANCELLED'].includes(current.mission.status)){
-      alert('This mission has already moved beyond Finance and is locked. Finish or cancel it in the owning department before replacing it.');
+    if(missionIsInFlight(current.mission)&&current.mission.status!=='FINANCE_APPROVED'){
+      alert('The current released mission is still in progress. Finance will keep calculating the next payday forecast, but a new mission cannot be released until the current mission is registered/completed or cancelled.');
       return;
     }
+    const replacingTerminal=!!(current.mission&&terminalMission(current.mission));
     const mission={
       id:current.mission?.status==='FINANCE_APPROVED'?current.mission.id:A().core.uid('MISSION'),
       approvedBudget:Number(amount.toFixed(2)),
@@ -177,7 +191,14 @@
     };
     A().core.update(s=>({
       ...s,
-      finance:{...s.finance,plan:{...c.plan,releaseAmount:amount},lastReleasedAt:isoNow()},
+      finance:{
+        ...s.finance,
+        plan:{...c.plan,releaseAmount:amount},
+        lastReleasedAt:isoNow(),
+        missionHistory:replacingTerminal
+          ? [current.mission,...(s.finance?.missionHistory||[])].slice(0,24)
+          : (s.finance?.missionHistory||[])
+      },
       mission,
       alerts:[
         {id:A().core.uid('ALERT'),title:`Finance released ${money(amount)}`,note:'Investment mission is ready for Scouting and Transfer.',when:'now'},
@@ -190,13 +211,37 @@
 
   function renderMission(){
     const s=A().core.read(),m=s.mission,ui=A().ui;
+    const c=calc(s.finance?.plan||{},s);
+    const currentBudget=m?.approvedBudget!=null?Number(m.approvedBudget):0;
+    const nextSafe=Number(c.safeSurplus)||0;
     ui.text('missionStatus',m?.status==='FINANCE_APPROVED'?'FINANCE APPROVED':m?.status||'NO ACTIVE MISSION');
     ui.text('missionAmount',m?.approvedBudget!=null?money(m.approvedBudget):'£0.00');
-    ui.text('missionMeta',m?`${m.id}${m.paydayDate?' • payday '+m.paydayDate:''}`:'Nothing has been released to Transfer yet.');
+    ui.text('missionMeta',m?`${m.id}${m.paydayDate?' • released payday '+m.paydayDate:''}`:'No released mission is active.');
+    ui.text('reconNextSafe',money(nextSafe));
+    ui.text('reconMission',m?money(currentBudget):'£0.00');
+    ui.text('reconMissionStatus',m?`${m.status} • frozen released amount`:'No active mission');
+    const difference=m?nextSafe-currentBudget:0;
+    ui.text('reconDifference',`${difference>=0?'+':''}${money(difference)}`);
+    ui.text('reconDifferenceMeta',m
+      ? (Math.abs(difference)<.005?'Forecast currently matches the released mission.':difference>0?'Next forecast is above the current mission.':'Next forecast is below the current mission.')
+      : 'No released mission to compare');
     const lock=$('missionLock');
-    if(lock)lock.textContent=m?.status==='FINANCE_APPROVED'
-      ?'Budget locked at Finance. Transfer may read it but cannot overwrite it.'
+    if(lock)lock.textContent=m
+      ?'Current released mission is frozen. Transfer and Scouting may use it, but changing the next payday plan will not rewrite it.'
       :'Finance owns the investment budget.';
+    const note=$('missionForecastNotice');
+    if(note){
+      if(m&&Math.abs(difference)>.005){
+        note.className='notice';
+        note.textContent=`Current mission ${money(currentBudget)} remains frozen at ${m.status}. The live next-payday forecast is ${money(nextSafe)} (${difference>=0?'+':''}${money(difference)} vs the current mission).`;
+      }else if(m){
+        note.className='notice good';
+        note.textContent=`Current mission ${money(currentBudget)} is frozen and the next-payday forecast currently matches it.`;
+      }else{
+        note.className='notice good';
+        note.textContent=`No released mission is active. Finance can currently support up to ${money(nextSafe)} based on the live payday plan.`;
+      }
+    }
   }
 
   function priorityLabel(p){return Number(p.priority)===1?'P1 Critical':Number(p.priority)===3?'P3 Flexible':'P2 Important'}
