@@ -91,22 +91,29 @@
     const priceUnit=String(first(row,['price_unit','Price Unit'])||'').toUpperCase();
     const currency=String(first(row,['currency','Currency','quote_currency'])||'GBP').toUpperCase();
 
-    let livePriceGbp=shares>0&&directValue>0?directValue/shares:0;
-    if(livePriceGbp<=0){
-      if(first(row,['live_price_gbp','current_price_gbp','price_gbp'])!=null)livePriceGbp=rawPrice;
-      else if(currency==='GBP')livePriceGbp=priceUnit==='PENCE'?rawPrice/100:rawPrice;
+    // Canonical rule: share count is authoritative. If a usable live price exists,
+    // market value must be rebuilt from shares × live price rather than trusting
+    // a stale derived current_value field from Aurora 1.
+    let livePriceGbp=0;
+    if(first(row,['live_price_gbp','current_price_gbp','price_gbp'])!=null){
+      livePriceGbp=rawPrice;
+    }else if(currency==='GBP'){
+      livePriceGbp=priceUnit==='PENCE'?rawPrice/100:rawPrice;
     }
-    const marketValueGbp=directValue||(shares*livePriceGbp);
+    if(livePriceGbp<=0&&shares>0&&directValue>0)livePriceGbp=directValue/shares;
+    const marketValueGbp=shares>0&&livePriceGbp>0 ? shares*livePriceGbp : directValue;
 
     let bookCostGbp=Math.max(0,num(first(row,['book_cost','Book Cost','cost_basis','costBasis','bookValue'])));
     const sourceAvg=Math.max(0,num(first(row,['average_price','avg_price','average_cost','avg_cost','Average Price','Average Cost'])));
     if(bookCostGbp<=0&&sourceAvg>0&&shares>0)bookCostGbp=sourceAvg*shares;
     const avgCostGbp=shares>0&&bookCostGbp>0?bookCostGbp/shares:sourceAvg;
 
-    let annualIncomeGbp=Math.max(0,num(first(row,['annual_dps_total','Annual DPS Total','annual_income','Annual Income','income_annual','dividend_income','annual_dividend_total'])));
+    const storedAnnualIncome=Math.max(0,num(first(row,['annual_dps_total','Annual DPS Total','annual_income','Annual Income','income_annual','dividend_income','annual_dividend_total'])));
     let annualDpsGbp=Math.max(0,num(first(row,['annual_dps_gbp','annual_dps','Annual_DPS','dps','dividend_per_share'])));
-    if(annualIncomeGbp>0&&shares>0)annualDpsGbp=annualIncomeGbp/shares;
-    else if(annualIncomeGbp<=0&&annualDpsGbp>0&&shares>0)annualIncomeGbp=shares*annualDpsGbp;
+    // Same rule for income: if DPS exists, shares × DPS is canonical.
+    // Stored annual totals are only a fallback when no usable per-share dividend exists.
+    let annualIncomeGbp=shares>0&&annualDpsGbp>0 ? shares*annualDpsGbp : storedAnnualIncome;
+    if(annualDpsGbp<=0&&storedAnnualIncome>0&&shares>0)annualDpsGbp=storedAnnualIncome/shares;
 
     const acct=account(first(row,['account','Account','platform','Platform','broker','Broker']));
     let locked=Boolean(first(row,['locked','is_locked','legacy_locked']));
@@ -141,6 +148,57 @@
     };
   }
 
+
+  function healImportedHoldings(scan){
+    if(!scan?.holdings?.length)return false;
+    const state=A().core.read();
+    const current=arr(state.squad?.holdings);
+    if(!current.some(h=>h.source==='AURORA1_MASTER'))return false;
+
+    let changed=false;
+    const incomingMap=new Map(scan.holdings.map(h=>[`${shortTicker(h.ticker)}|${account(h.account)}`,h]));
+    const healed=current.map(old=>{
+      if(old.source==='MANUAL')return old;
+      const key=`${shortTicker(old.ticker)}|${account(old.account)}`;
+      const fresh=incomingMap.get(key);
+      if(!fresh)return old;
+
+      const fields=['shares','bookCostGbp','avgCostGbp','livePriceGbp','marketValueGbp','profitLossGbp','annualDpsGbp','annualIncomeGbp'];
+      const differs=fields.some(k=>Math.abs(num(old[k])-num(fresh[k]))>.005);
+      if(!differs)return old;
+
+      changed=true;
+      return {
+        ...old,
+        shares:fresh.shares,
+        bookCostGbp:fresh.bookCostGbp,
+        avgCostGbp:fresh.avgCostGbp,
+        livePriceGbp:fresh.livePriceGbp,
+        marketValueGbp:fresh.marketValueGbp,
+        profitLossGbp:fresh.profitLossGbp,
+        annualDpsGbp:fresh.annualDpsGbp,
+        annualIncomeGbp:fresh.annualIncomeGbp,
+        sourceUpdatedAt:fresh.sourceUpdatedAt,
+        updatedAt:now()
+      };
+    });
+
+    if(!changed)return false;
+    A().core.write({
+      ...state,
+      squad:{
+        ...state.squad,
+        holdings:healed,
+        updatedAt:now()
+      },
+      alerts:[
+        {id:A().core.uid('ALERT'),title:'Squad derived totals repaired',note:'Market values and annual income were rebuilt from canonical shares, live prices and annual DPS.',when:'now'},
+        ...(state.alerts||[]).filter(a=>a?.title!=='Squad derived totals repaired')
+      ].slice(0,8)
+    });
+    return true;
+  }
+
   async function scanLegacy(){
     set('migrationBadge','SCANNING');
     let master=null,source='';
@@ -165,6 +223,8 @@
     active.forEach(h=>{if(!tickerAccounts.has(h.ticker))tickerAccounts.set(h.ticker,new Set());tickerAccounts.get(h.ticker).add(h.account)});
     const duplicates=[...tickerAccounts].filter(([,set])=>set.size>1);
     migrationScan={source,rows,holdings,active,missingAccount,missingBook,duplicates,error:''};
+    const healed=healImportedHoldings(migrationScan);
+    if(healed)toast('Squad totals repaired from canonical shares × price and shares × DPS.');
     renderMigration();return migrationScan;
   }
 
@@ -222,8 +282,9 @@
     return arr(state.squad?.holdings).filter(h=>['ACTIVE','LOCKED'].includes(String(h.status).toUpperCase())&&num(h.shares)>0);
   }
   function holdingMetrics(h){
-    const shares=num(h.shares),book=num(h.bookCostGbp),price=num(h.livePriceGbp);
-    const value=num(h.marketValueGbp)||(shares*price),income=num(h.annualIncomeGbp)||(shares*num(h.annualDpsGbp));
+    const shares=num(h.shares),book=num(h.bookCostGbp),price=num(h.livePriceGbp),dps=num(h.annualDpsGbp);
+    const value=shares>0&&price>0 ? shares*price : num(h.marketValueGbp);
+    const income=shares>0&&dps>0 ? shares*dps : num(h.annualIncomeGbp);
     const profit=value-book,yoc=book>0?income/book*100:0,avg=shares>0?book/shares:0;
     return {shares,book,price,value,income,profit,yoc,avg};
   }
@@ -418,5 +479,5 @@
 
   document.addEventListener('DOMContentLoaded',()=>{wire();clearEditor();render();scanLegacy()});
   w.addEventListener('aurora2:state',()=>{if(!renderingDerived)render()});
-  w.Aurora2=w.Aurora2||{};w.Aurora2.squad={metrics:squadMetrics,scanLegacy,importLegacy};
+  w.Aurora2=w.Aurora2||{};w.Aurora2.squad={metrics:squadMetrics,scanLegacy,importLegacy,healImportedHoldings};
 })(window);
