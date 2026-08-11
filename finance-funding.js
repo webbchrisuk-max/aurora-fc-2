@@ -21,14 +21,21 @@
   }
   function isoNow(){return new Date().toISOString()}
   function money(v){return A().ui.money(v)}
-  function potFunded(p){
+  function isHousePot(p){return /house/.test(norm(p?.name))||String(p?.id||'').toLowerCase().includes('house')}
+  function houseFunded(state,p){
+    const hp=obj(state?.finance?.houseProject);
+    const spent=num(hp.openingHistoricalSpend)+arr(hp.entries).filter(e=>e.status==='paid'||e.status==='historical').reduce((s,e)=>s+num(e.actual),0);
+    return num(p?.balance)+spent;
+  }
+  function potFunded(p,state=A()?.core?.read?.()){
     const balance=num(p?.balance);
+    if(isHousePot(p)&&state?.finance?.houseProject)return houseFunded(state,p);
     return p?.goalMode==='funded-progress'?balance+num(p?.spent):balance;
   }
-  function potGap(p){return Math.max(0,num(p?.target)-potFunded(p))}
+  function potGap(p,state=A()?.core?.read?.()){return Math.max(0,num(p?.target)-potFunded(p,state))}
   function excludedFromGoalFunding(p){
     const name=norm(p?.name);
-    return !p || p.archived || potGap(p)<=.009 ||
+    return !p || p.archived || potGap(p,A()?.core?.read?.())<=.009 ||
       name==='holding pot' || name==='spending pot' || name==='ig trading';
   }
 
@@ -116,7 +123,7 @@
   }
 
   function deadlineInfo(p,payday){
-    const gap=potGap(p), deadline=parseDate(p?.deadline), pd=parseDate(payday);
+    const gap=potGap(p,A()?.core?.read?.()), deadline=parseDate(p?.deadline), pd=parseDate(payday);
     if(!deadline||!pd||gap<=.009)return {hasDeadline:!!deadline,gap,required:0,paydays:0,deadline};
     const diff=deadline.getTime()-pd.getTime();
     const cycles=Math.floor(diff/(PAY_CYCLE_DAYS*86400000));
@@ -181,7 +188,7 @@
     const pots=arr(f.pots);
     const candidates=pots
       .filter(p=>!excludedFromGoalFunding(p))
-      .map(p=>({pot:p,gap:potGap(p),priority:[1,2,3].includes(Number(p.priority))?Number(p.priority):2,deadline:deadlineInfo(p,payday)}));
+      .map(p=>({pot:p,gap:potGap(p,state),priority:[1,2,3].includes(Number(p.priority))?Number(p.priority):2,deadline:deadlineInfo(p,payday)}));
     const allocations=new Map();
     let remaining=budget;
 
@@ -222,8 +229,8 @@
 
     const nextPots=pots.map(p=>{
       const a=allocations.get(p.id);
-      const nextFunding=a?Math.min(potGap(p),a.amount):0;
-      const reason=a?a.reasons.join(' • '):(potGap(p)<=.009?'Target funded':excludedFromGoalFunding(p)?'Excluded from goal-pot funding':'Waiting behind higher-priority pots');
+      const nextFunding=a?Math.min(potGap(p,state),a.amount):0;
+      const reason=a?a.reasons.join(' • '):(potGap(p,A()?.core?.read?.())<=.009?'Target funded':excludedFromGoalFunding(p)?'Excluded from goal-pot funding':'Waiting behind higher-priority pots');
       const required=a?.required||0;
       return {
         ...p,

@@ -27,6 +27,9 @@
 .auto-chip small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:900}.auto-chip strong{display:block;margin-top:5px;font-size:22px}.auto-chip span{display:block;margin-top:4px;color:var(--muted);font-size:8px}
 @media(max-width:1050px){.finance-kpis,.pots-bills-layout{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.finance-kpis,.pots-bills-layout{grid-template-columns:1fr}.finance-item{align-items:flex-start;flex-direction:column}.finance-item-actions{justify-content:flex-start;width:100%}}
+
+.house-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}.house-ring{min-height:180px;display:grid;place-items:center;text-align:center}.house-ring strong{display:block;font-size:38px}.house-ring span{display:block;color:var(--muted);font-size:9px;margin-top:5px}.house-kpis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}.house-room-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.house-room{padding:13px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.025)}.house-room h3{font-size:12px;margin:0}.house-room .house-room-meta{color:var(--muted);font-size:8px;line-height:1.55;margin-top:6px}.house-room .house-room-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}.house-entry{padding:12px;border:1px solid rgba(255,255,255,.075);border-radius:14px;background:rgba(255,255,255,.025)}.house-entry+.house-entry{margin-top:8px}.house-entry-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.house-entry strong{font-size:11px}.house-entry-meta{font-size:8px;color:var(--muted);line-height:1.5;margin-top:4px}.house-entry-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:end;margin-top:9px}.house-actual{display:grid;gap:3px}.house-actual label{font-size:7px;color:var(--muted);text-transform:uppercase;font-weight:900}.house-actual input{width:95px;min-height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px}.house-pill{font-size:8px;font-weight:900;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);color:var(--muted)}.house-pill.good{color:var(--green);border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.house-pill.watch{color:#fbbf24;border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.05)}.house-migrate{border-color:rgba(167,139,250,.22)!important;background:rgba(167,139,250,.035)!important}.house-history-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.055)}.house-history-row:last-child{border-bottom:0}.house-history-row strong{font-size:9px}.house-history-row span{display:block;color:var(--muted);font-size:8px;margin-top:3px}.house-empty{padding:16px;color:var(--muted);font-size:9px;text-align:center}@media(max-width:1150px){.house-kpis{grid-template-columns:repeat(4,1fr)}.house-room-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.house-hero,.house-room-grid{grid-template-columns:1fr}.house-kpis{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -46,10 +49,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Funding Engine v0.3.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — House Projects v0.4.</b> Live Finance records now calculate payday commitments automatically. Aurora 1 and AuroraData are still untouched.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">FUNDING ENGINE v0.3</span>
+  <span class="status">HOUSE PROJECTS v0.4</span>
 </header>
 
 <div class="tabs card">
@@ -206,7 +209,78 @@
 </section>
 
 <section id="housePanel" class="tab-panel">
-  <article class="card card-pad empty-state"><strong>🏠 House Projects stays in Finance</strong><p>The renovation ledger is the next Finance migration after Pots & Bills. Rooms, estimated/actual costs, paid/reserved work and House Pot funded progress will be rebuilt on this same clean data model.</p></article>
+  <section class="house-hero">
+    <article class="card card-pad">
+      <span class="eyebrow">HOUSE FUNDING RULE</span>
+      <h2 style="font-size:23px;margin:7px 0 8px">Every payment belongs to a room.</h2>
+      <p class="muted" style="font-size:10px;line-height:1.65">Reserved work uses the estimated cost. When the work is paid, only the actual cost leaves the House Fund. A saving is released back into available cash automatically.</p>
+      <div class="notice good" style="margin-top:12px"><b>Funded progress = current House Fund cash + confirmed actual house spending.</b><br>Reserved estimates reduce available cash but do not count as spent until paid.</div>
+    </article>
+    <article class="card card-pad house-ring">
+      <div><strong id="houseProgressPct">0%</strong><span id="houseProgressCaption">Project funded</span><div class="progress-mini" style="width:220px;max-width:70vw;margin:12px auto 0"><i id="houseProgressBar" style="width:0%"></i></div></div>
+    </article>
+  </section>
+
+  <section class="section house-kpis">
+    <article class="card card-pad metric"><small>Project Target</small><strong id="houseTargetKpi">£0.00</strong><span>Whole renovation</span></article>
+    <article class="card card-pad metric"><small>House Fund Cash</small><strong id="houseCashKpi">£0.00</strong><span>Current available pot</span></article>
+    <article class="card card-pad metric"><small>Estimated Reserved</small><strong id="houseReservedKpi">£0.00</strong><span>Upcoming work</span></article>
+    <article class="card card-pad metric"><small>Available After Costs</small><strong id="houseAvailableKpi">£0.00</strong><span>Cash after reservations</span></article>
+    <article class="card card-pad metric"><small>Actual Spent</small><strong id="houseSpentKpi">£0.00</strong><span>Confirmed historical + paid</span></article>
+    <article class="card card-pad metric"><small>Total Funded</small><strong class="good" id="houseFundedKpi">£0.00</strong><span>Cash + actual spending</span></article>
+    <article class="card card-pad metric"><small>Remaining</small><strong id="houseRemainingKpi">£0.00</strong><span>Still to fund</span></article>
+  </section>
+
+  <section class="section card card-pad house-migrate" id="houseMigrationCard">
+    <div class="section-head"><h2>Aurora 1 House Migration</h2><span id="houseMigrationBadge" class="muted">SCANNING</span></div>
+    <p class="muted" id="houseMigrationSummary" style="font-size:9px;line-height:1.6">Checking the old Finance planner for the room-by-room House Project Ledger…</p>
+    <div class="action-row"><button class="btn primary" id="houseImportBtn" disabled>Import / Merge Aurora 1 House Ledger</button></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Room Dashboard</h2><span class="muted">Estimated • actual • reserved</span></div>
+    <div class="house-room-grid" id="houseRoomGrid"></div>
+    <div class="action-row"><button class="btn secondary" id="houseAddRoom">+ Add Room</button></div>
+  </section>
+
+  <section class="section grid grid-2">
+    <article class="card card-pad">
+      <div class="section-head"><h2>House Ledger</h2><span id="houseLedgerMeta" class="muted">0 records</span></div>
+      <div id="houseLedgerList"></div>
+    </article>
+
+    <article class="card card-pad editor-card" id="houseEntryEditor">
+      <h3 class="editor-title" id="houseEditorTitle">Add House Payment</h3>
+      <input id="houseEntryId" type="hidden">
+      <div class="field-grid">
+        <div class="field"><label>Description</label><input id="houseEntryName" placeholder="e.g. Games room plastering"></div>
+        <div class="field"><label>Room</label><select id="houseEntryRoom"></select></div>
+        <div class="field"><label>Estimated cost</label><div class="money-wrap"><input id="houseEntryEstimated" type="number" min="0" step="0.01"></div></div>
+        <div class="field"><label>Actual cost</label><div class="money-wrap"><input id="houseEntryActual" type="number" min="0" step="0.01"></div><small>Can be entered later for reserved work.</small></div>
+        <div class="field"><label>Due / paid date</label><input id="houseEntryDue" type="date"></div>
+        <div class="field"><label>Category</label><input id="houseEntryCategory" value="House project"></div>
+        <div class="field"><label>Record type</label><select id="houseEntryType"><option value="reserved">Reserved / upcoming</option><option value="historical">Already paid / historical</option></select><small>Historical records never deduct today’s House Fund cash.</small></div>
+        <div class="field"><label>Notes</label><input id="houseEntryNotes" placeholder="Optional"></div>
+      </div>
+      <div class="action-row"><button class="btn primary" id="houseSaveEntry">Save Payment</button><button class="btn secondary" id="houseClearEntry">Clear</button></div>
+      <div id="houseStatus" class="notice" style="margin-top:10px">House Ledger owns renovation payments. Do not duplicate these as normal Bills.</div>
+    </article>
+  </section>
+
+  <section class="section grid grid-2">
+    <article class="card card-pad">
+      <div class="section-head"><h2>House Setup</h2><span class="muted">Project controls</span></div>
+      <div class="field-grid">
+        <div class="field"><label>Project target</label><div class="money-wrap"><input id="houseProjectTarget" type="number" min="0" step="0.01"></div></div>
+        <div class="field"><label>Opening historical spend</label><div class="money-wrap"><input id="houseOpeningSpent" type="number" min="0" step="0.01"></div><small>Legacy spend not represented by an individual ledger entry.</small></div>
+      </div>
+      <div class="action-row"><button class="btn secondary" id="houseSaveSetup">Save House Setup</button></div>
+    </article>
+    <article class="card card-pad">
+      <div class="section-head"><h2>House Action History</h2><span class="muted">Payments & undo trail</span></div>
+      <div id="houseActionHistory"></div>
+    </article>
+  </section>
 </section>
 
 <p class="muted" style="font-size:8px;margin:14px 2px 0">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
@@ -215,6 +289,7 @@
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js"></script>
 <script src="finance-funding.js"></script>
+<script src="finance-house.js"></script>
 <script src="finance.js"></script>
 </body>
 </html>

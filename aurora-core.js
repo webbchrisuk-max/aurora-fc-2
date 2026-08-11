@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=3;
+  const VERSION=4;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -33,6 +33,17 @@
         legacyImported:false,
         lastCalculatedAt:null,
         lastPlan:null
+      },
+      houseProject:{
+        version:1,
+        target:0,
+        openingHistoricalSpend:0,
+        rooms:['Games Room','Living Room','Hallway','Kitchen','Whole House'],
+        entries:[],
+        actions:[],
+        migrated:false,
+        migration:null,
+        updatedAt:null
       },
       lastCalculatedAt:null,
       lastReleasedAt:null
@@ -100,6 +111,43 @@
     };
   }
 
+  function normalizeHouseEntry(e){
+    const r=object(e), allowed=['reserved','paid','historical'];
+    const status=allowed.includes(r.status)?r.status:'reserved';
+    const estimated=Math.max(0,Number(r.estimated??r.amount)||0);
+    const actual=Math.max(0,Number(r.actual??((status==='paid'||status==='historical')?r.amount:0))||0);
+    return {
+      id:String(r.id||''),
+      name:String(r.name||'House payment'),
+      estimated,
+      actual,
+      due:String(r.due||''),
+      room:String(r.room||'Whole House'),
+      category:String(r.category||'House project'),
+      status,
+      deducted:Boolean(r.deducted),
+      paidDate:String(r.paidDate||''),
+      notes:String(r.notes||''),
+      createdAt:r.createdAt||now(),
+      updatedAt:r.updatedAt||now()
+    };
+  }
+  function normalizeHouseAction(a){
+    const r=object(a);
+    return {
+      id:String(r.id||''),
+      type:String(r.type||'change'),
+      entryId:String(r.entryId||''),
+      label:String(r.label||'House change'),
+      amount:Math.max(0,Number(r.amount)||0),
+      at:r.at||now(),
+      reversed:Boolean(r.reversed),
+      reversedAt:r.reversedAt||null,
+      beforeEntry:r.beforeEntry?object(r.beforeEntry):null,
+      beforePot:r.beforePot?object(r.beforePot):null
+    };
+  }
+
   function normalize(raw){
     const d=defaultState(), r=object(raw), rf=object(r.finance);
     return {
@@ -120,6 +168,18 @@
           ...object(rf.fundingPolicy),
           goalPotBudget:Math.max(0,Number(rf.fundingPolicy?.goalPotBudget)||0),
           strategy:['priority','balanced','critical'].includes(rf.fundingPolicy?.strategy)?rf.fundingPolicy.strategy:'priority'
+        },
+        houseProject:{
+          ...d.finance.houseProject,
+          ...object(rf.houseProject),
+          version:1,
+          target:Math.max(0,Number(rf.houseProject?.target)||0),
+          openingHistoricalSpend:Math.max(0,Number(rf.houseProject?.openingHistoricalSpend)||0),
+          rooms:Array.isArray(rf.houseProject?.rooms)&&rf.houseProject.rooms.length
+            ? [...new Set(rf.houseProject.rooms.map(x=>String(x).trim()).filter(Boolean))]
+            : [...d.finance.houseProject.rooms],
+          entries:Array.isArray(rf.houseProject?.entries)?rf.houseProject.entries.map(normalizeHouseEntry):[],
+          actions:Array.isArray(rf.houseProject?.actions)?rf.houseProject.actions.map(normalizeHouseAction):[]
         }
       },
       alerts:Array.isArray(r.alerts)?r.alerts:[]
