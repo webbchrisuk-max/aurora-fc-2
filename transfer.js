@@ -214,6 +214,16 @@
       return {...s,transfer:{...s.transfer,route:next,updatedAt:now()}};
     });
   }
+  function updateRouteAccount(id,value){
+    const account=accountCode(value);
+    A().core.update(s=>{
+      const r=s.transfer.route;if(!r||r.locked)return s;
+      const allocations=arr(r.allocations).map(a=>a.id===id?{...a,account}:a);
+      const next={...r,allocations,updatedAt:now()};Object.assign(next,routeSummary(next));
+      return {...s,transfer:{...s.transfer,route:next,updatedAt:now()}};
+    });
+  }
+
   function resetRoute(){
     const s=A().core.read();
     if(s.transfer.route?.locked){toast('Unlock the approved route before resetting it.');return}
@@ -226,6 +236,8 @@
     if(totals.allocated<=0){toast('Allocate at least one purchase.');return}
     if(totals.allocated>num(m.approvedBudget)+.005){toast('Route is above the Finance ceiling.');return}
     if(r.missionId!==m.id){toast('This route belongs to an older Finance mission. Rebuild it.');return}
+    const unresolved=arr(r.allocations).filter(a=>num(a.amount)>0&&accountCode(a.account)==='CHECK');
+    if(unresolved.length){toast(`Assign a broker to ${unresolved.map(a=>a.ticker).join(', ')} before approval.`);return}
     const blockedTickers=new Set(arr(state.scouting.targets).filter(t=>t.status==='block').map(t=>t.ticker));
     if(arr(r.allocations).some(a=>num(a.amount)>0&&blockedTickers.has(a.ticker))){toast('A blocked Scouting target is still allocated.');return}
     const approved={...r,...totals,status:'TRANSFER_READY',locked:true,updatedAt:now()};
@@ -266,6 +278,7 @@
     const s=A().core.read(), r=s.transfer.route;if(!r){toast('Build a route first.');return}
     const ig=arr(r.allocations).filter(a=>accountCode(a.account)==='IG').reduce((x,a)=>x+num(a.amount),0);
     const t212=arr(r.allocations).filter(a=>accountCode(a.account)==='T212').reduce((x,a)=>x+num(a.amount),0);
+    const unresolved=arr(r.allocations).filter(a=>accountCode(a.account)==='CHECK').reduce((x,a)=>x+num(a.amount),0);
     const totals=routeSummary(r);
     const lines=arr(r.allocations).filter(a=>num(a.amount)>0).map(a=>`${accountLabel(a.account)}: ${a.ticker} ${money(a.amount)}`);
     const text=`Aurora FC 2.0 — Transfer Route\nFinance mission: ${r.missionId}\nBudget: ${money(r.financeBudget)}\nStrategy: ${r.strategy==='maximum'?'Maximum Income':'Sustainable Income'}\n\nIG ISA: ${money(ig)}\nTrading 212 ISA: ${money(t212)}\nKeep untransferred: ${money(totals.remaining)}\n\n${lines.join('\n')}`;
@@ -350,20 +363,24 @@
     const r=state.transfer.route,host=$('routeList'),budget=routeBudget(state);
     if(!r){
       set('kAllocated',money(0));set('kHoldback',money(budget));set('kIncome',money(0));set('routeStatus','NO ROUTE');
-      set('brokerIg',money(0));set('brokerT212',money(0));set('brokerHold',money(budget));if($('routeProgress'))$('routeProgress').style.width='0%';
+      set('brokerIg',money(0));set('brokerT212',money(0));set('brokerUnassigned',money(0));set('brokerHold',money(budget));if($('routeProgress'))$('routeProgress').style.width='0%';
       if(host)host.innerHTML='<div class="empty-state compact"><strong>No transfer route yet</strong><p>Choose the strategy and auto-build the deal sheet.</p></div>';
       $('approveRoute').disabled=true;$('unlockRoute').hidden=true;return;
     }
-    const totals=routeSummary(r),ig=arr(r.allocations).filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0),t212=arr(r.allocations).filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0);
+    const totals=routeSummary(r),
+      ig=arr(r.allocations).filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0),
+      t212=arr(r.allocations).filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0),
+      unresolved=arr(r.allocations).filter(a=>accountCode(a.account)==='CHECK').reduce((s,a)=>s+num(a.amount),0);
     set('kAllocated',money(totals.allocated));set('kHoldback',money(totals.remaining));set('kIncome',money(totals.income));set('routeStatus',r.status);
-    set('brokerIg',money(ig));set('brokerT212',money(t212));set('brokerHold',money(totals.remaining));
+    set('brokerIg',money(ig));set('brokerT212',money(t212));set('brokerUnassigned',money(unresolved));set('brokerHold',money(totals.remaining));
     if($('routeProgress'))$('routeProgress').style.width=`${budget>0?Math.min(100,totals.allocated/budget*100):0}%`;
-    if(host)host.innerHTML=arr(r.allocations).map(a=>`<article class="route-row"><div class="route-main"><strong>${esc(a.ticker)} — ${esc(a.name)}</strong><span>${accountLabel(a.account)} • ${num(a.yieldPct)>0?num(a.yieldPct).toFixed(2)+'% yield • ':''}${money(a.expectedAnnualIncome)}/yr projected • ${esc(a.reason||'Transfer allocation')}</span></div><div class="route-side">${r.locked?`<strong>${money(a.amount)}</strong>`:`<input class="route-input" data-route-amount="${esc(a.id)}" type="number" min="0" step="${r.increment}" value="${num(a.amount).toFixed(2)}">`}<span>${r.locked?'LOCKED':'editable allocation'}</span></div></article>`).join('');
-    const valid=totals.allocated>0&&totals.allocated<=budget+.005&&r.missionId===state.mission?.id;
+    if(host)host.innerHTML=arr(r.allocations).map(a=>`<article class="route-row"><div class="route-main"><strong>${esc(a.ticker)} — ${esc(a.name)}</strong><span>${accountLabel(a.account)} • ${num(a.yieldPct)>0?num(a.yieldPct).toFixed(2)+'% yield • ':''}${money(a.expectedAnnualIncome)}/yr projected • ${esc(a.reason||'Transfer allocation')}</span></div><div class="route-side">${r.locked?`<strong>${money(a.amount)}</strong><span>${accountLabel(a.account)} • LOCKED</span>`:`<div class="route-edit-stack"><select class="route-account" data-route-account="${esc(a.id)}"><option value="CHECK" ${accountCode(a.account)==='CHECK'?'selected':''}>Choose broker</option><option value="IG" ${accountCode(a.account)==='IG'?'selected':''}>IG ISA</option><option value="T212" ${accountCode(a.account)==='T212'?'selected':''}>Trading 212 ISA</option></select><input class="route-input" data-route-amount="${esc(a.id)}" type="number" min="0" step="${r.increment}" value="${num(a.amount).toFixed(2)}"></div><span>${accountCode(a.account)==='CHECK'?'BROKER REQUIRED':'editable route'}</span>`}</div></article>`).join('');
+    const valid=totals.allocated>0&&totals.allocated<=budget+.005&&unresolved<=.005&&r.missionId===state.mission?.id;
     $('approveRoute').disabled=!valid||r.locked;$('unlockRoute').hidden=!r.locked;
     const guard=$('routeGuard');
     if(guard){
       if(totals.allocated>budget+.005){guard.className='notice red';guard.textContent=`Blocked: route exceeds Finance by ${money(totals.allocated-budget)}.`}
+      else if(unresolved>.005){guard.className='notice red';guard.textContent=`Blocked: ${money(unresolved)} is allocated to target(s) with no broker assigned. Choose IG or Trading 212 in the deal sheet.`}
       else{guard.className='notice good';guard.textContent=`${money(totals.allocated)} allocated from the locked ${money(budget)} mission • ${money(totals.remaining)} held back.`}
     }
   }
@@ -398,7 +415,10 @@
     ['brokerScope','minAllocation','allocationIncrement'].forEach(id=>$(id)?.addEventListener('change',()=>{setSettings();render()}));
     $('autoBuildRoute')?.addEventListener('click',()=>{setSettings();autoRoute()});
     $('resetRoute')?.addEventListener('click',resetRoute);$('approveRoute')?.addEventListener('click',approveRoute);$('unlockRoute')?.addEventListener('click',unlockRoute);$('copyBrokerInstructions')?.addEventListener('click',copyInstructions);
-    document.addEventListener('change',e=>{const input=e.target.closest('[data-route-amount]');if(input)updateRouteAmount(input.dataset.routeAmount,input.value)});
+    document.addEventListener('change',e=>{
+      const input=e.target.closest('[data-route-amount]');if(input){updateRouteAmount(input.dataset.routeAmount,input.value);return}
+      const account=e.target.closest('[data-route-account]');if(account)updateRouteAccount(account.dataset.routeAccount,account.value);
+    });
     $('regAllocation')?.addEventListener('change',loadRegistrationAllocation);
     ['regShares','regPrice','regPriceUnit','regCurrency','regFx','regFees'].forEach(id=>$(id)?.addEventListener('input',registrationCalc));
     $('saveRegistrationDraft')?.addEventListener('click',saveRegistrationDraft);$('clearRegistration')?.addEventListener('click',clearRegistration);
