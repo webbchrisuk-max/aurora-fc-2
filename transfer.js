@@ -71,75 +71,30 @@
     const settings={strategy:'sustainable',brokerScope:'both',minAllocation:250,increment:25,...(state.transfer?.settings||{})};
     if(!validMission(m)){toast('Release a Finance mission first.');return}
     if(sc.status!=='SCOUTING_READY'){toast('Transfer needs a current Scouting-approved shortlist first.');return}
-    const budget=routeBudget(state);
-    const min=Math.max(25,num(settings.minAllocation)||250);
-    const inc=Math.max(1,num(settings.increment)||25);
-    let candidates=arr(sc.targets).filter(t=>String(t.status||'').toLowerCase()!=='block'&&brokerEligible(t,settings.brokerScope));
-    candidates.sort((a,b)=>targetScore(b,settings.strategy)-targetScore(a,settings.strategy)||num(a.rank)-num(b.rank));
-    if(!candidates.length){toast('No permitted targets match this broker route.');return}
+    const engine=A().transferEngine;
+    if(!engine?.simulate){toast('Transfer simulation engine is unavailable. Reload the page.');return}
 
-    let count=Math.min(8,candidates.length,Math.max(1,Math.floor(budget/min)));
-    if(budget<min)count=1;
-    candidates=candidates.slice(0,count);
-
-    const scores=candidates.map(t=>Math.max(1,targetScore(t,settings.strategy)));
-    const allocations=candidates.map((t,i)=>({
-      id:A().core.uid('ALLOC'),
-      targetId:t.id,
-      ticker:ticker(t.ticker),
-      name:t.name||ticker(t.ticker),
-      account:accountCode(t.preferredAccount),
-      amount:0,
-      yieldPct:Math.max(0,num(t.yieldPct)),
-      expectedAnnualIncome:0,
-      score:scores[i],
-      reason:t.reason||'Scouting-approved target',
-      status:'PLANNED'
-    }));
-
-    let remaining=budget;
-    if(budget>=min*count){
-      allocations.forEach(a=>{a.amount=roundDown(min,inc);remaining-=a.amount});
-    }
-    const weightSum=scores.reduce((s,x)=>s+x,0)||1;
-    const extraRaw=allocations.map((a,i)=>remaining*(scores[i]/weightSum));
-    allocations.forEach((a,i)=>{
-      const add=roundDown(extraRaw[i],inc);
-      a.amount+=add;
-      remaining-=add;
+    const sim=engine.simulate(state,{
+      budget:routeBudget(state),
+      strategy:settings.strategy,
+      brokerScope:settings.brokerScope,
+      minAllocation:settings.minAllocation,
+      increment:settings.increment,
+      maxTargets:8,
+      idFactory:p=>A().core.uid(p)
     });
-
-    let guard=0;
-    while(remaining>=inc-.001&&guard<5000){
-      guard++;
-      const ranked=allocations
-        .map((a,i)=>({i,priority:scores[i]/Math.max(inc,a.amount)}))
-        .sort((a,b)=>b.priority-a.priority);
-      allocations[ranked[0].i].amount+=inc;
-      remaining-=inc;
-    }
-    if(budget<min){
-      allocations[0].amount=roundDown(budget,inc)||budget;
-      remaining=Math.max(0,budget-allocations[0].amount);
-    }
-    allocations.forEach(a=>a.expectedAnnualIncome=a.amount*(a.yieldPct/100));
+    if(!sim.allocations.length){toast('No permitted targets match this broker route.');return}
 
     const previous=state.transfer?.route;
     const route={
+      ...sim,
       id:previous?.missionId===m.id?previous.id:A().core.uid('ROUTE'),
       missionId:m.id,
-      financeBudget:budget,
-      strategy:settings.strategy,
-      brokerScope:settings.brokerScope,
-      minAllocation:min,
-      increment:inc,
-      allocations,
       status:'DRAFT',
       locked:false,
       createdAt:previous?.missionId===m.id?previous.createdAt:now(),
       updatedAt:now()
     };
-    Object.assign(route,routeSummary(route));
     A().core.update(s=>({...s,transfer:{...s.transfer,route,updatedAt:now()}}));
     toast('Draft transfer route built.');
   }
@@ -268,45 +223,71 @@
     return {value,book,income,profit,profitPct,locked};
   }
 
+  function chairmanMateriality(state,h,m){
+    const rows=chairmanHoldings(state).map(x=>chairmanHoldingMetrics(x));
+    const totalValue=rows.reduce((s,x)=>s+x.value,0);
+    const totalIncome=rows.reduce((s,x)=>s+x.income,0);
+    const valueFloor=Math.max(100,totalValue*.001);
+    const profitFloor=Math.max(10,totalValue*.0002);
+    const incomeFloor=Math.max(5,totalIncome*.005);
+    const micro=m.value<valueFloor&&Math.abs(m.profit)<profitFloor&&m.income<incomeFloor;
+    const priority=
+      (Math.max(0,m.profitPct)*.25)+
+      (Math.max(0,m.profit)/Math.max(1,profitFloor))*18+
+      (Math.max(0,m.value)/Math.max(1,valueFloor))*4+
+      (Math.max(0,m.income)/Math.max(1,incomeFloor))*5;
+    return {micro,priority,valueFloor,profitFloor,incomeFloor,totalValue,totalIncome};
+  }
+
   function renderChairman(state){
     const holdings=chairmanHoldings(state);
-    const cases=holdings
-      .map(h=>({h,m:chairmanHoldingMetrics(h)}))
+    const triggered=holdings
+      .map(h=>{
+        const m=chairmanHoldingMetrics(h);
+        return {h,m,mat:chairmanMateriality(state,h,m)};
+      })
       .filter(x=>!x.m.locked&&x.m.profitPct>=6)
-      .sort((a,b)=>b.m.profitPct-a.m.profitPct||b.m.profit-a.m.profit);
+      .sort((a,b)=>{
+        if(a.mat.micro!==b.mat.micro)return a.mat.micro?1:-1;
+        return b.mat.priority-a.mat.priority||b.m.profit-a.m.profit;
+      });
 
-    const strong=cases.filter(x=>x.m.profitPct>=10);
-    const incomeRisk=cases.reduce((s,x)=>s+x.m.income,0);
-    const best=cases[0]||null;
+    const meaningful=triggered.filter(x=>!x.mat.micro);
+    const strong=meaningful.filter(x=>x.m.profitPct>=10);
+    const micro=triggered.filter(x=>x.mat.micro);
+    const incomeRisk=meaningful.reduce((s,x)=>s+x.m.income,0);
+    const best=meaningful[0]||null;
 
-    set('chairmanReviewCount',String(cases.length));
+    set('chairmanReviewCount',String(meaningful.length));
     set('chairmanStrongCount',String(strong.length));
     set('chairmanIncomeRisk',money(incomeRisk));
-    set('chairmanBestTicker',best?ticker(best.h.ticker):'—');
+    set('chairmanBestTicker',best?ticker(best.h.ticker):meaningful.length?'—':'NO MATERIAL CASE');
     set('chairmanBestMeta',best
       ?`${best.m.profitPct>=0?'+':''}${best.m.profitPct.toFixed(1)}% • ${money(best.m.profit)} capital profit • ${money(best.m.income)}/yr income`
-      :holdings.length?'No unlocked holding has reached +6% yet.':'No canonical Squad holdings loaded.'
+      :micro.length
+        ?`${micro.length} percentage trigger${micro.length===1?' is':'s are'} currently micro-sized and muted.`
+        :holdings.length?'No meaningful unlocked holding has reached +6% yet.':'No canonical Squad holdings loaded.'
     );
-    set('chairmanQueueMeta',`${cases.length} case${cases.length===1?'':'s'} • ${strong.length} strong`);
+    set('chairmanQueueMeta',`${meaningful.length} meaningful • ${micro.length} micro trigger${micro.length===1?'':'s'}`);
 
     const badge=$('chairmanConnection');
     if(badge)badge.textContent=holdings.length?'SQUAD LIVE':'SQUAD EMPTY';
 
     const host=$('chairmanCaseList');
     if(!host)return;
-    if(!cases.length){
+    if(!triggered.length){
       host.innerHTML=`<div class="empty-state compact"><strong>${holdings.length?'No live Chairman trigger':'No Squad holdings connected'}</strong><p>${holdings.length?'No unlocked position is currently at +6% or above.':'Open Squad and load canonical holdings first.'}</p></div>`;
       return;
     }
 
-    host.innerHTML=cases.slice(0,6).map(({h,m})=>`
+    host.innerHTML=triggered.slice(0,8).map(({h,m,mat})=>`
       <article class="chairman-case-row">
         <div class="chairman-case-main">
           <strong>${esc(ticker(h.ticker))} — ${esc(h.name||ticker(h.ticker))}</strong>
-          <span>${esc(accountLabel(h.account))} • ${money(m.value)} current value • ${money(m.income)}/yr dividend income</span>
+          <span>${esc(accountLabel(h.account))} • ${money(m.value)} current value • ${money(m.income)}/yr dividend income${mat.micro?' • MICRO POSITION':''}</span>
         </div>
         <div class="chairman-case-side">
-          <span class="status-pill ${m.profitPct>=10?'pass':'caution'}">${m.profitPct>=10?'+10% STRONG':'+6% REVIEW'}</span>
+          <span class="status-pill ${mat.micro?'caution':m.profitPct>=10?'pass':'caution'}">${mat.micro?'MICRO POSITION':m.profitPct>=10?'+10% STRONG':'+6% REVIEW'}</span>
           <strong>${m.profitPct>=0?'+':''}${m.profitPct.toFixed(1)}%</strong>
           <span>${m.profit>=0?'+':''}${money(m.profit)} capital P/L</span>
         </div>
@@ -517,8 +498,10 @@
 
   w.Aurora2=w.Aurora2||{};
   w.Aurora2.transferEngine={
+    ...(w.Aurora2.transferEngine||{}),
     routeSummary,
     targetScore,
-    chairmanHoldingMetrics
+    chairmanHoldingMetrics,
+    chairmanMateriality
   };
 })(window);

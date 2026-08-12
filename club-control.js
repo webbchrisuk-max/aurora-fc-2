@@ -4,14 +4,13 @@
   const A=()=>w.Aurora2;
   const $=id=>document.getElementById(id);
   const arr=v=>Array.isArray(v)?v:[];
-  const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
   const num=v=>{const n=Number(String(v??'').replace(/[£,%]/g,'').replace(/,/g,''));return Number.isFinite(n)?n:0};
   const esc=v=>A().ui.escape(v);
   const money=v=>A().ui.money(Number(v)||0);
-  const now=()=>new Date().toISOString();
 
   let selectedKey='';
   let lens='sustainable';
+  let saleFraction=1;
   let customIds=new Set();
 
   function set(id,v){const el=$(id);if(el)el.textContent=v}
@@ -56,12 +55,40 @@
     const currentYield=value>0?income/value*100:0;
     return {shares,price,value,book,avg,income,profit,profitPct,currentYield};
   }
-  function profitTrigger(h){
+  function materiality(state,h,m=holdingMetrics(h)){
+    const metrics=activeHoldings(state).map(holdingMetrics);
+    const totalValue=metrics.reduce((s,x)=>s+x.value,0);
+    const totalIncome=metrics.reduce((s,x)=>s+x.income,0);
+    const valueFloor=Math.max(100,totalValue*.001);
+    const profitFloor=Math.max(10,totalValue*.0002);
+    const incomeFloor=Math.max(5,totalIncome*.005);
+    const micro=m.value<valueFloor&&Math.abs(m.profit)<profitFloor&&m.income<incomeFloor;
+    const priority=
+      (Math.max(0,m.profitPct)*.25)+
+      (Math.max(0,m.profit)/Math.max(1,profitFloor))*18+
+      (Math.max(0,m.value)/Math.max(1,valueFloor))*4+
+      (Math.max(0,m.income)/Math.max(1,incomeFloor))*5;
+    return {micro,priority,valueFloor,profitFloor,incomeFloor,totalValue,totalIncome};
+  }
+  function profitTrigger(state,h,m=holdingMetrics(h),mat=materiality(state,h,m)){
     if(h.locked||String(h.status||'').toUpperCase()==='LOCKED')return {code:'locked',label:'LOCKED'};
-    const p=holdingMetrics(h).profitPct;
-    if(p>=10)return {code:'strong',label:'+10% STRONG REVIEW'};
-    if(p>=6)return {code:'review',label:'+6% REVIEW'};
+    if(mat.micro&&m.profitPct>=6)return {code:'micro',label:'MICRO POSITION'};
+    if(m.profitPct>=10)return {code:'strong',label:'+10% STRONG REVIEW'};
+    if(m.profitPct>=6)return {code:'review',label:'+6% REVIEW'};
     return {code:'keep',label:'KEEP ZONE'};
+  }
+
+  function scenarioMetrics(m){
+    const f=Math.max(0,Math.min(1,saleFraction));
+    return {
+      fraction:f,
+      sharesSold:m.shares*f,
+      sharesRemaining:m.shares*(1-f),
+      cashReleased:m.value*f,
+      bookReleased:m.book*f,
+      profitRealised:m.profit*f,
+      incomeSurrendered:m.income*f
+    };
   }
 
   function parseDate(v){
@@ -78,110 +105,89 @@
     const b=new Date(to.getFullYear(),to.getMonth(),to.getDate());
     return Math.round((b-a)/86400000);
   }
-  function nextExDate(state,h){
+  function eventDps(e){
+    const fields=[
+      e?.dividendPerShareGbp,e?.dividend_per_share_gbp,e?.dpsGbp,e?.dps,
+      e?.dividendPerShare,e?.dividend_per_share
+    ];
+    for(const v of fields){if(num(v)>0)return num(v)}
+    return 0;
+  }
+  function nextExDate(state,h,scenario){
     const tk=ticker(h.ticker),ac=accountCode(h.account);
     const today=new Date();today.setHours(0,0,0,0);
     const events=arr(state.income?.calendar)
       .filter(e=>!['CANCELLED','ARCHIVED'].includes(String(e.status||'').toUpperCase()))
       .filter(e=>ticker(e.ticker)===tk)
       .filter(e=>accountCode(e.account)===ac||accountCode(e.account)==='CHECK'||ac==='CHECK')
-      .map(e=>({...e,date:parseDate(e.exDate)}))
+      .map(e=>({...e,date:parseDate(e.exDate||e.ex_date)}))
       .filter(e=>e.date&&e.date.getTime()>=today.getTime())
       .sort((a,b)=>a.date-b.date);
     const e=events[0];
     if(!e)return null;
-    return {...e,days:dayDiff(today,e.date)};
+
+    const dps=eventDps(e);
+    const expectedFull=Math.max(0,num(e.expectedAmountGbp||e.expected_amount_gbp||e.grossDividendGbp||e.gross_dividend_gbp));
+    let dividendAtRisk=0;
+    if(dps>0&&scenario.sharesSold>0)dividendAtRisk=scenario.sharesSold*dps;
+    else if(expectedFull>0)dividendAtRisk=expectedFull*scenario.fraction;
+
+    return {
+      ...e,
+      exDate:e.exDate||e.ex_date,
+      days:dayDiff(today,e.date),
+      dps,
+      dividendAtRisk
+    };
   }
 
-  function scoutingCandidates(state,currentTicker){
+  function eligibleCustomCandidates(state,currentTicker){
     return arr(state.scouting?.targets)
       .filter(t=>ticker(t.ticker)!==currentTicker)
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
       .filter(t=>num(t.yieldPct)>0)
-      .map(t=>({
-        ...t,
-        _ticker:ticker(t.ticker),
-        _yield:Math.max(0,num(t.yieldPct)),
-        _sustainable:Math.max(0,num(t.sustainableScore)),
-        _maximum:Math.max(0,num(t.maximumScore)),
-        _status:String(t.status||'caution').toLowerCase()
-      }));
-  }
-  function rankedCandidates(state,currentTicker,mode){
-    const rows=scoutingCandidates(state,currentTicker);
-    const scoreKey=mode==='maximum'?'_maximum':'_sustainable';
-    return rows.sort((a,b)=>{
-      const aPass=a._status==='pass'?0:1,bPass=b._status==='pass'?0:1;
-      return aPass-bPass||b[scoreKey]-a[scoreKey]||b._yield-a._yield;
-    });
+      .sort((a,b)=>num(b.sustainableScore)-num(a.sustainableScore)||num(b.yieldPct)-num(a.yieldPct));
   }
 
-  function allocateBasket(cash,candidates){
-    const rows=arr(candidates).slice(0,5);
-    if(!(cash>0)||!rows.length)return [];
-    const base=Math.floor((cash/rows.length)*100)/100;
-    let used=0;
-    return rows.map((c,i)=>{
-      const amount=i===rows.length-1?Math.max(0,Number((cash-used).toFixed(2))):base;
-      used+=amount;
-      return {
-        id:c.id||c._ticker,
-        ticker:c._ticker,
-        name:String(c.name||c._ticker),
-        account:accountLabel(c.preferredAccount),
-        status:c._status,
-        yieldPct:c._yield,
-        score:lens==='maximum'?c._maximum:c._sustainable,
-        amount,
-        annualIncome:amount*c._yield/100
-      };
-    });
-  }
+  function transferSimulation(state,h,scenario){
+    const engine=A().transferEngine;
+    if(!engine?.simulate)return {
+      financeBudget:scenario.cashReleased,allocations:[],allocated:0,income:0,
+      remaining:scenario.cashReleased,status:'SIMULATION',reason:'ENGINE_MISSING'
+    };
 
-  function replacementBasket(state,h,m){
-    const candidates=rankedCandidates(state,ticker(h.ticker),lens==='maximum'?'maximum':'sustainable');
+    let targetIds=null,strategy=lens==='maximum'?'maximum':'sustainable';
     if(lens==='custom'){
-      const selected=candidates.filter(c=>customIds.has(String(c.id||c._ticker)));
-      return allocateBasket(m.value,selected);
+      targetIds=[...customIds];
+      strategy='sustainable';
     }
-    return allocateBasket(m.value,candidates.slice(0,3));
+
+    return engine.simulate(state,{
+      budget:scenario.cashReleased,
+      strategy,
+      brokerScope:'both',
+      minAllocation:state.transfer?.settings?.minAllocation||250,
+      increment:state.transfer?.settings?.increment||25,
+      maxTargets:8,
+      excludeTicker:ticker(h.ticker),
+      targetIds,
+      rotationContext:{
+        holdingId:h.id||'',
+        ticker:ticker(h.ticker),
+        account:h.account,
+        saleFraction:scenario.fraction
+      }
+    });
   }
 
-  function buildVerdict({holding,metrics,basket,exEvent}){
-    const replacementIncome=basket.reduce((s,r)=>s+r.annualIncome,0);
-    const net=replacementIncome-metrics.income;
-    const netPct=metrics.income>0?net/metrics.income*100:(replacementIncome>0?100:0);
-    const caution=basket.filter(r=>r.status!=='pass').length;
-    const closeEx=exEvent&&exEvent.days>=0&&exEvent.days<=7;
-
-    if(holding.locked||String(holding.status||'').toUpperCase()==='LOCKED'){
-      return {code:'block',title:'DO NOT ROTATE',reason:'This is a locked / legacy Squad position. Chairman can inspect it, but it is not eligible for a normal rotation.'};
-    }
-    if(!(metrics.value>0)){
-      return {code:'review',title:'REVIEW',reason:'Current market value is missing, so Aurora cannot produce a reliable cash-released comparison.'};
-    }
-    if(!basket.length){
-      return {code:'review',title:'REVIEW',reason:'There are no eligible Active Scouting replacements for this case. Promote and review more candidates in Scouting first.'};
-    }
-    if(closeEx){
-      return {code:'review',title:'REVIEW',reason:`The next ex-dividend date is only ${exEvent.days} day${exEvent.days===1?'':'s'} away. Aurora caps the case at REVIEW so the income timing is considered before any exit.`};
-    }
-    if(caution>0){
-      return {code:'review',title:'REVIEW',reason:`The replacement basket contains ${caution} caution target${caution===1?'':'s'}. The income comparison is useful, but Scouting evidence must be cleared before a stronger verdict.`};
-    }
-    if(metrics.profitPct>=10&&netPct>=5){
-      return {code:'strong',title:'STRONG ROTATION',reason:`Capital profit is ${metrics.profitPct.toFixed(1)}% and the replacement basket improves annual income by ${money(net)} (${netPct.toFixed(1)}%). Both sides of the rotation case are stronger.`};
-    }
-    if((metrics.profitPct>=10&&net>=-0.005)||(metrics.profitPct>=6&&net>0)){
-      return {code:'attractive',title:'ATTRACTIVE ROTATION',reason:`The profit trigger is active and the replacement basket ${net>=0?'maintains/improves':'nearly replaces'} the surrendered income. This is a credible Chairman review, not an automatic sale.`};
-    }
-    if(metrics.profitPct>=6||net>0){
-      return {code:'review',title:'REVIEW',reason:`There is enough value on one side of the case to investigate, but the combined capital-profit and dividend-income result is not yet strong enough for an attractive rotation verdict.`};
-    }
-    if(metrics.income>0&&replacementIncome<metrics.income*.85){
-      return {code:'keep',title:'KEEP',reason:'The replacement basket would surrender more than 15% of the current annual income without a +6% capital-profit trigger.'};
-    }
-    return {code:'keep',title:'KEEP',reason:'The current position does not yet offer a compelling enough capital-profit and replacement-income advantage to justify a rotation.'};
+  function concentration(state,h,scenario,sim){
+    const engine=A().transferEngine;
+    if(!engine?.concentrationSnapshot)return null;
+    return engine.concentrationSnapshot(
+      state,
+      {holdingId:h.id||'',ticker:ticker(h.ticker),account:h.account,saleFraction:scenario.fraction},
+      sim.allocations
+    );
   }
 
   function selectedHolding(state=A().core.read()){
@@ -189,47 +195,105 @@
     return hs.find(h=>holdingKey(h)===selectedKey)||hs[0]||null;
   }
 
+  function buildVerdict({holding,metrics,mat,scenario,sim,exEvent,concentration:conc}){
+    const replacementIncome=num(sim.income);
+    const net=replacementIncome-scenario.incomeSurrendered;
+    const netPct=scenario.incomeSurrendered>0?net/scenario.incomeSurrendered*100:(replacementIncome>0?100:0);
+    const caution=arr(sim.allocations).filter(r=>String(r.scoutingStatus||'caution')!=='pass').length;
+    const closeEx=exEvent&&exEvent.days>=0&&exEvent.days<=7;
+    const worsens=conc&&(conc.after.largestTickerPct-conc.before.largestTickerPct)>5;
+
+    if(holding.locked||String(holding.status||'').toUpperCase()==='LOCKED'){
+      return {code:'block',title:'DO NOT ROTATE',reason:'This is a locked / legacy Squad position. It may be inspected, but Chairman will not recommend a normal rotation.'};
+    }
+    if(mat.micro){
+      return {code:'micro',title:'MICRO POSITION',reason:`The percentage move is real, but the £ impact is below Aurora's dynamic materiality thresholds. Current value ${money(metrics.value)} and capital P/L ${money(metrics.profit)} are too small to deserve a rotation priority.`};
+    }
+    if(!(scenario.cashReleased>0)){
+      return {code:'review',title:'REVIEW',reason:'No meaningful sale proceeds are available for this scenario.'};
+    }
+    if(closeEx&&num(exEvent.dividendAtRisk)>0){
+      return {code:'wait',title:'WAIT FOR DIVIDEND',reason:`The next ex-date is ${exEvent.days===0?'today':`only ${exEvent.days} day${exEvent.days===1?'':'s'} away`} and approximately ${money(exEvent.dividendAtRisk)} of the next dividend is attached to the shares being sold. Re-run the case after the ex-date.`};
+    }
+    if(!arr(sim.allocations).length){
+      return {code:'review',title:'REVIEW',reason:'Transfer could not build a hypothetical replacement route from the currently eligible Active Scouting candidates.'};
+    }
+    if(caution>0){
+      return {code:'review',title:'REVIEW',reason:`Transfer used ${caution} caution replacement${caution===1?'':'s'}. The economics can be compared, but Scouting evidence must be cleared before a stronger verdict.`};
+    }
+    if(worsens){
+      return {code:'review',title:'REVIEW',reason:'The simulated route worsens the largest-position concentration by more than 5 percentage points, so Chairman caps the verdict at REVIEW.'};
+    }
+    if(metrics.profitPct>=10&&netPct>=5){
+      return {code:'strong',title:'STRONG ROTATION',reason:`The holding is up ${metrics.profitPct.toFixed(1)}%, this ${Math.round(scenario.fraction*100)}% sale realises ${money(scenario.profitRealised)}, and Transfer improves the surrendered annual income by ${money(net)} (${netPct.toFixed(1)}%).`};
+    }
+    if((metrics.profitPct>=10&&net>=-0.005)||(metrics.profitPct>=6&&net>0)){
+      return {code:'attractive',title:'ATTRACTIVE ROTATION',reason:`The profit trigger is active and Transfer ${net>=0?'maintains/improves':'almost replaces'} the income attached to the sold fraction. This is a credible rotation case, not an automatic sell.`};
+    }
+    if(metrics.profitPct>=6||net>0){
+      return {code:'review',title:'REVIEW',reason:'One side of the case is attractive, but the combined capital-profit, income and concentration result is not strong enough for a positive rotation verdict.'};
+    }
+    if(scenario.incomeSurrendered>0&&replacementIncome<scenario.incomeSurrendered*.85){
+      return {code:'keep',title:'KEEP',reason:'Transfer would replace less than 85% of the surrendered annual income and there is no meaningful +6% capital-profit case.'};
+    }
+    return {code:'keep',title:'KEEP',reason:'The current holding remains more compelling than the simulated rotation at this point.'};
+  }
+
   function caseData(state=A().core.read()){
     const h=selectedHolding(state);
     if(!h)return null;
-    const m=holdingMetrics(h);
-    const exEvent=nextExDate(state,h);
-    const basket=replacementBasket(state,h,m);
-    const replacementIncome=basket.reduce((s,r)=>s+r.annualIncome,0);
-    const netAnnual=replacementIncome-m.income;
+    const metrics=holdingMetrics(h);
+    const mat=materiality(state,h,metrics);
+    const scenario=scenarioMetrics(metrics);
+    const exEvent=nextExDate(state,h,scenario);
+    const sim=transferSimulation(state,h,scenario);
+    const replacementIncome=num(sim.income);
+    const netAnnual=replacementIncome-scenario.incomeSurrendered;
     const netMonthly=netAnnual/12;
-    const coverage=m.income>0?replacementIncome/m.income*100:(replacementIncome>0?100:0);
-    const profitYears=m.profit>0&&m.income>0?m.profit/m.income:null;
-    const profitCushion=netAnnual<0&&m.profit>0?m.profit/Math.abs(netAnnual):null;
-    const replacementYield=m.value>0?replacementIncome/m.value*100:0;
-    const verdict=buildVerdict({holding:h,metrics:m,basket,exEvent});
-    return {holding:h,metrics:m,exEvent,basket,replacementIncome,netAnnual,netMonthly,coverage,profitYears,profitCushion,replacementYield,verdict};
+    const coverage=scenario.incomeSurrendered>0?replacementIncome/scenario.incomeSurrendered*100:(replacementIncome>0?100:0);
+    const profitYears=scenario.profitRealised>0&&scenario.incomeSurrendered>0?scenario.profitRealised/scenario.incomeSurrendered:null;
+    const profitCushion=netAnnual<0&&scenario.profitRealised>0?scenario.profitRealised/Math.abs(netAnnual):null;
+    const replacementYield=scenario.cashReleased>0?replacementIncome/scenario.cashReleased*100:0;
+    const conc=concentration(state,h,scenario,sim);
+    const verdict=buildVerdict({holding:h,metrics,mat,scenario,sim,exEvent,concentration:conc});
+    return {holding:h,metrics,mat,scenario,exEvent,sim,replacementIncome,netAnnual,netMonthly,coverage,profitYears,profitCushion,replacementYield,concentration:conc,verdict};
   }
 
   function renderKpis(state){
-    const hs=activeHoldings(state);
-    set('kPositions',hs.length);
-    set('kReview',hs.filter(h=>!h.locked&&holdingMetrics(h).profitPct>=6).length);
-    set('kStrong',hs.filter(h=>!h.locked&&holdingMetrics(h).profitPct>=10).length);
+    const rows=activeHoldings(state).map(h=>{
+      const m=holdingMetrics(h),mat=materiality(state,h,m);
+      return {h,m,mat};
+    });
+    const unlocked=rows.filter(x=>!x.h.locked&&String(x.h.status||'').toUpperCase()!=='LOCKED');
+    const triggered=unlocked.filter(x=>x.m.profitPct>=6);
+    set('kPositions',rows.length);
+    set('kReview',triggered.filter(x=>!x.mat.micro).length);
+    set('kStrong',triggered.filter(x=>!x.mat.micro&&x.m.profitPct>=10).length);
+    set('kMicro',triggered.filter(x=>x.mat.micro).length);
     set('kScouts',arr(state.scouting?.targets).length);
     set('kGlobal',arr(state.scouting?.universe).length||arr(state.scouting?.targets).length);
   }
 
   function renderMarket(state){
-    const hs=activeHoldings(state)
-      .map(h=>({h,m:holdingMetrics(h),trigger:profitTrigger(h)}))
-      .sort((a,b)=>{
-        if(a.trigger.code==='locked'&&b.trigger.code!=='locked')return 1;
-        if(b.trigger.code==='locked'&&a.trigger.code!=='locked')return -1;
-        return b.m.profitPct-a.m.profitPct||b.m.value-a.m.value;
-      });
+    const rows=activeHoldings(state).map(h=>{
+      const m=holdingMetrics(h),mat=materiality(state,h,m);
+      return {h,m,mat,trigger:profitTrigger(state,h,m,mat)};
+    }).sort((a,b)=>{
+      if(a.trigger.code==='locked'&&b.trigger.code!=='locked')return 1;
+      if(b.trigger.code==='locked'&&a.trigger.code!=='locked')return -1;
+      if(a.mat.micro!==b.mat.micro)return a.mat.micro?1:-1;
+      if((a.m.profitPct>=6)!==(b.m.profitPct>=6))return a.m.profitPct>=6?-1:1;
+      return b.mat.priority-a.mat.priority||b.m.profit-a.m.profit;
+    });
+
     const host=$('marketRows');
     if(!host)return;
-    if(!hs.length){
-      host.innerHTML='<tr><td colspan="9">No active Squad positions found.</td></tr>';
+    if(!rows.length){
+      host.innerHTML='<tr><td colspan="10">No active Squad positions found.</td></tr>';
       return;
     }
-    host.innerHTML=hs.map(({h,m,trigger})=>{
+
+    host.innerHTML=rows.map(({h,m,mat,trigger})=>{
       const key=holdingKey(h),selected=key===selectedKey;
       const plClass=m.profit>=0?'good-text':'bad-text';
       return `<tr class="${selected?'selected':''}">
@@ -239,7 +303,8 @@
         <td>${money(m.book)}</td>
         <td class="${plClass}">${m.profit>=0?'+':''}${money(m.profit)}</td>
         <td>${money(m.income)} / yr</td>
-        <td class="${m.profitPct>=6?'gold-text':''}">${m.profitPct>=0?'+':''}${m.profitPct.toFixed(1)}%</td>
+        <td class="${m.profitPct>=6&&!mat.micro?'gold-text':''}">${m.profitPct>=0?'+':''}${m.profitPct.toFixed(1)}%</td>
+        <td>${mat.micro?'<span class="trigger micro">MICRO</span>':'<span class="trigger keep">MEANINGFUL</span>'}</td>
         <td><span class="trigger ${trigger.code}">${trigger.label}</span></td>
         <td><button class="btn secondary" type="button" data-review="${esc(key)}">Review</button></td>
       </tr>`;
@@ -249,14 +314,18 @@
   function renderSelect(state){
     const hs=activeHoldings(state);
     const el=$('holdingSelect');if(!el)return;
-    if(!hs.length){
-      el.innerHTML='<option value="">No Squad holdings</option>';selectedKey='';return;
-    }
+    if(!hs.length){el.innerHTML='<option value="">No Squad holdings</option>';selectedKey='';return}
     if(!selectedKey||!hs.some(h=>holdingKey(h)===selectedKey)){
-      const preferred=[...hs].filter(h=>!h.locked).sort((a,b)=>holdingMetrics(b).profitPct-holdingMetrics(a).profitPct)[0]||hs[0];
+      const preferred=hs
+        .map(h=>({h,m:holdingMetrics(h),mat:materiality(state,h)}))
+        .filter(x=>!x.h.locked)
+        .sort((a,b)=>{
+          if(a.mat.micro!==b.mat.micro)return a.mat.micro?1:-1;
+          return b.mat.priority-a.mat.priority;
+        })[0]?.h||hs[0];
       selectedKey=holdingKey(preferred);
     }
-    el.innerHTML=hs
+    el.innerHTML=[...hs]
       .sort((a,b)=>ticker(a.ticker).localeCompare(ticker(b.ticker))||accountCode(a.account).localeCompare(accountCode(b.account)))
       .map(h=>`<option value="${esc(holdingKey(h))}">${esc(ticker(h.ticker))} • ${esc(accountLabel(h.account))}${h.locked?' • LOCKED':''}</option>`)
       .join('');
@@ -265,7 +334,7 @@
 
   function renderCustomPool(state,h){
     const host=$('customPool');if(!host)return;
-    const candidates=rankedCandidates(state,ticker(h.ticker),'sustainable');
+    const candidates=eligibleCustomCandidates(state,ticker(h.ticker));
     host.style.display=lens==='custom'?'grid':'none';
     if(lens!=='custom')return;
     if(!candidates.length){
@@ -273,100 +342,128 @@
       return;
     }
     if(!customIds.size){
-      candidates.slice(0,3).forEach(c=>customIds.add(String(c.id||c._ticker)));
+      candidates.slice(0,3).forEach(c=>customIds.add(String(c.id||ticker(c.ticker))));
     }
-    host.innerHTML=candidates.slice(0,12).map(c=>{
-      const id=String(c.id||c._ticker);
+    host.innerHTML=candidates.slice(0,16).map(c=>{
+      const id=String(c.id||ticker(c.ticker));
       return `<label class="custom-choice"><input type="checkbox" data-custom="${esc(id)}" ${customIds.has(id)?'checked':''}>
-        <div><strong>${esc(c._ticker)} — ${esc(c.name||c._ticker)}</strong><span>${c._yield.toFixed(2)}% yield • Sustainable ${Math.round(c._sustainable)} • Maximum ${Math.round(c._maximum)} • ${esc(c._status.toUpperCase())}</span></div>
+        <div><strong>${esc(ticker(c.ticker))} — ${esc(c.name||ticker(c.ticker))}</strong><span>${num(c.yieldPct).toFixed(2)}% yield • S ${Math.round(num(c.sustainableScore))} • M ${Math.round(num(c.maximumScore))} • ${esc(String(c.status||'caution').toUpperCase())}</span></div>
       </label>`;
     }).join('');
   }
 
+  function renderMateriality(data){
+    const box=$('materialityBox');
+    if(!box)return;
+    box.className=`materiality ${data.mat.micro?'micro':'good'}`;
+    set('materialityTitle',data.mat.micro?'MICRO POSITION — percentage noise muted':'MATERIALLY MEANINGFUL POSITION');
+    set('materialityMeta',data.mat.micro
+      ?`Dynamic thresholds: value ${money(data.mat.valueFloor)} • capital P/L ${money(data.mat.profitFloor)} • income ${money(data.mat.incomeFloor)}/yr. This holding is below all three.`
+      :`Aurora ranks this case using percentage gain plus actual £ profit, position value and annual income impact.`
+    );
+  }
+
   function renderBasket(data){
     const host=$('basketList');if(!host)return;
-    set('basketMeta',data.basket.length
-      ?`${data.basket.length} replacement${data.basket.length===1?'':'s'} • equal split of ${money(data.metrics.value)} • scenario only`
-      :'No eligible Active Scouting replacements for this case.'
+    const rows=arr(data.sim.allocations);
+    set('basketMeta',rows.length
+      ?`${rows.length} Transfer-sized replacement${rows.length===1?'':'s'} • ${money(data.sim.allocated)} invested • ${money(data.sim.remaining)} holdback • scenario only`
+      :'Transfer could not build a replacement route from the current Active Scouting pool.'
     );
-    if(!data.basket.length){
-      host.innerHTML='<div class="empty-state compact"><strong>No replacement basket</strong><p>Open Scouting, promote candidates and clear their evidence first.</p></div>';
+    if(!rows.length){
+      host.innerHTML='<div class="empty-state compact"><strong>No Transfer simulation</strong><p>Promote/clear eligible candidates in Scouting, or select a different custom basket.</p></div>';
       return;
     }
-    host.innerHTML=data.basket.map(r=>`<div class="basket-row">
-      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${esc(r.account)} • ${esc(r.status.toUpperCase())}</span></div>
+    host.innerHTML=rows.map(r=>`<div class="basket-row">
+      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${esc(accountLabel(r.account))} • ${esc(String(r.scoutingStatus||'caution').toUpperCase())}${r.sector?' • '+esc(r.sector):''}</span></div>
       <div class="basket-num"><b>${money(r.amount)}</b><small>allocation</small></div>
-      <div class="basket-num"><b>${r.yieldPct.toFixed(2)}%</b><small>yield</small></div>
-      <div class="basket-num"><b>${money(r.annualIncome)}</b><small>income / yr</small></div>
-      <div class="basket-num"><b>${Math.round(r.score)}/100</b><small>${lens==='maximum'?'maximum':'sustainable'}</small></div>
+      <div class="basket-num"><b>${num(r.yieldPct).toFixed(2)}%</b><small>yield</small></div>
+      <div class="basket-num"><b>${money(r.expectedAnnualIncome)}</b><small>income / yr</small></div>
+      <div class="basket-num"><b>${Math.round(num(r.scoutingScore))}/100</b><small>Scouting score</small></div>
+      <div class="basket-num"><b>${num(r.concentrationFactor).toFixed(2)}×</b><small>route fit</small></div>
     </div>`).join('');
   }
 
   function paintSigned(id,value){
     const el=$(id);if(!el)return;
     el.classList.remove('good-text','bad-text');
-    if(value>0.005)el.classList.add('good-text');
+    if(value>.005)el.classList.add('good-text');
     if(value<-.005)el.classList.add('bad-text');
   }
 
-  function renderCase(state){
-    const data=caseData(state);
-    if(!data)return;
-    const {holding:h,metrics:m,exEvent,basket,replacementIncome,netAnnual,netMonthly,coverage,profitYears,profitCushion,replacementYield,verdict}=data;
-
-    set('caseBadge',`${ticker(h.ticker)} • ${accountLabel(h.account)}`);
-    set('caseCash',money(m.value));
-    set('caseProfit',`${m.profit>=0?'+':''}${money(m.profit)}`);
-    paintSigned('caseProfit',m.profit);
-    set('caseProfitMeta',`${m.profitPct>=0?'+':''}${m.profitPct.toFixed(2)}% versus book cost ${money(m.book)}`);
-    set('caseIncomeLost',`${money(m.income)} / yr`);
-    set('caseIncomeMeta',`${money(m.income/12)} / month • current yield ${m.currentYield.toFixed(2)}%`);
-    if(exEvent){
-      set('caseExDate',dateLabel(exEvent.exDate));
-      set('caseExMeta',exEvent.days===0?'Ex-date is today':`${exEvent.days} day${exEvent.days===1?'':'s'} away • ${String(exEvent.status||'FORECAST').toUpperCase()}`);
-    }else{
-      set('caseExDate','No upcoming');
-      set('caseExMeta','No future ex-date is loaded in the Income calendar for this account position.');
-    }
-
-    renderCustomPool(state,h);
-    // Custom pool may seed selections. Rebuild once if necessary.
-    const fresh=lens==='custom'?caseData(state):data;
-    if(fresh!==data){
-      renderBasket(fresh);
-      renderComparison(fresh);
-      renderVerdict(fresh);
-    }else{
-      renderBasket(data);
-      renderComparison(data);
-      renderVerdict(data);
-    }
-  }
-
   function renderComparison(data){
-    const old=data.metrics.income,newInc=data.replacementIncome,net=data.netAnnual;
+    const old=data.scenario.incomeSurrendered,newInc=data.replacementIncome,net=data.netAnnual;
     set('oldIncome',money(old));
     set('newIncome',money(newInc));
-    set('newIncomeMeta',`${data.basket.length} Scouting replacement${data.basket.length===1?'':'s'} • ${data.replacementYield.toFixed(2)}% blended yield`);
-    set('netAnnual',`${net>=0?'+':''}${money(net)}`);
-    paintSigned('netAnnual',net);
+    set('newIncomeMeta',`${arr(data.sim.allocations).length} Transfer allocation${arr(data.sim.allocations).length===1?'':'s'} • ${data.replacementYield.toFixed(2)}% on released cash`);
+    set('netAnnual',`${net>=0?'+':''}${money(net)}`);paintSigned('netAnnual',net);
     set('netAnnualMeta',old>0?`${net>=0?'+':''}${(net/old*100).toFixed(1)}% versus surrendered income`:'No old dividend income to replace');
-    set('netMonthly',`${data.netMonthly>=0?'+':''}${money(data.netMonthly)}`);
-    paintSigned('netMonthly',data.netMonthly);
+    set('netMonthly',`${data.netMonthly>=0?'+':''}${money(data.netMonthly)}`);paintSigned('netMonthly',data.netMonthly);
     set('incomeCoverage',old>0?`${data.coverage.toFixed(1)}%`:newInc>0?'NEW INCOME':'—');
     set('profitYears',data.profitYears!=null?`${data.profitYears.toFixed(1)} years`:'—');
     set('profitCushion',net>=0?'No erosion':data.profitCushion!=null?`${data.profitCushion.toFixed(1)} years`:'No cushion');
     set('replacementYield',`${data.replacementYield.toFixed(2)}%`);
+    set('simHoldback',money(data.sim.remaining));
+
+    const c=data.concentration;
+    if(c){
+      set('largestBefore',`${c.before.largestTickerPct.toFixed(1)}%`);
+      set('largestBeforeMeta',`${c.before.largestTicker} • portfolio`);
+      set('largestAfter',`${c.after.largestTickerPct.toFixed(1)}%`);
+      set('largestAfterMeta',`${c.after.largestTicker} • simulated`);
+      set('sectorAfter',c.after.largestSector!=='—'?`${c.after.largestSectorPct.toFixed(1)}%`:'—');
+      set('sectorAfterMeta',c.after.largestSector!=='—'?`${c.after.largestSector} • known sectors only`:'No sector labels available');
+    }else{
+      set('largestBefore','—');set('largestAfter','—');set('sectorAfter','—');
+    }
     set('comparisonLens',lens==='maximum'?'MAXIMUM':lens==='custom'?'CUSTOM':'SUSTAINABLE');
   }
 
   function renderVerdict(data){
     const card=$('verdictCard');
-    if(card){
-      card.className=`verdict-card ${data.verdict.code}`;
-    }
+    if(card)card.className=`verdict-card ${data.verdict.code}`;
     set('verdictTitle',data.verdict.title);
     set('verdictReason',data.verdict.reason);
+  }
+
+  function renderCase(state){
+    const first=selectedHolding(state);
+    if(!first)return;
+    renderCustomPool(state,first);
+
+    // Custom mode may seed its first three choices on this render.
+    const data=caseData(state);
+    if(!data)return;
+    const {holding:h,metrics:m,scenario:s,exEvent}=data;
+
+    set('caseBadge',`${ticker(h.ticker)} • ${accountLabel(h.account)} • ${Math.round(s.fraction*100)}%`);
+    set('caseShares',s.sharesSold.toLocaleString('en-GB',{maximumFractionDigits:6}));
+    set('caseSharesMeta',`${s.sharesRemaining.toLocaleString('en-GB',{maximumFractionDigits:6})} shares remain`);
+    set('caseCash',money(s.cashReleased));
+    set('caseProfit',`${s.profitRealised>=0?'+':''}${money(s.profitRealised)}`);paintSigned('caseProfit',s.profitRealised);
+    set('caseProfitMeta',`${m.profitPct>=0?'+':''}${m.profitPct.toFixed(2)}% holding gain • ${money(s.bookReleased)} book cost sold`);
+    set('caseIncomeLost',`${money(s.incomeSurrendered)} / yr`);
+    set('caseIncomeMeta',`${money(s.incomeSurrendered/12)} / month surrendered`);
+
+    if(exEvent){
+      set('caseExDate',dateLabel(exEvent.exDate));
+      set('caseExMeta',exEvent.days===0?'Ex-date is today':`${exEvent.days} day${exEvent.days===1?'':'s'} away • ${String(exEvent.status||'FORECAST').toUpperCase()}`);
+      set('caseDividendRisk',money(exEvent.dividendAtRisk));
+      set('caseDividendRiskMeta',exEvent.dividendAtRisk>0
+        ?`${Math.round(s.fraction*100)}% sale before ${dateLabel(exEvent.exDate)}`
+        :'Upcoming event loaded, but no per-share/expected amount is available.'
+      );
+    }else{
+      set('caseExDate','No upcoming');
+      set('caseExMeta','No future ex-date loaded in Income for this account position.');
+      set('caseDividendRisk','—');
+      set('caseDividendRiskMeta','No upcoming dividend event to value.');
+    }
+
+    renderMateriality(data);
+    renderBasket(data);
+    renderComparison(data);
+    renderVerdict(data);
   }
 
   function render(){
@@ -376,10 +473,11 @@
     renderMarket(state);
     renderCase(state);
     document.querySelectorAll('[data-lens]').forEach(b=>b.classList.toggle('active',b.dataset.lens===lens));
+    document.querySelectorAll('[data-sale]').forEach(b=>b.classList.toggle('active',Math.abs(num(b.dataset.sale)-saleFraction)<.001));
     set('lensNote',
       lens==='custom'
-        ?'Custom mode uses only the Active Scouting players you tick below. Allocation is equal-split and remains hypothetical.'
-        :`${lens==='maximum'?'Maximum Income':'Sustainable'} mode takes the top three current Active Scouting candidates. Allocation is equal-split so Chairman does not recreate Transfer deployment logic.`
+        ?'Custom mode chooses the eligible players; Transfer still applies its own sizing, increments and holdback rules.'
+        :`${lens==='maximum'?'Maximum Income':'Sustainable'} mode uses Transfer's shared route engine with the selected holding reduced before concentration is tested.`
     );
     set('lastUpdated',new Date(state.updatedAt).toLocaleString('en-GB'));
   }
@@ -392,8 +490,12 @@
     });
     $('refreshCase')?.addEventListener('click',()=>{
       render();
-      toast('Chairman case refreshed from Squad, Income and Scouting.');
+      toast('Chairman case refreshed from Squad, Income, Scouting and Transfer.');
     });
+    document.querySelectorAll('[data-sale]').forEach(b=>b.addEventListener('click',()=>{
+      saleFraction=Math.max(.25,Math.min(1,num(b.dataset.sale)||1));
+      render();
+    }));
     document.querySelectorAll('[data-lens]').forEach(b=>b.addEventListener('click',()=>{
       lens=b.dataset.lens;
       if(lens!=='custom')customIds.clear();
@@ -417,17 +519,14 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded',()=>{
-    wire();
-    render();
-  });
+  document.addEventListener('DOMContentLoaded',()=>{wire();render()});
   w.addEventListener('aurora2:state',render);
 
   w.Aurora2=w.Aurora2||{};
   w.Aurora2.clubControl={
     holdingMetrics,
-    profitTrigger,
-    allocateBasket,
+    materiality,
+    scenarioMetrics,
     buildVerdict,
     caseData
   };
