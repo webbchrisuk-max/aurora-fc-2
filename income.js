@@ -9,7 +9,7 @@
   const money=v=>A().ui.money(Number(v)||0);
   const esc=v=>A().ui.escape(v);
   const now=()=>new Date().toISOString();
-  let publishing=false,backendBusy=false,freezingEligibility=false;
+  let publishing=false,backendBusy=false,freezingEligibility=false,engineBusy=false;
 
   function toast(msg){const el=$('toast');if(!el)return;el.textContent=msg;el.style.opacity='1';clearTimeout(w.__a2IncomeToast);w.__a2IncomeToast=setTimeout(()=>el.style.opacity='0',2300)}
   function set(id,v){const el=$(id);if(el)el.textContent=v}
@@ -106,18 +106,19 @@
   function populateHoldingSelect(state=A().core.read(),selected){const el=$('eventHolding');if(!el)return;const hs=dividendEligibleHoldings(state).sort((a,b)=>ticker(a.ticker).localeCompare(ticker(b.ticker))||accountCode(a.account).localeCompare(accountCode(b.account)));el.innerHTML=hs.length?hs.map(h=>{const v=`${accountCode(h.account)}|${ticker(h.ticker)}`;return `<option value="${esc(v)}">${esc(ticker(h.ticker))} • ${esc(accountLabel(h.account))} • ${num(h.shares).toLocaleString('en-GB',{maximumFractionDigits:6})} shares</option>`}).join(''):'<option value="">No dividend-eligible Squad holdings</option>';if(selected&&hs.some(h=>`${accountCode(h.account)}|${ticker(h.ticker)}`===selected))el.value=selected}
   function selectedHolding(state=A().core.read()){const [ac,tk]=String($('eventHolding')?.value||'').split('|');return dividendEligibleHoldings(state).find(h=>accountCode(h.account)===ac&&ticker(h.ticker)===tk)||null}
   function eventPreview(){
-    const h=selectedHolding(),dps=Math.max(0,num($('eventDps')?.value)),lockedShares=Math.max(0,num($('eventEligible')?.value));
-    const calcShares=lockedShares>0?lockedShares:num(h?.shares),auto=h&&dps>0?calcShares*dps:Math.max(0,num($('eventExpected')?.value));
-    if(h&&dps>0)setValue('eventExpected',auto.toFixed(2));
-    const eligibility=lockedShares>0?`${lockedShares.toLocaleString('en-GB',{maximumFractionDigits:6})} eligible shares locked`:`live forecast from ${num(h?.shares).toLocaleString('en-GB',{maximumFractionDigits:6})} current shares`;
+    const h=selectedHolding(),dps=Math.max(0,num($('eventDps')?.value)),lockedShares=Math.max(0,num($('eventEligible')?.value)),ex=parseDate($('eventExDate')?.value),today=new Date();today.setHours(12,0,0,0);
+    const pastOrToday=ex&&ex.getTime()<=today.getTime(),calcShares=lockedShares>0?lockedShares:(pastOrToday?0:num(h?.shares));
+    const auto=h&&dps>0&&calcShares>0?calcShares*dps:Math.max(0,num($('eventExpected')?.value));
+    if(h&&dps>0&&calcShares>0)setValue('eventExpected',auto.toFixed(2));
+    const eligibility=lockedShares>0?`${lockedShares.toLocaleString('en-GB',{maximumFractionDigits:6})} eligible shares locked`:pastOrToday?'eligible shares required — ex-date has arrived':`live forecast from ${num(h?.shares).toLocaleString('en-GB',{maximumFractionDigits:6})} current shares`;
     set('eventPreview',h?`${ticker(h.ticker)} • ${accountLabel(h.account)} • ${eligibility} • expected ${money(auto)}`:'Choose a dividend-eligible Squad holding.');
-    return {h,amount:auto,sharesEligible:lockedShares}
+    return {h,amount:auto,sharesEligible:lockedShares,pastOrToday}
   }
   function clearEvent(){setValue('eventId','');['eventExDate','eventPayDate','eventEligible','eventDps','eventExpected','eventActual','eventNotes'].forEach(id=>setValue(id,''));setValue('eventStatus','FORECAST');populateHoldingSelect();set('editorMode','NEW EVENT');eventPreview()}
   function editEvent(id){const s=A().core.read(),e=arr(s.income?.calendar).find(x=>x.id===id);if(!e)return;setValue('eventId',e.id);populateHoldingSelect(s,`${accountCode(e.account)}|${ticker(e.ticker)}`);setValue('eventHolding',`${accountCode(e.account)}|${ticker(e.ticker)}`);setValue('eventExDate',e.exDate);setValue('eventPayDate',e.payDate);setValue('eventEligible',e.sharesEligible||'');setValue('eventDps',e.dividendPerShareGbp||'');setValue('eventExpected',e.expectedAmountGbp||'');setValue('eventActual',e.actualAmountGbp||'');setValue('eventStatus',e.status||'FORECAST');setValue('eventNotes',e.notes||'');set('editorMode',`EDIT ${ticker(e.ticker)}`);eventPreview();document.querySelector('article:has(#eventHolding)')?.scrollIntoView({behavior:'smooth',block:'start'})}
 
   async function backendUpsert(event){const cfg=D()?.config?.();if(!cfg?.endpoint||!cfg?.token)return {synced:false};try{const res=await D().post('upsertDividend',{dividend:event});return {synced:true,result:res}}catch(err){return {synced:false,error:String(err.message||err)}}}
-  async function saveEvent(){const state=A().core.read(),p=eventPreview(),h=p.h;if(!h){toast('Choose a Squad holding.');return}const payDate=$('eventPayDate')?.value;if(!payDate){toast('Enter the payment date.');return}const id=$('eventId')?.value||A().core.uid('DIV');const old=arr(state.income?.calendar).find(e=>e.id===id);const exDate=$('eventExDate')?.value||'',ex=parseDate(exDate),today=new Date();today.setHours(12,0,0,0);let sharesEligible=Math.max(0,num($('eventEligible')?.value));if(sharesEligible<=0&&ex&&ex.getTime()<=today.getTime())sharesEligible=num(h.shares);const dps=Math.max(0,num($('eventDps')?.value)),calcAmount=dps>0?(sharesEligible>0?sharesEligible:num(h.shares))*dps:Math.max(0,p.amount);const event={...old,id,ticker:ticker(h.ticker),name:h.name||ticker(h.ticker),account:accountCode(h.account),exDate,payDate,sharesEligible,dividendPerShareGbp:dps,expectedAmountGbp:Math.max(0,calcAmount),actualAmountGbp:Math.max(0,num($('eventActual')?.value)),status:String($('eventStatus')?.value||'FORECAST').toUpperCase(),notes:String($('eventNotes')?.value||''),source:old?.source||'AURORA2_INCOME',createdAt:old?.createdAt||now(),updatedAt:now()};A().core.update(s=>({...s,income:{...s.income,calendar:[event,...arr(s.income?.calendar).filter(e=>e.id!==id)],updatedAt:now()}}));const sync=await backendUpsert(event);if(sync.synced){A().core.update(s=>({...s,income:{...s.income,backend:{...s.income.backend,status:'CONNECTED',lastSyncAt:now(),lastError:null}}}));toast('Dividend saved and synced to AuroraData 2.')}else if(sync.error){A().core.update(s=>({...s,income:{...s.income,backend:{...s.income.backend,status:'LOCAL',lastError:sync.error}}}));toast('Dividend saved locally; backend calendar upgrade is not active yet.')}else toast('Dividend saved.');clearEvent();publishDerived()}
+  async function saveEvent(){const state=A().core.read(),p=eventPreview(),h=p.h;if(!h){toast('Choose a Squad holding.');return}const payDate=$('eventPayDate')?.value;if(!payDate){toast('Enter the payment date.');return}const id=$('eventId')?.value||A().core.uid('DIV');const old=arr(state.income?.calendar).find(e=>e.id===id);const exDate=$('eventExDate')?.value||'',ex=parseDate(exDate),today=new Date();today.setHours(12,0,0,0);let sharesEligible=Math.max(0,num($('eventEligible')?.value));if(sharesEligible<=0&&ex&&ex.getTime()<=today.getTime()){toast('Enter the shares that were eligible before saving a past/current ex-date.');return}const dps=Math.max(0,num($('eventDps')?.value)),calcAmount=dps>0?(sharesEligible>0?sharesEligible:num(h.shares))*dps:Math.max(0,p.amount);const event={...old,id,ticker:ticker(h.ticker),name:h.name||ticker(h.ticker),account:accountCode(h.account),exDate,payDate,sharesEligible,dividendPerShareGbp:dps,expectedAmountGbp:Math.max(0,calcAmount),actualAmountGbp:Math.max(0,num($('eventActual')?.value)),status:String($('eventStatus')?.value||'FORECAST').toUpperCase(),notes:String($('eventNotes')?.value||''),source:old?.source||'AURORA2_INCOME',createdAt:old?.createdAt||now(),updatedAt:now()};A().core.update(s=>({...s,income:{...s.income,calendar:[event,...arr(s.income?.calendar).filter(e=>e.id!==id)],updatedAt:now()}}));const sync=await backendUpsert(event);if(sync.synced){A().core.update(s=>({...s,income:{...s.income,backend:{...s.income.backend,status:'CONNECTED',lastSyncAt:now(),lastError:null}}}));toast('Dividend saved and synced to AuroraData 2.')}else if(sync.error){A().core.update(s=>({...s,income:{...s.income,backend:{...s.income.backend,status:'LOCAL',lastError:sync.error}}}));toast('Dividend saved locally; backend calendar upgrade is not active yet.')}else toast('Dividend saved.');clearEvent();publishDerived()}
   function removeEvent(id){const s=A().core.read(),e=arr(s.income?.calendar).find(x=>x.id===id);if(!e)return;if(!confirm(`Archive ${ticker(e.ticker)} dividend event?`))return;A().core.update(x=>({...x,income:{...x.income,calendar:arr(x.income?.calendar).map(v=>v.id===id?{...v,status:'ARCHIVED',updatedAt:now()}:v),updatedAt:now()}}));toast('Dividend event archived.');publishDerived()}
 
   async function syncBackend(){if(backendBusy)return;backendBusy=true;const btn=$('syncIncomeBackend');if(btn)btn.disabled=true;try{const cfg=D()?.config?.();if(!cfg?.endpoint||!cfg?.token)throw new Error('AuroraData 2 connection is not configured in this browser.');const res=await D().post('incomeSnapshot',{});const incoming=arr(res.dividends).map(x=>({id:String(x.id||x.dividendId||A().core.uid('DIV')),ticker:ticker(x.ticker),name:x.name||x.ticker,account:accountCode(x.account),exDate:x.exDate||'',payDate:x.payDate||'',sharesEligible:num(x.sharesEligible),dividendPerShareGbp:num(x.dividendPerShareGbp),expectedAmountGbp:num(x.expectedAmountGbp),actualAmountGbp:num(x.actualAmountGbp),status:String(x.status||'FORECAST').toUpperCase(),notes:x.notes||'',source:x.source||'AURORADATA2',backendId:x.id||'',createdAt:x.createdAt||now(),updatedAt:x.updatedAt||now()}));A().core.update(s=>{const local=arr(s.income?.calendar),map=new Map(local.map(e=>[e.id,e]));incoming.forEach(e=>map.set(e.id,e));return {...s,income:{...s.income,calendar:[...map.values()],backend:{...s.income.backend,status:'CONNECTED',lastSyncAt:now(),lastError:null},updatedAt:now()}}});toast(`Dividend calendar synced • ${incoming.length} backend event${incoming.length===1?'':'s'}.`);await freezeDueEligibility();publishDerived()}catch(err){const msg=String(err.message||err);A().core.update(s=>({...s,income:{...s.income,backend:{...s.income.backend,status:'LOCAL',lastError:msg}}}));toast('Income works locally; backend dividend sync needs the v0.2 script upgrade.')}finally{backendBusy=false;if(btn)btn.disabled=false}}
@@ -127,9 +128,10 @@
     const state=A().core.read(),today=new Date();today.setHours(12,0,0,0);const changed=[];
     const next=arr(state.income?.calendar).map(e=>{
       const status=String(e.status||'').toUpperCase(),ex=parseDate(e.exDate),dps=num(e.dividendPerShareGbp);
-      if(['PAID','CANCELLED','ARCHIVED'].includes(status)||!ex||ex.getTime()>today.getTime()||num(e.sharesEligible)>0||dps<=0)return e;
+      const tomorrow=new Date(today.getTime());tomorrow.setDate(tomorrow.getDate()+1);
+      if(['PAID','CANCELLED','ARCHIVED'].includes(status)||!ex||dateISO(ex)!==dateISO(tomorrow)||num(e.sharesEligible)>0||dps<=0)return e;
       const h=holdingForEvent(state,e);if(!h)return e;
-      const shares=num(h.shares),updated={...e,sharesEligible:shares,expectedAmountGbp:Number((shares*dps).toFixed(2)),updatedAt:now(),notes:String(e.notes||'')+(String(e.notes||'').includes('Eligibility auto-locked')?'':`${e.notes?' • ':''}Eligibility auto-locked on/after ex-date`)};
+      const shares=num(h.shares),updated={...e,sharesEligible:shares,expectedAmountGbp:Number((shares*dps).toFixed(2)),updatedAt:now(),notes:String(e.notes||'')+(String(e.notes||'').includes('Eligibility pre-locked')?'':`${e.notes?' • ':''}Eligibility pre-locked the day before ex-date`)};
       changed.push(updated);return updated;
     });
     if(!changed.length)return;
@@ -139,6 +141,45 @@
       for(const e of changed){try{await backendUpsert(e)}catch(_){}}
       toast(`${changed.length} dividend eligibilit${changed.length===1?'y':'ies'} locked to ex-date shares.`);
     }finally{freezingEligibility=false}
+  }
+
+  function engineTime(v){if(!v)return 'Never';const d=new Date(v);return Number.isNaN(d.getTime())?'Never':d.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
+  function renderDividendEngineStatus(res){
+    const ok=res&&res.ok!==false,installed=Boolean(res?.installed),coverage=res?.coverage||{},last=res?.lastSummary||{};
+    set('engineBadge',!ok?'ENGINE ERROR':installed?'AUTO ON':'AUTO OFF');
+    set('engineAuto',installed?'Nightly':'Off');
+    set('engineCoverage',`${coverage.covered||0}/${coverage.eligibleTickers||0}`);
+    set('engineLastRun',engineTime(res?.lastRunAt));
+    set('engineUpdated',num(last.autoUpdated||last.updated||0));
+    set('engineReviews',num(res?.openReviewCount));
+    const failures=num(last.errors),sources=num(last.sourcesChecked),review=num(res?.openReviewCount);
+    set('engineNote',!ok?String(res?.message||'Dividend engine status unavailable.'):installed?`Nightly scan enabled • ${sources||coverage.covered||0} source${(sources||coverage.covered||0)===1?'':'s'} checked last run • ${failures} error${failures===1?'':'s'} • ambiguous findings are never auto-written.`:`Auto update is off. Run it manually or enable the nightly trigger. Ambiguous findings are never auto-written.`);
+    const host=$('engineReviewList'),rows=arr(res?.openReviews).slice(0,4);
+    if(host)host.innerHTML=rows.length?rows.map(x=>`<div class="engine-review"><strong>${esc(x.ticker||'Review')} • ${esc(x.reason||'Needs review')}</strong><span>${esc(x.summary||x.sourceUrl||'Open DividendReview item in AuroraData 2.')}</span></div>`).join(''):'';
+  }
+  async function loadDividendEngineStatus(){
+    try{
+      const cfg=D()?.config?.();if(!cfg?.endpoint||!cfg?.token){renderDividendEngineStatus({ok:false,message:'AuroraData 2 connection is not configured in this browser.'});return}
+      renderDividendEngineStatus(await D().post('dividendEngineStatus',{}));
+    }catch(err){renderDividendEngineStatus({ok:false,message:String(err.message||err)})}
+  }
+  async function runDividendEngineNow(){
+    if(engineBusy)return;engineBusy=true;const btn=$('runDividendEngine');if(btn)btn.disabled=true;
+    try{
+      toast('Checking official dividend sources…');
+      const res=await D().post('runDividendUpdate',{});
+      renderDividendEngineStatus(res.status||res);
+      await syncBackend();
+      await loadDividendEngineStatus();
+      toast(`Dividend update complete • ${num(res.autoUpdated)} updated • ${num(res.reviewAdded)} review.`);
+    }catch(err){toast(`Dividend update failed: ${String(err.message||err)}`)}
+    finally{engineBusy=false;if(btn)btn.disabled=false}
+  }
+  async function enableDividendEngine(){
+    try{const res=await D().post('installDividendUpdateTrigger',{});renderDividendEngineStatus(res.status||res);toast('Nightly Dividend Update Engine enabled.');await loadDividendEngineStatus()}catch(err){toast(String(err.message||err))}
+  }
+  async function disableDividendEngine(){
+    try{const res=await D().post('removeDividendUpdateTrigger',{});renderDividendEngineStatus(res.status||res);toast('Nightly Dividend Update Engine disabled.');await loadDividendEngineStatus()}catch(err){toast(String(err.message||err))}
   }
 
   function saveSettings(){const target=Math.max(0,num($('monthlyTarget')?.value)),horizon=Math.max(3,Math.min(24,num($('horizonMonths')?.value)||12));A().core.update(s=>({...s,income:{...s.income,settings:{...s.income.settings,monthlyTarget:target,horizonMonths:horizon},updatedAt:now()}}));toast('Income settings saved.')}
@@ -151,8 +192,8 @@
   function renderHealth(state,m){const missing=m.eligibleHoldings.filter(h=>num(h.annualDpsGbp)<=0&&num(h.annualIncomeGbp)<=0).length,events=activeCalendar(state).length,b=state.income?.backend||{},exempt=m.exemptHoldings.length;set('healthHoldings',m.holdings.length);set('healthExempt',exempt);set('healthDps',missing);set('healthCalendar',events);set('healthBackend',b.status||'LOCAL');set('healthNote',missing?`${missing} dividend-eligible holding${missing===1?' has':'s have'} no annual DPS/income evidence, so the forward total may be incomplete.`:exempt?`Every dividend-eligible holding has income evidence. ${exempt} income-exempt holding${exempt===1?' is':'s are'} intentionally excluded from dividend income and the calendar (Tesco SAYE / legacy plan).`:'Every dividend-eligible holding has income evidence. Dividend payment dates remain separate calendar data.')}
   function render(){if(!A()?.core)return;const state=A().core.read(),m=metrics(state),up=registeredUplift(state),route=state.transfer?.route,nd=nextDividend(state);set('heroAnnual',money(m.annual));set('heroMonthly',`${money(m.monthly)} / month`);set('heroMeta',`${m.holdings.length} active account-scoped position${m.holdings.length===1?'':'s'}${m.exemptHoldings.length?` • ${m.exemptHoldings.length} income-exempt`:''} • ${money(m.annual/52)} / week equivalent`);set('kAnnual',money(m.annual));set('kMonthly',money(m.monthly));set('kYoc',`${m.yoc.toFixed(2)}%`);set('kYield',`${m.yieldPct.toFixed(2)}%`);set('kBest',m.best?.ticker||'—');set('kBestMeta',m.best?`${money(m.best.annual)} / year`:'—');set('kNext',nd?.ticker||'—');set('kNextMeta',nd?`${money(nd.amount)} • ${nd.date}`:'Calendar needed');set('registeredUplift',money(up.total));set('routeUplift',money(route?.status==='REGISTERED'?0:num(route?.expectedAnnualIncome)));const target=num(state.income?.settings?.monthlyTarget);set('targetProgress',target>0?`${Math.min(999,m.monthly/target*100).toFixed(1)}%`:'Not set');set('targetMeta',target>0?`${money(m.monthly)} of ${money(target)} / month`:'Optional target below');renderAccounts(m);renderPlayers(m);renderMonths(state);renderCalendar(state);renderHistory(state);renderHealth(state,m);populateHoldingSelect(state,$('eventHolding')?.value);setValue('monthlyTarget',target||0);setValue('horizonMonths',state.income?.settings?.horizonMonths||12);set('lastUpdated',new Date(state.updatedAt).toLocaleString('en-GB'));const b=state.income?.backend;if(b?.lastError)set('growthNote',`Income calculations are live from Squad. Dividend calendar backend sync note: ${b.lastError}`);}
 
-  function wire(){populateHoldingSelect();$('recalculateIncome')?.addEventListener('click',()=>{publishDerived();toast('Income recalculated from canonical Squad holdings.')});$('syncIncomeBackend')?.addEventListener('click',syncBackend);$('saveEvent')?.addEventListener('click',saveEvent);$('clearEvent')?.addEventListener('click',clearEvent);$('saveIncomeSettings')?.addEventListener('click',saveSettings);$('eventHolding')?.addEventListener('change',()=>{setValue('eventEligible','');eventPreview()});['eventEligible','eventDps','eventStatus','eventExDate'].forEach(id=>$(id)?.addEventListener('change',eventPreview));$('eventExpected')?.addEventListener('input',eventPreview);document.addEventListener('click',e=>{const edit=e.target.closest('[data-edit-event]');if(edit){editEvent(edit.dataset.editEvent);return}const rem=e.target.closest('[data-remove-event]');if(rem)removeEvent(rem.dataset.removeEvent)})}
-  document.addEventListener('DOMContentLoaded',()=>{wire();publishDerived();render();clearEvent();freezeDueEligibility()});
+  function wire(){populateHoldingSelect();$('recalculateIncome')?.addEventListener('click',()=>{publishDerived();toast('Income recalculated from canonical Squad holdings.')});$('syncIncomeBackend')?.addEventListener('click',syncBackend);$('saveEvent')?.addEventListener('click',saveEvent);$('clearEvent')?.addEventListener('click',clearEvent);$('saveIncomeSettings')?.addEventListener('click',saveSettings);$('eventHolding')?.addEventListener('change',()=>{setValue('eventEligible','');eventPreview()});['eventEligible','eventDps','eventStatus','eventExDate'].forEach(id=>$(id)?.addEventListener('change',eventPreview));$('eventExpected')?.addEventListener('input',eventPreview);$('runDividendEngine')?.addEventListener('click',runDividendEngineNow);$('enableDividendEngine')?.addEventListener('click',enableDividendEngine);$('disableDividendEngine')?.addEventListener('click',disableDividendEngine);document.addEventListener('click',e=>{const edit=e.target.closest('[data-edit-event]');if(edit){editEvent(edit.dataset.editEvent);return}const rem=e.target.closest('[data-remove-event]');if(rem)removeEvent(rem.dataset.removeEvent)})}
+  document.addEventListener('DOMContentLoaded',()=>{wire();publishDerived();render();clearEvent();freezeDueEligibility();loadDividendEngineStatus()});
   w.addEventListener('aurora2:state',()=>{if(publishing||freezingEligibility)return;publishDerived();render();freezeDueEligibility()});
   w.Aurora2=w.Aurora2||{};w.Aurora2.income={metrics,nextDividend,eventAmount,publishDerived,monthForecast,incomeExempt,dividendEligibleHoldings,freezeDueEligibility};
 })(window);
