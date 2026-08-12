@@ -651,6 +651,84 @@
     renderAll(); showToast('Payment recorded.');
   }
 
+
+  function repairPaidRecurringBills(){
+    const current=A().core.read();
+    const bills=current.finance?.bills||[];
+    const today=new Date(); today.setHours(12,0,0,0);
+    const todayIso=dateISO(today);
+    const adjustments=[];
+
+    bills.forEach(b=>{
+      if(!b||b.archived||!b.paid||b.frequency==='one-off')return;
+
+      const beforeDue=String(b.due||'');
+      let afterDue=beforeDue;
+
+      if(beforeDue){
+        // A recurring item imported as "Paid" belongs to the old Aurora state.
+        // Move it to the first due date AFTER today so the next cycle is active.
+        let cursor=beforeDue, guard=0;
+        do{
+          const next=nextDue(cursor,b.frequency);
+          if(!next||next===cursor)break;
+          cursor=next;
+        }while(parseLocalDate(cursor)&&parseLocalDate(cursor).getTime()<=today.getTime()&&guard++<120);
+        afterDue=cursor;
+      }
+
+      adjustments.push({
+        id:b.id,name:b.name,frequency:b.frequency,
+        beforeDue,afterDue,reactivatedAt:isoNow()
+      });
+    });
+
+    if(!adjustments.length)return 0;
+
+    const byId=new Map(adjustments.map(x=>[x.id,x]));
+    A().core.update(s=>{
+      const repaired=(s.finance?.bills||[]).map(b=>{
+        const fix=byId.get(b.id);
+        if(!fix)return b;
+        return {
+          ...b,
+          due:fix.afterDue,
+          paid:false,
+          actualPaid:0,
+          updatedAt:isoNow()
+        };
+      });
+      return {
+        ...s,
+        finance:{
+          ...s.finance,
+          bills:repaired,
+          recurringBillRepair:{
+            version:1,
+            appliedAt:isoNow(),
+            today:todayIso,
+            count:adjustments.length,
+            adjustments
+          }
+        }
+      };
+    });
+    return adjustments.length;
+  }
+
+  function renderRecurringRepairNotice(){
+    const state=A().core.read();
+    const info=state.finance?.recurringBillRepair;
+    const el=$('recurringRepairNotice');
+    if(!el)return;
+    if(!info?.count){el.style.display='none';return;}
+    const latest=(info.adjustments||[]).slice(0,6)
+      .map(x=>`${esc(x.name)} → ${esc(x.afterDue||'date required')}`).join(' • ');
+    el.style.display='';
+    el.className='notice good';
+    el.innerHTML=`<b>Recurring bills repaired:</b> ${info.count} imported paid recurring bill${info.count===1?'':'s'} reactivated for the next cycle.${latest?`<br><span class="muted">${latest}${(info.adjustments||[]).length>6?' • …':''}</span>`:''}`;
+  }
+
   function renderHistory(){
     const state=A().core.read(), payments=state.finance?.payments||[], host=$('paymentHistory');
     if(!host)return;
@@ -694,7 +772,7 @@
   }
 
   function renderAll(){
-    renderPlan(); renderMission(); renderPots(); renderBills(); renderHistory(); renderLastUpdated();
+    renderPlan(); renderMission(); renderPots(); renderBills(); renderRecurringRepairNotice(); renderHistory(); renderLastUpdated();
   }
 
   function loadForm(){
@@ -744,6 +822,7 @@
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
+    repairPaidRecurringBills();
     loadForm(); resetPotEditor(); resetBillEditor(); renderAll(); wire();
   });
   w.addEventListener('aurora2:state',renderAll);
