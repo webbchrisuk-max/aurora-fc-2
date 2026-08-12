@@ -29,6 +29,9 @@
   ];
   const NETWORK_SYNC_MS=6*60*60*1000;
   const NETWORK_RENDER_LIMIT=120;
+  const AUTO_BENCH_TOTAL=12;
+  const AUTO_BENCH_MIN_STRENGTH=60;
+  const AUTO_BENCH_MAX_YIELD=12;
 
   const SUSTAINABLE_WEIGHTS={
     dividendSafety:25,incomeScore:20,valuationScore:20,
@@ -442,7 +445,9 @@
       dividendStatus:String($('editDividendStatus')?.value||'').trim(),
       payoutRisk:String($('editPayoutRisk')?.value||'').trim(),
       requiresRefresh:existing?.requiresRefresh?!evidenceReady:false,
-      source:existing?.source||'AURORA2_MANUAL',
+      autoManaged:false,
+      autoPriority:0,
+      source:existing?.autoManaged?'AURORA2_MANUAL_OVERRIDE':existing?.source||'AURORA2_MANUAL',
       createdAt:existing?.createdAt||now(),
       updatedAt:now()
     };
@@ -834,6 +839,260 @@
     throw lastError||new Error('Global scouting source unavailable.');
   }
 
+  function autoBenchEnabled(state=A().core.read()){
+    return state.scouting?.autoBench?.enabled!==false;
+  }
+
+  function autoPromotionProfile(n){
+    const y=Math.max(0,num(n.legacyYieldPct));
+    const strength=Math.max(0,num(n.legacyStrength));
+    const impact=Math.max(0,num(n.legacyImpact));
+    const safety=Math.max(0,num(n.legacyPayoutScore));
+    const valuation=Math.max(0,num(n.legacyValuationScore));
+    const growth=Math.max(0,num(n.legacyGrowthScore));
+    const evidence=Math.max(0,num(n.evidenceCount));
+    const status=norm(n.sourceStatus);
+    const risk=norm(n.legacyPayoutRisk);
+    const tk=activeTicker(n.marketSymbol);
+
+    const blockers=[];
+    if(tk==='TSCO')blockers.push('locked legacy ticker');
+    if(!(y>0))blockers.push('no dividend yield');
+    if(y>AUTO_BENCH_MAX_YIELD)blockers.push('yield above auto-promotion ceiling');
+    if(strength<AUTO_BENCH_MIN_STRENGTH)blockers.push('legacy scout strength below 60');
+    if(evidence<3)blockers.push('thin evidence');
+    if(/suspend|cancel|omit|avoid|sell/.test(status))blockers.push('negative source status');
+    if(/very high|extreme/.test(risk))blockers.push('payout risk too high');
+
+    const fundamentalSignals=[safety>0,valuation>0,growth>0,n.legacyPriceGbp>0||n.legacyPriceNative>0]
+      .filter(Boolean).length;
+    if(fundamentalSignals<1)blockers.push('no supporting fundamental/price evidence');
+
+    const incomeFit=incomeScoreFromYield(y);
+    const evidenceScore=clamp(evidence*12.5,0,100);
+    const priority=
+      strength*.38+
+      impact*.20+
+      incomeFit*.12+
+      (safety||55)*.10+
+      (valuation||55)*.08+
+      (growth||50)*.05+
+      evidenceScore*.07;
+
+    return {
+      eligible:blockers.length===0,
+      blockers,
+      priority:Number(priority.toFixed(3)),
+      strength,impact,yieldPct:y,safety,valuation,growth,evidence
+    };
+  }
+
+  function autoCandidateFromNetwork(n){
+    const p=autoPromotionProfile(n);
+    const safety=p.safety>0?clamp(p.safety):55;
+    const valuation=p.valuation>0?clamp(p.valuation):55;
+    const growth=p.growth>0?clamp(p.growth):50;
+    const explicitFields=[
+      n.legacyPriceGbp>0,n.legacyYieldPct>0,p.safety>0,p.valuation>0,p.growth>0,
+      p.evidence>=5
+    ].filter(Boolean).length;
+    const confidence=Math.round(clamp((explicitFields/6)*100,50,90));
+
+    return {
+      id:`AUTO-${n.id}`,
+      ticker:activeTicker(n.marketSymbol),
+      name:n.name,
+      preferredAccount:'CHECK',
+      sector:n.sector,
+      livePriceGbp:n.legacyPriceGbp,
+      yieldPct:n.legacyYieldPct,
+      confidence,
+      dividendSafety:safety,
+      incomeScore:0,
+      valuationScore:valuation,
+      portfolioFit:0,
+      dividendGrowth:growth,
+      businessQuality:55,
+      dividendStatus:'',
+      payoutRisk:n.legacyPayoutRisk,
+      requiresRefresh:false,
+      autoManaged:true,
+      autoPriority:p.priority,
+      autoRegion:n.region,
+      source:'AURORA1_GLOBAL_AUTO_BENCH',
+      sourceUpdatedAt:n.sourceUpdatedAt||n.legacyCheckedAt||null,
+      createdAt:now(),
+      updatedAt:now()
+    };
+  }
+
+  function selectAutoBench(state){
+    const universe=arr(state.scouting?.universe);
+    const manual=arr(state.scouting?.targets).filter(t=>!t.autoManaged);
+    const slots=Math.max(0,AUTO_BENCH_TOTAL-manual.length);
+    if(!slots)return {selected:[],qualified:0,slots,manual:manual.length};
+
+    const manualTickers=new Set(manual.map(t=>String(t.ticker||'').toUpperCase()));
+    const qualified=universe
+      .map(n=>({n,p:autoPromotionProfile(n)}))
+      .filter(x=>x.p.eligible)
+      .filter(x=>!manualTickers.has(activeTicker(x.n.marketSymbol).toUpperCase()))
+      .sort((a,b)=>b.p.priority-a.p.priority||b.p.strength-a.p.strength||b.p.yieldPct-a.p.yieldPct);
+
+    const picked=[],used=new Set();
+    const take=(region,count)=>{
+      for(const x of qualified){
+        if(picked.length>=slots||count<=0)break;
+        const key=x.n.id;
+        if(used.has(key)||x.n.region!==region)continue;
+        picked.push(x);used.add(key);count--;
+      }
+    };
+
+    // Keep the bench genuinely global when enough qualified names exist.
+    if(slots>=6){
+      take('US',Math.min(2,slots));
+      take('WORLD',Math.min(1,Math.max(0,slots-picked.length)));
+    }
+    for(const x of qualified){
+      if(picked.length>=slots)break;
+      if(used.has(x.n.id))continue;
+      picked.push(x);used.add(x.n.id);
+    }
+
+    return {
+      selected:picked.map(x=>autoCandidateFromNetwork(x.n)),
+      qualified:qualified.length,
+      slots,
+      manual:manual.length
+    };
+  }
+
+  function autoBenchSignature(rows){
+    return arr(rows).map(t=>[
+      t.id,t.ticker,t.yieldPct,t.livePriceGbp,t.dividendSafety,t.valuationScore,
+      t.dividendGrowth,t.confidence,t.autoPriority,t.sourceUpdatedAt
+    ].join('|')).sort().join('||');
+  }
+
+  function rebalanceAutoBench({silent=false}={}){
+    const state=A().core.read();
+    if(!autoBenchEnabled(state)){
+      if(!silent)toast('Auto Bench is paused.');
+      return {changed:false,paused:true};
+    }
+    if(scoutingLocked(state)){
+      if(!silent)toast('Auto Bench is frozen while Transfer is locked.');
+      return {changed:false,locked:true};
+    }
+    const universe=arr(state.scouting?.universe);
+    if(!universe.length){
+      if(!silent)toast('Sync the Global Network before refreshing Auto Bench.');
+      return {changed:false,empty:true};
+    }
+
+    const plan=selectAutoBench(state);
+    const manual=arr(state.scouting?.targets).filter(t=>!t.autoManaged);
+    const currentAuto=arr(state.scouting?.targets).filter(t=>t.autoManaged);
+    const nextAuto=plan.selected.map(t=>assessTarget(t,state));
+    const changed=autoBenchSignature(currentAuto)!==autoBenchSignature(nextAuto);
+
+    if(!changed){
+      A().core.update(s=>({
+        ...s,
+        scouting:{
+          ...s.scouting,
+          autoBench:{
+            ...obj(s.scouting?.autoBench),
+            enabled:true,
+            targetSize:AUTO_BENCH_TOTAL,
+            qualified:plan.qualified,
+            autoCount:nextAuto.length,
+            manualCount:manual.length,
+            lastRunAt:now(),
+            lastChangeAt:s.scouting?.autoBench?.lastChangeAt||null,
+            status:'CURRENT'
+          }
+        }
+      }));
+      if(!silent)toast(`Auto Bench already current • ${nextAuto.length} automatic + ${manual.length} manual.`);
+      return {changed:false,plan};
+    }
+
+    if(!invalidateApproval(s=>{
+      const liveManual=arr(s.scouting?.targets).filter(t=>!t.autoManaged);
+      const meta={...obj(s.scouting?.activeMeta)};
+      Object.keys(meta).forEach(k=>{
+        if(String(k).startsWith('AUTO-NET-'))delete meta[k];
+      });
+      nextAuto.forEach(t=>{
+        const n=universe.find(x=>`AUTO-${x.id}`===t.id);
+        if(!n)return;
+        meta[t.id]={
+          networkId:n.id,
+          marketSymbol:n.marketSymbol,
+          region:n.region,
+          country:n.country,
+          exchange:n.exchange,
+          currency:n.currency,
+          source:'AURORA1_GLOBAL_AUTO_BENCH',
+          autoManaged:true,
+          promotedAt:now()
+        };
+      });
+      return {
+        ...s,
+        scouting:{
+          ...s.scouting,
+          targets:rankTargets([...liveManual,...nextAuto],s),
+          activeMeta:meta,
+          autoBench:{
+            ...obj(s.scouting?.autoBench),
+            enabled:true,
+            targetSize:AUTO_BENCH_TOTAL,
+            qualified:plan.qualified,
+            autoCount:nextAuto.length,
+            manualCount:liveManual.length,
+            lastRunAt:now(),
+            lastChangeAt:now(),
+            status:'UPDATED'
+          },
+          source:'AURORA2_SCOUTING_AUTO_BENCH',
+          updatedAt:now()
+        }
+      };
+    }))return {changed:false,blocked:true};
+
+    if(!silent)toast(`Auto Bench updated • ${nextAuto.length} best available scouts promoted automatically.`);
+    return {changed:true,plan};
+  }
+
+  function setAutoBenchEnabled(enabled){
+    const state=A().core.read();
+    if(scoutingLocked(state)){
+      toast('Unlock Transfer before changing Auto Bench.');
+      return;
+    }
+    A().core.update(s=>({
+      ...s,
+      scouting:{
+        ...s.scouting,
+        autoBench:{
+          ...obj(s.scouting?.autoBench),
+          enabled:!!enabled,
+          targetSize:AUTO_BENCH_TOTAL,
+          status:enabled?'READY':'PAUSED',
+          updatedAt:now()
+        }
+      }
+    }));
+    if(enabled){
+      rebalanceAutoBench({silent:false});
+    }else{
+      toast('Auto Bench paused. Current Active Scouting stays in place.');
+    }
+  }
+
   async function syncGlobalNetwork(force=true){
     const btn=$('syncGlobalNetwork');
     if(btn){btn.disabled=true;btn.textContent='Syncing…'}
@@ -858,7 +1117,8 @@
           updatedAt:now()
         }
       }));
-      toast(`Global Network synced • ${universe.length} stocks across UK, US and World.`);
+      const autoResult=rebalanceAutoBench({silent:true});
+      toast(`Global Network synced • ${universe.length} stocks • Auto Bench ${autoResult.locked?'frozen':autoBenchEnabled()?'checked':'paused'}.`);
       return universe;
     }catch(err){
       A().core.update(s=>({
@@ -998,7 +1258,10 @@
       .network-name strong{display:block;font-size:9px}.network-name span{display:block;color:var(--muted);font-size:7px;margin-top:2px}
       .network-source-note{font-size:7px;color:var(--muted)}
       .network-active{color:#9df0ba;font-weight:900}
-      @media(max-width:900px){.network-toolbar{grid-template-columns:1fr 1fr}.network-toolbar #networkSearch{grid-column:1/-1}.network-kpis{grid-template-columns:1fr 1fr}.network-pipeline{grid-template-columns:1fr 1fr}.network-node:not(:last-child):after{display:none}}
+      .auto-bench-bar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin:10px 0;padding:12px;border-radius:14px;border:1px solid rgba(74,222,128,.16);background:rgba(74,222,128,.028)}
+      .auto-bench-copy strong{display:block;font-size:10px;color:#c9f7d8}.auto-bench-copy span{display:block;color:var(--muted);font-size:8px;line-height:1.45;margin-top:3px}
+      .auto-tag{display:inline-flex;padding:4px 6px;border-radius:999px;border:1px solid rgba(74,222,128,.2);color:#9df0ba;font-size:7px;font-weight:1000}
+      @media(max-width:900px){.network-toolbar{grid-template-columns:1fr 1fr}.network-toolbar #networkSearch{grid-column:1/-1}.network-kpis{grid-template-columns:1fr 1fr}.network-pipeline{grid-template-columns:1fr 1fr}.network-node:not(:last-child):after{display:none}.auto-bench-bar{grid-template-columns:1fr 1fr}.auto-bench-copy{grid-column:1/-1}}
       @media(max-width:600px){.network-toolbar{grid-template-columns:1fr}.network-toolbar #networkSearch{grid-column:auto}}
     `;
     document.head.appendChild(style);
@@ -1023,10 +1286,16 @@
       </div>
 
       <div class="network-pipeline">
-        <div class="network-node"><strong>1 • Global Network</strong>Large monitor-only universe.</div>
-        <div class="network-node"><strong>2 • Active Scouting</strong>Promoted names get Aurora 2 evidence review.</div>
-        <div class="network-node"><strong>3 • Approved Shortlist</strong>Only permitted ranked targets are approved.</div>
-        <div class="network-node"><strong>4 • Transfer</strong>Transfer deploys the approved route only.</div>
+        <div class="network-node"><strong>1 • Global Network</strong>UK + US + World candidates.</div>
+        <div class="network-node"><strong>2 • Auto Bench</strong>Best evidence-qualified names rotate in automatically.</div>
+        <div class="network-node"><strong>3 • Active Scouting</strong>Aurora 2 scores manual + automatic scouts.</div>
+        <div class="network-node"><strong>4 • Transfer</strong>Only an approved shortlist can be deployed.</div>
+      </div>
+
+      <div class="auto-bench-bar">
+        <div class="auto-bench-copy"><strong id="autoBenchTitle">AUTO BENCH ON</strong><span id="autoBenchMeta">Building the best available Active Scouting bench…</span></div>
+        <button class="btn secondary" id="refreshAutoBench" type="button">Refresh Auto Bench</button>
+        <button class="btn secondary" id="toggleAutoBench" type="button">Pause Auto Bench</button>
       </div>
 
       <div class="network-toolbar">
@@ -1037,7 +1306,7 @@
       </div>
 
       <div id="networkNote" class="notice">
-        The network is monitor-only. Importing or syncing it never changes an approved Transfer route.
+        Auto Bench promotes only evidence-qualified names. A locked Transfer route is never changed.
       </div>
 
       <div class="section-head" style="margin-top:14px">
@@ -1058,6 +1327,8 @@
     else document.querySelector('.content')?.appendChild(section);
 
     $('syncGlobalNetwork')?.addEventListener('click',()=>syncGlobalNetwork(true));
+    $('refreshAutoBench')?.addEventListener('click',()=>rebalanceAutoBench({silent:false}));
+    $('toggleAutoBench')?.addEventListener('click',()=>setAutoBenchEnabled(!autoBenchEnabled()));
     $('networkSearchInput')?.addEventListener('input',()=>renderNetwork(A().core.read()));
     $('networkRegion')?.addEventListener('change',()=>renderNetwork(A().core.read()));
     $('networkSector')?.addEventListener('change',()=>renderNetwork(A().core.read()));
@@ -1070,6 +1341,23 @@
     const counts=networkCounts(rows);
     set('networkTotal',counts.total);set('networkUK',counts.UK);
     set('networkUS',counts.US);set('networkWorld',counts.WORLD);
+
+    const auto=obj(state.scouting?.autoBench);
+    const autoOn=autoBenchEnabled(state);
+    const autoRows=arr(state.scouting?.targets).filter(t=>t.autoManaged);
+    const manualRows=arr(state.scouting?.targets).filter(t=>!t.autoManaged);
+    set('autoBenchTitle',autoOn?(scoutingLocked(state)?'AUTO BENCH FROZEN':'AUTO BENCH ON'):'AUTO BENCH PAUSED');
+    set('autoBenchMeta',autoOn
+      ?`${autoRows.length} automatic + ${manualRows.length} manual = ${autoRows.length+manualRows.length} Active Scouts • ${auto.qualified??'—'} global names currently clear the auto-promotion gate • target ${AUTO_BENCH_TOTAL}.`
+      :`${autoRows.length} automatic scouts remain in Active Scouting, but automatic rotation is paused.`
+    );
+    const toggle=$('toggleAutoBench');
+    if(toggle){
+      toggle.textContent=autoOn?'Pause Auto Bench':'Resume Auto Bench';
+      toggle.disabled=scoutingLocked(state);
+    }
+    const refresh=$('refreshAutoBench');
+    if(refresh)refresh.disabled=!autoOn||scoutingLocked(state)||!rows.length;
 
     const badge=$('networkBadge');
     if(badge){
@@ -1090,6 +1378,8 @@
     const sector=$('networkSector')?.value||'ALL';
     const activeIds=new Set(arr(state.scouting?.targets).map(t=>String(t.id||'')));
     const activeTickers=new Set(arr(state.scouting?.targets)
+      .map(t=>String(t.ticker||'').toUpperCase()));
+    const autoTickers=new Set(arr(state.scouting?.targets).filter(t=>t.autoManaged)
       .map(t=>String(t.ticker||'').toUpperCase()));
 
     const filtered=rows.filter(r=>{
@@ -1123,6 +1413,8 @@
     host.innerHTML=filtered.map((r,i)=>{
       const active=activeIds.has(`ACTIVE-${r.id}`)||
         activeTickers.has(activeTicker(r.marketSymbol).toUpperCase());
+      const auto=autoTickers.has(activeTicker(r.marketSymbol).toUpperCase());
+      const profile=autoPromotionProfile(r);
       const valueRisk=[r.legacyValuation,r.legacyPayoutRisk].filter(Boolean).join(' • ')||'—';
       return `<tr>
         <td>${i+1}</td>
@@ -1135,10 +1427,12 @@
           :'—<div class="network-source-note">needs data</div>'}</td>
         <td>${r.legacyStrength>0?Math.round(r.legacyStrength):'—'}${r.legacyImpact>0?` <span class="network-source-note">• impact ${Math.round(r.legacyImpact)}</span>`:''}</td>
         <td>${esc(valueRisk)}</td>
-        <td>${esc(r.sourceStatus||'MONITOR')}</td>
-        <td>${active
-          ?'<span class="network-active">ACTIVE</span>'
-          :`<button class="btn secondary" type="button" data-promote-network="${esc(r.id)}">Promote</button>`}
+        <td>${esc(r.sourceStatus||'MONITOR')}${profile.eligible?'<div class="network-source-note">AUTO READY</div>':''}</td>
+        <td>${auto
+          ?'<span class="auto-tag">AUTO</span>'
+          :active
+            ?'<span class="network-active">MANUAL</span>'
+            :`<button class="btn secondary" type="button" data-promote-network="${esc(r.id)}">Promote</button>`}
         </td>
       </tr>`;
     }).join('');
@@ -1255,7 +1549,7 @@
       const market=m.marketSymbol?` • ${esc(m.marketSymbol)}${m.region?' • '+esc(m.region):''}`:'';
       return `<article class="target-card ${i===0&&t.status!=='block'?'top':''}">
         <div class="target-copy">
-          <strong>#${t[rankKey]||i+1} • ${esc(t.ticker)} — ${esc(t.name)}</strong>
+          <strong>#${t[rankKey]||i+1} • ${esc(t.ticker)} — ${esc(t.name)} ${t.autoManaged?'<span class="auto-tag">AUTO</span>':''}</strong>
           <span>${esc(t.reason||'Scouting evaluation')} • ${accountLabel(t.preferredAccount)}${t.sector?' • '+esc(t.sector):''}${market}</span>
           <div class="score-strip">
             <span class="score-chip">Yield ${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</span>
@@ -1273,7 +1567,7 @@
           <div class="target-score">${Math.round(num(t[scoreKey]))}</div>
           <small>${strategy==='maximum'?'MAXIMUM':'SUSTAINABLE'} / 100</small>
           <div class="action-row" style="justify-content:flex-end;margin-top:7px">
-            <button class="btn secondary" data-edit="${esc(t.id)}">Edit</button>
+            <button class="btn secondary" data-edit="${esc(t.id)}">${t.autoManaged?'Take Over':'Edit'}</button>
             <button class="btn secondary" data-delete="${esc(t.id)}">Remove</button>
           </div>
         </div>
@@ -1342,12 +1636,12 @@
 
   function updateVersionLabels(){
     const notice=document.querySelector('.scout-notice b');
-    if(notice)notice.textContent='Scouting Centre 2.0 — Global Network v0.2.2.';
+    if(notice)notice.textContent='Scouting Centre 2.0 — Auto Bench v0.3.';
     const badge=document.querySelector('.page-head .scout-badge');
-    if(badge)badge.textContent='GLOBAL NETWORK v0.2.2';
+    if(badge)badge.textContent='AUTO BENCH v0.3';
     const hero=document.querySelector('.scout-hero p');
     if(hero)hero.textContent=
-      'Scouting now separates a broad UK, US and world candidate universe from the smaller Active Scouting shortlist. The whole network is monitored; only reviewed Active Scouting targets can reach Transfer.';
+      'Scouting now rotates the best evidence-qualified names from the UK, US and world network into a 12-player Active Scouting bench automatically. Transfer still requires shortlist approval.';
   }
 
   function render(){
@@ -1396,6 +1690,9 @@
     wire();
     render();
     maybeAutoSyncNetwork();
+    if(arr(A().core.read().scouting?.universe).length&&autoBenchEnabled()){
+      setTimeout(()=>rebalanceAutoBench({silent:true}),80);
+    }
   });
 
   w.addEventListener('aurora2:state',render);
@@ -1411,7 +1708,11 @@
       parse:collectNetworkRows,
       counts:networkCounts,
       sync:syncGlobalNetwork,
-      promote:promoteNetworkCandidate
+      promote:promoteNetworkCandidate,
+      autoProfile:autoPromotionProfile,
+      autoSelect:selectAutoBench,
+      rebalanceAutoBench,
+      setAutoBenchEnabled
     }
   };
 })(window);
