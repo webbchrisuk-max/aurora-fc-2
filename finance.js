@@ -223,6 +223,31 @@
     return {plan:saved,c};
   }
 
+  function planningAudit(state,plan,c){
+    const active=activeBills(state).filter(b=>!b.paid&&b.included!==false),critical=[],warnings=[];
+    active.forEach(b=>{
+      const freq=String(b.frequency||'one-off');
+      if((freq==='yearly'||freq==='one-off')&&!parseLocalDate(b.due))critical.push(`${b.name}: ${freq} bill needs a due date`);
+      if(!String(b.fundingSource||'').trim())critical.push(`${b.name}: funding source is missing`);
+    });
+    const holdingFunded=active.filter(b=>isHoldingPotName(b.fundingSource));
+    if(holdingFunded.length&&!c.auto.holdingPot)critical.push(`Holding Pot is missing but ${holdingFunded.length} active bill${holdingFunded.length===1?'':'s'} use it`);
+    const fundingPlan=state.finance?.fundingPolicy?.lastPlan;
+    if(fundingPlan&&Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0))>.011)warnings.push(`Goal-pot funding view is out of sync by ${money(Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0)))}`);
+    const stale=active.filter(b=>{const d=parseLocalDate(b.due);return d&&String(b.frequency||'one-off')==='one-off'&&d.getTime()<Date.now()-86400000});
+    if(stale.length)warnings.push(`${stale.length} overdue one-off bill${stale.length===1?'':'s'} still active`);
+    const missionGate=!missionIsInFlight(state.mission)||state.mission?.status==='FINANCE_APPROVED';
+    return {critical,warnings,billStatus:critical.some(x=>/bill needs a due date|funding source/.test(x))?'ACTION':'READY',holdingStatus:holdingFunded.length?(c.auto.holdingPot?'READY':'MISSING'):'NOT NEEDED',goalStatus:`${money(c.auto.potsDue)} SCHEDULED`,missionStatus:missionGate?'OPEN':'LOCKED'};
+  }
+
+  function renderPlanningAudit(state,plan,c){
+    const a=planningAudit(state,plan,c),badge=$('financeReadinessBadge'),list=$('financePlanningGaps');
+    if(badge){if(a.critical.length){badge.className='readiness-badge block';badge.textContent='ACTION REQUIRED'}else if(a.warnings.length){badge.className='readiness-badge warn';badge.textContent='READY WITH NOTES'}else{badge.className='readiness-badge ready';badge.textContent='FINANCE READY'}}
+    A().ui.text('readyBills',a.billStatus);A().ui.text('readyHolding',a.holdingStatus);A().ui.text('readyGoalPots',a.goalStatus);A().ui.text('readyMission',a.missionStatus);
+    if(list){if(!a.critical.length&&!a.warnings.length)list.innerHTML='<div class="notice good">Finance has no unresolved payday-planning gaps. The safe-release figure is fully reconciled from the information currently stored.</div>';else list.innerHTML=[...a.critical.map(x=>`<div class="planning-gap block"><b>BLOCK:</b> ${esc(x)}</div>`),...a.warnings.map(x=>`<div class="planning-gap"><b>CHECK:</b> ${esc(x)}</div>`)].join('')}
+    return a;
+  }
+
   function renderPlan(){
     const state=A().core.read(), raw=state.finance?.plan||{}, c=calc(raw,state), plan=c.plan, ui=A().ui;
     ui.text('mOpening',money(plan.openingCash));
@@ -277,6 +302,7 @@
     if(release&&document.activeElement!==release&&(!release.value||Number(release.value)>c.safeSurplus)){
       release.value=c.safeSurplus?c.safeSurplus.toFixed(2):'';
     }
+    renderPlanningAudit(state,plan,c);
     renderReleaseGuard(c.safeSurplus);
   }
 
@@ -290,7 +316,13 @@
   function renderReleaseGuard(safe){
     const requested=numValue('releaseAmount'), msg=$('releaseGuard'), btn=$('releaseMission');
     if(!msg||!btn)return;
-    const m=A().core.read().mission;
+    const state=A().core.read(),m=state.mission;
+    const c=calc(state.finance?.plan||{},state),audit=planningAudit(state,c.plan,c);
+    if(audit.critical.length){
+      msg.className='notice red';
+      msg.textContent=`Blocked: Finance has ${audit.critical.length} unresolved planning gap${audit.critical.length===1?'':'s'}. Fix the Payday Readiness items before releasing money to Transfer.`;
+      btn.disabled=true; return;
+    }
     if(missionIsInFlight(m)&&m.status!=='FINANCE_APPROVED'){
       msg.className='notice';
       msg.textContent=`Current mission ${money(m.approvedBudget||0)} is ${m.status}. This screen is calculating the next payday forecast; release is locked until that mission is completed/registered or cancelled.`;
@@ -315,6 +347,11 @@
     const {plan,c}=savePlan(), amount=numValue('releaseAmount');
     if(amount<=0||amount>c.safeSurplus+0.005)return;
     const current=A().core.read();
+    const audit=planningAudit(current,c.plan,c);
+    if(audit.critical.length){
+      alert('Finance cannot release a mission while payday-planning gaps remain. Fix the Payday Readiness items first.');
+      return;
+    }
     if(missionIsInFlight(current.mission)&&current.mission.status!=='FINANCE_APPROVED'){
       alert('The current released mission is still in progress. Finance will keep calculating the next payday forecast, but a new mission cannot be released until the current mission is registered/completed or cancelled.');
       return;

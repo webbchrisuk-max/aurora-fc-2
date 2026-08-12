@@ -30,6 +30,8 @@
 
 .house-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}.house-ring{min-height:180px;display:grid;place-items:center;text-align:center}.house-ring strong{display:block;font-size:38px}.house-ring span{display:block;color:var(--muted);font-size:9px;margin-top:5px}.house-kpis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}.house-room-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.house-room{padding:13px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.025)}.house-room h3{font-size:12px;margin:0}.house-room .house-room-meta{color:var(--muted);font-size:8px;line-height:1.55;margin-top:6px}.house-room .house-room-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}.house-entry{padding:12px;border:1px solid rgba(255,255,255,.075);border-radius:14px;background:rgba(255,255,255,.025)}.house-entry+.house-entry{margin-top:8px}.house-entry-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.house-entry strong{font-size:11px}.house-entry-meta{font-size:8px;color:var(--muted);line-height:1.5;margin-top:4px}.house-entry-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:end;margin-top:9px}.house-actual{display:grid;gap:3px}.house-actual label{font-size:7px;color:var(--muted);text-transform:uppercase;font-weight:900}.house-actual input{width:95px;min-height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px}.house-pill{font-size:8px;font-weight:900;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);color:var(--muted)}.house-pill.good{color:var(--green);border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.house-pill.watch{color:#fbbf24;border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.05)}.house-migrate{border-color:rgba(167,139,250,.22)!important;background:rgba(167,139,250,.035)!important}.house-history-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.055)}.house-history-row:last-child{border-bottom:0}.house-history-row strong{font-size:9px}.house-history-row span{display:block;color:var(--muted);font-size:8px;margin-top:3px}.house-empty{padding:16px;color:var(--muted);font-size:9px;text-align:center}@media(max-width:1150px){.house-kpis{grid-template-columns:repeat(4,1fr)}.house-room-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.house-hero,.house-room-grid{grid-template-columns:1fr}.house-kpis{grid-template-columns:1fr 1fr}}
 
+
+.finance-readiness{border-color:rgba(88,233,155,.18)!important;background:linear-gradient(145deg,rgba(88,233,155,.045),rgba(67,217,255,.025))!important}.readiness-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.readiness-badge{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:8px;font-weight:1000;border:1px solid rgba(255,255,255,.10)}.readiness-badge.ready{color:#9df0ba;border-color:rgba(88,233,155,.28);background:rgba(88,233,155,.05)}.readiness-badge.warn{color:#f7d77d;border-color:rgba(241,196,90,.28);background:rgba(241,196,90,.05)}.readiness-badge.block{color:#ffb6c2;border-color:rgba(255,112,137,.28);background:rgba(255,112,137,.05)}.readiness-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}.readiness-item{padding:11px;border-radius:13px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.readiness-item small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.readiness-item strong{display:block;font-size:14px;margin-top:5px}.planning-gap-list{display:grid;gap:7px;margin-top:10px}.planning-gap{padding:9px 10px;border-radius:12px;border:1px solid rgba(241,196,90,.18);background:rgba(241,196,90,.035);font-size:8px;color:#f7d77d}.planning-gap.block{border-color:rgba(255,112,137,.2);background:rgba(255,112,137,.04);color:#ffb6c2}@media(max-width:900px){.readiness-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.readiness-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -49,10 +51,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Holding Pot Protection v0.4.5.1.</b> Finance now projects recurring bills across the whole payday cycle, calculates the Holding Pot balance required, and reserves only the top-up shortfall before shares.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Finance Complete v1.0.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">HOLDING POT v0.4.5.1</span>
+  <span class="status">FINANCE v1.0</span>
 </header>
 
 <div class="tabs card">
@@ -69,6 +71,12 @@
     <article class="card card-pad metric"><small>Commitments</small><strong id="mCommitments">£0.00</strong><span>Current Account bills + Holding Pot top-up + goal pots + planned</span></article>
     <article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article>
     <article class="card card-pad metric"><small>Next Safe Release</small><strong class="good" id="mAvailable">£0.00</strong><span>Current payday forecast</span></article>
+  </section>
+
+  <section class="section card card-pad finance-readiness">
+    <div class="readiness-head"><div><span class="eyebrow">Finance Control Check</span><h2 style="margin:5px 0 0">Payday Readiness</h2></div><span id="financeReadinessBadge" class="readiness-badge warn">CHECKING</span></div>
+    <div class="readiness-grid"><div class="readiness-item"><small>Bill planning</small><strong id="readyBills">—</strong></div><div class="readiness-item"><small>Holding Pot</small><strong id="readyHolding">—</strong></div><div class="readiness-item"><small>Goal pots</small><strong id="readyGoalPots">—</strong></div><div class="readiness-item"><small>Mission gate</small><strong id="readyMission">—</strong></div></div>
+    <div id="financePlanningGaps" class="planning-gap-list"></div>
   </section>
 
   <section class="section card card-pad">
@@ -158,7 +166,7 @@
       <div id="holdingPotBreakdown" class="notice" style="margin-top:10px">No Holding Pot-funded bills in this payday cycle.</div>
 
       <div class="split-line"></div>
-      <p class="muted" style="font-size:9px;line-height:1.7">Current Account bills are protected directly. Holding Pot-funded bills are projected across the full payday cycle, compared with the cash already in Holding Pot, and only the shortfall is reserved from this payday. Other named pots are not double-counted.</p>
+      <p class="muted" style="font-size:9px;line-height:1.7">Current Account bills are protected directly. Holding Pot-funded bills are projected across the full payday cycle, compared with the cash already in Holding Pot, and only the shortfall is reserved from this payday. Weekly/monthly/4-week/5-week bills can be projected; yearly and one-off bills must have a due date so Finance knows which payday owns them.</p>
     </article>
   </section>
 </section>
@@ -312,8 +320,8 @@
 
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js?v=6"></script>
-<script src="finance-funding.js?v=0451"></script>
+<script src="finance-funding.js?v=100"></script>
 <script src="finance-house.js?v=042"></script>
-<script src="finance.js?v=0451"></script>
+<script src="finance.js?v=100"></script>
 </body>
 </html>

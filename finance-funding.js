@@ -1,3 +1,4 @@
+/* Aurora FC 2.0 — Finance Funding Engine v1.0 */
 (function(w){
   'use strict';
 
