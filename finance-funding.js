@@ -1,4 +1,4 @@
-/* Aurora FC 2.0 — Finance Funding Engine v1.2 (compatible with Finance v1.3) */
+/* Aurora FC 2.0 — Finance Funding Engine v1.4 — Pace-Only Deadlines */
 (function(w){
   'use strict';
 
@@ -279,7 +279,7 @@
       if(required>.009){
         const reasons=[];
         if(deadlineNeed>.009){
-          reasons.push(`Required for ${row.pot.deadline} • ${row.deadline.paydays>0?row.deadline.paydays+' payday'+(row.deadline.paydays===1?'':'s')+' left':'deadline passed'}`);
+          reasons.push(`Required for ${row.pot.deadline} • ${row.deadline.paydays>0?row.deadline.paydays+' payday'+(row.deadline.paydays===1?'':'s')+' left':'deadline passed'} • pace only`);
         }
         if(manual>deadlineNeed+.009)reasons.push('Manual minimum');
         addAllocation(allocations,row.pot,required,reasons.join(' • '),deadlineNeed);
@@ -287,12 +287,15 @@
       }
     }
 
-    // 2) EXTRA WAGE ROUTING.
-    // Wages received above expected wages are routed to remaining pot gaps
-    // after required funding. Whatever cannot/need not go to pots remains
-    // available to the rest of the payday allocation.
+    // 2) EXTRA WAGE ROUTING — PACE-ONLY DEADLINES.
+    // Any pot with a completion date receives only the amount needed to stay
+    // on schedule (or a higher explicit manual minimum). Extra wages skip
+    // dated pots and continue through undated P1 -> P2 -> P3 gaps. This stops
+    // seasonal / deadline goals being filled early just because extra pay landed.
+    const paceOnlyCandidates=candidates.filter(row=>row.deadline.hasDeadline);
+    const extraCandidates=candidates.filter(row=>!row.deadline.hasDeadline);
     let remainingExtra=extraBudget;
-    remainingExtra=allocatePriority(candidates,remainingExtra,allocations,strategy);
+    remainingExtra=allocatePriority(extraCandidates,remainingExtra,allocations,strategy);
 
     let nextPots=pots.map(p=>{
       const a=allocations.get(p.id);
@@ -349,6 +352,8 @@
           deadlineShortfall:0,
           extraBudget:Number(extraBudget.toFixed(2)),
           extraAllocated:Number(extraAllocated.toFixed(2)),
+          paceOnlyCount:paceOnlyCandidates.length,
+          extraEligibleCount:extraCandidates.length,
           allocated:Number(allocated.toFixed(2)),
           totalFunding:Number(allocated.toFixed(2)),
           unallocated:Number(Math.max(0,extraBudget-extraAllocated).toFixed(2)),
@@ -434,7 +439,7 @@
     set('fundingEngineNote',
       `Expected ${money(plan.expectedWages||0)} • received ${money(plan.wagesReceived||0)}. `
       + ((plan.wageDifference||0)>0
-          ? `Extra wage ${money(plan.wageDifference)}: ${money(plan.extraAllocated||0)} routed to pots first; ${money(plan.unallocated||0)} left for the rest of the payday allocation.`
+          ? `Extra wage ${money(plan.wageDifference)}: ${money(plan.extraAllocated||0)} routed to undated pot gaps; ${plan.paceOnlyCount||0} dated pot${(plan.paceOnlyCount||0)===1?' is':'s are'} pace-only; ${money(plan.unallocated||0)} left for the rest of the payday allocation.`
           : (plan.wageShortfall||0)>0
             ? `Wages are ${money(plan.wageShortfall)} below expected. No extra-wage pot routing is applied.`
             : 'No wage difference. Only required pot funding is scheduled.')
