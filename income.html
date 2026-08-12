@@ -44,8 +44,8 @@
   <div class="sidebar-foot"><b>Income owns the dividends</b><br>Squad owns shares. Income turns those shares into one canonical income picture.</div>
 </aside>
 <main class="main"><div class="content">
-<div class="notice income-notice" style="margin-bottom:14px"><b>Income Centre 2.0 — Dividend Update Engine v0.2.0.</b> Annual income stays Squad-derived. The new Dividend Update Engine checks configured official issuer/IR sources, updates only high-confidence declarations, sends ambiguous findings to review, and pre-locks eligible shares before the ex-date.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--income)">Aurora FC 2.0 • Income</span><h1>Income Centre</h1><p>See what the Squad pays you now, what is due next, and how every confirmed purchase changes the income engine.</p></div><span class="income-badge">INCOME ENGINE v0.2.0</span></header>
+<div class="notice income-notice" style="margin-bottom:14px"><b>Income Centre 2.0 — Dividend Update Engine v0.3.0.</b> Annual income stays Squad-derived. Alpha Vantage is now the structured discovery layer; Aurora cross-checks declarations against configured official issuer/IR evidence, keeps uncertain findings in review, and pre-locks eligible shares before the ex-date.</div>
+<header class="page-head"><div><span class="eyebrow" style="color:var(--income)">Aurora FC 2.0 • Income</span><h1>Income Centre</h1><p>See what the Squad pays you now, what is due next, and how every confirmed purchase changes the income engine.</p></div><span class="income-badge">INCOME ENGINE v0.3.0</span></header>
 
 <section class="income-hero"><div class="income-hero-grid">
   <div><span class="eyebrow" style="color:#f8d67c">Forward Dividend Income</span><h2>Build the squad.<br>Grow the wage.</h2><p>Income reads account-scoped holdings from Squad, calculates the forward annual dividend income and publishes only the finished result back to Aurora HQ.</p><div class="action-row"><button class="btn primary" id="recalculateIncome">Recalculate Income</button><button class="btn secondary" id="syncIncomeBackend">Sync Dividend Calendar</button><a class="btn secondary" href="squad.html">Open Squad</a></div></div>
@@ -91,15 +91,16 @@
 </section>
 
 <section class="section card card-pad">
-  <div class="section-head"><div><h2>Dividend Update Engine</h2><p class="muted">Nightly official-source discovery • high-confidence auto-update • ambiguous items go to review</p></div><span class="income-badge" id="engineBadge">CHECKING</span></div>
+  <div class="section-head"><div><h2>Dividend Update Engine</h2><p class="muted">Alpha Vantage discovery • official-source verification/fallback • ambiguous items go to review</p></div><span class="income-badge" id="engineBadge">CHECKING</span></div>
   <div class="engine-grid">
     <div class="engine-stat"><small>Auto update</small><strong id="engineAuto">—</strong></div>
-    <div class="engine-stat"><small>Source coverage</small><strong id="engineCoverage">—</strong></div>
+    <div class="engine-stat"><small>Alpha Vantage</small><strong id="engineAlpha">—</strong></div>
+    <div class="engine-stat"><small>Official coverage</small><strong id="engineCoverage">—</strong></div>
     <div class="engine-stat"><small>Last scan</small><strong id="engineLastRun">—</strong></div>
     <div class="engine-stat"><small>Updated last scan</small><strong id="engineUpdated">0</strong></div>
     <div class="engine-stat"><small>Review queue</small><strong id="engineReviews">0</strong></div>
   </div>
-  <div id="engineNote" class="notice" style="margin-top:10px">The engine only writes complete, high-confidence declarations. It never guesses a past ex-date share entitlement.</div>
+  <div id="engineNote" class="notice" style="margin-top:10px">The engine uses the private Alpha Vantage key only in Apps Script. It never exposes the key to GitHub or the browser, and it never guesses a past ex-date share entitlement.</div>
   <div class="engine-reviews" id="engineReviewList"></div>
   <div class="action-row">
     <button class="btn primary" id="runDividendEngine">Run Update Now</button>
@@ -120,5 +121,5 @@
 <div id="toast" class="toast" style="position:fixed;right:18px;bottom:18px;z-index:100;opacity:0;transition:.2s;padding:10px 13px;border-radius:12px;border:1px solid rgba(246,196,83,.25);background:#171105;color:#fff1c8;font-size:10px;font-weight:850"></div>
 <script src="aurora-core.js?v=9"></script>
 <script src="aurora-data2-client.js?v=010"></script>
-<script src="income.js?v=020"></script>
+<script src="income.js?v=030"></script>
 </body></html>

@@ -146,14 +146,16 @@
   function engineTime(v){if(!v)return 'Never';const d=new Date(v);return Number.isNaN(d.getTime())?'Never':d.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
   function renderDividendEngineStatus(res){
     const ok=res&&res.ok!==false,installed=Boolean(res?.installed),coverage=res?.coverage||{},last=res?.lastSummary||{};
+    const alpha=res?.alphaVantage||{};
     set('engineBadge',!ok?'ENGINE ERROR':installed?'AUTO ON':'AUTO OFF');
     set('engineAuto',installed?'Nightly':'Off');
+    set('engineAlpha',alpha.configured?'CONNECTED':'NOT SET');
     set('engineCoverage',`${coverage.covered||0}/${coverage.eligibleTickers||0}`);
     set('engineLastRun',engineTime(res?.lastRunAt));
     set('engineUpdated',num(last.autoUpdated||last.updated||0));
     set('engineReviews',num(res?.openReviewCount));
-    const failures=num(last.errors),sources=num(last.sourcesChecked),review=num(res?.openReviewCount);
-    set('engineNote',!ok?String(res?.message||'Dividend engine status unavailable.'):installed?`Nightly scan enabled • ${sources||coverage.covered||0} source${(sources||coverage.covered||0)===1?'':'s'} checked last run • ${failures} error${failures===1?'':'s'} • ambiguous findings are never auto-written.`:`Auto update is off. Run it manually or enable the nightly trigger. Ambiguous findings are never auto-written.`);
+    const failures=num(last.errors),sources=num(last.sourcesChecked),alphaCalls=num(last.alphaCalls),alphaCached=num(last.alphaCached),alphaMatched=num(last.alphaMatchedOfficial),review=num(res?.openReviewCount);
+    set('engineNote',!ok?String(res?.message||'Dividend engine status unavailable.'):installed?`Nightly scan enabled • Alpha ${alpha.configured?'connected':'not configured'} • ${alphaCalls} API call${alphaCalls===1?'':'s'} + ${alphaCached} cached • ${alphaMatched} official match${alphaMatched===1?'':'es'} • ${sources||coverage.covered||0} official source${(sources||coverage.covered||0)===1?'':'s'} checked • ${failures} error${failures===1?'':'s'} • ambiguous findings are never auto-written.`:`Auto update is off. Run it manually or enable the nightly trigger. Ambiguous findings are never auto-written.`);
     const host=$('engineReviewList'),rows=arr(res?.openReviews).slice(0,4);
     if(host)host.innerHTML=rows.length?rows.map(x=>`<div class="engine-review"><strong>${esc(x.ticker||'Review')} • ${esc(x.reason||'Needs review')}</strong><span>${esc(x.summary||x.sourceUrl||'Open DividendReview item in AuroraData 2.')}</span></div>`).join(''):'';
   }
