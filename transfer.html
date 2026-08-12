@@ -39,8 +39,8 @@
     <a href="index.html">🏟 Aurora HQ</a>
     <a href="finance.html">💷 Finance</a>
     <a href="transfer.html">🔄 Transfer</a>
-    <a href="squad.html">⚽ Squad</a>
-    <a href="#" data-soon="Scouting">🔎 Scouting</a>
+    <a href="#" data-soon="Squad">⚽ Squad</a>
+    <a href="scouting.html">🔎 Scouting</a>
     <a href="#" data-soon="Income">💰 Income</a>
     <a href="#" data-soon="Club Control">⚙ Club Control</a>
   </nav>
@@ -48,8 +48,8 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Mission & Route v0.1.1.</b> Finance budget is read-only here. Registration remains local-only until AuroraData 2 is connected.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">MISSION & ROUTE v0.1.1</span></header>
+<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Scouting Handoff v0.2.</b> Finance budget is read-only here. Registration remains local-only until AuroraData 2 is connected.</div>
+<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">SCOUTING HANDOFF v0.2</span></header>
 
 <section class="transfer-hero">
   <div class="transfer-hero-grid">
@@ -91,9 +91,9 @@
 
     <article class="card card-pad migration-card">
       <div class="section-head"><h2>Scouting Handoff</h2><span id="scoutingState" class="muted">CHECKING</span></div>
-      <p class="muted" style="font-size:9px;line-height:1.6">Transfer does not create investment research. Until Scouting 2.0 is built, this one-time bridge can migrate the latest approved Aurora 1 shortlist into the shared Scouting target store.</p>
-      <div id="legacyScoutingSummary"><div class="notice">Scanning legacy shortlist…</div></div>
-      <div class="action-row"><button class="btn secondary" id="importLegacyScouting" disabled>Import Aurora 1 Shortlist</button></div>
+      <p class="muted" style="font-size:9px;line-height:1.6">Transfer does not create investment research. Scouting 2.0 owns the scores, eligibility gates and approved shortlist. Transfer only deploys Finance-authorised money across those approved targets.</p>
+      <div class="notice good"><b>One owner per job.</b><br>If the shortlist needs changing, make the change in Scouting and approve it there before rebuilding the route.</div>
+      <div class="action-row"><a class="btn secondary" href="scouting.html">Open Scouting Centre</a></div>
     </article>
   </section>
 
@@ -198,7 +198,7 @@
 </div></main></div>
 
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#28130f;border:1px solid rgba(255,122,89,.28);color:#ffd1c5;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
-<script src="aurora-core.js"></script>
-<script src="transfer.js"></script>
+<script src="aurora-core.js?v=7"></script>
+<script src="transfer.js?v=020"></script>
 </body>
 </html>

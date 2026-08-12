@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=6;
+  const VERSION=7;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -20,16 +20,19 @@
     },
     finance:{
       plan:{
-        paydayDate:'',openingCash:0,netPay:0,extraCash:0,
-        billsDue:0,potsDue:0,otherPlanned:0,protectedCash:0,releaseAmount:0
+        paydayDate:'',openingCash:0,expectedWages:0,wagesReceived:0,netPay:0,
+        wageDifference:0,extraCash:0,billsDue:0,potsDue:0,otherPlanned:0,
+        protectedCash:0,releaseAmount:0
       },
       pots:[],
       bills:[],
       payments:[],
       fundingPolicy:{
         goalPotBudget:0,
+        extraPotBudget:0,
+        engineVersion:3,
         strategy:'priority',
-        source:'AURORA2',
+        source:'AURORA2_WAGE_ROUTING',
         legacyImported:false,
         lastCalculatedAt:null,
         lastPlan:null
@@ -49,10 +52,13 @@
       lastReleasedAt:null
     },
     scouting:{
-      status:'NOT_BUILT',
+      version:1,
+      status:'SCOUTING_REVIEW',
+      strategy:'sustainable',
       targets:[],
+      decisionHistory:[],
       importedFromLegacy:false,
-      source:null,
+      source:'AURORA2_SCOUTING',
       updatedAt:null
     },
     transfer:{
@@ -179,25 +185,39 @@
   function normalizeScoutingTarget(t){
     const r=object(t);
     const allowedStatus=['pass','caution','block'];
+    const allowedRecommendation=['STRONG BUY','BUY','WATCH','CAUTION','BLOCK'];
     const account=String(r.preferredAccount||r.account||r.platform||r.broker||'CHECK');
     return {
       id:String(r.id||''),
-      ticker:String(r.ticker||r.symbol||'').toUpperCase(),
+      ticker:String(r.ticker||r.symbol||'').replace(/\..*$/,'').toUpperCase(),
       name:String(r.name||r.company||r.companyName||r.ticker||'Target'),
       preferredAccount:account,
-      status:allowedStatus.includes(String(r.status||'').toLowerCase())?String(r.status).toLowerCase():'pass',
+      sector:String(r.sector||''),
+      status:allowedStatus.includes(String(r.status||'').toLowerCase())?String(r.status).toLowerCase():'caution',
+      recommendation:allowedRecommendation.includes(String(r.recommendation||'').toUpperCase())
+        ? String(r.recommendation).toUpperCase()
+        : 'WATCH',
       reason:String(r.reason||r.note||''),
+      eligibilityReasons:Array.isArray(r.eligibilityReasons)?r.eligibilityReasons.map(x=>String(x)):[],
       rank:Math.max(0,Number(r.rank)||0),
+      maximumRank:Math.max(0,Number(r.maximumRank)||0),
       yieldPct:Math.max(0,Number(r.yieldPct)||0),
+      livePriceGbp:Math.max(0,Number(r.livePriceGbp||r.livePrice||r.price)||0),
       sustainableScore:Math.max(0,Math.min(100,Number(r.sustainableScore)||0)),
-      confidence:Math.max(0,Math.min(100,Number(r.confidence)||0)),
+      maximumScore:Math.max(0,Math.min(100,Number(r.maximumScore)||0)),
+      confidence:Math.max(0,Math.min(100,Number(r.confidence||r.dataQuality)||0)),
+      dataQuality:Math.max(0,Math.min(100,Number(r.dataQuality||r.confidence)||0)),
       dividendSafety:Math.max(0,Math.min(100,Number(r.dividendSafety)||0)),
       incomeScore:Math.max(0,Math.min(100,Number(r.incomeScore)||0)),
       valuationScore:Math.max(0,Math.min(100,Number(r.valuationScore)||0)),
       portfolioFit:Math.max(0,Math.min(100,Number(r.portfolioFit)||0)),
       dividendGrowth:Math.max(0,Math.min(100,Number(r.dividendGrowth)||0)),
       businessQuality:Math.max(0,Math.min(100,Number(r.businessQuality)||0)),
+      dividendStatus:String(r.dividendStatus||''),
+      payoutRisk:String(r.payoutRisk||''),
       source:String(r.source||'SCOUTING'),
+      sourceUpdatedAt:r.sourceUpdatedAt||null,
+      lastAssessedAt:r.lastAssessedAt||null,
       createdAt:r.createdAt||now(),
       updatedAt:r.updatedAt||now()
     };
@@ -327,7 +347,10 @@
       scouting:{
         ...d.scouting,
         ...object(r.scouting),
-        targets:Array.isArray(r.scouting?.targets)?r.scouting.targets.map(normalizeScoutingTarget):[]
+        version:1,
+        strategy:['sustainable','maximum'].includes(r.scouting?.strategy)?r.scouting.strategy:'sustainable',
+        targets:Array.isArray(r.scouting?.targets)?r.scouting.targets.map(normalizeScoutingTarget):[],
+        decisionHistory:Array.isArray(r.scouting?.decisionHistory)?r.scouting.decisionHistory:[]
       },
       transfer:{
         ...d.transfer,
@@ -419,6 +442,10 @@
     });
     document.querySelectorAll('[data-soon="Squad"]').forEach(a=>{
       a.setAttribute('href','squad.html');
+      a.removeAttribute('data-soon');
+    });
+    document.querySelectorAll('[data-soon="Scouting"]').forEach(a=>{
+      a.setAttribute('href','scouting.html');
       a.removeAttribute('data-soon');
     });
   }
