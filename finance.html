@@ -52,10 +52,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Pace-Only Deadlines v1.4.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Protected Spending Money v1.4.1.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">FINANCE v1.4</span>
+  <span class="status">FINANCE v1.4.1</span>
 </header>
 
 <div class="tabs card">
@@ -70,7 +70,7 @@
     <article class="card card-pad metric"><small>Opening Cash</small><strong id="mOpening">£0.00</strong><span>Before payday</span></article>
     <article class="card card-pad metric"><small>Wages Received</small><strong id="mPay">£0.00</strong><span id="mPayMeta">Expected £0.00</span></article>
     <article class="card card-pad metric"><small>Total Funding Required</small><strong id="mCommitments">£0.00</strong><span>Bills + pots + safety protection + planned spending</span></article>
-    <article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article>
+    <article class="card card-pad metric"><small>Protected Spending Money</small><strong id="mProtected">£0.00</strong><span>Personal spending money kept aside</span></article>
     <article class="card card-pad metric"><small>Next Safe Release</small><strong class="good" id="mAvailable">£0.00</strong><span>Current payday forecast</span></article>
   </section>
 
@@ -103,7 +103,7 @@
         <div class="calc-row"><span>Holding Pot safety top-up</span><strong id="breakHoldingTopUp">− £0.00</strong></div>
         <div class="calc-row"><span>Pot funding required</span><strong id="breakPots">− £0.00</strong></div>
         <div class="calc-row"><span>Other planned spending</span><strong id="breakOther">− £0.00</strong></div>
-        <div class="calc-row"><span>Protected cash floor</span><strong id="breakProtected">− £0.00</strong></div>
+        <div class="calc-row"><span>Protected spending money</span><strong id="breakProtected">− £0.00</strong></div>
         <div class="calc-row total"><span>Safe surplus</span><strong class="good" id="breakAvailable">£0.00</strong></div>
       </div>
       <div class="action-row"><button class="btn" onclick="document.querySelector('[data-tab=paydayPanel]').click()">Edit Payday Plan</button><button class="btn secondary" onclick="document.querySelector('[data-tab=potsPanel]').click()">Manage Pots & Bills</button></div>
@@ -129,7 +129,7 @@
         <div class="field"><label for="wagesReceived">Wages received</label><div class="money-wrap"><input id="wagesReceived" type="number" min="0" step="0.01"></div><small>Enter the actual wage that landed. Aurora works out the difference automatically.</small></div>
         <div class="field"><label for="extraCash">Other cash / one-off income</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Money included this payday that is not part of your wage.</small></div>
         <div class="field"><label for="otherPlanned">Other planned spending</label><div class="money-wrap"><input id="otherPlanned" type="number" min="0" step="0.01"></div><small>Known spend not already represented by a bill or pot.</small></div>
-        <div class="field"><label for="protectedCash">Protected cash floor</label><div class="money-wrap"><input id="protectedCash" type="number" min="0" step="0.01"></div><small>Cash Finance must leave untouched.</small></div>
+        <div class="field"><label for="protectedCash">Protected spending money</label><div class="money-wrap"><input id="protectedCash" type="number" min="0" step="0.01"></div><small>Your personal spending money for the pay cycle. Finance leaves this untouched.</small></div>
         <div class="field"><label for="releaseAmount">Investment amount to release</label><div class="money-wrap"><input id="releaseAmount" type="number" min="0" step="0.01"></div><small>Can be less than safe surplus, never more.</small></div>
       </div>
 
