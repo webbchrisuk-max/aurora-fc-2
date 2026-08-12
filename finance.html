@@ -51,10 +51,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Automatic Funding v1.1.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Payday Wage Routing v1.2.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">FINANCE v1.1</span>
+  <span class="status">FINANCE v1.2</span>
 </header>
 
 <div class="tabs card">
@@ -67,7 +67,7 @@
 <section id="overviewPanel" class="tab-panel active">
   <section class="grid grid-5">
     <article class="card card-pad metric"><small>Opening Cash</small><strong id="mOpening">£0.00</strong><span>Before payday</span></article>
-    <article class="card card-pad metric"><small>Net Pay</small><strong id="mPay">£0.00</strong><span>Actual payday input</span></article>
+    <article class="card card-pad metric"><small>Wages Received</small><strong id="mPay">£0.00</strong><span id="mPayMeta">Expected £0.00</span></article>
     <article class="card card-pad metric"><small>Total Funding Required</small><strong id="mCommitments">£0.00</strong><span>Bills + pots + safety protection + planned spending</span></article>
     <article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article>
     <article class="card card-pad metric"><small>Next Safe Release</small><strong class="good" id="mAvailable">£0.00</strong><span>Current payday forecast</span></article>
@@ -93,6 +93,9 @@
     <article class="card card-pad">
       <div class="section-head"><h2>Next Payday Forecast</h2><span class="muted">Automatic commitments</span></div>
       <div class="calc-list">
+        <div class="calc-row"><span>Expected wages</span><strong id="breakExpectedWages">£0.00</strong></div>
+        <div class="calc-row"><span>Wages received</span><strong id="breakWagesReceived">£0.00</strong></div>
+        <div class="calc-row"><span>Extra wage</span><strong class="good" id="breakWageExtra">£0.00</strong></div>
         <div class="calc-row"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div>
         <div class="calc-row"><span>Current Account bills</span><strong id="breakBills">− £0.00</strong></div>
         <div class="calc-row"><span>13-pay bill funding</span><strong id="breakAnnualBills">− £0.00</strong></div>
@@ -121,13 +124,21 @@
       <div class="field-grid">
         <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small id="paydayWindowHelp">Aurora calculates bills over 13 paydays, required pot funding, and a safety check before the next payday.</small></div>
         <div class="field"><label for="openingCash">Opening cash</label><div class="money-wrap"><input id="openingCash" type="number" min="0" step="0.01"></div><small>Cash available before the wage lands.</small></div>
-        <div class="field"><label for="netPay">Actual net pay</label><div class="money-wrap"><input id="netPay" type="number" min="0" step="0.01"></div><small>Use the real wage received.</small></div>
-        <div class="field"><label for="extraCash">Extra / one-off cash</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Optional cash intentionally included this payday.</small></div>
+        <div class="field"><label for="expectedWages">Expected wages</label><div class="money-wrap"><input id="expectedWages" type="number" min="0" step="0.01"></div><small>Your normal expected take-home pay for this payday.</small></div>
+        <div class="field"><label for="wagesReceived">Wages received</label><div class="money-wrap"><input id="wagesReceived" type="number" min="0" step="0.01"></div><small>Enter the actual wage that landed. Aurora works out the difference automatically.</small></div>
+        <div class="field"><label for="extraCash">Other cash / one-off income</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Money included this payday that is not part of your wage.</small></div>
         <div class="field"><label for="otherPlanned">Other planned spending</label><div class="money-wrap"><input id="otherPlanned" type="number" min="0" step="0.01"></div><small>Known spend not already represented by a bill or pot.</small></div>
         <div class="field"><label for="protectedCash">Protected cash floor</label><div class="money-wrap"><input id="protectedCash" type="number" min="0" step="0.01"></div><small>Cash Finance must leave untouched.</small></div>
         <div class="field"><label for="releaseAmount">Investment amount to release</label><div class="money-wrap"><input id="releaseAmount" type="number" min="0" step="0.01"></div><small>Can be less than safe surplus, never more.</small></div>
       </div>
 
+      <div class="split-line"></div>
+      <div class="grid grid-3">
+        <div class="auto-chip"><small>Expected wage</small><strong id="autoExpectedWages">£0.00</strong><span>Normal payday baseline</span></div>
+        <div class="auto-chip"><small>Wage difference</small><strong class="good" id="autoWageDifference">£0.00</strong><span id="autoWageDifferenceMeta">No extra pay</span></div>
+        <div class="auto-chip"><small>Extra pay → pots</small><strong id="autoWageToPots">£0.00</strong><span id="autoWageToPotsMeta">Extra wages are routed to pot gaps first</span></div>
+        <div class="auto-chip"><small>Extra left after pots</small><strong class="cyan" id="autoWageRemaining">£0.00</strong><span>Flows into the remaining safe allocation</span></div>
+      </div>
       <div class="split-line"></div>
       <div class="grid grid-3">
         <div class="auto-chip"><small>13-pay bill funding</small><strong id="autoAnnualBills">£0.00</strong><span id="autoAnnualBillsMeta">Annual Holding Pot bills ÷ 13</span></div>
@@ -143,21 +154,20 @@
 
     <article class="card card-pad">
       <div class="section-head"><h2>Finance Rule</h2><span class="good">Single source</span></div>
-      <div class="notice good"><b>Finance owns the approved amount.</b><br>Pots and bills now feed this calculation themselves. Transfer receives the released mission but cannot replace its budget.</div>
+      <div class="notice good"><b>Payday order:</b><br>Expected wages set the baseline. Actual wages are compared automatically. Extra wage goes to pot gaps first; anything left then flows into the remaining safe allocation. Bills and required dated pots stay protected throughout.</div>
       <div class="split-line"></div>
       <div class="section-head"><h2 style="font-size:15px">Automatic Pot Funding</h2><span class="cyan">AUTO</span></div>
       <div class="field-grid">
-        <div class="field"><label for="goalPotBudget">Extra pot funding (optional)</label><div class="money-wrap"><input id="goalPotBudget" type="number" min="0" step="0.01"></div><small>Required dated-pot funding is calculated automatically. Put £0 here unless you deliberately want Aurora to add extra to pots.</small></div>
-        <div class="field"><label for="fundingStrategy">Extra-funding strategy</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced</option><option value="critical">Critical P1 only</option></select><small>Deadlines are mandatory. Priority only decides where optional extra money goes.</small></div>
+        <div class="field"><label for="fundingStrategy">Extra-wage routing</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced across eligible pots</option><option value="critical">Critical P1 only</option></select><small>Required dated-pot funding is protected first. Any wage received above expected pay is then routed to remaining pot gaps using this rule.</small></div>
       </div>
       <div class="grid grid-2" style="margin-top:10px">
-        <div class="auto-chip"><small>Optional extra</small><strong id="fundingBudgetValue">£0.00</strong><span>Extra money you chose to add</span></div>
+        <div class="auto-chip"><small>Extra wage available</small><strong id="fundingBudgetValue">£0.00</strong><span>Received wage above expected wage</span></div>
         <div class="auto-chip"><small>Total pot funding</small><strong id="fundingAllocatedValue">£0.00</strong><span>Required + optional extra</span></div>
         <div class="auto-chip"><small>Required by dates</small><strong id="fundingDeadlineValue">£0.00</strong><span>Calculated from gaps ÷ paydays left</span></div>
-        <div class="auto-chip"><small>Unused optional extra</small><strong id="fundingUnallocatedValue">£0.00</strong><span>Only applies to optional extra funding</span></div>
+        <div class="auto-chip"><small>Extra wage remaining</small><strong id="fundingUnallocatedValue">£0.00</strong><span>Available for the rest of the payday allocation</span></div>
       </div>
       <div id="fundingEngineNote" class="notice" style="margin-top:10px">Funding engine calculating…</div>
-      <div class="action-row"><button class="btn secondary" id="saveFundingPolicy">Save Funding Rule</button></div>
+      <div class="action-row"><button class="btn secondary" id="saveFundingPolicy">Save Routing Rule</button></div>
       <div class="split-line"></div>
 
       <div class="section-head"><h2 style="font-size:15px">Holding Pot Protection</h2><span class="good">AUTO</span></div>
@@ -326,8 +336,8 @@
 
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js?v=6"></script>
-<script src="finance-funding.js?v=110"></script>
+<script src="finance-funding.js?v=120"></script>
 <script src="finance-house.js?v=042"></script>
-<script src="finance.js?v=110"></script>
+<script src="finance.js?v=120"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* Aurora FC 2.0 — Finance Funding Engine v1.1 */
+/* Aurora FC 2.0 — Finance Funding Engine v1.2 */
 (function(w){
   'use strict';
 
@@ -127,21 +127,15 @@
   function initialiseDefaultBudgetIfNeeded(state){
     const f=obj(state?.finance), policy={...obj(f.fundingPolicy)};
 
-    // v1.1 removes the old fixed £250 cap. Deadline funding is now calculated
-    // from each pot's remaining gap and paydays left. The old value is kept
-    // only for audit, then optional extra funding starts at £0.
-    if(Number(policy.engineVersion||0)<2){
-      policy.previousGoalPotBudget=num(policy.goalPotBudget);
+    // v1.2: extra-pot funding is no longer a manually entered budget.
+    // It is the positive difference between wages received and expected wages.
+    if(Number(policy.engineVersion||0)<3){
+      policy.previousExtraPotBudget=num(policy.extraPotBudget??policy.goalPotBudget);
       policy.goalPotBudget=0;
       policy.extraPotBudget=0;
-      policy.engineVersion=2;
-      policy.source='AURORA2_DYNAMIC_REQUIRED';
+      policy.engineVersion=3;
+      policy.source='AURORA2_WAGE_ROUTING';
       policy.legacyImported=true;
-      return {state:{...state,finance:{...f,fundingPolicy:policy}},changed:true};
-    }
-
-    if(policy.extraPotBudget==null){
-      policy.extraPotBudget=num(policy.goalPotBudget);
       return {state:{...state,finance:{...f,fundingPolicy:policy}},changed:true};
     }
     return {state,changed:false};
@@ -248,7 +242,11 @@
 
   function buildPlan(state){
     const f=obj(state.finance), plan=obj(f.plan), policy=obj(f.fundingPolicy);
-    const extraBudget=Math.max(0,num(policy.extraPotBudget));
+    const expectedWages=num(plan.expectedWages!=null?plan.expectedWages:plan.netPay);
+    const wagesReceived=num(plan.wagesReceived!=null?plan.wagesReceived:plan.netPay);
+    const wageDifference=Number((wagesReceived-expectedWages).toFixed(2));
+    const wageShortfall=Math.max(0,-wageDifference);
+    const extraBudget=Math.max(0,wageDifference);
     const strategy=['priority','balanced','critical'].includes(policy.strategy)?policy.strategy:'priority';
     const payday=plan.paydayDate||'';
     const pots=arr(f.pots);
@@ -289,9 +287,10 @@
       }
     }
 
-    // 2) OPTIONAL EXTRA FUNDING.
-    // Only the user-entered extra amount is routed by priority. This no longer
-    // limits deadline funding.
+    // 2) EXTRA WAGE ROUTING.
+    // Wages received above expected wages are routed to remaining pot gaps
+    // after required funding. Whatever cannot/need not go to pots remains
+    // available to the rest of the payday allocation.
     let remainingExtra=extraBudget;
     remainingExtra=allocatePriority(candidates,remainingExtra,allocations,strategy);
 
@@ -332,14 +331,18 @@
       pots:nextPots,
       policy:{
         ...policy,
-        goalPotBudget:Number(extraBudget.toFixed(2)), // compatibility only
-        extraPotBudget:Number(extraBudget.toFixed(2)),
-        engineVersion:2,
+        goalPotBudget:0,
+        extraPotBudget:0,
+        engineVersion:3,
         strategy,
         lastCalculatedAt:isoNow(),
         lastPlan:{
           paydayDate:payday,
           budget:Number(extraBudget.toFixed(2)),
+          expectedWages:Number(expectedWages.toFixed(2)),
+          wagesReceived:Number(wagesReceived.toFixed(2)),
+          wageDifference:Number(wageDifference.toFixed(2)),
+          wageShortfall:Number(wageShortfall.toFixed(2)),
           requiredFunding:Number(requiredVisible.toFixed(2)),
           deadlineRequired:Number(deadlineRequired.toFixed(2)),
           deadlineAllocated:Number(deadlineRequired.toFixed(2)),
@@ -400,20 +403,19 @@
   }
 
   function savePolicyFromUI(){
-    const budget=document.getElementById('goalPotBudget');
     const strategy=document.getElementById('fundingStrategy');
-    if(!budget||!strategy)return;
+    if(!strategy)return;
     A().core.update(s=>({
       ...s,
       finance:{
         ...s.finance,
         fundingPolicy:{
           ...s.finance.fundingPolicy,
-          goalPotBudget:num(budget.value),
-          extraPotBudget:num(budget.value),
-          engineVersion:2,
+          goalPotBudget:0,
+          extraPotBudget:0,
+          engineVersion:3,
           strategy:strategy.value,
-          source:'AURORA2',
+          source:'AURORA2_WAGE_ROUTING',
           legacyImported:true
         }
       }
@@ -425,27 +427,28 @@
     if(!A()?.core)return;
     const s=A().core.read(), p=obj(s.finance?.fundingPolicy), plan=obj(p.lastPlan);
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
-    set('fundingBudgetValue',money(plan.extraBudget??p.extraPotBudget??0));
+    set('fundingBudgetValue',money(plan.extraBudget||0));
     set('fundingAllocatedValue',money(plan.allocated||0));
     set('fundingDeadlineValue',money(plan.requiredFunding??plan.deadlineAllocated??0));
     set('fundingUnallocatedValue',money(plan.unallocated||0));
     set('fundingEngineNote',
-      `Aurora requires ${money(plan.requiredFunding||0)} this payday to keep dated/manual pots on schedule.`
-      + ((plan.extraBudget||0)>.009
-          ? ` Optional extra: ${money(plan.extraBudget)}; ${money(plan.extraAllocated||0)} routed by ${p.strategy==='balanced'?'balanced':p.strategy==='critical'?'P1-only':'P1 → P2 → P3'} priority.`
-          : ' No optional extra pot funding is set.')
+      `Expected ${money(plan.expectedWages||0)} • received ${money(plan.wagesReceived||0)}. `
+      + ((plan.wageDifference||0)>0
+          ? `Extra wage ${money(plan.wageDifference)}: ${money(plan.extraAllocated||0)} routed to pots first; ${money(plan.unallocated||0)} left for the rest of the payday allocation.`
+          : (plan.wageShortfall||0)>0
+            ? `Wages are ${money(plan.wageShortfall)} below expected. No extra-wage pot routing is applied.`
+            : 'No wage difference. Only required pot funding is scheduled.')
     );
-    const budget=document.getElementById('goalPotBudget');
     const strategy=document.getElementById('fundingStrategy');
-    if(budget&&document.activeElement!==budget)budget.value=Number(p.extraPotBudget||0).toFixed(2);
     if(strategy&&document.activeElement!==strategy)strategy.value=p.strategy||'priority';
   }
-
   document.addEventListener('DOMContentLoaded',()=>{
     recalc();
     render();
     document.getElementById('saveFundingPolicy')?.addEventListener('click',savePolicyFromUI);
     document.getElementById('paydayDate')?.addEventListener('change',()=>setTimeout(recalc,0));
+    document.getElementById('expectedWages')?.addEventListener('change',()=>setTimeout(recalc,0));
+    document.getElementById('wagesReceived')?.addEventListener('change',()=>setTimeout(recalc,0));
   });
   w.addEventListener('aurora2:state',()=>{
     if(syncing)return;

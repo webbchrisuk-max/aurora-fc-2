@@ -222,16 +222,69 @@
     };
   }
 
+
+  function stateWithFundingPreview(state,plan){
+    const build=A()?.funding?.buildPlan;
+    if(typeof build!=='function')return {state,fundingPlan:state.finance?.fundingPolicy?.lastPlan||null};
+    try{
+      const seeded={
+        ...state,
+        finance:{
+          ...state.finance,
+          plan:{...(state.finance?.plan||{}),...plan}
+        }
+      };
+      const result=build(seeded);
+      return {
+        state:{
+          ...seeded,
+          finance:{
+            ...seeded.finance,
+            pots:result.pots,
+            fundingPolicy:result.policy
+          }
+        },
+        fundingPlan:result.policy?.lastPlan||null
+      };
+    }catch(_){
+      return {state,fundingPlan:state.finance?.fundingPolicy?.lastPlan||null};
+    }
+  }
+
   function calc(plan,state=A().core.read()){
-    const auto=autoCommitments(state,plan);
+    const expectedWages=Math.max(0,Number(plan.expectedWages ?? plan.netPay)||0);
+    const wagesReceived=Math.max(0,Number(plan.wagesReceived ?? plan.netPay)||0);
+    const wageDifference=Number((wagesReceived-expectedWages).toFixed(2));
+    const wageExtra=Math.max(0,wageDifference);
+    const wageShortfall=Math.max(0,-wageDifference);
+
+    const preview=stateWithFundingPreview(state,{
+      ...plan,
+      expectedWages,
+      wagesReceived,
+      netPay:wagesReceived
+    });
+    const auto=autoCommitments(preview.state,plan);
+    const fundingPlan=preview.fundingPlan||{};
+    const wageExtraToPots=Number(Math.max(0,Number(fundingPlan.extraAllocated)||0).toFixed(2));
+    const wageExtraRemaining=Number(Math.max(0,wageExtra-wageExtraToPots).toFixed(2));
+
     const normalized={
       ...plan,
+      expectedWages,
+      wagesReceived,
+      netPay:wagesReceived, // compatibility for existing Aurora 2 state/readers
+      wageDifference,
+      wageExtra,
+      wageShortfall,
+      wageExtraToPots,
+      wageExtraRemaining,
       billsDue:auto.billsDue,
       potsDue:auto.potsDue,
       annualBillFunding:auto.annualHoldingContribution,
       holdingPotTopUp:auto.holdingTopUp
     };
-    const totalCash=Number(((Number(normalized.openingCash)||0)+(Number(normalized.netPay)||0)+(Number(normalized.extraCash)||0)).toFixed(2));
+    const totalCash=Number(((Number(normalized.openingCash)||0)+wagesReceived+(Number(normalized.extraCash)||0)).toFixed(2));
     const commitments=Number((
       auto.billsDue+
       auto.annualHoldingContribution+
@@ -240,17 +293,21 @@
       (Number(normalized.otherPlanned)||0)
     ).toFixed(2));
     const safeSurplus=Number(Math.max(0,totalCash-commitments-(Number(normalized.protectedCash)||0)).toFixed(2));
-    return {totalCash,commitments,safeSurplus,auto,plan:normalized};
+    return {totalCash,commitments,safeSurplus,auto,plan:normalized,fundingPlan};
   }
 
   function readForm(){
     const state=A().core.read();
     const base=state.finance?.plan||{};
+    const expectedWages=numValue('expectedWages');
+    const wagesReceived=numValue('wagesReceived');
     return {
       ...base,
       paydayDate:value('paydayDate'),
       openingCash:numValue('openingCash'),
-      netPay:numValue('netPay'),
+      expectedWages,
+      wagesReceived,
+      netPay:wagesReceived,
       extraCash:numValue('extraCash'),
       otherPlanned:numValue('otherPlanned'),
       protectedCash:numValue('protectedCash'),
@@ -262,8 +319,9 @@
     const state=A().core.read(), plan=readForm(), c=calc(plan,state);
     const saved={...c.plan,releaseAmount:plan.releaseAmount};
     A().core.update(s=>({...s,finance:{...s.finance,plan:saved,lastCalculatedAt:isoNow()}}));
+    A().funding?.recalc?.();
     renderAll();
-    return {plan:saved,c};
+    return {plan:saved,c:calc(saved,A().core.read())};
   }
 
   function planningAudit(state,plan,c){
@@ -275,7 +333,7 @@
     });
     const holdingFunded=active.filter(b=>isHoldingPotName(b.fundingSource));
     if(holdingFunded.length&&!c.auto.holdingPot)critical.push(`Holding Pot is missing but ${holdingFunded.length} active bill${holdingFunded.length===1?'':'s'} use it`);
-    const fundingPlan=state.finance?.fundingPolicy?.lastPlan;
+    const fundingPlan=c.fundingPlan||state.finance?.fundingPolicy?.lastPlan;
     if(fundingPlan&&Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0))>.011)warnings.push(`Pot funding view is out of sync by ${money(Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0)))}`);
     const stale=active.filter(b=>{const d=parseLocalDate(b.due);return d&&String(b.frequency||'one-off')==='one-off'&&d.getTime()<Date.now()-86400000});
     if(stale.length)warnings.push(`${stale.length} overdue one-off bill${stale.length===1?'':'s'} still active`);
@@ -294,7 +352,11 @@
   function renderPlan(){
     const state=A().core.read(), raw=state.finance?.plan||{}, c=calc(raw,state), plan=c.plan, ui=A().ui;
     ui.text('mOpening',money(plan.openingCash));
-    ui.text('mPay',money(plan.netPay));
+    ui.text('mPay',money(plan.wagesReceived));
+    ui.text('mPayMeta',`Expected ${money(plan.expectedWages)}`);
+    ui.text('breakExpectedWages',money(plan.expectedWages));
+    ui.text('breakWagesReceived',money(plan.wagesReceived));
+    ui.text('breakWageExtra',plan.wageDifference>=0?money(plan.wageExtra):`− ${money(plan.wageShortfall)}`);
     ui.text('mCommitments',money(c.commitments));
     ui.text('mProtected',money(plan.protectedCash));
     ui.text('mAvailable',money(c.safeSurplus));
@@ -306,6 +368,14 @@
     ui.text('breakOther',`− ${money(plan.otherPlanned)}`);
     ui.text('breakProtected',`− ${money(plan.protectedCash)}`);
     ui.text('breakAvailable',money(c.safeSurplus));
+    ui.text('autoExpectedWages',money(plan.expectedWages));
+    ui.text('autoWageDifference',plan.wageDifference>=0?`+ ${money(plan.wageExtra)}`:`− ${money(plan.wageShortfall)}`);
+    ui.text('autoWageDifferenceMeta',plan.wageDifference>0?'Extra pay detected':plan.wageDifference<0?'Below expected wage':'Wage matched expected');
+    ui.text('autoWageToPots',money(plan.wageExtraToPots));
+    ui.text('autoWageToPotsMeta',plan.wageExtra>0
+      ?`${money(plan.wageExtraToPots)} of ${money(plan.wageExtra)} routed to remaining pot gaps`
+      :'No extra wage to route');
+    ui.text('autoWageRemaining',money(plan.wageExtraRemaining));
     ui.text('autoBillsDue',money(c.auto.billsDue));
     ui.text('autoAnnualBills',money(c.auto.annualHoldingContribution));
     ui.text('autoTotalFunding',money(c.commitments));
@@ -422,6 +492,11 @@
       source:'Finance',
       financeSnapshot:{
         totalCash:Number(c.totalCash.toFixed(2)),
+        expectedWages:Number((c.plan.expectedWages||0).toFixed(2)),
+        wagesReceived:Number((c.plan.wagesReceived||0).toFixed(2)),
+        wageDifference:Number((c.plan.wageDifference||0).toFixed(2)),
+        wageExtraToPots:Number((c.plan.wageExtraToPots||0).toFixed(2)),
+        wageExtraRemaining:Number((c.plan.wageExtraRemaining||0).toFixed(2)),
         commitments:Number(c.commitments.toFixed(2)),
         billsDue:Number(c.auto.billsDue.toFixed(2)),
         holdingPotRequired:Number(c.auto.holdingRequired.toFixed(2)),
@@ -912,7 +987,10 @@
 
   function loadForm(){
     const p=A().core.read().finance?.plan||{};
-    ['paydayDate','openingCash','netPay','extraCash','otherPlanned','protectedCash','releaseAmount'].forEach(id=>setValue(id,p[id]??''));
+    ['paydayDate','openingCash','extraCash','otherPlanned','protectedCash','releaseAmount'].forEach(id=>setValue(id,p[id]??''));
+    const legacyPay=p.netPay??'';
+    setValue('expectedWages',p.expectedWages??legacyPay);
+    setValue('wagesReceived',p.wagesReceived??legacyPay);
   }
 
   function wireTabs(){
@@ -927,6 +1005,12 @@
     document.querySelectorAll('#paydayPanel input').forEach(el=>el.addEventListener('input',()=>{
       const state=A().core.read(), plan=readForm(), c=calc(plan,state);
       renderReleaseGuard(c.safeSurplus);
+      A().ui.text('autoExpectedWages',money(c.plan.expectedWages));
+      A().ui.text('autoWageDifference',c.plan.wageDifference>=0?`+ ${money(c.plan.wageExtra)}`:`− ${money(c.plan.wageShortfall)}`);
+      A().ui.text('autoWageDifferenceMeta',c.plan.wageDifference>0?'Extra pay detected':c.plan.wageDifference<0?'Below expected wage':'Wage matched expected');
+      A().ui.text('autoWageToPots',money(c.plan.wageExtraToPots));
+      A().ui.text('autoWageToPotsMeta',c.plan.wageExtra>0?`${money(c.plan.wageExtraToPots)} of ${money(c.plan.wageExtra)} routed to remaining pot gaps`:'No extra wage to route');
+      A().ui.text('autoWageRemaining',money(c.plan.wageExtraRemaining));
       A().ui.text('autoBillsDue',money(c.auto.billsDue));
       A().ui.text('autoAnnualBills',money(c.auto.annualHoldingContribution));
       A().ui.text('autoHoldingTopUp',money(c.auto.holdingTopUp));
