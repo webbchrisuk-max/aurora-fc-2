@@ -153,10 +153,64 @@
 
   const PAYDAYS_PER_YEAR=13;
   const PAY_CYCLE_DAYS=28;
+  const HOLDING_TARGET_CYCLES=3;
   function addDays(d,days){
     const x=new Date(d.getTime());
     x.setDate(x.getDate()+days);
     return x;
+  }
+
+
+  function holdingDynamicForecast(holdingBills,annualOccurrences,payday,annualContribution,hp){
+    const minimumFloor=Math.max(0,Number(hp?.target)||0);
+    const cycleTotals=Array.from({length:HOLDING_TARGET_CYCLES},()=>0);
+    const cycleCounts=Array.from({length:HOLDING_TARGET_CYCLES},()=>0);
+    if(!payday){
+      return {minimumFloor,calculatedTarget:0,dynamicTarget:minimumFloor,cycleTotals,cycleCounts,peakCycle:0};
+    }
+
+    // Dated occurrences come from the single annual projection so an overdue
+    // occurrence cannot be duplicated again in later four-week windows.
+    annualOccurrences.forEach(o=>{
+      if(!o.date)return;
+      const d=parseLocalDate(o.date);if(!d)return;
+      const diffDays=Math.floor((d.getTime()-payday.getTime())/86400000);
+      const idx=diffDays<0?0:Math.floor(diffDays/PAY_CYCLE_DAYS);
+      if(idx>=0&&idx<HOLDING_TARGET_CYCLES){
+        cycleTotals[idx]+=Math.max(0,Number(o.amount)||0);
+        cycleCounts[idx]+=1;
+      }
+    });
+
+    // Undated recurring bills cannot be placed on an exact day. Use a
+    // conservative per-cycle estimate instead of inventing a fake due date.
+    holdingBills.filter(b=>!parseLocalDate(b.due)).forEach(b=>{
+      const amount=Math.max(0,Number(b.amount)||0);if(amount<=0)return;
+      for(let i=0;i<HOLDING_TARGET_CYCLES;i++){
+        const start=addDays(payday,i*PAY_CYCLE_DAYS), end=addDays(start,PAY_CYCLE_DAYS);
+        const count=occurrenceCountForUndatedBill(b,start,end);
+        cycleTotals[i]+=amount*count;
+        cycleCounts[i]+=count;
+      }
+    });
+
+    let cumulativeBills=0,calculatedTarget=0,peakCycle=0;
+    cycleTotals.forEach((amount,i)=>{
+      cumulativeBills+=amount;
+      // Dynamic target is measured immediately AFTER this payday's funding.
+      // Before cycle 2/3 bills arrive, one/two future normal contributions
+      // will have replenished the pot, so subtract those future contributions.
+      const futureContributions=annualContribution*i;
+      const requiredAfterThisPayday=Math.max(0,cumulativeBills-futureContributions);
+      if(requiredAfterThisPayday>calculatedTarget){calculatedTarget=requiredAfterThisPayday;peakCycle=i+1;}
+    });
+    calculatedTarget=Number(calculatedTarget.toFixed(2));
+    return {
+      minimumFloor:Number(minimumFloor.toFixed(2)),
+      calculatedTarget,
+      dynamicTarget:Number(Math.max(minimumFloor,calculatedTarget).toFixed(2)),
+      cycleTotals:cycleTotals.map(v=>Number(v.toFixed(2))),cycleCounts,peakCycle
+    };
   }
 
   function autoCommitments(state,plan){
@@ -188,17 +242,23 @@
     const annualHoldingContribution=Number((annualHoldingTotal/PAYDAYS_PER_YEAR).toFixed(2));
 
     const holdingBalance=Number(Math.max(0,Number(hp?.balance)||0).toFixed(2));
+    const dynamic=holdingDynamicForecast(holdingBills,annualHoldingOccurrences,payday,annualHoldingContribution,hp);
+    const holdingProjectedBeforeTopUp=Number((holdingBalance+annualHoldingContribution).toFixed(2));
 
     // Normal annual contribution lands first. Safety top-up is EXTRA only
-    // when that still would not cover every Holding Pot bill before next pay.
-    const holdingTopUp=Number(
-      Math.max(0,holdingRequired-(holdingBalance+annualHoldingContribution)).toFixed(2)
-    );
+    // when the resulting balance would still sit below the dynamic 3-cycle target.
+    const holdingTopUp=Number((payday
+      ?Math.max(0,dynamic.dynamicTarget-holdingProjectedBeforeTopUp)
+      :0).toFixed(2));
+    const holdingAfterFunding=Number((holdingProjectedBeforeTopUp+holdingTopUp).toFixed(2));
+    const holdingTargetHeadroom=Number((holdingAfterFunding-dynamic.dynamicTarget).toFixed(2));
     const holdingSurplus=Number(
-      Math.max(0,holdingBalance+annualHoldingContribution+holdingTopUp-holdingRequired).toFixed(2)
+      Math.max(0,holdingAfterFunding-holdingRequired).toFixed(2)
     );
 
-    const pots=activePots(state);
+    // Holding Pot is funded exclusively by the annual contribution + dynamic
+    // safety top-up. Never count its optional minimum floor as a goal-pot gap.
+    const pots=activePots(state).filter(p=>!isHoldingPotName(p.name));
     const potsDue=Number(pots.reduce((s,p)=>{
       const gap=potGap(p);
       return s+Math.min(gap,Math.max(0,Number(p.fundingPerPayday)||0));
@@ -218,7 +278,15 @@
       annualHoldingSummary:summarizeOccurrences(annualHoldingOccurrences),
       annualHoldingTotal,
       annualHoldingContribution,
-      holdingRequired,holdingBalance,holdingTopUp,holdingSurplus
+      holdingRequired,holdingBalance,holdingTopUp,holdingSurplus,
+      holdingDynamicTarget:dynamic.dynamicTarget,
+      holdingCalculatedTarget:dynamic.calculatedTarget,
+      holdingMinimumFloor:dynamic.minimumFloor,
+      holdingCycleTotals:dynamic.cycleTotals,
+      holdingCycleCounts:dynamic.cycleCounts,
+      holdingPeakCycle:dynamic.peakCycle,
+      holdingAfterFunding,holdingProjectedBeforeTopUp,holdingTargetHeadroom,
+      holdingTargetCycles:HOLDING_TARGET_CYCLES
     };
   }
 
@@ -396,14 +464,27 @@
     ui.text('holdingAnnualTotal',money(c.auto.annualHoldingTotal));
     ui.text('holdingAnnualContribution',money(c.auto.annualHoldingContribution));
     ui.text('holdingAnnualMeta',c.auto.annualEnd?`Funding horizon to before ${c.auto.annualEnd}`:'Choose payday date');
+    ui.text('holdingDynamicTarget',money(c.auto.holdingDynamicTarget));
+    ui.text('holdingDynamicMeta',c.auto.holdingMinimumFloor>c.auto.holdingCalculatedTarget+.005
+      ?`Manual floor ${money(c.auto.holdingMinimumFloor)} is above calculated ${money(c.auto.holdingCalculatedTarget)}`
+      :`Calculated from the worst cash position across ${c.auto.holdingTargetCycles} pay cycles`);
     ui.text('holdingRequired',money(c.auto.holdingRequired));
     ui.text('holdingBalance',money(c.auto.holdingBalance));
+    ui.text('holdingBalanceMeta',c.auto.holdingBalance>=c.auto.holdingDynamicTarget
+      ?`${money(c.auto.holdingBalance-c.auto.holdingDynamicTarget)} above today's dynamic target`
+      :`${money(c.auto.holdingDynamicTarget-c.auto.holdingBalance)} below target before payday funding`);
     ui.text('holdingTopUp',money(c.auto.holdingTopUp));
+    ui.text('holdingAfterFunding',money(c.auto.holdingAfterFunding));
+    ui.text('holdingAfterFundingMeta',c.auto.holdingTargetHeadroom>=0
+      ?`${money(c.auto.holdingTargetHeadroom)} headroom above dynamic target`
+      :`${money(Math.abs(c.auto.holdingTargetHeadroom))} below dynamic target`);
+    const floorInput=$('holdingMinimumFloor');
+    if(floorInput&&document.activeElement!==floorInput)floorInput.value=Number(c.auto.holdingMinimumFloor||0).toFixed(2);
     ui.text('holdingRequiredMeta',`${c.auto.holdingOccurrences.length} projected occurrence${c.auto.holdingOccurrences.length===1?'':'s'}`);
     ui.text('holdingTopUpMeta',c.auto.holdingTopUp>0
       ?`${money(c.auto.holdingTopUp)} extra after the normal ${money(c.auto.annualHoldingContribution)} contribution`
-      :c.auto.holdingRequired>0
-        ?`${money(c.auto.holdingSurplus)} remains after next-cycle bills`
+      :c.auto.holdingDynamicTarget>0
+        ?'Normal funding already reaches the dynamic target'
         :'No safety top-up required');
 
     const hpBox=$('holdingPotBreakdown');
@@ -419,7 +500,9 @@
         const nextCycle=c.auto.holdingSummary.length
           ?c.auto.holdingSummary.map(x=>`${esc(x.name)} ×${x.count} = ${money(x.total)}${x.estimated?' (date estimate)':''}${x.overdue?' (includes overdue)':''}`).join(' • ')
           :'No Holding Pot bills before next payday';
-        hpBox.innerHTML=`<b>13-pay bill funding:</b> ${money(c.auto.annualHoldingTotal)} ÷ 13 = ${money(c.auto.annualHoldingContribution)} each payday.<br><br><b>Next-cycle safety check:</b> ${nextCycle}`;
+        const cycles=(c.auto.holdingCycleTotals||[]).map((v,i)=>`Cycle ${i+1}: ${money(v)}`).join(' • ');
+        const floor=c.auto.holdingMinimumFloor>0?` • optional floor ${money(c.auto.holdingMinimumFloor)}`:'';
+        hpBox.innerHTML=`<b>13-pay bill funding:</b> ${money(c.auto.annualHoldingTotal)} ÷ 13 = ${money(c.auto.annualHoldingContribution)} each payday.<br><br><b>Dynamic target:</b> ${money(c.auto.holdingDynamicTarget)} • calculated ${money(c.auto.holdingCalculatedTarget)}${floor}.<br>${cycles}<br><br><b>Next-cycle bills:</b> ${nextCycle}`;
       }
     }
 
@@ -504,6 +587,9 @@
         annualBillFunding:Number(c.auto.annualHoldingContribution.toFixed(2)),
         annualHoldingTotal:Number(c.auto.annualHoldingTotal.toFixed(2)),
         holdingPotTopUp:Number(c.auto.holdingTopUp.toFixed(2)),
+        holdingPotDynamicTarget:Number(c.auto.holdingDynamicTarget.toFixed(2)),
+        holdingPotMinimumFloor:Number(c.auto.holdingMinimumFloor.toFixed(2)),
+        holdingPotAfterFunding:Number(c.auto.holdingAfterFunding.toFixed(2)),
         holdingPotOccurrences:c.auto.holdingOccurrences.length,
         potsDue:Number(c.auto.potsDue.toFixed(2)),
         protectedCash:Number(plan.protectedCash.toFixed(2)),
@@ -568,10 +654,12 @@
   function priorityLabel(p){return Number(p.priority)===1?'P1 Critical':Number(p.priority)===3?'P3 Flexible':'P2 Important'}
   function renderPots(){
     const state=A().core.read(), pots=state.finance?.pots||[], live=pots.filter(p=>!p.archived);
-    const funded=live.reduce((s,p)=>s+potFunded(p),0);
-    const targets=live.reduce((s,p)=>s+(Number(p.target)||0),0);
-    const gaps=live.reduce((s,p)=>s+potGap(p),0);
-    const due=live.reduce((s,p)=>s+Math.min(potGap(p),Number(p.fundingPerPayday)||0),0);
+    const goalPots=live.filter(p=>!isHoldingPotName(p.name));
+    const holdingAuto=autoCommitments(state,state.finance?.plan||{});
+    const funded=goalPots.reduce((s,p)=>s+potFunded(p),0);
+    const targets=goalPots.reduce((s,p)=>s+(Number(p.target)||0),0);
+    const gaps=goalPots.reduce((s,p)=>s+potGap(p),0);
+    const due=goalPots.reduce((s,p)=>s+Math.min(potGap(p),Number(p.fundingPerPayday)||0),0);
     A().ui.text('potBalanceTotal',money(live.reduce((s,p)=>s+(Number(p.balance)||0),0)));
     A().ui.text('potTargetTotal',money(targets));
     A().ui.text('potGapTotal',money(gaps));
@@ -583,15 +671,29 @@
       return;
     }
     host.innerHTML=pots.map(p=>{
-      const target=Math.max(0,Number(p.target)||0), fundedAmount=potFunded(p), pct=target>0?Math.min(100,fundedAmount/target*100):0, gap=potGap(p);
-      const spentNote=p.goalMode==='funded-progress'?` • ${money(p.spent)} spent counts toward goal`:'';
+      const holding=isHoldingPotName(p.name);
+      const target=holding?holdingAuto.holdingDynamicTarget:Math.max(0,Number(p.target)||0);
+      const fundedAmount=holding?Math.max(0,Number(p.balance)||0):potFunded(p);
+      const projected=holding?holdingAuto.holdingAfterFunding:fundedAmount;
+      const pct=target>0?Math.min(100,projected/target*100):(holding?100:0);
+      const gap=holding?Math.max(0,target-fundedAmount):potGap(p);
+      const spentNote=!holding&&p.goalMode==='funded-progress'?` • ${money(p.spent)} spent counts toward goal`:'';
+      const primaryMeta=holding
+        ?`${money(p.balance)} available • Dynamic target ${money(target)}${holdingAuto.holdingMinimumFloor>0?` • floor ${money(holdingAuto.holdingMinimumFloor)}`:''}`
+        :`${money(p.balance)} available • ${money(fundedAmount)} funded of ${money(target)}${spentNote}`;
+      const fundingMeta=holding
+        ?`${gap>.005?`Current gap ${money(gap)}`:`Current balance meets target`} • <b class="good">After payday ${money(projected)}</b>`
+        :`Gap ${money(gap)} • <b class="good">Next payday ${money(Math.min(gap,Number(p.fundingPerPayday)||0))}</b>${p.deadline?` • Complete by ${esc(p.deadline)}`:''}`;
+      const reason=holding
+        ?`Dynamic 3-cycle protection • ${money(holdingAuto.annualHoldingContribution)} normal funding${holdingAuto.holdingTopUp>0?` + ${money(holdingAuto.holdingTopUp)} safety top-up`:''}`
+        :(p.fundingReason||'Funding engine waiting');
       return `<article class="finance-item ${p.archived?'is-archived':''}">
         <div class="finance-item-main">
-          <div class="finance-item-title"><strong>${esc(p.name)}</strong><span>${esc(priorityLabel(p))}</span></div>
-          <div class="finance-item-meta">${money(p.balance)} available • ${money(fundedAmount)} funded of ${money(target)}${spentNote}</div>
+          <div class="finance-item-title"><strong>${esc(p.name)}</strong><span>${esc(priorityLabel(p))}</span>${holding?'<span class="cyan">DYNAMIC</span>':''}</div>
+          <div class="finance-item-meta">${primaryMeta}</div>
           <div class="progress-mini"><i style="width:${pct.toFixed(1)}%"></i></div>
-          <div class="finance-item-meta">Gap ${money(gap)} • <b class="good">Next payday ${money(Math.min(gap,Number(p.fundingPerPayday)||0))}</b>${p.deadline?` • Complete by ${esc(p.deadline)}`:''}</div>
-          <div class="finance-item-meta">${esc(p.fundingReason||'Funding engine waiting')}</div>
+          <div class="finance-item-meta">${fundingMeta}</div>
+          <div class="finance-item-meta">${reason}</div>
         </div>
         <div class="finance-item-actions">
           <button class="btn secondary" data-pot-edit="${esc(p.id)}">Edit</button>
@@ -604,18 +706,29 @@
   function resetPotEditor(){
     setValue('potId',''); setValue('potName',''); setValue('potBalance',''); setValue('potTarget','');
     setValue('potFunding',''); setValue('potDeadline',''); setValue('potPriority','2'); setValue('potGoalMode','balance'); setValue('potSpent','');
-    updatePotSpentVisibility();
+    updatePotSpentVisibility(); updatePotEditorMode();
     A().ui.text('potEditorTitle','Add Pot');
   }
   function updatePotSpentVisibility(){
     const show=value('potGoalMode')==='funded-progress';
     const wrap=$('potSpentField'); if(wrap)wrap.style.display=show?'grid':'none';
   }
+  function updatePotEditorMode(){
+    const holding=isHoldingPotName(value('potName'));
+    const label=$('potTargetLabel'),help=$('potTargetHelp');
+    if(label)label.textContent=holding?'Minimum floor (optional)':'Target';
+    if(help)help.textContent=holding
+      ?'Aurora calculates the real Holding Pot target automatically. Leave £0 for fully dynamic, or set a minimum cash floor.'
+      :'The amount this pot is aiming to hold or fund.';
+    ['potFunding','potDeadline','potGoalMode','potSpent'].forEach(id=>{const el=$(id);if(el)el.disabled=holding});
+    if(holding){setValue('potFunding','0');setValue('potDeadline','');setValue('potGoalMode','balance');setValue('potSpent','0');}
+    updatePotSpentVisibility();
+  }
   function editPot(id){
     const p=(A().core.read().finance?.pots||[]).find(x=>x.id===id); if(!p)return;
     setValue('potId',p.id); setValue('potName',p.name); setValue('potBalance',p.balance); setValue('potTarget',p.target);
     setValue('potFunding',p.fundingOverride||0); setValue('potDeadline',p.deadline||''); setValue('potPriority',p.priority); setValue('potGoalMode',p.goalMode); setValue('potSpent',p.spent);
-    updatePotSpentVisibility();
+    updatePotSpentVisibility(); updatePotEditorMode();
     A().ui.text('potEditorTitle','Edit Pot');
     $('potEditor')?.scrollIntoView({behavior:'smooth',block:'center'});
   }
@@ -624,13 +737,14 @@
     if(!name){alert('Enter a pot name.');return;}
     A().core.update(s=>{
       const existing=(s.finance.pots||[]).find(p=>p.id===id);
+      const holding=isHoldingPotName(name);
       const pot={
         ...(existing||{}),id,name,
         balance:numValue('potBalance'),target:numValue('potTarget'),
-        fundingOverride:numValue('potFunding'),deadline:value('potDeadline'),
-        fundingPerPayday:Number(existing?.fundingPerPayday)||0,priority:Number(value('potPriority')||2),
-        goalMode:value('potGoalMode')==='funded-progress'?'funded-progress':'balance',
-        spent:value('potGoalMode')==='funded-progress'?numValue('potSpent'):0,
+        fundingOverride:holding?0:numValue('potFunding'),deadline:holding?'':value('potDeadline'),
+        fundingPerPayday:holding?0:(Number(existing?.fundingPerPayday)||0),priority:Number(value('potPriority')||2),
+        goalMode:holding?'balance':(value('potGoalMode')==='funded-progress'?'funded-progress':'balance'),
+        spent:holding?0:(value('potGoalMode')==='funded-progress'?numValue('potSpent'):0),
         archived:Boolean(existing?.archived),createdAt:existing?.createdAt||isoNow(),updatedAt:isoNow()
       };
       const pots=[...(s.finance.pots||[])], index=pots.findIndex(p=>p.id===id);
@@ -642,6 +756,14 @@
   function togglePotArchive(id){
     A().core.update(s=>({...s,finance:{...s.finance,pots:(s.finance.pots||[]).map(p=>p.id===id?{...p,archived:!p.archived,updatedAt:isoNow()}:p)}}));
     renderAll();
+  }
+
+  function saveHoldingRule(){
+    const floor=numValue('holdingMinimumFloor');
+    const state=A().core.read(), hp=holdingPot(state);
+    if(!hp){alert('Holding Pot is missing. Add it in Pots first.');return;}
+    A().core.update(s=>({...s,finance:{...s.finance,pots:(s.finance.pots||[]).map(p=>p.id===hp.id?{...p,target:floor,fundingOverride:0,deadline:'',goalMode:'balance',spent:0,updatedAt:isoNow()}:p)}}));
+    renderAll();showToast(floor>0?`Holding Pot minimum floor saved at ${money(floor)}.`:'Holding Pot is now fully dynamic with no manual floor.');
   }
 
   function billStatus(b){
@@ -1023,6 +1145,8 @@
     $('savePot')?.addEventListener('click',savePot);
     $('cancelPot')?.addEventListener('click',resetPotEditor);
     $('potGoalMode')?.addEventListener('change',updatePotSpentVisibility);
+    $('potName')?.addEventListener('input',updatePotEditorMode);
+    $('saveHoldingRule')?.addEventListener('click',saveHoldingRule);
 
     $('saveBill')?.addEventListener('click',saveBill);
     $('cancelBill')?.addEventListener('click',resetBillEditor);

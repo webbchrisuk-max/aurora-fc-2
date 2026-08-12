@@ -52,10 +52,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Payday Wage Routing v1.2.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Dynamic Holding Target v1.3.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">FINANCE v1.2</span>
+  <span class="status">FINANCE v1.3</span>
 </header>
 
 <div class="tabs card">
@@ -171,18 +171,25 @@
       <div class="action-row"><button class="btn secondary" id="saveFundingPolicy">Save Routing Rule</button></div>
       <div class="split-line"></div>
 
-      <div class="section-head"><h2 style="font-size:15px">Holding Pot Protection</h2><span class="good">AUTO</span></div>
+      <div class="section-head"><h2 style="font-size:15px">Holding Pot Protection</h2><span class="good">DYNAMIC</span></div>
       <div class="grid grid-3">
         <div class="auto-chip"><small>Annual Holding Pot bills</small><strong id="holdingAnnualTotal">£0.00</strong><span id="holdingAnnualMeta">Projected across 13 pay cycles</span></div>
         <div class="auto-chip"><small>13-pay contribution</small><strong id="holdingAnnualContribution">£0.00</strong><span>Annual bill total ÷ 13</span></div>
+        <div class="auto-chip"><small>Dynamic target</small><strong class="cyan" id="holdingDynamicTarget">£0.00</strong><span id="holdingDynamicMeta">Worst cash requirement across 3 pay cycles</span></div>
+        <div class="auto-chip"><small>Current Holding Pot</small><strong id="holdingBalance">£0.00</strong><span id="holdingBalanceMeta">Existing protected cash</span></div>
+        <div class="auto-chip"><small>Safety top-up</small><strong id="holdingTopUp">£0.00</strong><span id="holdingTopUpMeta">Only if scheduled funding misses the dynamic target</span></div>
+        <div class="auto-chip"><small>After payday funding</small><strong id="holdingAfterFunding">£0.00</strong><span id="holdingAfterFundingMeta">Balance + normal funding + safety top-up</span></div>
         <div class="auto-chip"><small>Bills before next payday</small><strong id="holdingRequired">£0.00</strong><span id="holdingRequiredMeta">0 projected occurrences</span></div>
-        <div class="auto-chip"><small>Already in Holding Pot</small><strong id="holdingBalance">£0.00</strong><span>Existing protected cash</span></div>
-        <div class="auto-chip"><small>Safety top-up</small><strong id="holdingTopUp">£0.00</strong><span id="holdingTopUpMeta">Only if normal funding would leave a shortfall</span></div>
       </div>
-      <div id="holdingPotBreakdown" class="notice" style="margin-top:10px">No Holding Pot-funded bills in this payday cycle.</div>
+      <div class="field-grid" style="margin-top:10px">
+        <div class="field"><label for="holdingMinimumFloor">Minimum floor (optional)</label><div class="money-wrap"><input id="holdingMinimumFloor" type="number" min="0" step="0.01"></div><small>Set £0 for fully automatic. Aurora always uses the higher of this floor or the calculated dynamic target.</small></div>
+        <div class="field"><label>Dynamic horizon</label><input value="3 pay cycles / 12 weeks" readonly><small>Looks beyond the next payday so clustered bills are protected before they arrive.</small></div>
+      </div>
+      <div class="action-row"><button class="btn secondary" id="saveHoldingRule">Save Holding Rule</button></div>
+      <div id="holdingPotBreakdown" class="notice" style="margin-top:10px">No Holding Pot-funded bills in the dynamic horizon.</div>
 
       <div class="split-line"></div>
-      <p class="muted" style="font-size:9px;line-height:1.7">Holding Pot bills are projected across the next 13 four-week pay cycles and divided by 13 to create a steady payday contribution. Finance then checks the bills due before the next payday and adds a safety top-up only if the Holding Pot plus this payday’s normal contribution would still be short. Bills funded by a dedicated named pot are excluded here so they are not counted twice.</p>
+      <p class="muted" style="font-size:9px;line-height:1.7">The normal bill contribution is still the annual Holding Pot requirement ÷ 13. The dynamic target is separate: Aurora looks across the next three four-week pay cycles and calculates the cash that must remain available after allowing for future regular contributions. A safety top-up is added only when the current balance plus this payday’s normal contribution would still sit below that dynamic target. Dedicated-pot bills remain excluded to prevent double counting.</p>
     </article>
   </section>
 </section>
@@ -207,7 +214,7 @@
       <div class="field-grid">
         <div class="field"><label>Pot name</label><input id="potName" placeholder="e.g. Coventry City Tickets / Travel"></div>
         <div class="field"><label>Current balance</label><div class="money-wrap"><input id="potBalance" type="number" min="0" step="0.01"></div></div>
-        <div class="field"><label>Target</label><div class="money-wrap"><input id="potTarget" type="number" min="0" step="0.01"></div></div>
+        <div class="field"><label id="potTargetLabel">Target</label><div class="money-wrap"><input id="potTarget" type="number" min="0" step="0.01"></div><small id="potTargetHelp">The amount this pot is aiming to hold or fund.</small></div>
         <div class="field"><label>Manual funding override</label><div class="money-wrap"><input id="potFunding" type="number" min="0" step="0.01"></div><small>Leave £0 for automatic deadline + priority funding.</small></div>
         <div class="field"><label>Complete by</label><input id="potDeadline" type="date"><small>A dated pot gets its minimum required amount first.</small></div>
         <div class="field"><label>Priority</label><select id="potPriority"><option value="1">P1 Critical</option><option value="2">P2 Important</option><option value="3">P3 Flexible</option></select></div>
@@ -339,6 +346,6 @@
 <script src="aurora-core.js?v=8"></script>
 <script src="finance-funding.js?v=120"></script>
 <script src="finance-house.js?v=042"></script>
-<script src="finance.js?v=120"></script>
+<script src="finance.js?v=130"></script>
 </body>
 </html>
