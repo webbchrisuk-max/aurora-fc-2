@@ -447,7 +447,7 @@
       requiresRefresh:existing?.requiresRefresh?!evidenceReady:false,
       autoManaged:false,
       autoPriority:0,
-      source:existing?.autoManaged?'AURORA2_MANUAL_OVERRIDE':existing?.source||'AURORA2_MANUAL',
+      source:isAutoManagedTarget(existing,state)?'AURORA2_MANUAL_OVERRIDE':existing?.source||'AURORA2_MANUAL',
       createdAt:existing?.createdAt||now(),
       updatedAt:now()
     };
@@ -458,10 +458,13 @@
       const next=rows.some(t=>t.id===id)
         ?rows.map(t=>t.id===id?assessed:t)
         :[...rows,assessed];
+      const autoBench={...obj(s.scouting?.autoBench)};
+      autoBench.autoIds=arr(autoBench.autoIds).map(String).filter(x=>x!==String(id));
       return {
         ...s,
         scouting:{
           ...s.scouting,targets:rankTargets(next,s),
+          autoBench,
           source:'AURORA2_SCOUTING',updatedAt:now()
         }
       };
@@ -500,12 +503,14 @@
     if(!invalidateApproval(s=>{
       const meta={...obj(s.scouting?.activeMeta)};
       delete meta[id];
+      const autoBench={...obj(s.scouting?.autoBench)};
+      autoBench.autoIds=arr(autoBench.autoIds).map(String).filter(x=>x!==String(id));
       return {
         ...s,
         scouting:{
           ...s.scouting,
           targets:arr(s.scouting?.targets).filter(x=>x.id!==id),
-          activeMeta:meta,updatedAt:now()
+          activeMeta:meta,autoBench,updatedAt:now()
         }
       };
     }))return;
@@ -843,6 +848,15 @@
     return state.scouting?.autoBench?.enabled!==false;
   }
 
+  function isAutoManagedTarget(t,state=A().core.read()){
+    if(!t)return false;
+    if(t.autoManaged===true)return true;
+    const source=String(t.source||'').toUpperCase();
+    if(source==='AURORA1_GLOBAL_AUTO_BENCH')return true;
+    const ids=new Set(arr(state.scouting?.autoBench?.autoIds).map(String));
+    return ids.has(String(t.id||''));
+  }
+
   function autoPromotionProfile(n){
     const y=Math.max(0,num(n.legacyYieldPct));
     const strength=Math.max(0,num(n.legacyStrength));
@@ -928,9 +942,8 @@
 
   function selectAutoBench(state){
     const universe=arr(state.scouting?.universe);
-    const manual=arr(state.scouting?.targets).filter(t=>!t.autoManaged);
+    const manual=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state));
     const slots=Math.max(0,AUTO_BENCH_TOTAL-manual.length);
-    if(!slots)return {selected:[],qualified:0,slots,manual:manual.length};
 
     const manualTickers=new Set(manual.map(t=>String(t.ticker||'').toUpperCase()));
     const qualified=universe
@@ -939,17 +952,17 @@
       .filter(x=>!manualTickers.has(activeTicker(x.n.marketSymbol).toUpperCase()))
       .sort((a,b)=>b.p.priority-a.p.priority||b.p.strength-a.p.strength||b.p.yieldPct-a.p.yieldPct);
 
+    if(!slots)return {selected:[],qualified:qualified.length,slots,manual:manual.length};
+
     const picked=[],used=new Set();
     const take=(region,count)=>{
       for(const x of qualified){
         if(picked.length>=slots||count<=0)break;
-        const key=x.n.id;
-        if(used.has(key)||x.n.region!==region)continue;
-        picked.push(x);used.add(key);count--;
+        if(used.has(x.n.id)||x.n.region!==region)continue;
+        picked.push(x);used.add(x.n.id);count--;
       }
     };
 
-    // Keep the bench genuinely global when enough qualified names exist.
     if(slots>=6){
       take('US',Math.min(2,slots));
       take('WORLD',Math.min(1,Math.max(0,slots-picked.length)));
@@ -971,7 +984,7 @@
   function autoBenchSignature(rows){
     return arr(rows).map(t=>[
       t.id,t.ticker,t.yieldPct,t.livePriceGbp,t.dividendSafety,t.valuationScore,
-      t.dividendGrowth,t.confidence,t.autoPriority,t.sourceUpdatedAt
+      t.dividendGrowth,t.confidence,t.source,t.sourceUpdatedAt
     ].join('|')).sort().join('||');
   }
 
@@ -992,8 +1005,8 @@
     }
 
     const plan=selectAutoBench(state);
-    const manual=arr(state.scouting?.targets).filter(t=>!t.autoManaged);
-    const currentAuto=arr(state.scouting?.targets).filter(t=>t.autoManaged);
+    const manual=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state));
+    const currentAuto=arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state));
     const nextAuto=plan.selected.map(t=>assessTarget(t,state));
     const changed=autoBenchSignature(currentAuto)!==autoBenchSignature(nextAuto);
 
@@ -1009,6 +1022,7 @@
             qualified:plan.qualified,
             autoCount:nextAuto.length,
             manualCount:manual.length,
+            autoIds:nextAuto.map(t=>String(t.id||'')),
             lastRunAt:now(),
             lastChangeAt:s.scouting?.autoBench?.lastChangeAt||null,
             status:'CURRENT'
@@ -1020,7 +1034,7 @@
     }
 
     if(!invalidateApproval(s=>{
-      const liveManual=arr(s.scouting?.targets).filter(t=>!t.autoManaged);
+      const liveManual=arr(s.scouting?.targets).filter(t=>!isAutoManagedTarget(t,s));
       const meta={...obj(s.scouting?.activeMeta)};
       Object.keys(meta).forEach(k=>{
         if(String(k).startsWith('AUTO-NET-'))delete meta[k];
@@ -1053,6 +1067,7 @@
             qualified:plan.qualified,
             autoCount:nextAuto.length,
             manualCount:liveManual.length,
+            autoIds:nextAuto.map(t=>String(t.id||'')),
             lastRunAt:now(),
             lastChangeAt:now(),
             status:'UPDATED'
@@ -1344,8 +1359,8 @@
 
     const auto=obj(state.scouting?.autoBench);
     const autoOn=autoBenchEnabled(state);
-    const autoRows=arr(state.scouting?.targets).filter(t=>t.autoManaged);
-    const manualRows=arr(state.scouting?.targets).filter(t=>!t.autoManaged);
+    const autoRows=arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state));
+    const manualRows=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state));
     set('autoBenchTitle',autoOn?(scoutingLocked(state)?'AUTO BENCH FROZEN':'AUTO BENCH ON'):'AUTO BENCH PAUSED');
     set('autoBenchMeta',autoOn
       ?`${autoRows.length} automatic + ${manualRows.length} manual = ${autoRows.length+manualRows.length} Active Scouts • ${auto.qualified??'—'} global names currently clear the auto-promotion gate • target ${AUTO_BENCH_TOTAL}.`
@@ -1379,7 +1394,7 @@
     const activeIds=new Set(arr(state.scouting?.targets).map(t=>String(t.id||'')));
     const activeTickers=new Set(arr(state.scouting?.targets)
       .map(t=>String(t.ticker||'').toUpperCase()));
-    const autoTickers=new Set(arr(state.scouting?.targets).filter(t=>t.autoManaged)
+    const autoTickers=new Set(arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state))
       .map(t=>String(t.ticker||'').toUpperCase()));
 
     const filtered=rows.filter(r=>{
@@ -1549,7 +1564,7 @@
       const market=m.marketSymbol?` • ${esc(m.marketSymbol)}${m.region?' • '+esc(m.region):''}`:'';
       return `<article class="target-card ${i===0&&t.status!=='block'?'top':''}">
         <div class="target-copy">
-          <strong>#${t[rankKey]||i+1} • ${esc(t.ticker)} — ${esc(t.name)} ${t.autoManaged?'<span class="auto-tag">AUTO</span>':''}</strong>
+          <strong>#${t[rankKey]||i+1} • ${esc(t.ticker)} — ${esc(t.name)} ${isAutoManagedTarget(t,state)?'<span class="auto-tag">AUTO</span>':''}</strong>
           <span>${esc(t.reason||'Scouting evaluation')} • ${accountLabel(t.preferredAccount)}${t.sector?' • '+esc(t.sector):''}${market}</span>
           <div class="score-strip">
             <span class="score-chip">Yield ${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</span>
@@ -1567,7 +1582,7 @@
           <div class="target-score">${Math.round(num(t[scoreKey]))}</div>
           <small>${strategy==='maximum'?'MAXIMUM':'SUSTAINABLE'} / 100</small>
           <div class="action-row" style="justify-content:flex-end;margin-top:7px">
-            <button class="btn secondary" data-edit="${esc(t.id)}">${t.autoManaged?'Take Over':'Edit'}</button>
+            <button class="btn secondary" data-edit="${esc(t.id)}">${isAutoManagedTarget(t,state)?'Take Over':'Edit'}</button>
             <button class="btn secondary" data-delete="${esc(t.id)}">Remove</button>
           </div>
         </div>
@@ -1636,9 +1651,9 @@
 
   function updateVersionLabels(){
     const notice=document.querySelector('.scout-notice b');
-    if(notice)notice.textContent='Scouting Centre 2.0 — Auto Bench v0.3.';
+    if(notice)notice.textContent='Scouting Centre 2.0 — Auto Bench v0.3.1.';
     const badge=document.querySelector('.page-head .scout-badge');
-    if(badge)badge.textContent='AUTO BENCH v0.3';
+    if(badge)badge.textContent='AUTO BENCH v0.3.1';
     const hero=document.querySelector('.scout-hero p');
     if(hero)hero.textContent=
       'Scouting now rotates the best evidence-qualified names from the UK, US and world network into a 12-player Active Scouting bench automatically. Transfer still requires shortlist approval.';
@@ -1712,7 +1727,8 @@
       autoProfile:autoPromotionProfile,
       autoSelect:selectAutoBench,
       rebalanceAutoBench,
-      setAutoBenchEnabled
+      setAutoBenchEnabled,
+      isAutoManagedTarget
     }
   };
 })(window);
