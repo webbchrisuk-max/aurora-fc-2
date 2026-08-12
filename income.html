@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050b16">
+<title>Income Centre — Aurora FC 2.0</title>
+<link rel="stylesheet" href="aurora.css">
+<style>
+:root{--income:#f6c453;--income2:#22d3ee;--income-rgb:246,196,83}
+.income-notice{border-color:rgba(var(--income-rgb),.22)!important;background:linear-gradient(90deg,rgba(var(--income-rgb),.065),rgba(34,211,238,.035))!important;color:#f8e7b1!important}
+.income-hero{position:relative;overflow:hidden;padding:24px;border-radius:26px;border:1px solid rgba(var(--income-rgb),.23);background:radial-gradient(circle at 0 0,rgba(var(--income-rgb),.15),transparent 35%),radial-gradient(circle at 100% 0,rgba(34,211,238,.10),transparent 32%),linear-gradient(145deg,rgba(32,24,7,.97),rgba(7,14,25,.99));box-shadow:var(--shadow)}
+.income-hero:after{content:"INCOME";position:absolute;right:14px;bottom:-18px;font-size:82px;font-weight:1000;letter-spacing:-5px;color:rgba(255,255,255,.025);pointer-events:none}
+.income-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.income-hero h2{font-size:clamp(30px,3.5vw,50px);margin:7px 0 0;letter-spacing:-1.7px}.income-hero p{color:var(--muted);font-size:11px;line-height:1.65;max-width:760px}
+.income-badge{display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(var(--income-rgb),.28);background:rgba(var(--income-rgb),.07);color:#f8df9e;font-size:9px;font-weight:1000}
+.hero-income{padding:17px;border-radius:18px;border:1px solid rgba(var(--income-rgb),.20);background:rgba(var(--income-rgb),.04)}.hero-income small{display:block;color:#f8d67c;font-size:8px;text-transform:uppercase;font-weight:1000}.hero-income .big{font-size:36px;font-weight:1000;letter-spacing:-1px;margin-top:4px}.hero-income strong{display:block;margin-top:5px;font-size:14px}.hero-income span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}
+.income-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.income-kpi{padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.income-kpi small{display:block;color:var(--muted);font-size:7px;font-weight:950;text-transform:uppercase}.income-kpi strong{display:block;font-size:21px;margin-top:6px}.income-kpi span{display:block;color:var(--muted);font-size:7px;margin-top:4px}
+.account-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.account-card{padding:14px;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.account-card small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase}.account-card strong{display:block;font-size:20px;margin-top:5px}.account-card span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
+.player-list,.calendar-list,.history-list{display:grid;gap:8px}.player-row,.calendar-row,.history-row2{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.player-row.top{border-color:rgba(var(--income-rgb),.23);background:rgba(var(--income-rgb),.035)}.row-copy strong{display:block;font-size:11px}.row-copy span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:4px}.row-side{text-align:right}.row-side strong{display:block;font-size:17px}.row-side span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
+.month-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.month-card{padding:11px;border-radius:13px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.month-card small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase}.month-card strong{display:block;font-size:14px;margin-top:5px}.month-bar{height:5px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:7px}.month-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--income),var(--cyan));border-radius:999px}
+.editor-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.editor-grid .wide{grid-column:span 2}.editor-grid .full{grid-column:1/-1}.field small.help{display:block;color:var(--muted);font-size:7px;line-height:1.45;margin-top:4px}
+.status-pill{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);font-size:7px;font-weight:1000;text-transform:uppercase}.status-pill.pass{color:#9df0ba;border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.status-pill.caution{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05)}.status-pill.block{color:#ffb6c2;border-color:rgba(255,112,137,.25);background:rgba(255,112,137,.05)}.status-pill.info{color:#a7efff;border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.05)}
+.health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.health{padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.health small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase}.health strong{display:block;font-size:15px;margin-top:4px}
+@media(max-width:1100px){.income-kpis{grid-template-columns:repeat(3,1fr)}.month-grid{grid-template-columns:repeat(4,1fr)}.editor-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.income-hero-grid{grid-template-columns:1fr}.account-grid{grid-template-columns:1fr}.health-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.income-kpis,.month-grid{grid-template-columns:1fr 1fr}.editor-grid{grid-template-columns:1fr}.editor-grid .wide,.editor-grid .full{grid-column:auto}.player-row,.calendar-row,.history-row2{grid-template-columns:1fr}.row-side{text-align:left}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
+  <nav class="nav">
+    <a href="index.html">🏟 Aurora HQ</a>
+    <a href="finance.html">💷 Finance</a>
+    <a href="transfer.html">🔄 Transfer</a>
+    <a href="registration.html">📝 Registration</a>
+    <a href="squad.html">⚽ Squad</a>
+    <a href="scouting.html">🔎 Scouting</a>
+    <a href="income.html">💰 Income</a>
+    <a href="#" data-soon="Club Control">⚙ Club Control</a>
+  </nav>
+  <div class="sidebar-foot"><b>Income owns the dividends</b><br>Squad owns shares. Income turns those shares into one canonical income picture.</div>
+</aside>
+<main class="main"><div class="content">
+<div class="notice income-notice" style="margin-bottom:14px"><b>Income Centre 2.0 — Income Engine v0.1.</b> Annual income is rebuilt from canonical Squad shares × annual DPS. Stored annual totals are fallback evidence only.</div>
+<header class="page-head"><div><span class="eyebrow" style="color:var(--income)">Aurora FC 2.0 • Income</span><h1>Income Centre</h1><p>See what the Squad pays you now, what is due next, and how every confirmed purchase changes the income engine.</p></div><span class="income-badge">INCOME ENGINE v0.1</span></header>
+
+<section class="income-hero"><div class="income-hero-grid">
+  <div><span class="eyebrow" style="color:#f8d67c">Forward Dividend Income</span><h2>Build the squad.<br>Grow the wage.</h2><p>Income reads account-scoped holdings from Squad, calculates the forward annual dividend income and publishes only the finished result back to Aurora HQ.</p><div class="action-row"><button class="btn primary" id="recalculateIncome">Recalculate Income</button><button class="btn secondary" id="syncIncomeBackend">Sync Dividend Calendar</button><a class="btn secondary" href="squad.html">Open Squad</a></div></div>
+  <article class="hero-income"><small>Forward annual income</small><div class="big" id="heroAnnual">£0.00</div><strong id="heroMonthly">£0.00 / month</strong><span id="heroMeta">Waiting for canonical Squad holdings.</span></article>
+</div></section>
+
+<section class="section income-kpis">
+  <article class="income-kpi"><small>Annual Income</small><strong class="gold" id="kAnnual">£0.00</strong><span>Forward run-rate</span></article>
+  <article class="income-kpi"><small>Monthly Equivalent</small><strong id="kMonthly">£0.00</strong><span>Annual ÷ 12</span></article>
+  <article class="income-kpi"><small>Yield on Cost</small><strong id="kYoc">0.00%</strong><span>Income ÷ book cost</span></article>
+  <article class="income-kpi"><small>Portfolio Yield</small><strong id="kYield">0.00%</strong><span>Income ÷ market value</span></article>
+  <article class="income-kpi"><small>Best Dividend Player</small><strong id="kBest">—</strong><span id="kBestMeta">—</span></article>
+  <article class="income-kpi"><small>Next Dividend</small><strong id="kNext">—</strong><span id="kNextMeta">Calendar needed</span></article>
+</section>
+
+<section class="section grid grid-2">
+  <article class="card card-pad"><div class="section-head"><h2>Income by Account</h2><span class="muted">Squad-derived</span></div><div class="account-grid" id="accountGrid"></div></article>
+  <article class="card card-pad"><div class="section-head"><h2>Income Growth</h2><span class="muted">Registration impact</span></div><div class="grid grid-3"><div class="metric"><small>Confirmed purchase uplift</small><strong class="good" id="registeredUplift">£0.00</strong><span>Expected annual income on confirmed registrations</span></div><div class="metric"><small>Current Transfer route</small><strong id="routeUplift">£0.00</strong><span>Read-only projection from Transfer</span></div><div class="metric"><small>Monthly target</small><strong id="targetProgress">Not set</strong><span id="targetMeta">Optional target below</span></div></div><div id="growthNote" class="notice" style="margin-top:10px">Registration impact is shown separately; it is already included in current Squad income after confirmation.</div></article>
+</section>
+
+<section class="section card card-pad"><div class="section-head"><div><h2>Dividend First Team</h2><p class="muted">Ranked by current forward annual income, aggregated by ticker across accounts.</p></div><span class="gold" id="playerCount">0 players</span></div><div class="player-list" id="playerList"></div></section>
+
+<section class="section card card-pad"><div class="section-head"><div><h2>12-Month Dividend Calendar</h2><p class="muted">Only recorded forecast/confirmed dividend events are included. Income will not invent payment dates.</p></div><span id="calendarCoverage" class="muted">0 events</span></div><div class="month-grid" id="monthGrid"></div></section>
+
+<section class="section grid grid-2">
+  <article class="card card-pad"><div class="section-head"><h2>Upcoming Dividends</h2><span class="muted">Next payments</span></div><div class="calendar-list" id="calendarList"></div></article>
+  <article class="card card-pad"><div class="section-head"><h2>Dividend Calendar Editor</h2><span id="editorMode" class="muted">NEW EVENT</span></div>
+    <input type="hidden" id="eventId">
+    <div class="editor-grid">
+      <div class="field wide"><label for="eventHolding">Holding</label><select id="eventHolding"></select><small class="help">Account + ticker is explicit so multi-account holdings stay correct.</small></div>
+      <div class="field"><label for="eventExDate">Ex-dividend date</label><input id="eventExDate" type="date"></div>
+      <div class="field"><label for="eventPayDate">Payment date</label><input id="eventPayDate" type="date"></div>
+      <div class="field"><label for="eventDps">Dividend per share £</label><input id="eventDps" type="number" min="0" step="0.000001"></div>
+      <div class="field"><label for="eventExpected">Expected amount £</label><input id="eventExpected" type="number" min="0" step="0.01"><small class="help">Auto-calculated from current shares × event DPS when DPS is supplied.</small></div>
+      <div class="field"><label for="eventActual">Actual amount £</label><input id="eventActual" type="number" min="0" step="0.01"></div>
+      <div class="field"><label for="eventStatus">Status</label><select id="eventStatus"><option>FORECAST</option><option>CONFIRMED</option><option>PAID</option><option>CANCELLED</option></select></div>
+      <div class="field full"><label for="eventNotes">Notes</label><input id="eventNotes" placeholder="Optional dividend note"></div>
+    </div>
+    <div id="eventPreview" class="notice" style="margin-top:10px">Choose a holding and enter the dividend information.</div>
+    <div class="action-row"><button class="btn primary" id="saveEvent">Save Dividend</button><button class="btn secondary" id="clearEvent">Clear</button></div>
+  </article>
+</section>
+
+<section class="section grid grid-2">
+  <article class="card card-pad"><div class="section-head"><h2>Income Settings</h2><span class="muted">Optional</span></div><div class="field-grid"><div class="field"><label for="monthlyTarget">Monthly income target</label><div class="money-wrap"><input id="monthlyTarget" type="number" min="0" step="1"></div><small>Leave at £0 if you do not want a target shown.</small></div><div class="field"><label for="horizonMonths">Calendar horizon</label><select id="horizonMonths"><option value="6">6 months</option><option value="12">12 months</option><option value="18">18 months</option><option value="24">24 months</option></select></div></div><div class="action-row"><button class="btn secondary" id="saveIncomeSettings">Save Settings</button></div></article>
+  <article class="card card-pad"><div class="section-head"><h2>Data Health</h2><span class="muted">No silent guessing</span></div><div class="health-grid"><div class="health"><small>Active holdings</small><strong id="healthHoldings">0</strong></div><div class="health"><small>Missing annual DPS</small><strong id="healthDps">0</strong></div><div class="health"><small>Calendar events</small><strong id="healthCalendar">0</strong></div><div class="health"><small>Backend calendar</small><strong id="healthBackend">LOCAL</strong></div></div><div id="healthNote" class="notice" style="margin-top:10px">Income uses Squad data as the source of truth for share counts.</div></article>
+</section>
+
+<section class="section card card-pad"><div class="section-head"><h2>Income History</h2><span class="muted">Automatic snapshots when the forward run-rate changes</span></div><div class="history-list" id="historyList"></div></section>
+
+<footer class="footer">Aurora FC 2.0 • Squad owns shares • Income owns dividend calculations • HQ displays the result • <span id="lastUpdated">—</span></footer>
+</div></main></div>
+<div id="toast" class="toast" style="position:fixed;right:18px;bottom:18px;z-index:100;opacity:0;transition:.2s;padding:10px 13px;border-radius:12px;border:1px solid rgba(246,196,83,.25);background:#171105;color:#fff1c8;font-size:10px;font-weight:850"></div>
+<script src="aurora-core.js?v=9"></script>
+<script src="aurora-data2-client.js?v=010"></script>
+<script src="income.js?v=010"></script>
+</body></html>

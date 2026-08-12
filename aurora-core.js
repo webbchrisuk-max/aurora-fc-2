@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=8;
+  const VERSION=9;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -12,7 +12,17 @@
       teamValue:null,annualIncome:null,monthlyIncome:null,squadSize:null,
       bestDividendPlayer:null,topAuroraPlayer:null
     },
-    income:{nextDividend:null},
+    income:{
+      version:1,
+      source:'SQUAD_CANONICAL',
+      nextDividend:null,
+      settings:{monthlyTarget:0,horizonMonths:12},
+      calendar:[],
+      history:[],
+      backend:{status:'LOCAL',lastSyncAt:null,lastError:null},
+      lastCalculatedAt:null,
+      updatedAt:null
+    },
     decision:{
       title:'Aurora 2.0 foundation ready',
       note:'No investment decision engine is connected yet.',
@@ -328,6 +338,39 @@
       source:String(x.source||'AURORADATA2')
     };
   }
+  function normalizeIncomeEvent(e){
+    const r=object(e);
+    const allowed=['FORECAST','CONFIRMED','PAID','CANCELLED','ARCHIVED'];
+    const status=allowed.includes(String(r.status||'').toUpperCase())?String(r.status).toUpperCase():'FORECAST';
+    return {
+      id:String(r.id||''),
+      ticker:String(r.ticker||'').replace(/\..*$/,'').toUpperCase(),
+      name:String(r.name||r.ticker||'Dividend'),
+      account:String(r.account||'CHECK'),
+      exDate:String(r.exDate||r.ex_date||''),
+      payDate:String(r.payDate||r.pay_date||''),
+      dividendPerShareGbp:Math.max(0,Number(r.dividendPerShareGbp??r.dividend_per_share_gbp)||0),
+      expectedAmountGbp:Math.max(0,Number(r.expectedAmountGbp??r.expected_amount_gbp)||0),
+      actualAmountGbp:Math.max(0,Number(r.actualAmountGbp??r.actual_amount_gbp)||0),
+      status,
+      notes:String(r.notes||''),
+      source:String(r.source||'AURORA2_INCOME'),
+      backendId:String(r.backendId||r.backend_id||''),
+      createdAt:r.createdAt||r.created_at||now(),
+      updatedAt:r.updatedAt||r.updated_at||now()
+    };
+  }
+  function normalizeIncomeHistory(h){
+    const r=object(h);
+    return {
+      id:String(r.id||''),
+      annualIncome:Math.max(0,Number(r.annualIncome)||0),
+      monthlyIncome:Math.max(0,Number(r.monthlyIncome)||0),
+      at:r.at||now(),
+      reason:String(r.reason||'Income recalculation')
+    };
+  }
+
   function normalizeHolding(h){
     const r=object(h);
     const allowedStatus=['ACTIVE','LOCKED','SOLD','ARCHIVED'];
@@ -381,7 +424,15 @@
       schemaVersion:VERSION,
       connection:{...d.connection,...object(r.connection)},
       portfolio:{...d.portfolio,...object(r.portfolio)},
-      income:{...d.income,...object(r.income)},
+      income:{
+        ...d.income,
+        ...object(r.income),
+        version:1,
+        settings:{...d.income.settings,...object(r.income?.settings),monthlyTarget:Math.max(0,Number(r.income?.settings?.monthlyTarget)||0),horizonMonths:Math.max(3,Math.min(24,Number(r.income?.settings?.horizonMonths)||12))},
+        calendar:Array.isArray(r.income?.calendar)?r.income.calendar.map(normalizeIncomeEvent):[],
+        history:Array.isArray(r.income?.history)?r.income.history.map(normalizeIncomeHistory):[],
+        backend:{...d.income.backend,...object(r.income?.backend)}
+      },
       decision:{...d.decision,...object(r.decision)},
       scouting:{
         ...d.scouting,
@@ -491,6 +542,10 @@
     });
     document.querySelectorAll('[data-soon="Scouting"]').forEach(a=>{
       a.setAttribute('href','scouting.html');
+      a.removeAttribute('data-soon');
+    });
+    document.querySelectorAll('[data-soon="Income"]').forEach(a=>{
+      a.setAttribute('href','income.html');
       a.removeAttribute('data-soon');
     });
     document.querySelectorAll('[data-soon="Registration"]').forEach(a=>{
