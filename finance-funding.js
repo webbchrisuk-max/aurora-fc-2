@@ -1,4 +1,4 @@
-/* Aurora FC 2.0 — Finance Funding Engine v1.0 */
+/* Aurora FC 2.0 — Finance Funding Engine v1.1 */
 (function(w){
   'use strict';
 
@@ -125,16 +125,23 @@
 
 
   function initialiseDefaultBudgetIfNeeded(state){
-    const f=obj(state?.finance), policy={...obj(f.fundingPolicy)}, pots=arr(f.pots);
-    const hasEligibleGap=pots.some(p=>!excludedFromGoalFunding(p));
-    const explicitlySaved=policy.legacyImported===true && policy.source==='AURORA2';
+    const f=obj(state?.finance), policy={...obj(f.fundingPolicy)};
 
-    // Aurora 1 used £250 when no payday goal-pot amount was available.
-    // Only untouched/foundation state is auto-initialised. An explicitly
-    // saved £0 remains £0.
-    if(hasEligibleGap && num(policy.goalPotBudget)<=.009 && !explicitlySaved){
-      policy.goalPotBudget=250;
-      policy.source='AURORA2_AUTO_DEFAULT';
+    // v1.1 removes the old fixed £250 cap. Deadline funding is now calculated
+    // from each pot's remaining gap and paydays left. The old value is kept
+    // only for audit, then optional extra funding starts at £0.
+    if(Number(policy.engineVersion||0)<2){
+      policy.previousGoalPotBudget=num(policy.goalPotBudget);
+      policy.goalPotBudget=0;
+      policy.extraPotBudget=0;
+      policy.engineVersion=2;
+      policy.source='AURORA2_DYNAMIC_REQUIRED';
+      policy.legacyImported=true;
+      return {state:{...state,finance:{...f,fundingPolicy:policy}},changed:true};
+    }
+
+    if(policy.extraPotBudget==null){
+      policy.extraPotBudget=num(policy.goalPotBudget);
       return {state:{...state,finance:{...f,fundingPolicy:policy}},changed:true};
     }
     return {state,changed:false};
@@ -241,87 +248,107 @@
 
   function buildPlan(state){
     const f=obj(state.finance), plan=obj(f.plan), policy=obj(f.fundingPolicy);
-    const budget=Math.max(0,num(policy.goalPotBudget));
+    const extraBudget=Math.max(0,num(policy.extraPotBudget));
     const strategy=['priority','balanced','critical'].includes(policy.strategy)?policy.strategy:'priority';
     const payday=plan.paydayDate||'';
     const pots=arr(f.pots);
     const candidates=pots
       .filter(p=>!excludedFromGoalFunding(p))
-      .map(p=>({pot:p,gap:potGap(p,state),priority:[1,2,3].includes(Number(p.priority))?Number(p.priority):2,deadline:deadlineInfo(p,payday)}));
+      .map(p=>({
+        pot:p,
+        gap:potGap(p,state),
+        priority:[1,2,3].includes(Number(p.priority))?Number(p.priority):2,
+        deadline:deadlineInfo(p,payday)
+      }));
+
     const allocations=new Map();
-    let remaining=budget;
 
-    // 1) Explicit manual overrides, if the user has chosen one.
-    for(const row of candidates.filter(x=>num(x.pot.fundingOverride)>0).sort((a,b)=>a.priority-b.priority||b.gap-a.gap)){
-      if(remaining<=.009)break;
-      const take=Math.min(remaining,row.gap,num(row.pot.fundingOverride));
-      if(take>.009){
-        addAllocation(allocations,row.pot,take,'Manual payday override');
-        remaining-=take;
+    // 1) REQUIRED FUNDING.
+    // Dated pots are never capped by an arbitrary pot budget. Each payday
+    // gets the amount needed to stay on schedule: remaining gap ÷ paydays left.
+    // A manual override can deliberately raise that minimum, but cannot lower
+    // a dated pot below the amount required to hit its deadline.
+    let requiredFunding=0;
+    let deadlineRequired=0;
+    for(const row of candidates){
+      const deadlineNeed=row.deadline.hasDeadline
+        ? Math.min(row.gap,Math.max(0,row.deadline.required))
+        : 0;
+      const manual=Math.min(row.gap,num(row.pot.fundingOverride));
+      const required=Math.min(row.gap,Math.max(deadlineNeed,manual));
+
+      if(deadlineNeed>.009)deadlineRequired+=deadlineNeed;
+      if(required>.009){
+        const reasons=[];
+        if(deadlineNeed>.009){
+          reasons.push(`Required for ${row.pot.deadline} • ${row.deadline.paydays>0?row.deadline.paydays+' payday'+(row.deadline.paydays===1?'':'s')+' left':'deadline passed'}`);
+        }
+        if(manual>deadlineNeed+.009)reasons.push('Manual minimum');
+        addAllocation(allocations,row.pot,required,reasons.join(' • '),deadlineNeed);
+        requiredFunding+=required;
       }
     }
 
-    // 2) Aurora 1 behaviour: dated pots protect their minimum payday amount first.
-    const dated=candidates
-      .filter(x=>x.deadline.hasDeadline&&x.deadline.gap>.009&&num(x.pot.fundingOverride)<=0)
-      .sort((a,b)=>(a.deadline.deadline?.getTime()||Infinity)-(b.deadline.deadline?.getTime()||Infinity)||a.priority-b.priority||b.gap-a.gap);
-    let deadlineRequired=0, deadlineAllocated=0;
-    for(const row of dated){
-      deadlineRequired+=row.deadline.required;
-      if(remaining<=.009)continue;
-      const current=allocations.get(row.pot.id)?.amount||0;
-      const need=Math.max(0,Math.min(row.gap-current,row.deadline.required-current));
-      const take=Math.min(remaining,need);
-      if(take>.009){
-        addAllocation(
-          allocations,row.pot,take,
-          `Deadline ${row.pot.deadline} • ${row.deadline.paydays>0?row.deadline.paydays+' payday'+(row.deadline.paydays===1?'':'s')+' left':'overdue'}`,
-          row.deadline.required
-        );
-        deadlineAllocated+=take;
-        remaining-=take;
-      }
-    }
-
-    // 3) Remaining flexible budget follows priority P1 -> P2 -> P3.
-    remaining=allocatePriority(candidates,remaining,allocations,strategy);
+    // 2) OPTIONAL EXTRA FUNDING.
+    // Only the user-entered extra amount is routed by priority. This no longer
+    // limits deadline funding.
+    let remainingExtra=extraBudget;
+    remainingExtra=allocatePriority(candidates,remainingExtra,allocations,strategy);
 
     let nextPots=pots.map(p=>{
       const a=allocations.get(p.id);
       const nextFunding=a?Math.min(potGap(p,state),a.amount):0;
-      const reason=a?a.reasons.join(' • '):(potGap(p,A()?.core?.read?.())<=.009?'Target funded':excludedFromGoalFunding(p)?'Excluded from goal-pot funding':'Waiting behind higher-priority pots');
-      const required=a?.required||0;
+      const reason=a
+        ?a.reasons.join(' • ')
+        :(potGap(p,state)<=.009
+          ?'Target funded'
+          :excludedFromGoalFunding(p)
+            ?'Excluded from goal-pot funding'
+            :'No deadline requirement; waiting for optional extra funding');
       return {
         ...p,
         fundingPerPayday:Number(nextFunding.toFixed(2)),
         fundingReason:reason,
-        fundingRequired:Number(required.toFixed(2))
+        fundingRequired:Number((a?.required||0).toFixed(2))
       };
     });
 
-    const targetAllocated=Number((budget-remaining).toFixed(2));
+    const extraAllocated=Math.max(0,extraBudget-remainingExtra);
+    const targetAllocated=Number((requiredFunding+extraAllocated).toFixed(2));
     nextPots=reconcileFundingPennies(nextPots,targetAllocated,state);
+
     const allocated=Number(nextPots.reduce((s,p)=>s+Math.max(0,num(p.fundingPerPayday)),0).toFixed(2));
-    const shortfall=Math.max(0,deadlineRequired-deadlineAllocated);
+    const requiredVisible=Number(nextPots.reduce((s,p)=>s+Math.max(0,num(p.fundingRequired)),0).toFixed(2));
     const rows=nextPots.filter(p=>num(p.fundingPerPayday)>0).map(p=>({
-      id:p.id,name:p.name,amount:Number(num(p.fundingPerPayday).toFixed(2)),reason:p.fundingReason,deadline:p.deadline||''
+      id:p.id,
+      name:p.name,
+      amount:Number(num(p.fundingPerPayday).toFixed(2)),
+      required:Number(num(p.fundingRequired).toFixed(2)),
+      reason:p.fundingReason,
+      deadline:p.deadline||''
     }));
 
     return {
       pots:nextPots,
       policy:{
         ...policy,
-        goalPotBudget:Number(budget.toFixed(2)),
+        goalPotBudget:Number(extraBudget.toFixed(2)), // compatibility only
+        extraPotBudget:Number(extraBudget.toFixed(2)),
+        engineVersion:2,
         strategy,
         lastCalculatedAt:isoNow(),
         lastPlan:{
           paydayDate:payday,
-          budget:Number(budget.toFixed(2)),
-          allocated:Number(allocated.toFixed(2)),
-          unallocated:Number(Math.max(0,budget-allocated).toFixed(2)),
+          budget:Number(extraBudget.toFixed(2)),
+          requiredFunding:Number(requiredVisible.toFixed(2)),
           deadlineRequired:Number(deadlineRequired.toFixed(2)),
-          deadlineAllocated:Number(deadlineAllocated.toFixed(2)),
-          deadlineShortfall:Number(shortfall.toFixed(2)),
+          deadlineAllocated:Number(deadlineRequired.toFixed(2)),
+          deadlineShortfall:0,
+          extraBudget:Number(extraBudget.toFixed(2)),
+          extraAllocated:Number(extraAllocated.toFixed(2)),
+          allocated:Number(allocated.toFixed(2)),
+          totalFunding:Number(allocated.toFixed(2)),
+          unallocated:Number(Math.max(0,extraBudget-extraAllocated).toFixed(2)),
           rows
         }
       }
@@ -383,6 +410,8 @@
         fundingPolicy:{
           ...s.finance.fundingPolicy,
           goalPotBudget:num(budget.value),
+          extraPotBudget:num(budget.value),
+          engineVersion:2,
           strategy:strategy.value,
           source:'AURORA2',
           legacyImported:true
@@ -396,18 +425,19 @@
     if(!A()?.core)return;
     const s=A().core.read(), p=obj(s.finance?.fundingPolicy), plan=obj(p.lastPlan);
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
-    set('fundingBudgetValue',money(plan.budget||p.goalPotBudget||0));
+    set('fundingBudgetValue',money(plan.extraBudget??p.extraPotBudget??0));
     set('fundingAllocatedValue',money(plan.allocated||0));
-    set('fundingDeadlineValue',money(plan.deadlineAllocated||0));
+    set('fundingDeadlineValue',money(plan.requiredFunding??plan.deadlineAllocated??0));
     set('fundingUnallocatedValue',money(plan.unallocated||0));
     set('fundingEngineNote',
-      (plan.deadlineShortfall||0)>.009
-        ? `Deadline funding is short by ${money(plan.deadlineShortfall)} inside the current goal-pot budget.`
-        : `Deadline needs are protected first; remaining money follows ${p.strategy==='balanced'?'balanced':p.strategy==='critical'?'P1-only':'P1 → P2 → P3'} priority.`
+      `Aurora requires ${money(plan.requiredFunding||0)} this payday to keep dated/manual pots on schedule.`
+      + ((plan.extraBudget||0)>.009
+          ? ` Optional extra: ${money(plan.extraBudget)}; ${money(plan.extraAllocated||0)} routed by ${p.strategy==='balanced'?'balanced':p.strategy==='critical'?'P1-only':'P1 → P2 → P3'} priority.`
+          : ' No optional extra pot funding is set.')
     );
     const budget=document.getElementById('goalPotBudget');
     const strategy=document.getElementById('fundingStrategy');
-    if(budget&&document.activeElement!==budget)budget.value=Number(p.goalPotBudget||0).toFixed(2);
+    if(budget&&document.activeElement!==budget)budget.value=Number(p.extraPotBudget||0).toFixed(2);
     if(strategy&&document.activeElement!==strategy)strategy.value=p.strategy||'priority';
   }
 

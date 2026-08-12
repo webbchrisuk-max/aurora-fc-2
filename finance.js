@@ -66,9 +66,11 @@
     const days=Math.max(1,Math.round((nextPayday-payday)/86400000));
     const frequency=String(bill.frequency||'one-off');
     if(frequency==='weekly')return Math.max(1,Math.ceil(days/7));
-    if(frequency==='4-weeks'||frequency==='5-weeks'||frequency==='monthly')return 1;
-    // Annual and one-off bills need a real due date before Finance can know
-    // which payday cycle owns them.
+    if(frequency==='4-weeks')return Math.max(1,Math.ceil(days/28));
+    if(frequency==='5-weeks')return Math.max(1,Math.ceil(days/35));
+    if(frequency==='monthly')return Math.max(1,Math.round(days/30.4375));
+    // Yearly and one-off bills require a real date so annual smoothing
+    // cannot silently put them into the wrong funding year.
     return 0;
   }
 
@@ -148,25 +150,53 @@
     return [...map.values()].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
   }
 
+
+  const PAYDAYS_PER_YEAR=13;
+  const PAY_CYCLE_DAYS=28;
+  function addDays(d,days){
+    const x=new Date(d.getTime());
+    x.setDate(x.getDate()+days);
+    return x;
+  }
+
   function autoCommitments(state,plan){
     const payday=parseLocalDate(plan.paydayDate);
-    const nextPayday=payday?addMonthsClamped(payday,1):null;
+    const nextPayday=payday?addDays(payday,PAY_CYCLE_DAYS):null;
+    const annualEnd=payday?addDays(payday,PAY_CYCLE_DAYS*PAYDAYS_PER_YEAR):null;
     const bills=activeBills(state).filter(b=>!b.paid&&b.included!==false);
 
-    const allOccurrences=[];
-    bills.forEach(b=>allOccurrences.push(...projectBillOccurrences(b,payday,nextPayday)));
+    // Direct Current Account bills are still protected in the immediate cycle.
+    const cycleOccurrences=[];
+    bills.forEach(b=>cycleOccurrences.push(...projectBillOccurrences(b,payday,nextPayday)));
 
-    const currentAccountOccurrences=allOccurrences.filter(o=>o.fundingSource==='Current Account');
+    const currentAccountOccurrences=cycleOccurrences.filter(o=>o.fundingSource==='Current Account');
     const currentAccountBills=[...new Set(currentAccountOccurrences.map(o=>o.billId))]
       .map(id=>bills.find(b=>b.id===id)).filter(Boolean);
     const billsDue=Number(currentAccountOccurrences.reduce((s,o)=>s+Math.max(0,Number(o.amount)||0),0).toFixed(2));
 
+    // Holding Pot: project a complete 13-pay / 364-day funding year.
+    // Named-pot bills are deliberately excluded so dedicated pots are not
+    // double-counted as Holding Pot bills.
     const hp=holdingPot(state);
-    const holdingOccurrences=allOccurrences.filter(o=>isHoldingPotName(o.fundingSource));
+    const holdingBills=bills.filter(b=>isHoldingPotName(b.fundingSource));
+    const holdingOccurrences=cycleOccurrences.filter(o=>isHoldingPotName(o.fundingSource));
+    const annualHoldingOccurrences=[];
+    holdingBills.forEach(b=>annualHoldingOccurrences.push(...projectBillOccurrences(b,payday,annualEnd)));
+
     const holdingRequired=Number(holdingOccurrences.reduce((s,o)=>s+Math.max(0,Number(o.amount)||0),0).toFixed(2));
+    const annualHoldingTotal=Number(annualHoldingOccurrences.reduce((s,o)=>s+Math.max(0,Number(o.amount)||0),0).toFixed(2));
+    const annualHoldingContribution=Number((annualHoldingTotal/PAYDAYS_PER_YEAR).toFixed(2));
+
     const holdingBalance=Number(Math.max(0,Number(hp?.balance)||0).toFixed(2));
-    const holdingTopUp=Number(Math.max(0,holdingRequired-holdingBalance).toFixed(2));
-    const holdingSurplus=Number(Math.max(0,holdingBalance-holdingRequired).toFixed(2));
+
+    // Normal annual contribution lands first. Safety top-up is EXTRA only
+    // when that still would not cover every Holding Pot bill before next pay.
+    const holdingTopUp=Number(
+      Math.max(0,holdingRequired-(holdingBalance+annualHoldingContribution)).toFixed(2)
+    );
+    const holdingSurplus=Number(
+      Math.max(0,holdingBalance+annualHoldingContribution+holdingTopUp-holdingRequired).toFixed(2)
+    );
 
     const pots=activePots(state);
     const potsDue=Number(pots.reduce((s,p)=>{
@@ -177,25 +207,38 @@
     return {
       billsDue,potsDue,bills:currentAccountBills,
       billOccurrences:currentAccountOccurrences,
-      allOccurrences,
+      allOccurrences:cycleOccurrences,
       payday:payday?dateISO(payday):'',
       nextPayday:nextPayday?dateISO(nextPayday):'',
+      annualEnd:annualEnd?dateISO(annualEnd):'',
       holdingPot:hp,
       holdingOccurrences,
       holdingSummary:summarizeOccurrences(holdingOccurrences),
+      annualHoldingOccurrences,
+      annualHoldingSummary:summarizeOccurrences(annualHoldingOccurrences),
+      annualHoldingTotal,
+      annualHoldingContribution,
       holdingRequired,holdingBalance,holdingTopUp,holdingSurplus
     };
   }
+
   function calc(plan,state=A().core.read()){
     const auto=autoCommitments(state,plan);
     const normalized={
       ...plan,
       billsDue:auto.billsDue,
       potsDue:auto.potsDue,
+      annualBillFunding:auto.annualHoldingContribution,
       holdingPotTopUp:auto.holdingTopUp
     };
     const totalCash=Number(((Number(normalized.openingCash)||0)+(Number(normalized.netPay)||0)+(Number(normalized.extraCash)||0)).toFixed(2));
-    const commitments=Number((auto.billsDue+auto.holdingTopUp+auto.potsDue+(Number(normalized.otherPlanned)||0)).toFixed(2));
+    const commitments=Number((
+      auto.billsDue+
+      auto.annualHoldingContribution+
+      auto.holdingTopUp+
+      auto.potsDue+
+      (Number(normalized.otherPlanned)||0)
+    ).toFixed(2));
     const safeSurplus=Number(Math.max(0,totalCash-commitments-(Number(normalized.protectedCash)||0)).toFixed(2));
     return {totalCash,commitments,safeSurplus,auto,plan:normalized};
   }
@@ -233,7 +276,7 @@
     const holdingFunded=active.filter(b=>isHoldingPotName(b.fundingSource));
     if(holdingFunded.length&&!c.auto.holdingPot)critical.push(`Holding Pot is missing but ${holdingFunded.length} active bill${holdingFunded.length===1?'':'s'} use it`);
     const fundingPlan=state.finance?.fundingPolicy?.lastPlan;
-    if(fundingPlan&&Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0))>.011)warnings.push(`Goal-pot funding view is out of sync by ${money(Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0)))}`);
+    if(fundingPlan&&Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0))>.011)warnings.push(`Pot funding view is out of sync by ${money(Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0)))}`);
     const stale=active.filter(b=>{const d=parseLocalDate(b.due);return d&&String(b.frequency||'one-off')==='one-off'&&d.getTime()<Date.now()-86400000});
     if(stale.length)warnings.push(`${stale.length} overdue one-off bill${stale.length===1?'':'s'} still active`);
     const missionGate=!missionIsInFlight(state.mission)||state.mission?.status==='FINANCE_APPROVED';
@@ -257,44 +300,56 @@
     ui.text('mAvailable',money(c.safeSurplus));
     ui.text('breakTotal',money(c.totalCash));
     ui.text('breakBills',`− ${money(c.auto.billsDue)}`);
+    ui.text('breakAnnualBills',`− ${money(c.auto.annualHoldingContribution)}`);
     ui.text('breakHoldingTopUp',`− ${money(c.auto.holdingTopUp)}`);
     ui.text('breakPots',`− ${money(c.auto.potsDue)}`);
     ui.text('breakOther',`− ${money(plan.otherPlanned)}`);
     ui.text('breakProtected',`− ${money(plan.protectedCash)}`);
     ui.text('breakAvailable',money(c.safeSurplus));
     ui.text('autoBillsDue',money(c.auto.billsDue));
+    ui.text('autoAnnualBills',money(c.auto.annualHoldingContribution));
+    ui.text('autoTotalFunding',money(c.commitments));
     ui.text('autoHoldingTopUp',money(c.auto.holdingTopUp));
     ui.text('autoPotsDue',money(c.auto.potsDue));
     ui.text('autoBillsCount',`${c.auto.billOccurrences.length} occurrence${c.auto.billOccurrences.length===1?'':'s'} across ${c.auto.bills.length} Current Account bill${c.auto.bills.length===1?'':'s'}`);
-    ui.text('autoHoldingMeta',c.auto.holdingOccurrences.length
-      ?`${c.auto.holdingOccurrences.length} occurrence${c.auto.holdingOccurrences.length===1?'':'s'} • ${money(c.auto.holdingBalance)} already protected`
-      :'No Holding Pot-funded bills in this cycle');
+    ui.text('autoAnnualBillsMeta',c.auto.annualHoldingTotal>0
+      ?`${money(c.auto.annualHoldingTotal)} projected across 13 paydays`
+      :'No Holding Pot bills in the 13-pay funding year');
+    ui.text('autoHoldingMeta',c.auto.holdingTopUp>0
+      ?`${money(c.auto.holdingTopUp)} extra needed after normal 13-pay funding`
+      :'Next payday cycle is covered by balance + normal funding');
     ui.text('autoPotsCount',`${activePots(state).filter(p=>Math.min(potGap(p),Number(p.fundingPerPayday)||0)>.009).length} pot contribution${activePots(state).filter(p=>Math.min(potGap(p),Number(p.fundingPerPayday)||0)>.009).length===1?'':'s'} scheduled`);
     ui.text('paydayWindowHelp',c.auto.payday&&c.auto.nextPayday
-      ?`Protection window: ${c.auto.payday} to before ${c.auto.nextPayday}. Recurring bills are projected through the whole cycle.`
-      :'Choose the payday date to calculate the monthly bill-protection window.');
+      ?`13-pay funding year starts ${c.auto.payday}; safety check covers bills before ${c.auto.nextPayday}.`
+      :'Choose the payday date to calculate the 13-pay funding plan.');
 
+    ui.text('holdingAnnualTotal',money(c.auto.annualHoldingTotal));
+    ui.text('holdingAnnualContribution',money(c.auto.annualHoldingContribution));
+    ui.text('holdingAnnualMeta',c.auto.annualEnd?`Funding horizon to before ${c.auto.annualEnd}`:'Choose payday date');
     ui.text('holdingRequired',money(c.auto.holdingRequired));
     ui.text('holdingBalance',money(c.auto.holdingBalance));
     ui.text('holdingTopUp',money(c.auto.holdingTopUp));
     ui.text('holdingRequiredMeta',`${c.auto.holdingOccurrences.length} projected occurrence${c.auto.holdingOccurrences.length===1?'':'s'}`);
     ui.text('holdingTopUpMeta',c.auto.holdingTopUp>0
-      ?`${money(c.auto.holdingTopUp)} must be protected from this payday`
+      ?`${money(c.auto.holdingTopUp)} extra after the normal ${money(c.auto.annualHoldingContribution)} contribution`
       :c.auto.holdingRequired>0
-        ?`${money(c.auto.holdingSurplus)} remains after this cycle's protected bills`
-        :'No top-up required');
+        ?`${money(c.auto.holdingSurplus)} remains after next-cycle bills`
+        :'No safety top-up required');
 
     const hpBox=$('holdingPotBreakdown');
     if(hpBox){
       if(!c.auto.holdingPot&&c.auto.holdingOccurrences.length){
         hpBox.className='notice red';
         hpBox.textContent=`Holding Pot-funded bills exist, but the Holding Pot record is missing. Finance is conservatively reserving the full ${money(c.auto.holdingRequired)} requirement.`;
-      }else if(!c.auto.holdingSummary.length){
+      }else if(!c.auto.holdingSummary.length&&!c.auto.annualHoldingSummary.length){
         hpBox.className='notice good';
-        hpBox.textContent='No Holding Pot-funded bills are projected in this payday cycle.';
+        hpBox.textContent='No Holding Pot-funded bills are projected in the 13-pay funding year.';
       }else{
         hpBox.className='notice';
-        hpBox.innerHTML='<b>Protected bill plan:</b> '+c.auto.holdingSummary.map(x=>`${esc(x.name)} ×${x.count} = ${money(x.total)}${x.estimated?' (date estimate)':''}${x.overdue?' (includes overdue)':''}`).join(' • ');
+        const nextCycle=c.auto.holdingSummary.length
+          ?c.auto.holdingSummary.map(x=>`${esc(x.name)} ×${x.count} = ${money(x.total)}${x.estimated?' (date estimate)':''}${x.overdue?' (includes overdue)':''}`).join(' • ')
+          :'No Holding Pot bills before next payday';
+        hpBox.innerHTML=`<b>13-pay bill funding:</b> ${money(c.auto.annualHoldingTotal)} ÷ 13 = ${money(c.auto.annualHoldingContribution)} each payday.<br><br><b>Next-cycle safety check:</b> ${nextCycle}`;
       }
     }
 
@@ -371,6 +426,8 @@
         billsDue:Number(c.auto.billsDue.toFixed(2)),
         holdingPotRequired:Number(c.auto.holdingRequired.toFixed(2)),
         holdingPotBalance:Number(c.auto.holdingBalance.toFixed(2)),
+        annualBillFunding:Number(c.auto.annualHoldingContribution.toFixed(2)),
+        annualHoldingTotal:Number(c.auto.annualHoldingTotal.toFixed(2)),
         holdingPotTopUp:Number(c.auto.holdingTopUp.toFixed(2)),
         holdingPotOccurrences:c.auto.holdingOccurrences.length,
         potsDue:Number(c.auto.potsDue.toFixed(2)),
@@ -871,7 +928,10 @@
       const state=A().core.read(), plan=readForm(), c=calc(plan,state);
       renderReleaseGuard(c.safeSurplus);
       A().ui.text('autoBillsDue',money(c.auto.billsDue));
+      A().ui.text('autoAnnualBills',money(c.auto.annualHoldingContribution));
+      A().ui.text('autoHoldingTopUp',money(c.auto.holdingTopUp));
       A().ui.text('autoPotsDue',money(c.auto.potsDue));
+      A().ui.text('autoTotalFunding',money(c.commitments));
     }));
     $('savePlan')?.addEventListener('click',()=>{savePlan();showToast('Payday plan saved locally in Aurora 2.0.');});
     $('releaseMission')?.addEventListener('click',releaseMission);

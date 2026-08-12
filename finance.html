@@ -51,10 +51,10 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Finance Complete v1.0.2.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
+<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Automatic Funding v1.1.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
 <header class="page-head">
   <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">FINANCE v1.0.2</span>
+  <span class="status">FINANCE v1.1</span>
 </header>
 
 <div class="tabs card">
@@ -68,7 +68,7 @@
   <section class="grid grid-5">
     <article class="card card-pad metric"><small>Opening Cash</small><strong id="mOpening">£0.00</strong><span>Before payday</span></article>
     <article class="card card-pad metric"><small>Net Pay</small><strong id="mPay">£0.00</strong><span>Actual payday input</span></article>
-    <article class="card card-pad metric"><small>Commitments</small><strong id="mCommitments">£0.00</strong><span>Current Account bills + Holding Pot top-up + goal pots + planned</span></article>
+    <article class="card card-pad metric"><small>Total Funding Required</small><strong id="mCommitments">£0.00</strong><span>Bills + pots + safety protection + planned spending</span></article>
     <article class="card card-pad metric"><small>Protected Cash</small><strong id="mProtected">£0.00</strong><span>Cash floor left untouched</span></article>
     <article class="card card-pad metric"><small>Next Safe Release</small><strong class="good" id="mAvailable">£0.00</strong><span>Current payday forecast</span></article>
   </section>
@@ -95,8 +95,9 @@
       <div class="calc-list">
         <div class="calc-row"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div>
         <div class="calc-row"><span>Current Account bills</span><strong id="breakBills">− £0.00</strong></div>
-        <div class="calc-row"><span>Holding Pot top-up</span><strong id="breakHoldingTopUp">− £0.00</strong></div>
-        <div class="calc-row"><span>Goal-pot funding due</span><strong id="breakPots">− £0.00</strong></div>
+        <div class="calc-row"><span>13-pay bill funding</span><strong id="breakAnnualBills">− £0.00</strong></div>
+        <div class="calc-row"><span>Holding Pot safety top-up</span><strong id="breakHoldingTopUp">− £0.00</strong></div>
+        <div class="calc-row"><span>Pot funding required</span><strong id="breakPots">− £0.00</strong></div>
         <div class="calc-row"><span>Other planned spending</span><strong id="breakOther">− £0.00</strong></div>
         <div class="calc-row"><span>Protected cash floor</span><strong id="breakProtected">− £0.00</strong></div>
         <div class="calc-row total"><span>Safe surplus</span><strong class="good" id="breakAvailable">£0.00</strong></div>
@@ -118,7 +119,7 @@
     <article class="card card-pad">
       <div class="section-head"><h2>Actual Payday Planner</h2><span class="good">Live commitments</span></div>
       <div class="field-grid">
-        <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small id="paydayWindowHelp">Finance protects the full payday cycle: Current Account bills directly, plus any Holding Pot shortfall.</small></div>
+        <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small id="paydayWindowHelp">Aurora calculates bills over 13 paydays, required pot funding, and a safety check before the next payday.</small></div>
         <div class="field"><label for="openingCash">Opening cash</label><div class="money-wrap"><input id="openingCash" type="number" min="0" step="0.01"></div><small>Cash available before the wage lands.</small></div>
         <div class="field"><label for="netPay">Actual net pay</label><div class="money-wrap"><input id="netPay" type="number" min="0" step="0.01"></div><small>Use the real wage received.</small></div>
         <div class="field"><label for="extraCash">Extra / one-off cash</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Optional cash intentionally included this payday.</small></div>
@@ -129,9 +130,11 @@
 
       <div class="split-line"></div>
       <div class="grid grid-3">
-        <div class="auto-chip"><small>Current Account bills</small><strong id="autoBillsDue">£0.00</strong><span id="autoBillsCount">0 bill occurrences in payday cycle</span></div>
-        <div class="auto-chip"><small>Holding Pot top-up</small><strong id="autoHoldingTopUp">£0.00</strong><span id="autoHoldingMeta">No Holding Pot requirement</span></div>
-        <div class="auto-chip"><small>Goal-pot funding</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
+        <div class="auto-chip"><small>13-pay bill funding</small><strong id="autoAnnualBills">£0.00</strong><span id="autoAnnualBillsMeta">Annual Holding Pot bills ÷ 13</span></div>
+        <div class="auto-chip"><small>Pot funding required</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
+        <div class="auto-chip"><small>Safety top-up</small><strong id="autoHoldingTopUp">£0.00</strong><span id="autoHoldingMeta">Only if the next cycle is short</span></div>
+        <div class="auto-chip"><small>Current Account bills</small><strong id="autoBillsDue">£0.00</strong><span id="autoBillsCount">0 direct bill occurrences</span></div>
+        <div class="auto-chip"><small>Total funding required</small><strong class="good" id="autoTotalFunding">£0.00</strong><span>Bills + pots + safety + planned</span></div>
       </div>
       <div class="split-line"></div>
       <div id="releaseGuard" class="notice">Enter the amount you want Finance to release to Transfer.</div>
@@ -142,16 +145,16 @@
       <div class="section-head"><h2>Finance Rule</h2><span class="good">Single source</span></div>
       <div class="notice good"><b>Finance owns the approved amount.</b><br>Pots and bills now feed this calculation themselves. Transfer receives the released mission but cannot replace its budget.</div>
       <div class="split-line"></div>
-      <div class="section-head"><h2 style="font-size:15px">Payday Funding Engine</h2><span class="cyan">AUTO</span></div>
+      <div class="section-head"><h2 style="font-size:15px">Automatic Pot Funding</h2><span class="cyan">AUTO</span></div>
       <div class="field-grid">
-        <div class="field"><label for="goalPotBudget">Goal-pot budget</label><div class="money-wrap"><input id="goalPotBudget" type="number" min="0" step="0.01"></div><small>Auto-migrated from Aurora 1; if no legacy value exists, Aurora starts at £250 while goal pots still have gaps.</small></div>
-        <div class="field"><label for="fundingStrategy">Funding strategy</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced</option><option value="critical">Critical P1 only</option></select><small>Deadlines are always protected first.</small></div>
+        <div class="field"><label for="goalPotBudget">Extra pot funding (optional)</label><div class="money-wrap"><input id="goalPotBudget" type="number" min="0" step="0.01"></div><small>Required dated-pot funding is calculated automatically. Put £0 here unless you deliberately want Aurora to add extra to pots.</small></div>
+        <div class="field"><label for="fundingStrategy">Extra-funding strategy</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced</option><option value="critical">Critical P1 only</option></select><small>Deadlines are mandatory. Priority only decides where optional extra money goes.</small></div>
       </div>
       <div class="grid grid-2" style="margin-top:10px">
-        <div class="auto-chip"><small>Goal-pot budget</small><strong id="fundingBudgetValue">£0.00</strong><span>Available to allocate this payday</span></div>
-        <div class="auto-chip"><small>Allocated</small><strong id="fundingAllocatedValue">£0.00</strong><span>Automatically routed to pots</span></div>
-        <div class="auto-chip"><small>Deadline protected</small><strong id="fundingDeadlineValue">£0.00</strong><span>Minimum date-aware funding</span></div>
-        <div class="auto-chip"><small>Unallocated</small><strong id="fundingUnallocatedValue">£0.00</strong><span>Budget left after target gaps</span></div>
+        <div class="auto-chip"><small>Optional extra</small><strong id="fundingBudgetValue">£0.00</strong><span>Extra money you chose to add</span></div>
+        <div class="auto-chip"><small>Total pot funding</small><strong id="fundingAllocatedValue">£0.00</strong><span>Required + optional extra</span></div>
+        <div class="auto-chip"><small>Required by dates</small><strong id="fundingDeadlineValue">£0.00</strong><span>Calculated from gaps ÷ paydays left</span></div>
+        <div class="auto-chip"><small>Unused optional extra</small><strong id="fundingUnallocatedValue">£0.00</strong><span>Only applies to optional extra funding</span></div>
       </div>
       <div id="fundingEngineNote" class="notice" style="margin-top:10px">Funding engine calculating…</div>
       <div class="action-row"><button class="btn secondary" id="saveFundingPolicy">Save Funding Rule</button></div>
@@ -159,14 +162,16 @@
 
       <div class="section-head"><h2 style="font-size:15px">Holding Pot Protection</h2><span class="good">AUTO</span></div>
       <div class="grid grid-3">
-        <div class="auto-chip"><small>Bills required in cycle</small><strong id="holdingRequired">£0.00</strong><span id="holdingRequiredMeta">0 projected occurrences</span></div>
+        <div class="auto-chip"><small>Annual Holding Pot bills</small><strong id="holdingAnnualTotal">£0.00</strong><span id="holdingAnnualMeta">Projected across 13 pay cycles</span></div>
+        <div class="auto-chip"><small>13-pay contribution</small><strong id="holdingAnnualContribution">£0.00</strong><span>Annual bill total ÷ 13</span></div>
+        <div class="auto-chip"><small>Bills before next payday</small><strong id="holdingRequired">£0.00</strong><span id="holdingRequiredMeta">0 projected occurrences</span></div>
         <div class="auto-chip"><small>Already in Holding Pot</small><strong id="holdingBalance">£0.00</strong><span>Existing protected cash</span></div>
-        <div class="auto-chip"><small>Top-up from payday</small><strong id="holdingTopUp">£0.00</strong><span id="holdingTopUpMeta">Only the shortfall is reserved</span></div>
+        <div class="auto-chip"><small>Safety top-up</small><strong id="holdingTopUp">£0.00</strong><span id="holdingTopUpMeta">Only if normal funding would leave a shortfall</span></div>
       </div>
       <div id="holdingPotBreakdown" class="notice" style="margin-top:10px">No Holding Pot-funded bills in this payday cycle.</div>
 
       <div class="split-line"></div>
-      <p class="muted" style="font-size:9px;line-height:1.7">Current Account bills are protected directly. Holding Pot-funded bills are projected across the full payday cycle, compared with the cash already in Holding Pot, and only the shortfall is reserved from this payday. Weekly/monthly/4-week/5-week bills can be projected; yearly and one-off bills must have a due date so Finance knows which payday owns them.</p>
+      <p class="muted" style="font-size:9px;line-height:1.7">Holding Pot bills are projected across the next 13 four-week pay cycles and divided by 13 to create a steady payday contribution. Finance then checks the bills due before the next payday and adds a safety top-up only if the Holding Pot plus this payday’s normal contribution would still be short. Bills funded by a dedicated named pot are excluded here so they are not counted twice.</p>
     </article>
   </section>
 </section>
@@ -321,8 +326,8 @@
 
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js?v=6"></script>
-<script src="finance-funding.js?v=100"></script>
+<script src="finance-funding.js?v=110"></script>
 <script src="finance-house.js?v=042"></script>
-<script src="finance.js?v=102"></script>
+<script src="finance.js?v=110"></script>
 </body>
 </html>
