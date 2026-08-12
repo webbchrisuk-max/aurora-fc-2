@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=7;
+  const VERSION=8;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -73,6 +73,17 @@
       registrationDrafts:[],
       offers:[],
       migration:null,
+      updatedAt:null
+    },
+    registration:{
+      version:1,
+      backend:{
+        spreadsheetId:'1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig',
+        status:'NOT_CONNECTED',
+        lastHealthAt:null,
+        lastError:null
+      },
+      receipts:[],
       updatedAt:null
     },
     squad:{
@@ -267,6 +278,8 @@
       missionId:String(r.missionId||''),
       allocationId:String(r.allocationId||''),
       transactionId:String(r.transactionId||''),
+      clientRequestId:String(r.clientRequestId||''),
+      backendReceiptId:String(r.backendReceiptId||''),
       tradeDate:String(r.tradeDate||''),
       account:String(r.account||''),
       ticker:String(r.ticker||'').toUpperCase(),
@@ -283,12 +296,38 @@
       totalCostGbp:Math.max(0,Number(r.totalCostGbp)||0),
       plannedAmount:Math.max(0,Number(r.plannedAmount)||0),
       differenceGbp:Number(r.differenceGbp)||0,
-      status:String(r.status||'READY_FOR_BACKEND'),
+      previousShares:Math.max(0,Number(r.previousShares)||0),
+      newShares:Math.max(0,Number(r.newShares)||0),
+      previousBookCostGbp:Math.max(0,Number(r.previousBookCostGbp)||0),
+      newBookCostGbp:Math.max(0,Number(r.newBookCostGbp)||0),
+      previousAvgCostGbp:Math.max(0,Number(r.previousAvgCostGbp)||0),
+      newAvgCostGbp:Math.max(0,Number(r.newAvgCostGbp)||0),
+      expectedAnnualIncomeGbp:Math.max(0,Number(r.expectedAnnualIncomeGbp)||0),
+      status:String(r.status||'DRAFT'),
+      error:String(r.error||''),
+      confirmedAt:r.confirmedAt||null,
       createdAt:r.createdAt||now(),
       updatedAt:r.updatedAt||now()
     };
   }
 
+  function normalizeRegistrationReceipt(r){
+    const x=object(r);
+    return {
+      id:String(x.id||x.backendReceiptId||''),
+      backendReceiptId:String(x.backendReceiptId||x.id||''),
+      transactionId:String(x.transactionId||''),
+      routeId:String(x.routeId||''),
+      missionId:String(x.missionId||''),
+      allocationId:String(x.allocationId||''),
+      account:String(x.account||''),
+      ticker:String(x.ticker||'').toUpperCase(),
+      totalCostGbp:Math.max(0,Number(x.totalCostGbp)||0),
+      confirmedAt:x.confirmedAt||now(),
+      duplicate:Boolean(x.duplicate),
+      source:String(x.source||'AURORADATA2')
+    };
+  }
   function normalizeHolding(h){
     const r=object(h);
     const allowedStatus=['ACTIVE','LOCKED','SOLD','ARCHIVED'];
@@ -366,6 +405,12 @@
         route:normalizeTransferRoute(r.transfer?.route),
         registrationDrafts:Array.isArray(r.transfer?.registrationDrafts)?r.transfer.registrationDrafts.map(normalizeRegistrationDraft):[],
         offers:Array.isArray(r.transfer?.offers)?r.transfer.offers:[]
+      },
+      registration:{
+        ...d.registration,
+        ...object(r.registration),
+        backend:{...d.registration.backend,...object(r.registration?.backend),spreadsheetId:'1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig'},
+        receipts:Array.isArray(r.registration?.receipts)?r.registration.receipts.map(normalizeRegistrationReceipt):[]
       },
       squad:{
         ...d.squad,
@@ -446,6 +491,10 @@
     });
     document.querySelectorAll('[data-soon="Scouting"]').forEach(a=>{
       a.setAttribute('href','scouting.html');
+      a.removeAttribute('data-soon');
+    });
+    document.querySelectorAll('[data-soon="Registration"]').forEach(a=>{
+      a.setAttribute('href','registration.html');
       a.removeAttribute('data-soon');
     });
   }

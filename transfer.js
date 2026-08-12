@@ -165,48 +165,6 @@
     navigator.clipboard?.writeText(text).then(()=>toast('Broker instructions copied.')).catch(()=>toast('Clipboard unavailable.'));
   }
 
-  function currentRegistrationAllocation(){
-    const s=A().core.read(), id=$('regAllocation')?.value;
-    return arr(s.transfer.route?.allocations).find(a=>a.id===id)||null;
-  }
-  function registrationCalc(){
-    const a=currentRegistrationAllocation();
-    const shares=Math.max(0,num($('regShares')?.value)), price=Math.max(0,num($('regPrice')?.value));
-    const unit=$('regPriceUnit')?.value||'GBP', currency=String($('regCurrency')?.value||'GBP').toUpperCase();
-    const fx=Math.max(0,num($('regFx')?.value)), fees=Math.max(0,num($('regFees')?.value));
-    const unitPrice=unit==='PENCE'?price/100:price;
-    const gross=shares*unitPrice,totalNative=gross+fees,totalGbp=totalNative*(currency==='GBP'?1:fx||0);
-    const planned=num(a?.amount),diff=totalGbp-planned;
-    set('regPlanned',money(planned));set('regTotal',money(totalGbp));set('regDifference',`${diff>=0?'+':''}${money(diff)}`);
-    const ready=!!(a&&shares>0&&price>0&&(currency==='GBP'||fx>0));
-    set('regPrecheck',ready?'READY':'WAITING');
-    return {a,shares,price,unit,currency,fx:currency==='GBP'?1:fx,fees,gross,totalNative,totalGbp,planned,diff,ready};
-  }
-  function loadRegistrationAllocation(){
-    const a=currentRegistrationAllocation();if(!a)return registrationCalc();
-    setValue('regTicker',a.ticker);setValue('regAccount',accountLabel(a.account));registrationCalc();
-  }
-  function clearRegistration(){
-    setValue('regShares','');setValue('regPrice','');setValue('regPriceUnit','GBP');setValue('regCurrency','GBP');setValue('regFx','1');setValue('regFees','0');registrationCalc();
-  }
-  function saveRegistrationDraft(){
-    const c=registrationCalc(), state=A().core.read(), r=state.transfer.route;
-    if(!r?.locked){toast('Approve and lock the Transfer route first.');return}
-    if(!c.ready){toast('Complete the registration pre-check first.');return}
-    const draft={
-      id:A().core.uid('REGDRAFT'),routeId:r.id,missionId:r.missionId,allocationId:c.a.id,
-      transactionId:A().core.uid('TX'),tradeDate:$('regDate')?.value||'',account:$('regAccount')?.value||'',
-      ticker:c.a.ticker,name:c.a.name,side:'BUY',shares:c.shares,priceInput:c.price,priceUnit:c.unit,currency:c.currency,
-      fxRateToGbp:c.fx,grossCostNative:c.gross,feesNative:c.fees,totalCostNative:c.totalNative,totalCostGbp:c.totalGbp,
-      plannedAmount:c.planned,differenceGbp:c.diff,status:'READY_FOR_BACKEND',createdAt:now(),updatedAt:now()
-    };
-    A().core.update(s=>({...s,transfer:{...s.transfer,registrationDrafts:[draft,...arr(s.transfer.registrationDrafts)],updatedAt:now()}}));
-    clearRegistration();toast('Registration draft saved. No holding was changed.');
-  }
-  function deleteDraft(id){
-    A().core.update(s=>({...s,transfer:{...s.transfer,registrationDrafts:arr(s.transfer.registrationDrafts).filter(d=>d.id!==id),updatedAt:now()}}));
-    toast('Registration draft removed.');
-  }
 
   function renderMission(state){
     const m=state.mission,b=validMission(m)?num(m.approvedBudget):0;
@@ -258,17 +216,22 @@
     }
   }
   function renderRegistration(state){
-    const r=state.transfer.route,select=$('regAllocation'),current=select?.value;
-    const eligible=arr(r?.allocations).filter(a=>num(a.amount)>0);
-    if(select){
-      select.innerHTML=eligible.length?eligible.map(a=>`<option value="${esc(a.id)}">${esc(a.ticker)} • ${accountLabel(a.account)} • ${money(a.amount)}</option>`).join(''):'<option value="">No approved route purchases</option>';
-      if(eligible.some(a=>a.id===current))select.value=current;
-    }
-    loadRegistrationAllocation();
-    const drafts=arr(state.transfer.registrationDrafts),host=$('registrationDraftList');set('registrationCount',`${drafts.length} draft${drafts.length===1?'':'s'}`);
+    const r=state.transfer.route,m=state.mission,drafts=arr(state.transfer.registrationDrafts);
+    const positive=arr(r?.allocations).filter(a=>num(a.amount)>0);
+    const confirmed=drafts.filter(d=>d.routeId===r?.id&&d.status==='CONFIRMED');
+    set('registrationRouteId',r?.id||'—');
+    set('registrationMissionId',m?.id||'—');
+    set('registrationAllocations',String(positive.length));
+    set('registrationConfirmed',String(confirmed.length));
+    set('registrationHandoffState',r?.locked?'READY':'WAITING');
+    const host=$('registrationDraftList');
     if(!host)return;
-    if(!drafts.length){host.innerHTML='<div class="empty-state compact"><strong>No registration drafts</strong><p>Completed broker buys can be prepared here once the route is approved.</p></div>';return}
-    host.innerHTML=drafts.map(d=>`<article class="draft-row"><div class="draft-main"><strong>${esc(d.ticker)} • ${esc(d.account)} • ${money(d.totalCostGbp)}</strong><span>${esc(d.transactionId)} • ${esc(d.tradeDate||'date pending')} • ${Number(d.shares).toLocaleString('en-GB')} shares • ${esc(d.status)}</span></div><button class="btn secondary" data-delete-draft="${esc(d.id)}">Delete</button></article>`).join('');
+    const rows=drafts.filter(d=>!r?.id||d.routeId===r.id);
+    if(!rows.length){
+      host.innerHTML='<div class="empty-state compact"><strong>No registration work yet</strong><p>Open Registration after the final Transfer route is approved.</p></div>';
+      return;
+    }
+    host.innerHTML=rows.map(d=>`<article class="draft-row"><div class="draft-main"><strong>${esc(d.ticker)} • ${esc(d.account)} • ${money(d.totalCostGbp)}</strong><span>${esc(d.transactionId||'draft')} • ${esc(d.tradeDate||'date pending')} • ${Number(d.shares||0).toLocaleString('en-GB')} shares • ${esc(d.status)}</span></div><span class="status-pill ${d.status==='CONFIRMED'?'pass':d.status==='BACKEND_ERROR'?'block':'caution'}">${esc(d.status)}</span></article>`).join('');
   }
   function render(){
     const state=A().core.read();renderMission(state);renderTargets(state);renderSettings(state);renderRoute(state);renderRegistration(state);set('lastUpdated',new Date(state.updatedAt).toLocaleString('en-GB'));
@@ -291,11 +254,6 @@
       const input=e.target.closest('[data-route-amount]');if(input){updateRouteAmount(input.dataset.routeAmount,input.value);return}
       const account=e.target.closest('[data-route-account]');if(account)updateRouteAccount(account.dataset.routeAccount,account.value);
     });
-    $('regAllocation')?.addEventListener('change',loadRegistrationAllocation);
-    ['regShares','regPrice','regPriceUnit','regCurrency','regFx','regFees'].forEach(id=>$(id)?.addEventListener('input',registrationCalc));
-    $('saveRegistrationDraft')?.addEventListener('click',saveRegistrationDraft);$('clearRegistration')?.addEventListener('click',clearRegistration);
-    document.addEventListener('click',e=>{const b=e.target.closest('[data-delete-draft]');if(b)deleteDraft(b.dataset.deleteDraft)});
-    if($('regDate')&&!$('regDate').value){const d=new Date();$('regDate').value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
   }
   document.addEventListener('DOMContentLoaded',()=>{wire();render()});
   w.addEventListener('aurora2:state',render);

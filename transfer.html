@@ -39,6 +39,7 @@
     <a href="index.html">🏟 Aurora HQ</a>
     <a href="finance.html">💷 Finance</a>
     <a href="transfer.html">🔄 Transfer</a>
+    <a href="registration.html">📝 Registration</a>
     <a href="#" data-soon="Squad">⚽ Squad</a>
     <a href="scouting.html">🔎 Scouting</a>
     <a href="#" data-soon="Income">💰 Income</a>
@@ -151,33 +152,20 @@
 <section id="registrationPanel" class="tab-panel">
   <section class="grid grid-2">
     <article class="card card-pad">
-      <div class="section-head"><h2>Purchase Registration Draft</h2><span class="muted">LOCAL ONLY</span></div>
-      <div class="notice"><b>No fake success.</b> Aurora 2.0 will not call a purchase “registered” until AuroraData 2 accepts the transaction and the exact record is read back.</div>
-      <div class="field-grid" style="margin-top:12px">
-        <div class="field"><label>Route purchase</label><select id="regAllocation"></select></div>
-        <div class="field"><label>Trade date</label><input id="regDate" type="date"></div>
-        <div class="field"><label>Account</label><select id="regAccount"><option>IG ISA</option><option>Trading 212 ISA</option></select></div>
-        <div class="field"><label>Ticker</label><input id="regTicker" readonly></div>
-        <div class="field"><label>Shares</label><input id="regShares" type="number" min="0" step="0.000001"></div>
-        <div class="field"><label>Execution price</label><input id="regPrice" type="number" min="0" step="0.0001"></div>
-        <div class="field"><label>Price unit</label><select id="regPriceUnit"><option value="GBP">GBP / share</option><option value="PENCE">Pence / share</option></select></div>
-        <div class="field"><label>Currency</label><input id="regCurrency" value="GBP"></div>
-        <div class="field"><label>FX to GBP</label><input id="regFx" type="number" min="0" step="0.000001" value="1"></div>
-        <div class="field"><label>Fees</label><input id="regFees" type="number" min="0" step="0.01" value="0"></div>
+      <div class="section-head"><h2>Registration Handoff</h2><span id="registrationHandoffState" class="muted">WAITING</span></div>
+      <div class="notice good"><b>Transfer stops here.</b><br>The locked route is the authority for what may be bought. Registration owns the real broker execution, AuroraData 2 write, read-back confirmation and Squad update.</div>
+      <div class="calc-list" style="margin-top:12px">
+        <div class="calc-row"><span>Route ID</span><strong id="registrationRouteId">—</strong></div>
+        <div class="calc-row"><span>Mission ID</span><strong id="registrationMissionId">—</strong></div>
+        <div class="calc-row"><span>Purchase allocations</span><strong id="registrationAllocations">0</strong></div>
+        <div class="calc-row"><span>Confirmed registrations</span><strong id="registrationConfirmed">0</strong></div>
       </div>
-      <div class="registration-preview section">
-        <div class="registration-stat"><small>Planned</small><strong id="regPlanned">£0.00</strong></div>
-        <div class="registration-stat"><small>Total GBP</small><strong id="regTotal">£0.00</strong></div>
-        <div class="registration-stat"><small>Difference</small><strong id="regDifference">£0.00</strong></div>
-        <div class="registration-stat"><small>Pre-check</small><strong id="regPrecheck">WAITING</strong></div>
-      </div>
-      <div class="action-row"><button class="btn primary" id="saveRegistrationDraft">Save Registration Draft</button><button class="btn secondary" id="clearRegistration">Clear</button></div>
+      <div class="action-row"><a class="btn primary" href="registration.html">Open Registration Desk</a></div>
     </article>
-
     <article class="card card-pad">
-      <div class="section-head"><h2>Registration Queue</h2><span id="registrationCount" class="muted">0 drafts</span></div>
+      <div class="section-head"><h2>Registration Work</h2><span class="muted">READ ONLY HERE</span></div>
       <div id="registrationDraftList" class="draft-list"></div>
-      <div class="notice" style="margin-top:12px">Backend registration will be switched on only after AuroraData 2 and the canonical Squad holdings engine are ready.</div>
+      <div class="notice" style="margin-top:12px"><b>No duplicate logic:</b> execution prices, shares, fees and backend confirmation are no longer edited in Transfer.</div>
     </article>
   </section>
 </section>
@@ -198,7 +186,7 @@
 </div></main></div>
 
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#28130f;border:1px solid rgba(255,122,89,.28);color:#ffd1c5;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
-<script src="aurora-core.js?v=7"></script>
-<script src="transfer.js?v=020"></script>
+<script src="aurora-core.js?v=8"></script>
+<script src="transfer.js?v=030"></script>
 </body>
 </html>
