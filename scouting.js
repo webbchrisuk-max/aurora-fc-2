@@ -68,6 +68,40 @@
     if(y>0&&y<=1&&!raw.includes('%'))y*=100;
     return Math.max(0,y);
   }
+  function deriveNetworkYield(row){
+    const explicit=yieldPctFrom(field(row,[
+      'yield_pct','dividend_yield','yieldPct','yield','forward_yield','forwardYield'
+    ]));
+    if(explicit>0)return {yieldPct:explicit,source:'reported'};
+
+    // Same-currency annual DPS ÷ current price. Currency cancels, so no FX is needed.
+    const annualDps=Math.max(0,num(field(row,[
+      'annual_dps','annualDps','annual_dividend_per_share','annualDividendPerShare',
+      'forward_dps','forwardDps'
+    ])));
+    const livePrice=Math.max(0,num(field(row,[
+      'live_price','livePrice','price','current_price','currentPrice','live_price_native'
+    ])));
+    if(annualDps>0&&livePrice>0){
+      const derived=(annualDps/livePrice)*100;
+      if(Number.isFinite(derived)&&derived>0&&derived<100){
+        return {yieldPct:derived,source:'DPS ÷ price',annualDps,livePrice};
+      }
+    }
+
+    // Aurora 1 sometimes stores expected annual income from a £500 test investment.
+    const income500=Math.max(0,num(field(row,[
+      'income_from_500','incomeFrom500','annual_income_from_500'
+    ])));
+    if(income500>0){
+      const derived=(income500/500)*100;
+      if(Number.isFinite(derived)&&derived>0&&derived<100){
+        return {yieldPct:derived,source:'£500 income',income500};
+      }
+    }
+
+    return {yieldPct:0,source:'missing'};
+  }
   function cleanMarketSymbol(v){
     return String(v||'').trim().toUpperCase().replace(/\s+/g,'');
   }
@@ -585,6 +619,8 @@
       ['buy_strength','buyStrength'],
       ['promotion_impact_score','impact','promotionImpactScore'],
       ['dividend_yield','yield_pct','yieldPct'],
+      ['annual_dps','annualDps','forward_dps','forwardDps'],
+      ['income_from_500','incomeFrom500'],
       ['live_price_gbp','livePriceGbp','live_price','livePrice'],
       ['valuation_score','valuationScore'],
       ['payout_score','dividend_safety','dividendSafety'],
@@ -603,7 +639,7 @@
     let name=String(field(row,['company_name','name','company','companyName','security_name'])||'').trim();
     if(symbol.replace(/[^A-Z]/gi,'').toUpperCase()==='RETURNEDWATCHLIST'){
       // Aurora 1 exported some returned-watchlist rows shifted one column:
-      // company_name contains the real ticker and scout_status contains the company name.
+      // company_name contains the real ticker; scout_status contains the company name.
       symbol=cleanMarketSymbol(field(row,['company_name','symbol','code']));
       name=String(field(row,['scout_status','name','company'])||symbol).trim();
     }
@@ -634,7 +670,15 @@
     const liveGbpRaw=field(row,['live_price_gbp','livePriceGbp']);
     const liveNative=field(row,['live_price','livePrice','price','live_price_native']);
     const livePriceGbp=Math.max(0,num(liveGbpRaw!=null?liveGbpRaw:(currency==='GBP'?liveNative:0)));
-    const y=yieldPctFrom(field(row,['yield_pct','dividend_yield','yieldPct','yield']));
+    const yieldEvidence=deriveNetworkYield(row);
+    const y=yieldEvidence.yieldPct;
+    const annualDps=Math.max(0,num(field(row,[
+      'annual_dps','annualDps','annual_dividend_per_share','annualDividendPerShare',
+      'forward_dps','forwardDps'
+    ])));
+    const incomeFrom500=Math.max(0,num(field(row,[
+      'income_from_500','incomeFrom500','annual_income_from_500'
+    ])));
     const strength=Math.max(0,num(field(row,['buy_strength','buyStrength'])));
     const impact=Math.max(0,num(field(row,['promotion_impact_score','promotionImpactScore','impact'])));
     const val=Math.max(0,num(field(row,['valuation_score','valuationScore'])));
@@ -659,6 +703,10 @@
       legacyStrength:strength,
       legacyImpact:impact,
       legacyYieldPct:Number(y.toFixed(4)),
+      legacyYieldSource:yieldEvidence.source,
+      legacyAnnualDps:Number(annualDps.toFixed(8)),
+      legacyIncomeFrom500:Number(incomeFrom500.toFixed(6)),
+      legacyPriceNative:Number(Math.max(0,num(liveNative)).toFixed(8)),
       legacyPriceGbp:Number(livePriceGbp.toFixed(6)),
       legacyValuation:String(field(row,['valuation_status','valuation'])||'').trim(),
       legacyValuationScore:val,
@@ -706,12 +754,49 @@
     const best=new Map();
     found.forEach(r=>{
       const key=`${r.region}|${displayTicker(r.marketSymbol).toUpperCase()}`;
-      const old=best.get(key);
-      if(!old||
-         r.evidenceCount>old.evidenceCount||
-         (r.evidenceCount===old.evidenceCount&&r.legacyStrength>old.legacyStrength)){
+      const prior=best.get(key);
+      if(!prior){
         best.set(key,r);
+        return;
       }
+
+      const rWins=
+        r.evidenceCount>prior.evidenceCount||
+        (r.evidenceCount===prior.evidenceCount&&r.legacyStrength>prior.legacyStrength);
+      const base=rWins?{...r}:{...prior};
+      const other=rWins?prior:r;
+
+      const fill=(k)=>{
+        const v=base[k],ov=other[k];
+        const missing=v==null||v===''||(typeof v==='number'&&!(v>0));
+        if(missing&&ov!=null&&ov!==''&&(typeof ov!=='number'||ov>0))base[k]=ov;
+      };
+      [
+        'legacyYieldPct','legacyYieldSource','legacyAnnualDps','legacyIncomeFrom500',
+        'legacyPriceNative','legacyPriceGbp','legacyValuation','legacyValuationScore',
+        'legacyPayoutScore','legacyGrowthScore','legacyPayoutRisk','sector','role',
+        'country','exchange','currency','legacyVerdict','legacyCheckedAt'
+      ].forEach(fill);
+
+      // Re-derive after merging if the strongest row was missing yield.
+      if(!(base.legacyYieldPct>0)){
+        if(base.legacyAnnualDps>0&&base.legacyPriceNative>0){
+          const y=(base.legacyAnnualDps/base.legacyPriceNative)*100;
+          if(Number.isFinite(y)&&y>0&&y<100){
+            base.legacyYieldPct=Number(y.toFixed(4));
+            base.legacyYieldSource='DPS ÷ price';
+          }
+        }else if(base.legacyIncomeFrom500>0){
+          const y=(base.legacyIncomeFrom500/500)*100;
+          if(Number.isFinite(y)&&y>0&&y<100){
+            base.legacyYieldPct=Number(y.toFixed(4));
+            base.legacyYieldSource='£500 income';
+          }
+        }
+      }
+
+      base.evidenceCount=Math.max(prior.evidenceCount,r.evidenceCount);
+      best.set(key,base);
     });
 
     return [...best.values()].sort((a,b)=>
@@ -1044,7 +1129,10 @@
         <td class="network-name"><strong>${esc(r.ticker)}</strong><span>${esc(r.name)}${r.marketSymbol&&r.marketSymbol!==r.ticker?' • '+esc(r.marketSymbol):''}</span></td>
         <td><span class="region-pill ${r.region.toLowerCase()}">${r.region==='UK'?'🇬🇧 UK':r.region==='US'?'🇺🇸 US':'🌍 World'}</span><div class="network-source-note">${esc(r.country||r.exchange||r.currency||'')}</div></td>
         <td>${esc(r.sector||'—')}</td>
-        <td>${r.legacyYieldPct>0?r.legacyYieldPct.toFixed(2)+'%':'—'}</td>
+        <td>${r.legacyYieldPct>0
+          ?`${r.legacyYieldPct.toFixed(2)}%${r.legacyYieldSource&&r.legacyYieldSource!=='reported'
+            ?`<div class="network-source-note">${esc(r.legacyYieldSource)}</div>`:''}`
+          :'—<div class="network-source-note">needs data</div>'}</td>
         <td>${r.legacyStrength>0?Math.round(r.legacyStrength):'—'}${r.legacyImpact>0?` <span class="network-source-note">• impact ${Math.round(r.legacyImpact)}</span>`:''}</td>
         <td>${esc(valueRisk)}</td>
         <td>${esc(r.sourceStatus||'MONITOR')}</td>
@@ -1254,16 +1342,12 @@
 
   function updateVersionLabels(){
     const notice=document.querySelector('.scout-notice b');
-    if(notice)notice.textContent='Scouting Centre 2.0 — Global Network v0.2.1.';
+    if(notice)notice.textContent='Scouting Centre 2.0 — Global Network v0.2.2.';
     const badge=document.querySelector('.page-head .scout-badge');
-    if(badge)badge.textContent='GLOBAL NETWORK v0.2.1';
+    if(badge)badge.textContent='GLOBAL NETWORK v0.2.2';
     const hero=document.querySelector('.scout-hero p');
     if(hero)hero.textContent=
-      'Scouting now separates a broad UK, US and world candidate universe from the smaller Active Scouting shortlist. The whole network is scouted; only reviewed Active Scouting targets can reach Transfer.';
-    const shortlist=[...document.querySelectorAll('section')]
-      .find(s=>/Ranked Shortlist|Active Scouting Shortlist/i.test(s.querySelector('h2')?.textContent||''));
-    const shortlistTitle=shortlist?.querySelector('h2');
-    if(shortlistTitle)shortlistTitle.textContent='Active Scouting Shortlist';
+      'Scouting now separates a broad UK, US and world candidate universe from the smaller Active Scouting shortlist. The whole network is monitored; only reviewed Active Scouting targets can reach Transfer.';
   }
 
   function render(){
