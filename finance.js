@@ -716,19 +716,97 @@
     return adjustments.length;
   }
 
-  function renderRecurringRepairNotice(){
-    const state=A().core.read();
-    const info=state.finance?.recurringBillRepair;
-    const el=$('recurringRepairNotice');
-    if(!el)return;
-    if(!info?.count){el.style.display='none';return;}
-    const latest=(info.adjustments||[]).slice(0,6)
-      .map(x=>`${esc(x.name)} → ${esc(x.afterDue||'date required')}`).join(' • ');
-    el.style.display='';
-    el.className='notice good';
-    el.innerHTML=`<b>Recurring bills repaired:</b> ${info.count} imported paid recurring bill${info.count===1?'':'s'} reactivated for the next cycle.${latest?`<br><span class="muted">${latest}${(info.adjustments||[]).length>6?' • …':''}</span>`:''}`;
+
+  function repairLegacyDuplicateGroceries(){
+    const current=A().core.read();
+
+    // One-time migration only. Never keep trying to dedupe user-created bills.
+    if(current.finance?.duplicateBillRepair?.version>=1)return 0;
+
+    const bills=current.finance?.bills||[];
+    const active=bills.filter(b=>b&&!b.archived&&b.included!==false&&!b.paid);
+
+    const groceries=active.filter(b=>{
+      const n=cleanName(b.name);
+      return (n==='grocery'||n==='grocery shop')
+        && String(b.frequency||'')==='weekly'
+        && Math.abs((Number(b.amount)||0)-45)<0.005
+        && isHoldingPotName(b.fundingSource);
+    });
+
+    const grocery=groceries.find(b=>cleanName(b.name)==='grocery');
+    const groceryShop=groceries.find(b=>cleanName(b.name)==='grocery shop');
+
+    const archivedIds=[];
+    const keptId=grocery?.id||groceryShop?.id||null;
+
+    // The legacy Aurora import contained both "Grocery Shop" and "Grocery"
+    // for the same £45 weekly Holding Pot spend. Keep the current "Grocery"
+    // record and archive only that known legacy duplicate.
+    if(grocery&&groceryShop&&grocery.id!==groceryShop.id){
+      archivedIds.push(groceryShop.id);
+    }
+
+    A().core.update(s=>{
+      const repaired=(s.finance?.bills||[]).map(b=>archivedIds.includes(b.id)
+        ? {
+            ...b,
+            archived:true,
+            included:false,
+            updatedAt:isoNow(),
+            note:[String(b.note||'').trim(),'Archived automatically: duplicate legacy £45 weekly grocery bill.'].filter(Boolean).join(' ')
+          }
+        : b
+      );
+
+      return {
+        ...s,
+        finance:{
+          ...s.finance,
+          bills:repaired,
+          duplicateBillRepair:{
+            version:1,
+            appliedAt:isoNow(),
+            type:'LEGACY_GROCERY_DUPLICATE',
+            keptBillId:keptId,
+            archivedBillIds:archivedIds,
+            archivedCount:archivedIds.length
+          }
+        }
+      };
+    });
+
+    return archivedIds.length;
   }
 
+  function renderRecurringRepairNotice(){
+    const state=A().core.read();
+    const recurring=state.finance?.recurringBillRepair;
+    const duplicate=state.finance?.duplicateBillRepair;
+    const el=$('recurringRepairNotice');
+    if(!el)return;
+
+    const parts=[];
+
+    if(recurring?.count){
+      const latest=(recurring.adjustments||[]).slice(0,5)
+        .map(x=>`${esc(x.name)} → ${esc(x.afterDue||'date required')}`).join(' • ');
+      parts.push(`<b>Recurring bills repaired:</b> ${recurring.count} imported paid recurring bill${recurring.count===1?'':'s'} reactivated for the next cycle.${latest?`<br><span class="muted">${latest}${(recurring.adjustments||[]).length>5?' • …':''}</span>`:''}`);
+    }
+
+    if(duplicate?.archivedCount){
+      parts.push(`<b>Duplicate removed:</b> the old “Grocery Shop” £45 weekly bill was archived. Aurora now protects only one £45 weekly grocery bill.`);
+    }
+
+    if(!parts.length){
+      el.style.display='none';
+      return;
+    }
+
+    el.style.display='';
+    el.className='notice good';
+    el.innerHTML=parts.join('<br><br>');
+  }
   function renderHistory(){
     const state=A().core.read(), payments=state.finance?.payments||[], host=$('paymentHistory');
     if(!host)return;
@@ -823,6 +901,7 @@
 
   document.addEventListener('DOMContentLoaded',()=>{
     repairPaidRecurringBills();
+    repairLegacyDuplicateGroceries();
     loadForm(); resetPotEditor(); resetBillEditor(); renderAll(); wire();
   });
   w.addEventListener('aurora2:state',renderAll);
