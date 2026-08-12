@@ -599,11 +599,15 @@
     if(!row||typeof row!=='object'||Array.isArray(row))return false;
     if(/holding|transaction|dividend|bill|pot|finance|route|mission|house|account|payment/i.test(path))return false;
 
-    const symbol=cleanMarketSymbol(field(row,['ticker','symbol','code','Ticker']));
-    const name=String(field(row,['company_name','name','company','companyName','security_name'])||'').trim();
+    let symbol=cleanMarketSymbol(field(row,['ticker','symbol','code','Ticker']));
+    let name=String(field(row,['company_name','name','company','companyName','security_name'])||'').trim();
+    if(symbol.replace(/[^A-Z]/gi,'').toUpperCase()==='RETURNEDWATCHLIST'){
+      // Aurora 1 exported some returned-watchlist rows shifted one column:
+      // company_name contains the real ticker and scout_status contains the company name.
+      symbol=cleanMarketSymbol(field(row,['company_name','symbol','code']));
+      name=String(field(row,['scout_status','name','company'])||symbol).trim();
+    }
     if(!symbol||!name)return false;
-    if(symbol.replace(/[^A-Z]/gi,'').toUpperCase()==='RETURNEDWATCHLIST')return false;
-    if(/returned watchlist/i.test(name)&&!num(field(row,['buy_strength','buyStrength'])))return false;
 
     const scoutingPath=/scout|watch|trial|candidate|global|intelligence/i.test(path);
     const scoutingFields=[
@@ -615,11 +619,14 @@
   }
 
   function normalizeNetworkRow(row,path,sourceGeneratedAt){
-    const rawSymbol=cleanMarketSymbol(field(row,['ticker','symbol','code','Ticker']));
-    if(!rawSymbol)return null;
-    const name=String(field(row,['company_name','name','company','companyName','security_name'])||
+    let rawSymbol=cleanMarketSymbol(field(row,['ticker','symbol','code','Ticker']));
+    let name=String(field(row,['company_name','name','company','companyName','security_name'])||
       displayTicker(rawSymbol)).trim();
-    if(!name||rawSymbol.replace(/[^A-Z]/gi,'').toUpperCase()==='RETURNEDWATCHLIST')return null;
+    if(rawSymbol.replace(/[^A-Z]/gi,'').toUpperCase()==='RETURNEDWATCHLIST'){
+      rawSymbol=cleanMarketSymbol(field(row,['company_name','symbol','code']));
+      name=String(field(row,['scout_status','name','company'])||displayTicker(rawSymbol)).trim();
+    }
+    if(!rawSymbol||!name)return null;
 
     const region=regionFor(row,rawSymbol);
     const currency=String(field(row,['currency','currency_code'])||
@@ -1017,7 +1024,7 @@
       meta.status==='ERROR'
         ?`Last sync failed: ${meta.lastError||'source unavailable'}. Existing network remains cached.`
         :rows.length
-          ?`${rows.length} monitor candidates • source ${sourceDate} • syncing this network does not alter Active Scouting or Transfer.`
+          ?`${rows.length} global scouting candidates • source ${sourceDate} • syncing this network does not alter Active Scouting or Transfer.`
           :'Connecting to the Aurora 1 scouting network…'
     );
 
@@ -1099,6 +1106,17 @@
       .join('');
   }
 
+  function setScoutKpi(id,label,value,meta){
+    const strong=$(id);if(!strong)return;
+    strong.textContent=value;
+    const card=strong.closest('.scout-kpi');
+    if(!card)return;
+    const small=card.querySelector('small');
+    const span=card.querySelector('span');
+    if(small)small.textContent=label;
+    if(span)span.textContent=meta;
+  }
+
   function renderTargets(state){
     const strategy=state.scouting?.strategy||'sustainable';
     const scoreKey=strategy==='maximum'?'maximumScore':'sustainableScore';
@@ -1110,10 +1128,14 @@
     });
     const host=$('targetList');
 
-    set('kCandidates',targets.length);
-    set('kPass',targets.filter(t=>t.status==='pass').length);
-    set('kCaution',targets.filter(t=>t.status==='caution').length);
-    set('kBlock',targets.filter(t=>t.status==='block').length);
+    const universe=arr(state.scouting?.universe);
+    const globalCount=universe.length||targets.length;
+    const permitted=targets.filter(t=>t.status!=='block').length;
+    const needsReview=targets.filter(t=>t.status==='block'||t.status==='caution'||t.requiresRefresh).length;
+    setScoutKpi('kCandidates','Global Candidates',globalCount,universe.length?'UK + US + World network':'Active list until network sync');
+    setScoutKpi('kPass','Active Scouting',targets.length,'Aurora 2 scored / review queue');
+    setScoutKpi('kCaution','Transfer Permitted',permitted,'Current active shortlist');
+    setScoutKpi('kBlock','Needs Review',needsReview,'Blocked / caution / evidence refresh');
 
     const topS=[...targets].filter(t=>t.status!=='block')
       .sort((a,b)=>b.sustainableScore-a.sustainableScore)[0];
@@ -1125,8 +1147,10 @@
     set('kTopMaximum',topM?.ticker||'—');
     set('kTopMaximumMeta',topM?`${topM.maximumScore}/100 • ${topM.recommendation}`:'—');
     set('scoutingStatus',state.scouting?.status||'SCOUTING REVIEW');
+    const universeCount=arr(state.scouting?.universe).length;
     set('shortlistMeta',targets.length
-      ?`${targets.filter(t=>t.status!=='block').length} permitted • ${targets.length} active • ranked by `+
+      ?`${targets.filter(t=>t.status!=='block').length} permitted • ${targets.length} active from `+
+        `${universeCount||targets.length} global candidate${(universeCount||targets.length)===1?'':'s'} • ranked by `+
         `${strategy==='maximum'?'Maximum Income':'Sustainable Income'} logic.`
       :'No Active Scouting candidates stored yet.'
     );
@@ -1230,12 +1254,16 @@
 
   function updateVersionLabels(){
     const notice=document.querySelector('.scout-notice b');
-    if(notice)notice.textContent='Scouting Centre 2.0 — Global Network v0.2.';
+    if(notice)notice.textContent='Scouting Centre 2.0 — Global Network v0.2.1.';
     const badge=document.querySelector('.page-head .scout-badge');
-    if(badge)badge.textContent='GLOBAL NETWORK v0.2';
+    if(badge)badge.textContent='GLOBAL NETWORK v0.2.1';
     const hero=document.querySelector('.scout-hero p');
     if(hero)hero.textContent=
-      'Scouting now separates a broad UK, US and world monitoring network from the smaller Active Scouting shortlist. Only reviewed Active Scouting targets can reach Transfer.';
+      'Scouting now separates a broad UK, US and world candidate universe from the smaller Active Scouting shortlist. The whole network is scouted; only reviewed Active Scouting targets can reach Transfer.';
+    const shortlist=[...document.querySelectorAll('section')]
+      .find(s=>/Ranked Shortlist|Active Scouting Shortlist/i.test(s.querySelector('h2')?.textContent||''));
+    const shortlistTitle=shortlist?.querySelector('h2');
+    if(shortlistTitle)shortlistTitle.textContent='Active Scouting Shortlist';
   }
 
   function render(){
