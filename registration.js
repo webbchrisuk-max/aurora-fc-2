@@ -50,7 +50,7 @@
 
 
   function setExecutionLocked(locked){
-    ['regDate','regShares','regPrice','regPriceUnit','regCurrency','regFx','regFees'].forEach(id=>{
+    ['regDate','regShares','regPrice','regPriceUnit','regCurrency','regActualGbp','regFx','regFees'].forEach(id=>{
       const el=$(id);if(el)el.disabled=!!locked;
     });
     const save=$('saveDraft'),register=$('registerPurchase');
@@ -58,7 +58,40 @@
     if(register)register.disabled=!!locked;
   }
 
-  // Registration Currency Guard v1.4.0 — confirmed trade lock + auto advance
+
+  function ensureActualGbpField(){
+    if($('regActualGbp'))return;
+    const currencyField=$('regCurrency')?.closest('.field');
+    if(!currencyField)return;
+    const field=document.createElement('div');
+    field.className='field';
+    field.id='regActualGbpField';
+    field.innerHTML=`<label for="regActualGbp">Actual GBP charged</label><input id="regActualGbp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Broker total, e.g. 165.03"><small id="regActualGbpHint" style="display:block;margin-top:5px;color:var(--muted);font-size:7px;line-height:1.35">Enter the broker's final GBP cost. For non-GBP trades Aurora derives FX automatically.</small>`;
+    currencyField.insertAdjacentElement('afterend',field);
+  }
+
+  function updateFxUi(currency,brokerActualGbp,totalNative,fx,derived){
+    const fxInput=$('regFx');
+    const fxLabel=document.querySelector('label[for="regFx"]');
+    const hint=$('regActualGbpHint');
+    if(currency==='GBP'){
+      if(fxLabel)fxLabel.textContent='FX to GBP';
+      if(fxInput){fxInput.readOnly=true;fxInput.value='1'}
+      if(hint)hint.textContent='Optional cross-check for GBP trades. It must match the execution total (including fees).';
+      return;
+    }
+    if(derived&&brokerActualGbp>0&&totalNative>0){
+      if(fxLabel)fxLabel.textContent='FX to GBP (auto)';
+      if(fxInput){fxInput.readOnly=true;fxInput.value=Number(fx.toFixed(9)).toString()}
+      if(hint)hint.textContent=`Broker total locked at ${money(brokerActualGbp)} • Aurora derived 1 ${currency} = £${fx.toFixed(6)}.`;
+    }else{
+      if(fxLabel)fxLabel.textContent='FX to GBP (manual fallback)';
+      if(fxInput)fxInput.readOnly=false;
+      if(hint)hint.textContent=`Enter the broker's final GBP cost to derive ${currency} → GBP automatically. Use FX manually only if no GBP total is available.`;
+    }
+  }
+
+  // Registration Currency Guard v1.5.0 — broker GBP total + automatic FX
   // Prefer explicit route/holding/scouting metadata. ARCC is retained as a
   // safe fallback because legacy Aurora 2 routes did not persist quote currency.
   function normalizeCurrency(v){
@@ -200,6 +233,7 @@
       // Repair legacy contradictory drafts such as ARCC = USD currency but GBP/share.
       const savedUnit=String(existing.priceUnit||'').toUpperCase();
       setValue('regPriceUnit',savedCurrency==='GBP'&&['GBP','PENCE'].includes(savedUnit)?savedUnit:'GBP');
+      setValue('regActualGbp',existing.brokerActualGbp||(existing.status==='CONFIRMED'?existing.totalCostGbp:'')||'');
       setValue('regFx',savedCurrency==='GBP'?1:(existing.fxRateToGbp||''));
       setValue('regFees',existing.feesNative||0);
     }else{
@@ -207,6 +241,7 @@
       setValue('regShares','');setValue('regPrice','');
       setValue('regCurrency',defaultCurrency);
       setValue('regPriceUnit','GBP');
+      setValue('regActualGbp','');
       setValue('regFx',defaultCurrency==='GBP'?'1':'');
       setValue('regFees','0');
       if(!$('regDate')?.value){const d=new Date();setValue('regDate',`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)}
@@ -222,6 +257,8 @@
     if(existing?.status==='CONFIRMED'){
       setExecutionLocked(true);
       const planned=num(a?.amount),actual=num(existing.totalCostGbp),difference=actual-planned;
+      setValue('regActualGbp',actual||'');
+      updateFxUi(normalizeCurrency(existing.currency)||'GBP',actual,num(existing.totalCostNative),num(existing.fxRateToGbp)||1,(normalizeCurrency(existing.currency)||'GBP')!=='GBP');
       set('pPlanned',money(planned));set('pActual',money(actual));set('pDifference',`${difference>=0?'+ ':'− '}${money(Math.abs(difference))}`);
       set('pPreviousShares',num(existing.previousShares).toLocaleString('en-GB',{maximumFractionDigits:6}));
       set('pNewShares',num(existing.newShares).toLocaleString('en-GB',{maximumFractionDigits:6}));
@@ -235,9 +272,15 @@
     const shares=Math.max(0,num($('regShares')?.value)),price=Math.max(0,num($('regPrice')?.value));
     const priceUnit=String($('regPriceUnit')?.value||'GBP').toUpperCase().trim();
     const currency=normalizeCurrency($('regCurrency')?.value)||'GBP';
-    const fx=currency==='GBP'?1:Math.max(0,num($('regFx')?.value)),fees=Math.max(0,num($('regFees')?.value));
+    const fees=Math.max(0,num($('regFees')?.value));
+    const brokerActualGbp=Math.max(0,num($('regActualGbp')?.value));
     const unitPrice=priceUnit==='PENCE'?price/100:price;
-    const grossNative=shares*unitPrice,totalNative=grossNative+fees,totalGbp=totalNative*(currency==='GBP'?1:fx||0);
+    const grossNative=shares*unitPrice,totalNative=grossNative+fees;
+    const manualFx=currency==='GBP'?1:Math.max(0,num($('regFx')?.value));
+    const fxWasDerived=currency!=='GBP'&&brokerActualGbp>0&&totalNative>0;
+    const fx=currency==='GBP'?1:(fxWasDerived?brokerActualGbp/totalNative:manualFx);
+    const totalGbp=currency==='GBP'?totalNative:(fxWasDerived?brokerActualGbp:totalNative*(fx||0));
+    updateFxUi(currency,brokerActualGbp,totalNative,fx,fxWasDerived);
     const planned=num(a?.amount),difference=totalGbp-planned;
     const holding=a?localHolding(state,a.account,a.ticker):null;
     const previousShares=num(holding?.shares),previousBook=num(holding?.bookCostGbp);
@@ -252,7 +295,8 @@
     if(!(price>0))checks.push('Execution price must be greater than zero.');
     if(currency==='GBP'&&!['GBP','PENCE'].includes(priceUnit))checks.push(`Price Unit ${priceUnit} does not match GBP currency.`);
     if(currency!=='GBP'&&priceUnit!=='GBP')checks.push(`Price Unit must use major ${currency} units per share.`);
-    if(currency!=='GBP'&&!(fx>0))checks.push('FX to GBP is required for non-GBP purchases.');
+    if(currency!=='GBP'&&!(fx>0))checks.push('Enter Actual GBP charged (recommended) or an FX to GBP rate.');
+    if(currency==='GBP'&&brokerActualGbp>0&&Math.abs(brokerActualGbp-totalNative)>0.02)checks.push(`Actual GBP charged ${money(brokerActualGbp)} does not match execution total ${money(totalNative)}. Check price and fees.`);
     if(!(totalGbp>0))checks.push('Calculated GBP cost must be greater than zero.');
     const ready=checks.length===0;
     set('pPlanned',money(planned));set('pActual',money(totalGbp));set('pDifference',`${difference>=0?'+ ':'− '}${money(Math.abs(difference))}`);
@@ -260,9 +304,9 @@
     set('pNewShares',newShares.toLocaleString('en-GB',{maximumFractionDigits:6}));set('pNewAvg',money(newAvg));
     set('executionState',ready?'READY':'WAITING');
     const note=$('precheckNote');
-    if(note){note.className=ready?'notice good':'notice';note.textContent=ready?`Ready • backend will re-calculate ${money(totalGbp)} before writing. Expected new annual income from this purchase: ${money(expectedAnnualIncome)}/yr.`:checks.join(' ')}
+    if(note){const fxNote=currency==='GBP'?'GBP trade':fxWasDerived?`FX auto-derived ${fx.toFixed(6)} from broker total ${money(brokerActualGbp)}`:`manual FX ${fx.toFixed(6)}`;note.className=ready?'notice good':'notice';note.textContent=ready?`Ready • ${fxNote} • backend will re-calculate ${money(totalGbp)} before writing. Expected new annual income from this purchase: ${money(expectedAnnualIncome)}/yr.`:checks.join(' ')}
     $('registerPurchase').disabled=!ready;
-    return {a,shares,price,priceUnit,currency,fx,fees,unitPrice,grossNative,totalNative,totalGbp,planned,difference,holding,previousShares,previousBook,newShares,newBook,newAvg,target,yieldPct,expectedAnnualIncome,ready,checks};
+    return {a,shares,price,priceUnit,currency,fx,fees,brokerActualGbp,fxWasDerived,unitPrice,grossNative,totalNative,totalGbp,planned,difference,holding,previousShares,previousBook,newShares,newBook,newAvg,target,yieldPct,expectedAnnualIncome,ready,checks};
   }
 
   function draftPayload(c,existing={}){
@@ -276,6 +320,7 @@
       tradeDate:$('regDate')?.value||'',account:accountCode(c.a?.account),ticker:c.a?.ticker||'',name:c.a?.name||c.a?.ticker||'',
       side:'BUY',shares:c.shares,priceInput:c.price,priceUnit:(c.currency==='GBP'&&c.priceUnit==='PENCE'?'PENCE':'GBP'),currency:c.currency,fxRateToGbp:c.fx,
       grossCostNative:c.grossNative,feesNative:c.fees,totalCostNative:c.totalNative,totalCostGbp:c.totalGbp,
+      brokerActualGbp:c.brokerActualGbp||0,fxSource:c.fxWasDerived?'BROKER_GBP_TOTAL':(c.currency==='GBP'?'GBP':'MANUAL'),
       plannedAmount:c.planned,differenceGbp:c.difference,previousShares:c.previousShares,newShares:c.newShares,
       previousBookCostGbp:c.previousBook,newBookCostGbp:c.newBook,previousAvgCostGbp:num(c.holding?.avgCostGbp),newAvgCostGbp:c.newAvg,
       expectedAnnualIncomeGbp:c.expectedAnnualIncome,status:existing.status==='CONFIRMED'?'CONFIRMED':'READY_FOR_BACKEND',
@@ -406,7 +451,7 @@
   }
 
   function clearExecution(keepAllocation=true){
-    ['draftId','transactionId','clientRequestId','regShares','regPrice'].forEach(id=>setValue(id,''));
+    ['draftId','transactionId','clientRequestId','regShares','regPrice','regActualGbp'].forEach(id=>setValue(id,''));
     const state=currentState(),a=keepAllocation?currentAllocation(state):null;
     const currency=a?executionCurrency(state,a):'GBP';
     ensurePriceUnitOption(currency);
@@ -483,10 +528,11 @@
   }
 
   function wire(){
+    ensureActualGbpField();
     loadConnection();
     $('saveConnection')?.addEventListener('click',saveConnection);$('testConnection')?.addEventListener('click',testConnection);$('seedSquad')?.addEventListener('click',seedSquad);
     $('regAllocation')?.addEventListener('change',()=>loadAllocation());
-    ['regShares','regPrice','regPriceUnit','regFx','regFees'].forEach(id=>$(id)?.addEventListener('input',calcExecution));
+    ['regShares','regPrice','regPriceUnit','regActualGbp','regFx','regFees'].forEach(id=>$(id)?.addEventListener('input',calcExecution));
     $('regCurrency')?.addEventListener('change',()=>{syncPriceUnitToCurrency();calcExecution();});
     $('regPriceUnit')?.addEventListener('change',calcExecution);
     $('saveDraft')?.addEventListener('click',saveDraft);$('registerPurchase')?.addEventListener('click',registerPurchase);$('clearExecution')?.addEventListener('click',()=>clearExecution(true));
