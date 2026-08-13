@@ -2,350 +2,476 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050b16">
-<title>Finance — Aurora FC 2.0</title>
-<link rel="stylesheet" href="aurora.css">
-<style>
-.finance-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.finance-item{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:13px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.025)}
-.finance-item+.finance-item{margin-top:8px}.finance-item.is-archived{opacity:.55}
-.finance-item-main{min-width:0;flex:1}.finance-item-title{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.finance-item-title strong{font-size:12px}.finance-item-title span{font-size:8px;color:var(--muted);font-weight:900}
-.finance-item-meta{margin-top:5px;color:var(--muted);font-size:9px;line-height:1.45}
-.finance-item-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
-.progress-mini{height:7px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:8px;max-width:420px}
-.progress-mini i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--green))}
-.editor-card{border:1px solid rgba(67,217,255,.16);background:rgba(67,217,255,.025)}
-.editor-title{font-size:14px;margin:0 0 11px}.check-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px}
-.check-line input{width:auto}.mini-actual{display:grid;gap:3px}.mini-actual label{font-size:7px;color:var(--muted);text-transform:uppercase;font-weight:900}
-.mini-actual input{width:92px;min-height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px}
-.history-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.history-row:last-child{border-bottom:0}.history-row strong{display:block;font-size:10px}.history-row span{display:block;margin-top:3px;color:var(--muted);font-size:8px}.history-row.is-reversed{opacity:.45;text-decoration:line-through}
-.empty-state.compact{padding:18px}.pots-bills-layout{display:grid;grid-template-columns:1fr 1fr;gap:12px}.subtabs{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
-.auto-chip{padding:12px;border-radius:14px;border:1px solid rgba(88,233,155,.15);background:rgba(88,233,155,.045)}
-.auto-chip small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:900}.auto-chip strong{display:block;margin-top:5px;font-size:22px}.auto-chip span{display:block;margin-top:4px;color:var(--muted);font-size:8px}
-@media(max-width:1050px){.finance-kpis,.pots-bills-layout{grid-template-columns:1fr 1fr}}
-@media(max-width:700px){.finance-kpis,.pots-bills-layout{grid-template-columns:1fr}.finance-item{align-items:flex-start;flex-direction:column}.finance-item-actions{justify-content:flex-start;width:100%}}
-
-.house-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}.house-ring{min-height:180px;display:grid;place-items:center;text-align:center}.house-ring strong{display:block;font-size:38px}.house-ring span{display:block;color:var(--muted);font-size:9px;margin-top:5px}.house-kpis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}.house-room-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.house-room{padding:13px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.025)}.house-room h3{font-size:12px;margin:0}.house-room .house-room-meta{color:var(--muted);font-size:8px;line-height:1.55;margin-top:6px}.house-room .house-room-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}.house-entry{padding:12px;border:1px solid rgba(255,255,255,.075);border-radius:14px;background:rgba(255,255,255,.025)}.house-entry+.house-entry{margin-top:8px}.house-entry-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.house-entry strong{font-size:11px}.house-entry-meta{font-size:8px;color:var(--muted);line-height:1.5;margin-top:4px}.house-entry-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:end;margin-top:9px}.house-actual{display:grid;gap:3px}.house-actual label{font-size:7px;color:var(--muted);text-transform:uppercase;font-weight:900}.house-actual input{width:95px;min-height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px}.house-pill{font-size:8px;font-weight:900;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);color:var(--muted)}.house-pill.good{color:var(--green);border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.house-pill.watch{color:#fbbf24;border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.05)}.house-migrate{border-color:rgba(167,139,250,.22)!important;background:rgba(167,139,250,.035)!important}.house-history-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.055)}.house-history-row:last-child{border-bottom:0}.house-history-row strong{font-size:9px}.house-history-row span{display:block;color:var(--muted);font-size:8px;margin-top:3px}.house-empty{padding:16px;color:var(--muted);font-size:9px;text-align:center}@media(max-width:1150px){.house-kpis{grid-template-columns:repeat(4,1fr)}.house-room-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.house-hero,.house-room-grid{grid-template-columns:1fr}.house-kpis{grid-template-columns:1fr 1fr}}
-
-
-.finance-readiness{border-color:rgba(88,233,155,.18)!important;background:linear-gradient(145deg,rgba(88,233,155,.045),rgba(67,217,255,.025))!important}.readiness-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.readiness-badge{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:8px;font-weight:1000;border:1px solid rgba(255,255,255,.10)}.readiness-badge.ready{color:#9df0ba;border-color:rgba(88,233,155,.28);background:rgba(88,233,155,.05)}.readiness-badge.warn{color:#f7d77d;border-color:rgba(241,196,90,.28);background:rgba(241,196,90,.05)}.readiness-badge.block{color:#ffb6c2;border-color:rgba(255,112,137,.28);background:rgba(255,112,137,.05)}.readiness-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}.readiness-item{padding:11px;border-radius:13px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.readiness-item small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.readiness-item strong{display:block;font-size:14px;margin-top:5px}.planning-gap-list{display:grid;gap:7px;margin-top:10px}.planning-gap{padding:9px 10px;border-radius:12px;border:1px solid rgba(241,196,90,.18);background:rgba(241,196,90,.035);font-size:8px;color:#f7d77d}.planning-gap.block{border-color:rgba(255,112,137,.2);background:rgba(255,112,137,.04);color:#ffb6c2}@media(max-width:900px){.readiness-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.readiness-grid{grid-template-columns:1fr}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020612">
+<title>Aurora City FC — Finance Command</title>
+<link rel="stylesheet" href="aurora.css?v=finance-base">
+<link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
+<link rel="stylesheet" href="finance-command.css?v=finance-command-100">
 </head>
-<body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
-  <nav class="nav">
-    <a href="index.html">🏟 Aurora HQ</a>
-    <a href="finance.html">💷 Finance</a>
-    <a href="transfer.html">🔄 Transfer</a>
-    <a href="registration.html">📝 Registration</a>
-    <a href="squad.html">⚽ Squad</a>
-    <a href="scouting.html">🔎 Scouting</a>
-    <a href="income.html">💰 Income</a>
-    <a href="#" data-soon="Club Control">⚙ Club Control</a>
-  </nav>
-  <div class="sidebar-foot"><b>Finance owns the money</b><br>Pots and bills now feed the payday calculation automatically.</div>
-</aside>
 
-<main class="main"><div class="content">
-<div class="notice" style="margin-bottom:14px"><b>Finance 2.0 — Protected Spending Money v1.4.1.</b> Payday, bills, Holding Pot protection, goal-pot funding, House Projects and mission release now run as one reconciled Finance system. Planning gaps are surfaced before Finance can release money to Transfer.</div>
-<header class="page-head">
-  <div><span class="eyebrow">Aurora FC 2.0 • Finance</span><h1>Finance Department</h1><p>Know what is available, protect what is committed, and release one authoritative investment budget to Transfer.</p></div>
-  <span class="status">FINANCE v1.4.1</span>
-</header>
+<body class="aurora-entered finance-command-page">
+<div class="aurora-game-shell is-active" id="gameShell">
 
-<div class="tabs card">
-  <button class="tab active" data-tab="overviewPanel">Overview</button>
-  <button class="tab" data-tab="paydayPanel">Payday</button>
-  <button class="tab" data-tab="potsPanel">Pots & Bills</button>
-  <button class="tab" data-tab="housePanel">House Projects</button>
+  <header class="aurora-shell-header">
+    <div class="aurora-shell-header-inner">
+      <div class="aurora-shell-brand">
+        <button id="auroraShellMenuButton" aria-label="Open club navigation" aria-expanded="false">☰</button>
+        <div class="aurora-shell-crest">
+          <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="Aurora City FC">
+        </div>
+        <div class="aurora-shell-copy">
+          <h1>Aurora City FC</h1>
+          <p id="currentDepartment">FINANCE COMMAND</p>
+        </div>
+      </div>
+
+      <div class="aurora-shell-context">
+        <div class="aurora-shell-datetime">
+          <span class="shell-clock" id="shellClock">--:--</span>
+          <span class="shell-date" id="shellDate">---</span>
+        </div>
+        <a class="shell-control shell-home" href="index.html" title="Nexus HQ">⌂</a>
+        <span class="aurora-shell-live">Live</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell-stage">
+    <main class="shell-page finance-shell-page">
+
+      <section class="finance-command-hero">
+        <div class="finance-command-hero-copy">
+          <div class="finance-status-line">
+            <span class="finance-live-pill">● FINANCE SYSTEM LIVE</span>
+            <span class="finance-version-pill">PROTECTED SPENDING MONEY v1.4.1</span>
+          </div>
+          <span class="finance-eyebrow">Aurora City FC • Finance Department</span>
+          <h2>Finance<br><span>Command Centre</span></h2>
+          <p>Protect every commitment, control the payday cycle and release one authoritative investment mission to Transfer.</p>
+        </div>
+
+        <div class="finance-command-rule">
+          <small>FINANCE RULE</small>
+          <strong>Money is protected before it is released.</strong>
+          <p>Bills, pot funding, Holding Pot safety, house commitments and personal spending money stay ahead of investment cash.</p>
+          <a href="#paydayPanel" class="finance-hero-action" data-finance-tab="paydayPanel">Open Payday Planner →</a>
+        </div>
+      </section>
+
+      <div class="finance-tabs">
+        <button class="tab active" data-tab="overviewPanel">Command Overview</button>
+        <button class="tab" data-tab="paydayPanel">Payday Control</button>
+        <button class="tab" data-tab="potsPanel">Pots & Bills</button>
+        <button class="tab" data-tab="housePanel">House Projects</button>
+      </div>
+
+      <section id="overviewPanel" class="tab-panel active">
+
+        <section class="finance-scoreboard">
+          <article class="finance-score green">
+            <small>Opening Cash</small>
+            <strong id="mOpening">£0.00</strong>
+            <span>Before payday</span>
+          </article>
+          <article class="finance-score cyan">
+            <small>Wages Received</small>
+            <strong id="mPay">£0.00</strong>
+            <span id="mPayMeta">Expected £0.00</span>
+          </article>
+          <article class="finance-score gold">
+            <small>Total Funding Required</small>
+            <strong id="mCommitments">£0.00</strong>
+            <span>Bills + pots + safety + planned spending</span>
+          </article>
+          <article class="finance-score blue">
+            <small>Protected Spending</small>
+            <strong id="mProtected">£0.00</strong>
+            <span>Personal cash kept aside</span>
+          </article>
+          <article class="finance-score release">
+            <small>Next Safe Release</small>
+            <strong id="mAvailable">£0.00</strong>
+            <span>Current payday forecast</span>
+          </article>
+        </section>
+
+        <section class="finance-command-grid two">
+          <article class="finance-panel readiness-panel">
+            <div class="finance-panel-head">
+              <div>
+                <span class="finance-panel-kicker">Finance Control Check</span>
+                <h3>Payday Readiness</h3>
+              </div>
+              <span id="financeReadinessBadge" class="readiness-badge warn">CHECKING</span>
+            </div>
+
+            <div class="readiness-grid">
+              <div class="readiness-item"><small>Bill planning</small><strong id="readyBills">—</strong></div>
+              <div class="readiness-item"><small>Holding Pot</small><strong id="readyHolding">—</strong></div>
+              <div class="readiness-item"><small>Goal pots</small><strong id="readyGoalPots">—</strong></div>
+              <div class="readiness-item"><small>Mission gate</small><strong id="readyMission">—</strong></div>
+            </div>
+            <div id="financePlanningGaps" class="planning-gap-list"></div>
+          </article>
+
+          <article class="finance-panel mission-panel">
+            <div class="finance-panel-head">
+              <div>
+                <span class="finance-panel-kicker">Current Released Mission</span>
+                <h3>Transfer Budget</h3>
+              </div>
+              <span class="mission-lock-chip">FROZEN AFTER RELEASE</span>
+            </div>
+            <div class="mission-amount" id="missionAmount">£0.00</div>
+            <strong class="mission-status" id="missionStatus">NO ACTIVE MISSION</strong>
+            <p id="missionMeta">No released mission is active.</p>
+            <div class="mission-lock" id="missionLock">Released missions stay frozen while the next payday forecast continues updating.</div>
+            <a class="finance-link-btn" href="index.html">View on Nexus HQ →</a>
+          </article>
+        </section>
+
+        <section class="finance-panel reconcile-panel">
+          <div class="finance-panel-head">
+            <div>
+              <span class="finance-panel-kicker">Payday Reconciliation</span>
+              <h3>Current mission vs next forecast</h3>
+            </div>
+            <span class="finance-panel-note">Finance keeps the live mission frozen</span>
+          </div>
+
+          <div class="reconcile-grid">
+            <div><small>Next Safe Release</small><strong id="reconNextSafe">£0.00</strong><span>Live payday inputs</span></div>
+            <div><small>Current Released Mission</small><strong id="reconMission">£0.00</strong><span id="reconMissionStatus">No active mission</span></div>
+            <div><small>Difference</small><strong id="reconDifference">£0.00</strong><span id="reconDifferenceMeta">No released mission to compare</span></div>
+          </div>
+          <div id="missionForecastNotice" class="finance-notice">Finance will keep the released mission frozen while calculating the next safe release independently.</div>
+        </section>
+
+        <section class="finance-command-grid two">
+          <article class="finance-panel forecast-panel">
+            <div class="finance-panel-head">
+              <div>
+                <span class="finance-panel-kicker">Next Payday Forecast</span>
+                <h3>Automatic Commitments</h3>
+              </div>
+              <button class="mini-link-btn" data-finance-tab="paydayPanel">Edit Payday</button>
+            </div>
+
+            <div class="forecast-list">
+              <div><span>Expected wages</span><strong id="breakExpectedWages">£0.00</strong></div>
+              <div><span>Wages received</span><strong id="breakWagesReceived">£0.00</strong></div>
+              <div><span>Extra wage</span><strong class="positive" id="breakWageExtra">£0.00</strong></div>
+              <div class="forecast-total"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div>
+              <div><span>Current Account bills</span><strong id="breakBills">− £0.00</strong></div>
+              <div><span>13-pay bill funding</span><strong id="breakAnnualBills">− £0.00</strong></div>
+              <div><span>Holding Pot safety top-up</span><strong id="breakHoldingTopUp">− £0.00</strong></div>
+              <div><span>Pot funding required</span><strong id="breakPots">− £0.00</strong></div>
+              <div><span>Other planned spending</span><strong id="breakOther">− £0.00</strong></div>
+              <div><span>Protected spending money</span><strong id="breakProtected">− £0.00</strong></div>
+              <div class="safe-surplus"><span>Safe surplus</span><strong id="breakAvailable">£0.00</strong></div>
+            </div>
+          </article>
+
+          <article class="finance-panel rule-panel">
+            <div class="finance-panel-head">
+              <div>
+                <span class="finance-panel-kicker">Money Protection Order</span>
+                <h3>Finance owns the money</h3>
+              </div>
+              <span class="rule-chip">SINGLE SOURCE</span>
+            </div>
+
+            <div class="rule-flow">
+              <div><i>01</i><b>Income lands</b><span>Opening cash + wages + other cash</span></div>
+              <div><i>02</i><b>Commitments protected</b><span>Bills, annual bill funding and pot funding</span></div>
+              <div><i>03</i><b>Safety protected</b><span>Holding Pot + personal spending</span></div>
+              <div><i>04</i><b>Mission released</b><span>Only the safe surplus can reach Transfer</span></div>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section id="paydayPanel" class="tab-panel">
+        <section class="finance-command-grid two">
+          <article class="finance-panel payday-planner">
+            <div class="finance-panel-head">
+              <div><span class="finance-panel-kicker">Payday Control</span><h3>Actual Payday Planner</h3></div>
+              <span class="rule-chip green">LIVE COMMITMENTS</span>
+            </div>
+
+            <div class="field-grid finance-field-grid">
+              <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small id="paydayWindowHelp">Aurora calculates bills over 13 paydays, required pot funding, and a safety check before the next payday.</small></div>
+              <div class="field"><label for="openingCash">Opening cash</label><div class="money-wrap"><input id="openingCash" type="number" min="0" step="0.01"></div><small>Cash available before the wage lands.</small></div>
+              <div class="field"><label for="expectedWages">Expected wages</label><div class="money-wrap"><input id="expectedWages" type="number" min="0" step="0.01"></div><small>Your normal expected take-home pay for this payday.</small></div>
+              <div class="field"><label for="wagesReceived">Wages received</label><div class="money-wrap"><input id="wagesReceived" type="number" min="0" step="0.01"></div><small>Enter the actual wage that landed.</small></div>
+              <div class="field"><label for="extraCash">Other cash / one-off income</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Cash included this payday that is not part of your wage.</small></div>
+              <div class="field"><label for="otherPlanned">Other planned spending</label><div class="money-wrap"><input id="otherPlanned" type="number" min="0" step="0.01"></div><small>Known spend not already represented by a bill or pot.</small></div>
+              <div class="field"><label for="protectedCash">Protected spending money</label><div class="money-wrap"><input id="protectedCash" type="number" min="0" step="0.01"></div><small>Your personal spending money for the pay cycle.</small></div>
+              <div class="field"><label for="releaseAmount">Investment amount to release</label><div class="money-wrap"><input id="releaseAmount" type="number" min="0" step="0.01"></div><small>Can be less than safe surplus, never more.</small></div>
+            </div>
+
+            <div class="finance-subhead">Wage Difference Routing</div>
+            <div class="finance-chip-grid four">
+              <div class="auto-chip"><small>Expected wage</small><strong id="autoExpectedWages">£0.00</strong><span>Normal payday baseline</span></div>
+              <div class="auto-chip"><small>Wage difference</small><strong id="autoWageDifference">£0.00</strong><span id="autoWageDifferenceMeta">No extra pay</span></div>
+              <div class="auto-chip"><small>Extra pay → pots</small><strong id="autoWageToPots">£0.00</strong><span id="autoWageToPotsMeta">Extra wages are routed to pot gaps first</span></div>
+              <div class="auto-chip"><small>Extra left after pots</small><strong id="autoWageRemaining">£0.00</strong><span>Flows into the remaining safe allocation</span></div>
+            </div>
+
+            <div class="finance-subhead">Automatic Commitments</div>
+            <div class="finance-chip-grid five">
+              <div class="auto-chip"><small>13-pay bill funding</small><strong id="autoAnnualBills">£0.00</strong><span id="autoAnnualBillsMeta">Annual Holding Pot bills ÷ 13</span></div>
+              <div class="auto-chip"><small>Pot funding required</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
+              <div class="auto-chip"><small>Safety top-up</small><strong id="autoHoldingTopUp">£0.00</strong><span id="autoHoldingMeta">Only if the next cycle is short</span></div>
+              <div class="auto-chip"><small>Current Account bills</small><strong id="autoBillsDue">£0.00</strong><span id="autoBillsCount">0 direct bill occurrences</span></div>
+              <div class="auto-chip total-chip"><small>Total funding required</small><strong id="autoTotalFunding">£0.00</strong><span>Bills + pots + safety + planned</span></div>
+            </div>
+
+            <div id="releaseGuard" class="finance-notice">Enter the amount you want Finance to release to Transfer.</div>
+            <div class="finance-actions">
+              <button class="finance-btn secondary" id="savePlan">Save Payday Plan</button>
+              <button class="finance-btn primary" id="releaseMission" disabled>Release Investment Mission</button>
+            </div>
+          </article>
+
+          <article class="finance-panel funding-panel">
+            <div class="finance-panel-head">
+              <div><span class="finance-panel-kicker">Finance Rule</span><h3>Automatic Funding Engine</h3></div>
+              <span class="rule-chip green">AUTO</span>
+            </div>
+
+            <div class="finance-notice good"><b>Payday order:</b><br>Expected wages set the baseline. Actual wages are compared automatically. Extra wage goes to pot gaps first; anything left then flows into the remaining safe allocation. Bills and required dated pots stay protected throughout.</div>
+
+            <div class="finance-subhead">Automatic Pot Funding</div>
+            <div class="field-grid finance-field-grid single">
+              <div class="field"><label for="fundingStrategy">Extra-wage routing</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced across eligible pots</option><option value="critical">Critical P1 only</option></select><small>Required dated-pot funding stays pace-only. Extra pay is routed through undated pot gaps using this rule.</small></div>
+            </div>
+
+            <div class="finance-chip-grid four">
+              <div class="auto-chip"><small>Extra wage available</small><strong id="fundingBudgetValue">£0.00</strong><span>Received wage above expected wage</span></div>
+              <div class="auto-chip"><small>Total pot funding</small><strong id="fundingAllocatedValue">£0.00</strong><span>Required + optional extra</span></div>
+              <div class="auto-chip"><small>Required by dates</small><strong id="fundingDeadlineValue">£0.00</strong><span>Calculated from gaps ÷ paydays left</span></div>
+              <div class="auto-chip"><small>Extra wage remaining</small><strong id="fundingUnallocatedValue">£0.00</strong><span>Available for the rest of the payday allocation</span></div>
+            </div>
+
+            <div id="fundingEngineNote" class="finance-notice">Funding engine calculating…</div>
+            <div class="finance-actions"><button class="finance-btn secondary" id="saveFundingPolicy">Save Routing Rule</button></div>
+
+            <div class="finance-subhead">Holding Pot Protection</div>
+            <div class="finance-chip-grid three">
+              <div class="auto-chip"><small>Annual Holding Pot bills</small><strong id="holdingAnnualTotal">£0.00</strong><span id="holdingAnnualMeta">Projected across 13 pay cycles</span></div>
+              <div class="auto-chip"><small>13-pay contribution</small><strong id="holdingAnnualContribution">£0.00</strong><span>Annual bill total ÷ 13</span></div>
+              <div class="auto-chip"><small>Dynamic target</small><strong id="holdingDynamicTarget">£0.00</strong><span id="holdingDynamicMeta">Worst cash requirement across 3 pay cycles</span></div>
+              <div class="auto-chip"><small>Current Holding Pot</small><strong id="holdingBalance">£0.00</strong><span id="holdingBalanceMeta">Existing protected cash</span></div>
+              <div class="auto-chip"><small>Safety top-up</small><strong id="holdingTopUp">£0.00</strong><span id="holdingTopUpMeta">Only if scheduled funding misses the dynamic target</span></div>
+              <div class="auto-chip"><small>After payday funding</small><strong id="holdingAfterFunding">£0.00</strong><span id="holdingAfterFundingMeta">Balance + normal funding + safety top-up</span></div>
+              <div class="auto-chip"><small>Bills before next payday</small><strong id="holdingRequired">£0.00</strong><span id="holdingRequiredMeta">0 projected occurrences</span></div>
+            </div>
+
+            <div class="field-grid finance-field-grid">
+              <div class="field"><label for="holdingMinimumFloor">Minimum floor (optional)</label><div class="money-wrap"><input id="holdingMinimumFloor" type="number" min="0" step="0.01"></div><small>Set £0 for fully automatic.</small></div>
+              <div class="field"><label>Dynamic horizon</label><input value="3 pay cycles / 12 weeks" readonly><small>Looks beyond the next payday so clustered bills are protected before they arrive.</small></div>
+            </div>
+
+            <div class="finance-actions"><button class="finance-btn secondary" id="saveHoldingRule">Save Holding Rule</button></div>
+            <div id="holdingPotBreakdown" class="finance-notice">No Holding Pot-funded bills in the dynamic horizon.</div>
+          </article>
+        </section>
+      </section>
+
+      <section id="potsPanel" class="tab-panel">
+
+        <section class="finance-scoreboard four">
+          <article class="finance-score green"><small>Pot Cash</small><strong id="potBalanceTotal">£0.00</strong><span>Available across active pots</span></article>
+          <article class="finance-score cyan"><small>Pot Targets</small><strong id="potTargetTotal">£0.00</strong><span>Combined active targets</span></article>
+          <article class="finance-score gold"><small>Funding Gap</small><strong id="potGapTotal">£0.00</strong><span>Remaining target gap</span></article>
+          <article class="finance-score release"><small>Next Payday Funding</small><strong id="potFundingTotal">£0.00</strong><span>Automatically protected</span></article>
+        </section>
+
+        <section class="finance-command-grid two">
+          <article class="finance-panel">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Protected Savings</span><h3>Pots</h3></div><span class="finance-panel-note">Deadlines = pace only • extra wage P1 → P2 → P3</span></div>
+            <div id="potList"></div>
+          </article>
+
+          <article class="finance-panel editor-panel" id="potEditor">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Pot Editor</span><h3 id="potEditorTitle">Add Pot</h3></div></div>
+            <input id="potId" type="hidden">
+            <div class="field-grid finance-field-grid">
+              <div class="field"><label>Pot name</label><input id="potName" placeholder="e.g. Coventry City Tickets / Travel"></div>
+              <div class="field"><label>Current balance</label><div class="money-wrap"><input id="potBalance" type="number" min="0" step="0.01"></div></div>
+              <div class="field"><label id="potTargetLabel">Target</label><div class="money-wrap"><input id="potTarget" type="number" min="0" step="0.01"></div><small id="potTargetHelp">The amount this pot is aiming to hold or fund.</small></div>
+              <div class="field"><label>Manual funding override</label><div class="money-wrap"><input id="potFunding" type="number" min="0" step="0.01"></div><small>Leave £0 for automatic deadline + priority funding.</small></div>
+              <div class="field"><label>Complete by</label><input id="potDeadline" type="date"><small>A dated pot gets its minimum required amount first.</small></div>
+              <div class="field"><label>Priority</label><select id="potPriority"><option value="1">P1 Critical</option><option value="2">P2 Important</option><option value="3">P3 Flexible</option></select></div>
+              <div class="field"><label>Goal type</label><select id="potGoalMode"><option value="balance">Balance target</option><option value="funded-progress">Funded progress</option></select><small>Funded progress = current balance + qualifying spend.</small></div>
+              <div class="field" id="potSpentField"><label>Spent so far</label><div class="money-wrap"><input id="potSpent" type="number" min="0" step="0.01"></div><small>Use only for progress goals.</small></div>
+            </div>
+            <div class="finance-actions"><button class="finance-btn primary" id="savePot">Save Pot</button><button class="finance-btn secondary" id="cancelPot">Clear</button></div>
+          </article>
+        </section>
+
+        <section class="finance-scoreboard four">
+          <article class="finance-score gold"><small>Due By Payday</small><strong id="billDuePayday">£0.00</strong><span>Current Account impact only</span></article>
+          <article class="finance-score cyan"><small>Next 7 Days</small><strong id="billNext7">£0.00</strong><span>All included bills</span></article>
+          <article class="finance-score red"><small>Overdue</small><strong id="billOverdueCount">0</strong><span>Needs attention</span></article>
+          <article class="finance-score blue"><small>Active Bills</small><strong id="billActiveCount">0</strong><span>Unpaid and included</span></article>
+        </section>
+
+        <section class="finance-command-grid two">
+          <article class="finance-panel">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Commitment Schedule</span><h3>Bills</h3></div><span class="finance-panel-note">Complete to roll recurring dates</span></div>
+            <div id="recurringRepairNotice" class="finance-notice" style="display:none"></div>
+            <div id="billList"></div>
+          </article>
+
+          <article class="finance-panel editor-panel" id="billEditor">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Bill Editor</span><h3 id="billEditorTitle">Add Bill</h3></div></div>
+            <input id="billId" type="hidden">
+            <div class="field-grid finance-field-grid">
+              <div class="field"><label>Bill name</label><input id="billName" placeholder="e.g. Grocery shop"></div>
+              <div class="field"><label>Planned amount</label><div class="money-wrap"><input id="billAmount" type="number" min="0" step="0.01"></div></div>
+              <div class="field"><label>Due date</label><input id="billDue" type="date"></div>
+              <div class="field"><label>Frequency</label><select id="billFrequency"><option value="one-off">One-off</option><option value="weekly">Weekly</option><option value="4-weeks">Every 4 weeks</option><option value="5-weeks">Every 5 weeks</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+              <div class="field"><label>Funding source</label><select id="billFundingSource"><option>Current Account</option></select><small>Named pots are deducted when payment completes.</small></div>
+              <div class="field"><label>Category</label><input id="billCategory" value="Other"></div>
+            </div>
+            <label class="check-line"><input id="billIncluded" type="checkbox" checked> Include this bill in Finance planning</label>
+            <div class="finance-actions"><button class="finance-btn primary" id="saveBill">Save Bill</button><button class="finance-btn secondary" id="cancelBill">Clear</button></div>
+          </article>
+        </section>
+
+        <section class="finance-panel">
+          <div class="finance-panel-head"><div><span class="finance-panel-kicker">Audit Trail</span><h3>Payment History</h3></div><span class="finance-panel-note">Safe undo trail</span></div>
+          <div id="paymentHistory"></div>
+        </section>
+      </section>
+
+      <section id="housePanel" class="tab-panel">
+        <section class="house-hero-new">
+          <article class="finance-panel house-rule-panel">
+            <span class="finance-panel-kicker">House Funding Rule</span>
+            <h3>Every payment belongs to a room.</h3>
+            <p>Reserved work uses the estimated cost. When the work is paid, only the actual cost leaves the House Fund. A saving is released back into available cash automatically.</p>
+            <div class="finance-notice good"><b>Funded progress = current House Fund cash + confirmed actual house spending.</b><br>Reserved estimates reduce available cash but do not count as spent until paid.</div>
+          </article>
+
+          <article class="finance-panel house-progress-panel">
+            <small>PROJECT FUNDED</small>
+            <strong id="houseProgressPct">0%</strong>
+            <span id="houseProgressCaption">Project funded</span>
+            <div class="house-progress-track"><i id="houseProgressBar" style="width:0%"></i></div>
+          </article>
+        </section>
+
+        <section class="house-kpis-new">
+          <article><small>Project Target</small><strong id="houseTargetKpi">£0.00</strong><span>Whole renovation</span></article>
+          <article><small>House Fund Cash</small><strong id="houseCashKpi">£0.00</strong><span>Current available pot</span></article>
+          <article><small>Estimated Reserved</small><strong id="houseReservedKpi">£0.00</strong><span>Upcoming work</span></article>
+          <article><small>Available After Costs</small><strong id="houseAvailableKpi">£0.00</strong><span>Cash after reservations</span></article>
+          <article><small>Actual Spent</small><strong id="houseSpentKpi">£0.00</strong><span>Confirmed historical + paid</span></article>
+          <article><small>Total Funded</small><strong id="houseFundedKpi">£0.00</strong><span>Cash + actual spending</span></article>
+          <article><small>Remaining</small><strong id="houseRemainingKpi">£0.00</strong><span>Still to fund</span></article>
+        </section>
+
+        <section class="finance-panel house-migrate" id="houseMigrationCard">
+          <div class="finance-panel-head"><div><span class="finance-panel-kicker">Legacy Migration</span><h3>Aurora 1 House Migration</h3></div><span id="houseMigrationBadge" class="rule-chip">SCANNING</span></div>
+          <p id="houseMigrationSummary">Checking the old Finance planner for the room-by-room House Project Ledger…</p>
+          <div class="finance-actions"><button class="finance-btn primary" id="houseImportBtn" disabled>Import / Merge Aurora 1 House Ledger</button></div>
+        </section>
+
+        <section class="finance-panel">
+          <div class="finance-panel-head"><div><span class="finance-panel-kicker">Renovation Control</span><h3>Room Dashboard</h3></div><span class="finance-panel-note">Estimated • actual • reserved</span></div>
+          <div class="house-room-grid" id="houseRoomGrid"></div>
+          <div class="finance-actions"><button class="finance-btn secondary" id="houseAddRoom">+ Add Room</button></div>
+        </section>
+
+        <section class="finance-command-grid two">
+          <article class="finance-panel">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">House Projects</span><h3>House Ledger</h3></div><span id="houseLedgerMeta" class="finance-panel-note">0 records</span></div>
+            <div id="houseLedgerList"></div>
+          </article>
+
+          <article class="finance-panel editor-panel" id="houseEntryEditor">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Ledger Editor</span><h3 id="houseEditorTitle">Add House Payment</h3></div></div>
+            <input id="houseEntryId" type="hidden">
+            <div class="field-grid finance-field-grid">
+              <div class="field"><label>Description</label><input id="houseEntryName" placeholder="e.g. Games room plastering"></div>
+              <div class="field"><label>Room</label><select id="houseEntryRoom"></select></div>
+              <div class="field"><label>Estimated cost</label><div class="money-wrap"><input id="houseEntryEstimated" type="number" min="0" step="0.01"></div></div>
+              <div class="field"><label>Actual cost</label><div class="money-wrap"><input id="houseEntryActual" type="number" min="0" step="0.01"></div><small>Can be entered later for reserved work.</small></div>
+              <div class="field"><label>Due / paid date</label><input id="houseEntryDue" type="date"></div>
+              <div class="field"><label>Category</label><input id="houseEntryCategory" value="House project"></div>
+              <div class="field"><label>Record type</label><select id="houseEntryType"><option value="reserved">Reserved / upcoming</option><option value="historical">Already paid / historical</option></select><small>Historical records never deduct today’s House Fund cash.</small></div>
+              <div class="field"><label>Notes</label><input id="houseEntryNotes" placeholder="Optional"></div>
+            </div>
+            <div class="finance-actions"><button class="finance-btn primary" id="houseSaveEntry">Save Payment</button><button class="finance-btn secondary" id="houseClearEntry">Clear</button></div>
+            <div id="houseStatus" class="finance-notice">House Ledger owns renovation payments. Do not duplicate these as normal Bills.</div>
+          </article>
+        </section>
+
+        <section class="finance-command-grid two">
+          <article class="finance-panel">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Project Controls</span><h3>House Setup</h3></div></div>
+            <div class="field-grid finance-field-grid">
+              <div class="field"><label>Project target</label><div class="money-wrap"><input id="houseProjectTarget" type="number" min="0" step="0.01"></div></div>
+              <div class="field"><label>Current House Fund balance</label><div class="money-wrap"><input id="houseCurrentBalance" type="number" min="0" step="0.01"></div><small>Reconcile the real cash currently available in your House Fund.</small></div>
+              <div class="field"><label>Opening historical spend</label><div class="money-wrap"><input id="houseOpeningSpent" type="number" min="0" step="0.01"></div><small>Legacy spend not represented by an individual ledger entry.</small></div>
+            </div>
+            <div class="finance-notice"><b>Balance changes are cash corrections, not spending.</b><br>Changing the House Fund balance updates available cash and funded progress, but does not create a paid House Ledger item.</div>
+            <div class="finance-actions"><button class="finance-btn secondary" id="houseSaveSetup">Save House Setup & Balance</button></div>
+          </article>
+
+          <article class="finance-panel">
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Audit Trail</span><h3>House Action History</h3></div><span class="finance-panel-note">Payments & undo trail</span></div>
+            <div id="houseActionHistory"></div>
+          </article>
+        </section>
+      </section>
+
+      <p class="finance-last-update">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
+    </main>
+  </div>
+
+  <div id="auroraShellNavigationOverlay"></div>
+  <aside id="auroraShellNavigation" aria-label="Aurora club navigation">
+    <div class="aurora-shell-nav-head">
+      <div class="aurora-shell-nav-crest">
+        <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="">
+      </div>
+      <div class="aurora-shell-nav-brand">
+        <strong>Aurora City FC</strong>
+        <span>Club Navigation 2.0</span>
+      </div>
+      <button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button>
+    </div>
+
+    <div class="aurora-shell-nav-scroll">
+      <div class="aurora-shell-nav-section">Club Command</div>
+      <a class="aurora-shell-department-row" href="index.html" data-name="Nexus HQ 2.0"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+      <div class="aurora-shell-nav-section">Football Operations</div>
+      <a class="aurora-shell-department-row is-current" href="finance.html" data-name="Finance Command"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="scouting.html" data-name="Scouting Centre"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="transfer.html" data-name="Transfer Centre"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy the approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="registration.html" data-name="Registration"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="squad.html" data-name="Squad Hub"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="income.html" data-name="Income Centre"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+      <div class="aurora-shell-nav-section">Club</div>
+      <a class="aurora-shell-department-row" href="club-control.html" data-name="Club Control"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    </div>
+  </aside>
 </div>
 
-<section id="overviewPanel" class="tab-panel active">
-  <section class="grid grid-5">
-    <article class="card card-pad metric"><small>Opening Cash</small><strong id="mOpening">£0.00</strong><span>Before payday</span></article>
-    <article class="card card-pad metric"><small>Wages Received</small><strong id="mPay">£0.00</strong><span id="mPayMeta">Expected £0.00</span></article>
-    <article class="card card-pad metric"><small>Total Funding Required</small><strong id="mCommitments">£0.00</strong><span>Bills + pots + safety protection + planned spending</span></article>
-    <article class="card card-pad metric"><small>Protected Spending Money</small><strong id="mProtected">£0.00</strong><span>Personal spending money kept aside</span></article>
-    <article class="card card-pad metric"><small>Next Safe Release</small><strong class="good" id="mAvailable">£0.00</strong><span>Current payday forecast</span></article>
-  </section>
+<div id="toast" class="finance-toast"></div>
 
-  <section class="section card card-pad finance-readiness">
-    <div class="readiness-head"><div><span class="eyebrow">Finance Control Check</span><h2 style="margin:5px 0 0">Payday Readiness</h2></div><span id="financeReadinessBadge" class="readiness-badge warn">CHECKING</span></div>
-    <div class="readiness-grid"><div class="readiness-item"><small>Bill planning</small><strong id="readyBills">—</strong></div><div class="readiness-item"><small>Holding Pot</small><strong id="readyHolding">—</strong></div><div class="readiness-item"><small>Goal pots</small><strong id="readyGoalPots">—</strong></div><div class="readiness-item"><small>Mission gate</small><strong id="readyMission">—</strong></div></div>
-    <div id="financePlanningGaps" class="planning-gap-list"></div>
-  </section>
-
-  <section class="section card card-pad">
-    <div class="section-head"><h2>Payday Reconciliation</h2><span class="muted">Current mission vs next forecast</span></div>
-    <div class="grid grid-3">
-      <div class="metric"><small>Next Safe Release</small><strong class="good" id="reconNextSafe">£0.00</strong><span>Recalculates from live payday inputs</span></div>
-      <div class="metric"><small>Current Released Mission</small><strong id="reconMission">£0.00</strong><span id="reconMissionStatus">No active mission</span></div>
-      <div class="metric"><small>Difference</small><strong id="reconDifference">£0.00</strong><span id="reconDifferenceMeta">No released mission to compare</span></div>
-    </div>
-    <div id="missionForecastNotice" class="notice" style="margin-top:12px">Finance will keep the released mission frozen while calculating the next safe release independently.</div>
-  </section>
-
-  <section class="section grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Next Payday Forecast</h2><span class="muted">Automatic commitments</span></div>
-      <div class="calc-list">
-        <div class="calc-row"><span>Expected wages</span><strong id="breakExpectedWages">£0.00</strong></div>
-        <div class="calc-row"><span>Wages received</span><strong id="breakWagesReceived">£0.00</strong></div>
-        <div class="calc-row"><span>Extra wage</span><strong class="good" id="breakWageExtra">£0.00</strong></div>
-        <div class="calc-row"><span>Total cash available</span><strong id="breakTotal">£0.00</strong></div>
-        <div class="calc-row"><span>Current Account bills</span><strong id="breakBills">− £0.00</strong></div>
-        <div class="calc-row"><span>13-pay bill funding</span><strong id="breakAnnualBills">− £0.00</strong></div>
-        <div class="calc-row"><span>Holding Pot safety top-up</span><strong id="breakHoldingTopUp">− £0.00</strong></div>
-        <div class="calc-row"><span>Pot funding required</span><strong id="breakPots">− £0.00</strong></div>
-        <div class="calc-row"><span>Other planned spending</span><strong id="breakOther">− £0.00</strong></div>
-        <div class="calc-row"><span>Protected spending money</span><strong id="breakProtected">− £0.00</strong></div>
-        <div class="calc-row total"><span>Safe surplus</span><strong class="good" id="breakAvailable">£0.00</strong></div>
-      </div>
-      <div class="action-row"><button class="btn" onclick="document.querySelector('[data-tab=paydayPanel]').click()">Edit Payday Plan</button><button class="btn secondary" onclick="document.querySelector('[data-tab=potsPanel]').click()">Manage Pots & Bills</button></div>
-    </article>
-
-    <article class="mission-box">
-      <span class="eyebrow">Current Released Mission</span><div class="big" id="missionAmount">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong>
-      <p class="meta" id="missionMeta">No released mission is active.</p>
-      <div class="lock" id="missionLock">Released missions stay frozen while the next payday forecast continues updating.</div>
-      <div class="action-row"><a class="btn secondary" href="index.html">View on Aurora HQ</a></div>
-    </article>
-  </section>
-</section>
-
-<section id="paydayPanel" class="tab-panel">
-  <section class="grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Actual Payday Planner</h2><span class="good">Live commitments</span></div>
-      <div class="field-grid">
-        <div class="field"><label for="paydayDate">Payday date</label><input id="paydayDate" type="date"><small id="paydayWindowHelp">Aurora calculates bills over 13 paydays, required pot funding, and a safety check before the next payday.</small></div>
-        <div class="field"><label for="openingCash">Opening cash</label><div class="money-wrap"><input id="openingCash" type="number" min="0" step="0.01"></div><small>Cash available before the wage lands.</small></div>
-        <div class="field"><label for="expectedWages">Expected wages</label><div class="money-wrap"><input id="expectedWages" type="number" min="0" step="0.01"></div><small>Your normal expected take-home pay for this payday.</small></div>
-        <div class="field"><label for="wagesReceived">Wages received</label><div class="money-wrap"><input id="wagesReceived" type="number" min="0" step="0.01"></div><small>Enter the actual wage that landed. Aurora works out the difference automatically.</small></div>
-        <div class="field"><label for="extraCash">Other cash / one-off income</label><div class="money-wrap"><input id="extraCash" type="number" min="0" step="0.01"></div><small>Money included this payday that is not part of your wage.</small></div>
-        <div class="field"><label for="otherPlanned">Other planned spending</label><div class="money-wrap"><input id="otherPlanned" type="number" min="0" step="0.01"></div><small>Known spend not already represented by a bill or pot.</small></div>
-        <div class="field"><label for="protectedCash">Protected spending money</label><div class="money-wrap"><input id="protectedCash" type="number" min="0" step="0.01"></div><small>Your personal spending money for the pay cycle. Finance leaves this untouched.</small></div>
-        <div class="field"><label for="releaseAmount">Investment amount to release</label><div class="money-wrap"><input id="releaseAmount" type="number" min="0" step="0.01"></div><small>Can be less than safe surplus, never more.</small></div>
-      </div>
-
-      <div class="split-line"></div>
-      <div class="grid grid-3">
-        <div class="auto-chip"><small>Expected wage</small><strong id="autoExpectedWages">£0.00</strong><span>Normal payday baseline</span></div>
-        <div class="auto-chip"><small>Wage difference</small><strong class="good" id="autoWageDifference">£0.00</strong><span id="autoWageDifferenceMeta">No extra pay</span></div>
-        <div class="auto-chip"><small>Extra pay → pots</small><strong id="autoWageToPots">£0.00</strong><span id="autoWageToPotsMeta">Extra wages are routed to pot gaps first</span></div>
-        <div class="auto-chip"><small>Extra left after pots</small><strong class="cyan" id="autoWageRemaining">£0.00</strong><span>Flows into the remaining safe allocation</span></div>
-      </div>
-      <div class="split-line"></div>
-      <div class="grid grid-3">
-        <div class="auto-chip"><small>13-pay bill funding</small><strong id="autoAnnualBills">£0.00</strong><span id="autoAnnualBillsMeta">Annual Holding Pot bills ÷ 13</span></div>
-        <div class="auto-chip"><small>Pot funding required</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
-        <div class="auto-chip"><small>Safety top-up</small><strong id="autoHoldingTopUp">£0.00</strong><span id="autoHoldingMeta">Only if the next cycle is short</span></div>
-        <div class="auto-chip"><small>Current Account bills</small><strong id="autoBillsDue">£0.00</strong><span id="autoBillsCount">0 direct bill occurrences</span></div>
-        <div class="auto-chip"><small>Total funding required</small><strong class="good" id="autoTotalFunding">£0.00</strong><span>Bills + pots + safety + planned</span></div>
-      </div>
-      <div class="split-line"></div>
-      <div id="releaseGuard" class="notice">Enter the amount you want Finance to release to Transfer.</div>
-      <div class="action-row"><button class="btn secondary" id="savePlan">Save Payday Plan</button><button class="btn primary" id="releaseMission" disabled>Release Investment Mission</button></div>
-    </article>
-
-    <article class="card card-pad">
-      <div class="section-head"><h2>Finance Rule</h2><span class="good">Single source</span></div>
-      <div class="notice good"><b>Payday order:</b><br>Expected wages set the baseline. Actual wages are compared automatically. Extra wage goes to pot gaps first; anything left then flows into the remaining safe allocation. Bills and required dated pots stay protected throughout.</div>
-      <div class="split-line"></div>
-      <div class="section-head"><h2 style="font-size:15px">Automatic Pot Funding</h2><span class="cyan">AUTO</span></div>
-      <div class="field-grid">
-        <div class="field"><label for="fundingStrategy">Extra-wage routing</label><select id="fundingStrategy"><option value="priority">Priority — P1, P2, P3</option><option value="balanced">Balanced across eligible pots</option><option value="critical">Critical P1 only</option></select><small>Required dated-pot funding is protected first and stays pace-only. Any wage received above expected pay skips dated pots and is routed through undated pot gaps using this rule.</small></div>
-      </div>
-      <div class="grid grid-2" style="margin-top:10px">
-        <div class="auto-chip"><small>Extra wage available</small><strong id="fundingBudgetValue">£0.00</strong><span>Received wage above expected wage</span></div>
-        <div class="auto-chip"><small>Total pot funding</small><strong id="fundingAllocatedValue">£0.00</strong><span>Required + optional extra</span></div>
-        <div class="auto-chip"><small>Required by dates</small><strong id="fundingDeadlineValue">£0.00</strong><span>Calculated from gaps ÷ paydays left</span></div>
-        <div class="auto-chip"><small>Extra wage remaining</small><strong id="fundingUnallocatedValue">£0.00</strong><span>Available for the rest of the payday allocation</span></div>
-      </div>
-      <div id="fundingEngineNote" class="notice" style="margin-top:10px">Funding engine calculating…</div>
-      <div class="action-row"><button class="btn secondary" id="saveFundingPolicy">Save Routing Rule</button></div>
-      <div class="split-line"></div>
-
-      <div class="section-head"><h2 style="font-size:15px">Holding Pot Protection</h2><span class="good">DYNAMIC</span></div>
-      <div class="grid grid-3">
-        <div class="auto-chip"><small>Annual Holding Pot bills</small><strong id="holdingAnnualTotal">£0.00</strong><span id="holdingAnnualMeta">Projected across 13 pay cycles</span></div>
-        <div class="auto-chip"><small>13-pay contribution</small><strong id="holdingAnnualContribution">£0.00</strong><span>Annual bill total ÷ 13</span></div>
-        <div class="auto-chip"><small>Dynamic target</small><strong class="cyan" id="holdingDynamicTarget">£0.00</strong><span id="holdingDynamicMeta">Worst cash requirement across 3 pay cycles</span></div>
-        <div class="auto-chip"><small>Current Holding Pot</small><strong id="holdingBalance">£0.00</strong><span id="holdingBalanceMeta">Existing protected cash</span></div>
-        <div class="auto-chip"><small>Safety top-up</small><strong id="holdingTopUp">£0.00</strong><span id="holdingTopUpMeta">Only if scheduled funding misses the dynamic target</span></div>
-        <div class="auto-chip"><small>After payday funding</small><strong id="holdingAfterFunding">£0.00</strong><span id="holdingAfterFundingMeta">Balance + normal funding + safety top-up</span></div>
-        <div class="auto-chip"><small>Bills before next payday</small><strong id="holdingRequired">£0.00</strong><span id="holdingRequiredMeta">0 projected occurrences</span></div>
-      </div>
-      <div class="field-grid" style="margin-top:10px">
-        <div class="field"><label for="holdingMinimumFloor">Minimum floor (optional)</label><div class="money-wrap"><input id="holdingMinimumFloor" type="number" min="0" step="0.01"></div><small>Set £0 for fully automatic. Aurora always uses the higher of this floor or the calculated dynamic target.</small></div>
-        <div class="field"><label>Dynamic horizon</label><input value="3 pay cycles / 12 weeks" readonly><small>Looks beyond the next payday so clustered bills are protected before they arrive.</small></div>
-      </div>
-      <div class="action-row"><button class="btn secondary" id="saveHoldingRule">Save Holding Rule</button></div>
-      <div id="holdingPotBreakdown" class="notice" style="margin-top:10px">No Holding Pot-funded bills in the dynamic horizon.</div>
-
-      <div class="split-line"></div>
-      <p class="muted" style="font-size:9px;line-height:1.7">The normal bill contribution is still the annual Holding Pot requirement ÷ 13. The dynamic target is separate: Aurora looks across the next three four-week pay cycles and calculates the cash that must remain available after allowing for future regular contributions. A safety top-up is added only when the current balance plus this payday’s normal contribution would still sit below that dynamic target. Dedicated-pot bills remain excluded to prevent double counting.</p>
-    </article>
-  </section>
-</section>
-
-<section id="potsPanel" class="tab-panel">
-  <section class="finance-kpis">
-    <article class="card card-pad metric"><small>Pot Cash</small><strong id="potBalanceTotal">£0.00</strong><span>Available across active pots</span></article>
-    <article class="card card-pad metric"><small>Pot Targets</small><strong id="potTargetTotal">£0.00</strong><span>Combined active targets</span></article>
-    <article class="card card-pad metric"><small>Funding Gap</small><strong id="potGapTotal">£0.00</strong><span>Remaining target gap</span></article>
-    <article class="card card-pad metric"><small>Next Payday Funding</small><strong class="good" id="potFundingTotal">£0.00</strong><span>Automatically protected</span></article>
-  </section>
-
-  <section class="section pots-bills-layout">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Pots</h2><span class="muted">Deadlines = pace only • extra wage P1 → P2 → P3</span></div>
-      <div id="potList"></div>
-    </article>
-
-    <article class="card card-pad editor-card" id="potEditor">
-      <h3 class="editor-title" id="potEditorTitle">Add Pot</h3>
-      <input id="potId" type="hidden">
-      <div class="field-grid">
-        <div class="field"><label>Pot name</label><input id="potName" placeholder="e.g. Coventry City Tickets / Travel"></div>
-        <div class="field"><label>Current balance</label><div class="money-wrap"><input id="potBalance" type="number" min="0" step="0.01"></div></div>
-        <div class="field"><label id="potTargetLabel">Target</label><div class="money-wrap"><input id="potTarget" type="number" min="0" step="0.01"></div><small id="potTargetHelp">The amount this pot is aiming to hold or fund.</small></div>
-        <div class="field"><label>Manual funding override</label><div class="money-wrap"><input id="potFunding" type="number" min="0" step="0.01"></div><small>Leave £0 for automatic deadline + priority funding.</small></div>
-        <div class="field"><label>Complete by</label><input id="potDeadline" type="date"><small>A dated pot gets its minimum required amount first.</small></div>
-        <div class="field"><label>Priority</label><select id="potPriority"><option value="1">P1 Critical</option><option value="2">P2 Important</option><option value="3">P3 Flexible</option></select></div>
-        <div class="field"><label>Goal type</label><select id="potGoalMode"><option value="balance">Balance target</option><option value="funded-progress">Funded progress</option></select><small>Funded progress = current balance + qualifying spend.</small></div>
-        <div class="field" id="potSpentField"><label>Spent so far</label><div class="money-wrap"><input id="potSpent" type="number" min="0" step="0.01"></div><small>Use only for progress goals such as season tickets/travel.</small></div>
-      </div>
-      <div class="action-row"><button class="btn primary" id="savePot">Save Pot</button><button class="btn secondary" id="cancelPot">Clear</button></div>
-    </article>
-  </section>
-
-  <section class="section finance-kpis">
-    <article class="card card-pad metric"><small>Due By Payday</small><strong id="billDuePayday">£0.00</strong><span>Current Account impact only</span></article>
-    <article class="card card-pad metric"><small>Next 7 Days</small><strong id="billNext7">£0.00</strong><span>All included bills</span></article>
-    <article class="card card-pad metric"><small>Overdue</small><strong id="billOverdueCount">0</strong><span>Needs attention</span></article>
-    <article class="card card-pad metric"><small>Active Bills</small><strong id="billActiveCount">0</strong><span>Unpaid and included</span></article>
-  </section>
-
-  <section class="section pots-bills-layout">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Bills</h2><span class="muted">Complete to roll recurring dates</span></div>
-      <div id="recurringRepairNotice" class="notice" style="margin-bottom:10px;display:none"></div>
-      <div id="billList"></div>
-    </article>
-
-    <article class="card card-pad editor-card" id="billEditor">
-      <h3 class="editor-title" id="billEditorTitle">Add Bill</h3>
-      <input id="billId" type="hidden">
-      <div class="field-grid">
-        <div class="field"><label>Bill name</label><input id="billName" placeholder="e.g. Grocery shop"></div>
-        <div class="field"><label>Planned amount</label><div class="money-wrap"><input id="billAmount" type="number" min="0" step="0.01"></div></div>
-        <div class="field"><label>Due date</label><input id="billDue" type="date"></div>
-        <div class="field"><label>Frequency</label><select id="billFrequency"><option value="one-off">One-off</option><option value="weekly">Weekly</option><option value="4-weeks">Every 4 weeks</option><option value="5-weeks">Every 5 weeks</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
-        <div class="field"><label>Funding source</label><select id="billFundingSource"><option>Current Account</option></select><small>Named pots are deducted when payment completes.</small></div>
-        <div class="field"><label>Category</label><input id="billCategory" value="Other"></div>
-      </div>
-      <div class="split-line"></div>
-      <label class="check-line"><input id="billIncluded" type="checkbox" checked> Include this bill in Finance planning</label>
-      <div class="action-row"><button class="btn primary" id="saveBill">Save Bill</button><button class="btn secondary" id="cancelBill">Clear</button></div>
-    </article>
-  </section>
-
-  <section class="section card card-pad">
-    <div class="section-head"><h2>Payment History</h2><span class="muted">Safe undo trail</span></div>
-    <div id="paymentHistory"></div>
-  </section>
-</section>
-
-<section id="housePanel" class="tab-panel">
-  <section class="house-hero">
-    <article class="card card-pad">
-      <span class="eyebrow">HOUSE FUNDING RULE</span>
-      <h2 style="font-size:23px;margin:7px 0 8px">Every payment belongs to a room.</h2>
-      <p class="muted" style="font-size:10px;line-height:1.65">Reserved work uses the estimated cost. When the work is paid, only the actual cost leaves the House Fund. A saving is released back into available cash automatically.</p>
-      <div class="notice good" style="margin-top:12px"><b>Funded progress = current House Fund cash + confirmed actual house spending.</b><br>Reserved estimates reduce available cash but do not count as spent until paid.</div>
-    </article>
-    <article class="card card-pad house-ring">
-      <div><strong id="houseProgressPct">0%</strong><span id="houseProgressCaption">Project funded</span><div class="progress-mini" style="width:220px;max-width:70vw;margin:12px auto 0"><i id="houseProgressBar" style="width:0%"></i></div></div>
-    </article>
-  </section>
-
-  <section class="section house-kpis">
-    <article class="card card-pad metric"><small>Project Target</small><strong id="houseTargetKpi">£0.00</strong><span>Whole renovation</span></article>
-    <article class="card card-pad metric"><small>House Fund Cash</small><strong id="houseCashKpi">£0.00</strong><span>Current available pot</span></article>
-    <article class="card card-pad metric"><small>Estimated Reserved</small><strong id="houseReservedKpi">£0.00</strong><span>Upcoming work</span></article>
-    <article class="card card-pad metric"><small>Available After Costs</small><strong id="houseAvailableKpi">£0.00</strong><span>Cash after reservations</span></article>
-    <article class="card card-pad metric"><small>Actual Spent</small><strong id="houseSpentKpi">£0.00</strong><span>Confirmed historical + paid</span></article>
-    <article class="card card-pad metric"><small>Total Funded</small><strong class="good" id="houseFundedKpi">£0.00</strong><span>Cash + actual spending</span></article>
-    <article class="card card-pad metric"><small>Remaining</small><strong id="houseRemainingKpi">£0.00</strong><span>Still to fund</span></article>
-  </section>
-
-  <section class="section card card-pad house-migrate" id="houseMigrationCard">
-    <div class="section-head"><h2>Aurora 1 House Migration</h2><span id="houseMigrationBadge" class="muted">SCANNING</span></div>
-    <p class="muted" id="houseMigrationSummary" style="font-size:9px;line-height:1.6">Checking the old Finance planner for the room-by-room House Project Ledger…</p>
-    <div class="action-row"><button class="btn primary" id="houseImportBtn" disabled>Import / Merge Aurora 1 House Ledger</button></div>
-  </section>
-
-  <section class="section">
-    <div class="section-head"><h2>Room Dashboard</h2><span class="muted">Estimated • actual • reserved</span></div>
-    <div class="house-room-grid" id="houseRoomGrid"></div>
-    <div class="action-row"><button class="btn secondary" id="houseAddRoom">+ Add Room</button></div>
-  </section>
-
-  <section class="section grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>House Ledger</h2><span id="houseLedgerMeta" class="muted">0 records</span></div>
-      <div id="houseLedgerList"></div>
-    </article>
-
-    <article class="card card-pad editor-card" id="houseEntryEditor">
-      <h3 class="editor-title" id="houseEditorTitle">Add House Payment</h3>
-      <input id="houseEntryId" type="hidden">
-      <div class="field-grid">
-        <div class="field"><label>Description</label><input id="houseEntryName" placeholder="e.g. Games room plastering"></div>
-        <div class="field"><label>Room</label><select id="houseEntryRoom"></select></div>
-        <div class="field"><label>Estimated cost</label><div class="money-wrap"><input id="houseEntryEstimated" type="number" min="0" step="0.01"></div></div>
-        <div class="field"><label>Actual cost</label><div class="money-wrap"><input id="houseEntryActual" type="number" min="0" step="0.01"></div><small>Can be entered later for reserved work.</small></div>
-        <div class="field"><label>Due / paid date</label><input id="houseEntryDue" type="date"></div>
-        <div class="field"><label>Category</label><input id="houseEntryCategory" value="House project"></div>
-        <div class="field"><label>Record type</label><select id="houseEntryType"><option value="reserved">Reserved / upcoming</option><option value="historical">Already paid / historical</option></select><small>Historical records never deduct today’s House Fund cash.</small></div>
-        <div class="field"><label>Notes</label><input id="houseEntryNotes" placeholder="Optional"></div>
-      </div>
-      <div class="action-row"><button class="btn primary" id="houseSaveEntry">Save Payment</button><button class="btn secondary" id="houseClearEntry">Clear</button></div>
-      <div id="houseStatus" class="notice" style="margin-top:10px">House Ledger owns renovation payments. Do not duplicate these as normal Bills.</div>
-    </article>
-  </section>
-
-  <section class="section grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>House Setup</h2><span class="muted">Project controls</span></div>
-      <div class="field-grid">
-        <div class="field"><label>Project target</label><div class="money-wrap"><input id="houseProjectTarget" type="number" min="0" step="0.01"></div></div>
-        <div class="field"><label>Current House Fund balance</label><div class="money-wrap"><input id="houseCurrentBalance" type="number" min="0" step="0.01"></div><small>Use this to reconcile the real cash currently available in your House Fund.</small></div>
-        <div class="field"><label>Opening historical spend</label><div class="money-wrap"><input id="houseOpeningSpent" type="number" min="0" step="0.01"></div><small>Legacy spend not represented by an individual ledger entry.</small></div>
-      </div>
-      <div class="notice" style="margin-top:10px"><b>Balance changes are cash corrections, not spending.</b><br>Changing the current House Fund balance updates available cash and funded progress, but does not create a paid House Ledger item.</div>
-      <div class="action-row"><button class="btn secondary" id="houseSaveSetup">Save House Setup & Balance</button></div>
-    </article>
-    <article class="card card-pad">
-      <div class="section-head"><h2>House Action History</h2><span class="muted">Payments & undo trail</span></div>
-      <div id="houseActionHistory"></div>
-    </article>
-  </section>
-</section>
-
-<p class="muted" style="font-size:8px;margin:14px 2px 0">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
-</div></main></div>
-
-<div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0d261b;border:1px solid rgba(88,233,155,.25);color:#b9ffd4;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js?v=9"></script>
 <script src="finance-funding.js?v=140"></script>
 <script src="finance-house.js?v=042"></script>
 <script src="finance.js?v=130"></script>
+<script src="aurora-page-shell.js?v=100"></script>
+<script src="finance-command-ui.js?v=100"></script>
 </body>
 </html>
