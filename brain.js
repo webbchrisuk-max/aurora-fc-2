@@ -10,6 +10,7 @@
   const ENDPOINT_KEY='aurora2:brain:endpoint';
   const TOKEN_KEY='aurora2:brain:token';
   const CHAT_KEY='aurora2:brain:history:v1';
+  const BRAIN_VERSION='0.1.1';
 
   function toast(msg){
     const el=$('toast');if(!el)return;el.textContent=msg;el.style.opacity='1';
@@ -398,7 +399,12 @@
   }
 
   function wire(){
+    if(w.__auroraBrainWired)return;
+    w.__auroraBrainWired=true;
     loadConfig();
+    set('connectionNote',config().endpoint&&config().token
+      ? `Aurora Brain ${BRAIN_VERSION} loaded • connection saved. Click Test AI.`
+      : `Aurora Brain ${BRAIN_VERSION} loaded • Local Guardian ready. Add the private AI connection when wanted.`);
     const s=state();renderKPIs(s);renderAudit(audit(s));
     $('runAudit')?.addEventListener('click',()=>{const s=state();renderKPIs(s);renderAudit(audit(s));toast('Guardian audit complete.');});
     $('askBrain')?.addEventListener('click',()=>ask($('question')?.value));
@@ -410,5 +416,12 @@
     $('clearBrainConnection')?.addEventListener('click',clearConfig);
     w.addEventListener('aurora2:state',e=>{renderKPIs(e.detail||state());renderAudit(audit(e.detail||state()))});
   }
-  document.addEventListener('DOMContentLoaded',wire);
+  // brain.html loads this file dynamically for automatic cache-busting.
+  // Dynamic scripts can finish AFTER DOMContentLoaded, so initialise immediately
+  // when the page is already ready; otherwise wait once for DOMContentLoaded.
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',wire,{once:true});
+  }else{
+    wire();
+  }
 })(window);
