@@ -708,10 +708,35 @@
 
   function ensurePaydayCompleteButtons(){
     let complete=$('completePaydayFunding'), undo=$('undoPaydayFunding');
-    if(complete&&undo)return {complete,undo};
 
+    // The payday completion action belongs with Pots & Bills because this is
+    // where the user physically moves the money. Older builds mounted these
+    // controls beside Save Payday Plan, which made the feature effectively
+    // invisible from the Pots screen.
+    const potList=$('potList');
+    let host=$('potPaydayCompletionBar');
+
+    if(!host&&potList){
+      host=document.createElement('div');
+      host.id='potPaydayCompletionBar';
+      host.className='notice good';
+      host.style.marginBottom='14px';
+      host.innerHTML=`
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+          <div style="min-width:220px;flex:1">
+            <b>Next payday pot moves</b>
+            <div id="potPaydayCompletionMeta" class="muted" style="margin-top:4px">Post the scheduled pot funding after you have moved the money.</div>
+          </div>
+          <div id="potPaydayCompletionActions" class="action-row" style="margin:0"></div>
+        </div>`;
+      potList.parentNode?.insertBefore(host,potList);
+    }
+
+    // Keep the old Payday action row only as a fallback for legacy HTML that
+    // does not yet contain the Pots list.
     const save=$('savePlan'), release=$('releaseMission');
-    const row=save?.closest('.action-row')||release?.closest('.action-row');
+    const fallback=save?.closest('.action-row')||release?.closest('.action-row');
+    const row=host?.querySelector('#potPaydayCompletionActions')||fallback;
     if(!row)return {complete:null,undo:null};
 
     if(!complete){
@@ -719,20 +744,20 @@
       complete.id='completePaydayFunding';
       complete.type='button';
       complete.className='btn primary';
-      complete.textContent='Complete Payday Funding';
-      complete.title='Apply the suggested pot transfers, then roll the planner forward one 4-week payday.';
-      row.appendChild(complete);
     }
+    complete.textContent='Complete Pot Moves';
+    complete.title='Post the suggested pot transfers, update the real pot balances, and roll the planner forward one 4-week payday.';
+    if(complete.parentNode!==row)row.appendChild(complete);
 
     if(!undo){
       undo=document.createElement('button');
       undo.id='undoPaydayFunding';
       undo.type='button';
       undo.className='btn secondary';
-      undo.textContent='Undo Last Payday Funding';
+      undo.textContent='Undo Last Pot Moves';
       undo.hidden=true;
-      row.appendChild(undo);
     }
+    if(undo.parentNode!==row)row.appendChild(undo);
 
     return {complete,undo};
   }
@@ -755,20 +780,32 @@
 
     complete.disabled=!payday||!!already;
     complete.textContent=already
-      ?`Payday Funding Completed • ${payday}`
+      ?`Pot Moves Completed • ${payday}`
       :preview&&preview.total>.005
-        ?`Complete Payday Funding • ${money(preview.total)}`
-        :'Complete Payday Funding';
+        ?`Complete Pot Moves • ${money(preview.total)}`
+        :'Complete Pot Moves';
     complete.title=!payday
       ?'Choose and save a payday date first.'
       :already
         ?`Funding for ${payday} has already been posted.`
         :`Post ${money(preview?.total||0)} to the pots and roll the planner forward by 28 days. Bills are not auto-marked paid.`;
 
+    const meta=$('potPaydayCompletionMeta');
+    if(meta){
+      meta.textContent=!payday
+        ?'Choose and save a payday date first.'
+        :already
+          ?`Funding for ${payday} has been posted to the pot balances.`
+          :preview&&preview.total>.005
+            ?`${money(preview.total)} is ready to post to the real pot balances once you have moved the money.`
+            :'There are no pot moves scheduled for this payday.';
+    }
+
     const latest=latestActivePaydayCompletion(state);
     if(undo){
       undo.hidden=!latest;
       undo.disabled=!latest;
+      undo.textContent='Undo Last Pot Moves';
       undo.title=latest?`Undo pot funding posted for ${latest.paydayDate}.`:'';
     }
   }
@@ -969,10 +1006,10 @@
 
   function stampFinanceVersion(){
     const status=document.querySelector('.page-head .status');
-    if(status)status.textContent='FINANCE v1.5.0';
+    if(status)status.textContent='FINANCE v1.5.1';
     const notice=document.querySelector('.content > .notice b');
     if(notice&&String(notice.textContent||'').startsWith('Finance 2.0')){
-      notice.textContent='Finance 2.0 — Payday Complete v1.5.0.';
+      notice.textContent='Finance 2.0 — Pot Moves v1.5.1.';
     }
   }
 
