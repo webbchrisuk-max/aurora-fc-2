@@ -26,11 +26,57 @@ function goodStatus(v){
   return ['LIVE','CONNECTED','READY','OK','HEALTHY'].includes(String(v||'').toUpperCase());
 }
 
+function parsePayDate(v){
+  if(!v)return null;
+  const d=new Date(`${String(v).slice(0,10)}T12:00:00`);
+  return Number.isNaN(d.getTime())?null:d;
+}
+function calendarNextDividend(state){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const rows=[...(state.income?.calendar||[])]
+    .filter(e=>!['PAID','CANCELLED','ARCHIVED'].includes(String(e.status||'').toUpperCase()))
+    .map(e=>({...e,__date:parsePayDate(e.payDate)}))
+    .filter(e=>e.__date && e.__date.getTime()>=today.getTime())
+    .sort((a,b)=>a.__date-b.__date || String(a.ticker||'').localeCompare(String(b.ticker||'')));
+  const e=rows[0];
+  if(!e)return state.income?.nextDividend||null;
+  return {
+    ticker:String(e.ticker||'').replace(/^LON:/i,'').replace(/\.L$/i,'').toUpperCase(),
+    name:e.name||e.ticker||'', account:e.account||'',
+    amount:Number(e.actualAmountGbp)||Number(e.expectedAmountGbp)||0,
+    date:e.payDate||'', exDate:e.exDate||'', status:e.status||'FORECAST'
+  };
+}
+function routeIncome(route){
+  if(!route)return 0;
+  const owned=Number(route.income);
+  if(Number.isFinite(owned) && owned>0)return owned;
+  return (route.allocations||[]).reduce((sum,a)=>sum+(Number(a.expectedAnnualIncome)||0),0);
+}
+function latestStateTimestamp(state){
+  const values=[
+    state.updatedAt,
+    state.finance?.updatedAt,state.finance?.lastCalculatedAt,state.finance?.lastReleasedAt,
+    state.transfer?.updatedAt,state.transfer?.route?.updatedAt,
+    state.scouting?.updatedAt,
+    state.income?.updatedAt,state.income?.lastCalculatedAt,
+    state.registration?.updatedAt,state.registration?.backend?.updatedAt
+  ];
+  (state.squad?.holdings||[]).forEach(h=>values.push(h.updatedAt,h.lastPriceAt));
+  (state.registration?.receipts||[]).forEach(r=>values.push(r.confirmedAt,r.updatedAt));
+  (state.scouting?.targets||[]).forEach(t=>values.push(t.updatedAt,t.lastAssessedAt));
+  let latest=0;
+  values.forEach(v=>{const n=new Date(v||0).getTime();if(Number.isFinite(n)&&n>latest)latest=n;});
+  return latest?new Date(latest):null;
+}
+
 function render(){
   const app=A();
   if(!app?.core?.read)return;
   const s=app.core.read();
   const holdings=activeHoldings(s);
+  text('currentDepartment','NEXUS HQ • CLUB HEADQUARTERS');
+  document.title='Aurora City FC — Nexus HQ 2.0';
 
   const market=holdings.reduce((n,h)=>n+(Number(h.marketValueGbp)||0),0);
   const book=holdings.reduce((n,h)=>n+(Number(h.bookCostGbp)||0),0);
@@ -56,7 +102,7 @@ function render(){
   text('hqConnectionBadge',goodStatus(connection)?'● Club systems live':'● Local / review');
   text('hqStrategyBadge',`Strategy • ${strategy}`);
 
-  const nd=s.income?.nextDividend;
+  const nd=calendarNextDividend(s);
   text('hqNextDividend',nd?.ticker||'—');
   text('hqNextDividendMeta',nd?`${money(nd.amount)} • ${nd.date||'date pending'}`:'Income calendar pending');
 
@@ -82,7 +128,7 @@ function render(){
 
   text('hqAllocated',route?money(route.allocated):'—');
   text('hqRemaining',route?money(route.remaining):'—');
-  text('hqExpectedIncome',route?`${money(route.expectedAnnualIncome)} / yr`:'—');
+  text('hqExpectedIncome',route?`${money(routeIncome(route))} / yr`:'—');
 
   const drafts=s.transfer?.registrationDrafts||[];
   const confirmed=drafts.filter(d=>String(d.status||'').toUpperCase()==='CONFIRMED').length;
@@ -91,13 +137,17 @@ function render(){
 
   const p=s.finance?.plan||{};
   text('hqPaydayTag',`Payday • ${p.paydayDate||'not set'}`);
-  text('hqReleaseAmount',money(Number(p.releaseAmount)||0));
+  const missionActive=missionBudget>0 && !['CANCELLED','COMPLETED','ARCHIVED'].includes(String(mission.status||'').toUpperCase());
+  const financeRelease=missionActive?missionBudget:(Number(p.releaseAmount)||0);
+  text('hqReleaseLabel',missionActive?'Current Mission Release':'Investment Release');
+  text('hqReleaseAmount',money(financeRelease));
   text('hqNetPay',money(Number(p.netPay)||Number(p.wagesReceived)||Number(p.expectedWages)||0));
   text('hqBillsDue',money(Number(p.billsDue)||0));
   text('hqPotsDue',money(Number(p.potsDue)||0));
   text('hqProtectedCash',money(Number(p.protectedCash)||0));
   const financeNote=[];
-  if(Number(p.releaseAmount)>0)financeNote.push(`${money(p.releaseAmount)} is currently released for investment.`);
+  if(missionActive)financeNote.push(`${money(missionBudget)} is already committed to the active Finance mission.`);
+  else if(Number(p.releaseAmount)>0)financeNote.push(`${money(p.releaseAmount)} is ready to release from Finance.`);
   if(Number(p.wageDifference))financeNote.push(`Wage difference ${money(p.wageDifference)}.`);
   text('hqFinanceNote',financeNote.join(' ')||'Finance owns the cash decision. Nexus only reports it.');
 
@@ -135,9 +185,15 @@ function render(){
   text('hqBestDividend',best?.ticker||'—');
   text('hqBestDividendMeta',best?.annualIncome!=null?`${money(best.annualIncome)} / year`:'Awaiting Income');
 
-  const top=s.portfolio?.topAuroraPlayer;
+  const scoutingStrategy=String(s.scouting?.strategy||'sustainable');
+  const scoutingScoreKey=scoutingStrategy==='maximum'?'maximumScore':'sustainableScore';
+  const scoutingLeader=[...(s.scouting?.targets||[])]
+    .filter(t=>String(t.status||'').toLowerCase()!=='block')
+    .sort((a,b)=>(Number(b[scoutingScoreKey])||0)-(Number(a[scoutingScoreKey])||0))[0];
+  const publishedTop=s.portfolio?.topAuroraPlayer;
+  const top=publishedTop || (scoutingLeader?{ticker:scoutingLeader.ticker,score:Number(scoutingLeader[scoutingScoreKey])||0}:null);
   text('hqTopAurora',top?.ticker||'—');
-  text('hqTopAuroraMeta',top?.score!=null?`${top.score}/100 Aurora score`:'Awaiting Scouting');
+  text('hqTopAuroraMeta',top?.score!=null?`${Number(top.score).toFixed(0)}/100 • ${scoutingStrategy} leader`:'Awaiting Scouting');
 
   const profitLeader=[...holdings].sort((a,b)=>(Number(b.profitLossGbp)||0)-(Number(a.profitLossGbp)||0))[0];
   text('hqProfitLeader',profitLeader?.ticker||'—');
@@ -150,7 +206,7 @@ function render(){
   // Scouting top three based on active strategy.
   const scoutHost=$('hqScoutingList');
   if(scoutHost){
-    const scoreKey=String(s.scouting?.strategy||'sustainable')==='maximum'?'maximumScore':'sustainableScore';
+    const scoreKey=scoutingScoreKey;
     const targets=[...(s.scouting?.targets||[])]
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
       .sort((a,b)=>(Number(b[scoreKey])||0)-(Number(a[scoreKey])||0))
@@ -206,11 +262,11 @@ function render(){
   guardianCells.forEach(([id,val])=>{
     const el=$(id);if(!el)return;el.classList.remove('good','watch');el.classList.add(goodStatus(val)?'good':'watch');
   });
-  const stamp=new Date(s.updatedAt||0);
-  const ageMin=Number.isFinite(stamp.getTime())?Math.max(0,Math.floor((Date.now()-stamp.getTime())/60000)):0;
-  text('gFreshnessValue',ageMin<2?'NOW':ageMin<60?`${ageMin} MIN`:`${Math.floor(ageMin/60)} HR`);
-  text('gFreshnessMeta',s.updatedAt?stamp.toLocaleString('en-GB'):'No timestamp');
-  const fresh=$('gFreshness');if(fresh){fresh.classList.remove('good','watch');fresh.classList.add(ageMin<60?'good':'watch')}
+  const stamp=latestStateTimestamp(s);
+  const ageMin=stamp?Math.max(0,Math.floor((Date.now()-stamp.getTime())/60000)):0;
+  text('gFreshnessValue',stamp?(ageMin<2?'NOW':ageMin<60?`${ageMin} MIN`:`${Math.floor(ageMin/60)} HR`):'—');
+  text('gFreshnessMeta',stamp?`Latest stored change • ${stamp.toLocaleString('en-GB')}`:'No stored timestamp');
+  const fresh=$('gFreshness');if(fresh){fresh.classList.remove('good','watch');fresh.classList.add(stamp&&ageMin<60?'good':'watch')}
   text('hqGuardianTag',goodStatus(connection)&&goodStatus(regStatus)?'Systems healthy':'Review status');
 
   // Activity.

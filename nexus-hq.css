@@ -52,3 +52,36 @@
 @media(max-width:980px){.arena-grid,.department-row.two{grid-template-columns:1fr}.mission-lane{grid-template-columns:1fr}.mission-connector{height:18px;width:1px;justify-self:center;background:linear-gradient(180deg,rgba(88,244,255,.08),rgba(88,244,255,.32),rgba(88,244,255,.08))}.mission-summary{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.shell-page{width:calc(100% - 24px)}.scoreboard,.stat-grid.four,.account-strip,.registration-grid,.guardian-grid,.dividend-runway,.launch-grid{grid-template-columns:repeat(2,1fr)}.income-main{grid-template-columns:1fr}}
 @media(max-width:460px){.scoreboard,.stat-grid.four,.account-strip,.leaders-grid,.registration-grid,.guardian-grid,.dividend-runway,.launch-grid,.mission-summary{grid-template-columns:1fr}.brief-actions{grid-template-columns:1fr}.transfer-strap{grid-template-columns:1fr}}
+
+
+/* Nexus HQ v1.1 — connection + iPad density polish */
+.department-row.two{align-items:start}
+.dept-panel{height:auto;align-self:start}
+.guardian-panel,.registration-panel,.finance-panel{align-self:start}
+
+@media(max-width:1500px){
+  .scoreboard{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .score-tile strong{font-size:clamp(20px,2.2vw,30px)}
+}
+@media(max-width:760px){
+  .scoreboard{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+.launch-card,.launch-link,.brief-btn{
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease;
+  touch-action:manipulation;
+}
+.launch-card:hover,.launch-card:focus-visible{
+  transform:translateY(-2px);
+  background:rgba(255,255,255,.025);
+  box-shadow:0 12px 24px rgba(0,0,0,.20);
+  outline:none;
+}
+.launch-card:active,.brief-btn:active{transform:translateY(1px) scale(.995)}
+.launch-card.finance:hover{border-color:rgba(89,255,154,.28)}
+.launch-card.transfer:hover{border-color:rgba(255,95,131,.30)}
+.launch-card.squad:hover{border-color:rgba(106,168,255,.30)}
+.launch-card.scouting:hover{border-color:rgba(255,209,94,.30)}
+.launch-card.registration:hover{border-color:rgba(66,232,193,.30)}
+.launch-card.income:hover{border-color:rgba(185,133,255,.30)}
+.guardian-grid,.registration-grid{align-items:start}
