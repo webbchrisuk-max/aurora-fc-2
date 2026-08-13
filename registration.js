@@ -48,7 +48,7 @@
   }
   function uid(prefix){return A().core.uid(prefix)}
 
-  // Registration Currency Guard v1.1.0
+  // Registration Currency Guard v1.2.0 â AuroraData 2 backend compatibility
   // Prefer explicit route/holding/scouting metadata. ARCC is retained as a
   // safe fallback because legacy Aurora 2 routes did not persist quote currency.
   function normalizeCurrency(v){
@@ -77,25 +77,28 @@
     return 'GBP';
   }
   function ensurePriceUnitOption(currency){
-    const select=$('regPriceUnit'),c=normalizeCurrency(currency);
-    if(!select||!c||c==='GBP')return;
-    if(![...select.options].some(o=>String(o.value||'').toUpperCase()===c)){
-      const option=document.createElement('option');
-      option.value=c;
-      option.textContent=`${c} / share`;
-      select.appendChild(option);
-    }
+    const select=$('regPriceUnit'),c=normalizeCurrency(currency)||'GBP';
+    if(!select)return;
+    const major=[...select.options].find(o=>String(o.value||'').toUpperCase()==='GBP');
+    const pence=[...select.options].find(o=>String(o.value||'').toUpperCase()==='PENCE');
+    // AuroraData 2's backend schema uses priceUnit=GBP to mean a major-unit
+    // per-share price, while currency carries the real quote currency.
+    // Keep the backend value GBP, but show the user the true quote currency.
+    if(major)major.textContent=`${c} / share`;
+    if(pence)pence.hidden=c!=='GBP';
   }
   function syncPriceUnitToCurrency(){
     const currency=normalizeCurrency($('regCurrency')?.value)||'GBP';
+    ensurePriceUnitOption(currency);
     const unit=String($('regPriceUnit')?.value||'GBP').toUpperCase();
     if(currency==='GBP'){
       if(!['GBP','PENCE'].includes(unit))setValue('regPriceUnit','GBP');
       setValue('regFx','1');
       return;
     }
-    ensurePriceUnitOption(currency);
-    if(unit!==currency)setValue('regPriceUnit',currency);
+    // Non-GBP purchases are still sent as backend priceUnit=GBP (major units),
+    // with currency=USD/EUR/etc and fxRateToGbp carrying the conversion.
+    if(unit!=='GBP')setValue('regPriceUnit','GBP');
   }
 
   function loadConnection(){
@@ -120,7 +123,7 @@
         connection:{...s.connection,mode:'AuroraData2',status:'CONNECTED',spreadsheetId:D().spreadsheetId},
         registration:{...s.registration,backend:{...s.registration.backend,status:'CONNECTED',lastHealthAt:now(),lastError:null},updatedAt:now()}
       }));
-      set('connectionNote',`Connected • ${res.transactions||0} transaction${res.transactions===1?'':'s'} • ${res.holdings||0} holding row${res.holdings===1?'':'s'}.`);
+      set('connectionNote',`Connected â¢ ${res.transactions||0} transaction${res.transactions===1?'':'s'} â¢ ${res.holdings||0} holding row${res.holdings===1?'':'s'}.`);
       toast('AuroraData 2 connected.');
     }catch(err){
       A().core.update(s=>({...s,connection:{...s.connection,status:'ERROR'},registration:{...s.registration,backend:{...s.registration.backend,status:'ERROR',lastError:String(err.message||err)},updatedAt:now()}}));
@@ -147,7 +150,7 @@
     $('seedSquad').disabled=true;
     try{
       const res=await D().post('seedHoldings',{holdings});
-      set('connectionNote',`Squad seed complete • ${res.inserted||0} inserted • ${res.skipped||0} already present.`);
+      set('connectionNote',`Squad seed complete â¢ ${res.inserted||0} inserted â¢ ${res.skipped||0} already present.`);
       toast('AuroraData 2 holdings seed complete.');
     }catch(err){
       set('connectionNote',String(err.message||err));toast('Squad seed failed.');
@@ -160,8 +163,8 @@
     const current=preferredId||select.value;
     select.innerHTML=rows.length?rows.map(a=>{
       const d=draftForAllocation(state,a.id);
-      const status=d?.status==='CONFIRMED'?' ✓ CONFIRMED':d?' • '+d.status:'';
-      return `<option value="${esc(a.id)}">${esc(a.ticker)} • ${accountLabel(a.account)} • ${money(a.amount)}${esc(status)}</option>`;
+      const status=d?.status==='CONFIRMED'?' â CONFIRMED':d?' â¢ '+d.status:'';
+      return `<option value="${esc(a.id)}">${esc(a.ticker)} â¢ ${accountLabel(a.account)} â¢ ${money(a.amount)}${esc(status)}</option>`;
     }).join(''):'<option value="">No locked route purchases</option>';
     if(rows.some(a=>a.id===current))select.value=current;
   }
@@ -186,14 +189,14 @@
       ensurePriceUnitOption(savedCurrency);
       // Repair legacy contradictory drafts such as ARCC = USD currency but GBP/share.
       const savedUnit=String(existing.priceUnit||'').toUpperCase();
-      setValue('regPriceUnit',savedCurrency==='GBP'&&['GBP','PENCE'].includes(savedUnit)?savedUnit:savedCurrency);
+      setValue('regPriceUnit',savedCurrency==='GBP'&&['GBP','PENCE'].includes(savedUnit)?savedUnit:'GBP');
       setValue('regFx',savedCurrency==='GBP'?1:(existing.fxRateToGbp||''));
       setValue('regFees',existing.feesNative||0);
     }else{
       setValue('draftId','');setValue('transactionId','');setValue('clientRequestId','');
       setValue('regShares','');setValue('regPrice','');
       setValue('regCurrency',defaultCurrency);
-      setValue('regPriceUnit',defaultCurrency==='GBP'?'GBP':defaultCurrency);
+      setValue('regPriceUnit','GBP');
       setValue('regFx',defaultCurrency==='GBP'?'1':'');
       setValue('regFees','0');
       if(!$('regDate')?.value){const d=new Date();setValue('regDate',`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)}
@@ -223,16 +226,16 @@
     if(!(shares>0))checks.push('Shares must be greater than zero.');
     if(!(price>0))checks.push('Execution price must be greater than zero.');
     if(currency==='GBP'&&!['GBP','PENCE'].includes(priceUnit))checks.push(`Price Unit ${priceUnit} does not match GBP currency.`);
-    if(currency!=='GBP'&&priceUnit!==currency)checks.push(`Price Unit must be ${currency} / share for a ${currency} purchase.`);
+    if(currency!=='GBP'&&priceUnit!=='GBP')checks.push(`Price Unit must use major ${currency} units per share.`);
     if(currency!=='GBP'&&!(fx>0))checks.push('FX to GBP is required for non-GBP purchases.');
     if(!(totalGbp>0))checks.push('Calculated GBP cost must be greater than zero.');
     const ready=checks.length===0;
-    set('pPlanned',money(planned));set('pActual',money(totalGbp));set('pDifference',`${difference>=0?'+ ':'− '}${money(Math.abs(difference))}`);
+    set('pPlanned',money(planned));set('pActual',money(totalGbp));set('pDifference',`${difference>=0?'+ ':'â '}${money(Math.abs(difference))}`);
     set('pPreviousShares',previousShares.toLocaleString('en-GB',{maximumFractionDigits:6}));
     set('pNewShares',newShares.toLocaleString('en-GB',{maximumFractionDigits:6}));set('pNewAvg',money(newAvg));
     set('executionState',ready?'READY':'WAITING');
     const note=$('precheckNote');
-    if(note){note.className=ready?'notice good':'notice';note.textContent=ready?`Ready • backend will re-calculate ${money(totalGbp)} before writing. Expected new annual income from this purchase: ${money(expectedAnnualIncome)}/yr.`:checks.join(' ')}
+    if(note){note.className=ready?'notice good':'notice';note.textContent=ready?`Ready â¢ backend will re-calculate ${money(totalGbp)} before writing. Expected new annual income from this purchase: ${money(expectedAnnualIncome)}/yr.`:checks.join(' ')}
     $('registerPurchase').disabled=!ready;
     return {a,shares,price,priceUnit,currency,fx,fees,unitPrice,grossNative,totalNative,totalGbp,planned,difference,holding,previousShares,previousBook,newShares,newBook,newAvg,target,yieldPct,expectedAnnualIncome,ready,checks};
   }
@@ -353,15 +356,15 @@
           registration:{...s.registration,backend:{...s.registration.backend,status:'CONNECTED',lastHealthAt:receipt.confirmedAt,lastError:null},
             receipts:[receipt,...arr(s.registration?.receipts).filter(x=>x.transactionId!==receipt.transactionId)].slice(0,100),updatedAt:receipt.confirmedAt},
           mission:nextMission,
-          alerts:[{id:A().core.uid('ALERT'),title:'Purchase registered',note:`${draft.ticker} • ${draft.account} • ${money(receipt.totalCostGbp)} confirmed by AuroraData 2.`,when:'now'},...arr(s.alerts).filter(a=>a?.title!=='Purchase registered')].slice(0,8)
+          alerts:[{id:A().core.uid('ALERT'),title:'Purchase registered',note:`${draft.ticker} â¢ ${draft.account} â¢ ${money(receipt.totalCostGbp)} confirmed by AuroraData 2.`,when:'now'},...arr(s.alerts).filter(a=>a?.title!=='Purchase registered')].slice(0,8)
         };
       });
-      toast(result.duplicate?'Existing transaction confirmed — no duplicate write.':'Purchase confirmed and Squad updated.');
+      toast(result.duplicate?'Existing transaction confirmed â no duplicate write.':'Purchase confirmed and Squad updated.');
       set('executionState','CONFIRMED');
     }catch(err){
       const msg=String(err.message||err);
       A().core.update(s=>({...s,registration:{...s.registration,backend:{...s.registration.backend,lastError:msg},updatedAt:now()},transfer:{...s.transfer,registrationDrafts:arr(s.transfer.registrationDrafts).map(d=>d.id===draft.id?{...d,status:'BACKEND_ERROR',error:msg,updatedAt:now()}:d)}}));
-      set('precheckNote',msg);toast('Registration failed — Squad was not changed.');
+      set('precheckNote',msg);toast('Registration failed â Squad was not changed.');
     }finally{
       $('registerPurchase').disabled=false;render();
     }
@@ -373,7 +376,7 @@
     const currency=a?executionCurrency(state,a):'GBP';
     ensurePriceUnitOption(currency);
     setValue('regCurrency',currency);
-    setValue('regPriceUnit',currency==='GBP'?'GBP':currency);
+    setValue('regPriceUnit','GBP');
     setValue('regFx',currency==='GBP'?'1':'');
     setValue('regFees','0');
     if(!keepAllocation){setValue('regAccount','');setValue('regTicker','')}
@@ -408,7 +411,7 @@
     const confirmed=drafts.filter(d=>d.status==='CONFIRMED');
     const confirmedTotal=confirmed.reduce((s,d)=>s+num(d.totalCostGbp),0),planned=num(r?.allocated||r?.financeBudget);
     set('routeBudget',money(planned));set('routeStatus',ready?(r.status||'TRANSFER_READY'):'NO LOCKED ROUTE');
-    set('routeMeta',r?`${r.id} • mission ${m?.id||'—'} • ${allocs.length} purchase allocation${allocs.length===1?'':'s'}`:'Approve the Transfer route first.');
+    set('routeMeta',r?`${r.id} â¢ mission ${m?.id||'â'} â¢ ${allocs.length} purchase allocation${allocs.length===1?'':'s'}`:'Approve the Transfer route first.');
     set('routeLock',ready?'Locked Transfer authority loaded.':'Registration cannot create its own budget.');
     set('kPlanned',money(planned));set('kConfirmed',money(confirmedTotal));set('kRemaining',money(Math.max(0,planned-confirmedTotal)));set('kPurchases',String(confirmed.length));
     set('allocationCount',`${allocs.length} allocation${allocs.length===1?'':'s'}`);
@@ -418,7 +421,7 @@
       else host.innerHTML=allocs.map(a=>{
         const d=draftForAllocation(state,a.id),status=d?.status||a.status||'PLANNED';
         const cls=status==='CONFIRMED'?'confirmed':'ready';
-        return `<article class="alloc-row ${cls}"><div class="alloc-main"><strong>${esc(a.ticker)} — ${esc(a.name)} • ${accountLabel(a.account)}</strong><span>${money(a.amount)} planned • ${num(a.yieldPct)>0?num(a.yieldPct).toFixed(2)+'% yield • ':''}${money(a.expectedAnnualIncome)}/yr projected</span></div><div class="alloc-side"><span class="status-pill ${status==='CONFIRMED'?'pass':status==='BACKEND_ERROR'?'block':status==='SENDING'?'info':'caution'}">${esc(status)}</span><div class="action-row" style="justify-content:flex-end;margin-top:6px"><button class="btn secondary" data-load-allocation="${esc(a.id)}">${status==='CONFIRMED'?'View':'Register'}</button></div></div></article>`;
+        return `<article class="alloc-row ${cls}"><div class="alloc-main"><strong>${esc(a.ticker)} â ${esc(a.name)} â¢ ${accountLabel(a.account)}</strong><span>${money(a.amount)} planned â¢ ${num(a.yieldPct)>0?num(a.yieldPct).toFixed(2)+'% yield â¢ ':''}${money(a.expectedAnnualIncome)}/yr projected</span></div><div class="alloc-side"><span class="status-pill ${status==='CONFIRMED'?'pass':status==='BACKEND_ERROR'?'block':status==='SENDING'?'info':'caution'}">${esc(status)}</span><div class="action-row" style="justify-content:flex-end;margin-top:6px"><button class="btn secondary" data-load-allocation="${esc(a.id)}">${status==='CONFIRMED'?'View':'Register'}</button></div></div></article>`;
       }).join('');
     }
   }
@@ -428,14 +431,14 @@
     set('queueCount',`${rows.length} item${rows.length===1?'':'s'}`);
     if(!host)return;
     if(!rows.length){host.innerHTML='<div class="empty-state compact"><strong>No drafts yet</strong><p>Enter the first broker execution above.</p></div>';return}
-    host.innerHTML=rows.map(d=>`<article class="queue-row"><div class="queue-main"><strong>${esc(d.ticker)} • ${accountLabel(d.account)} • ${money(d.totalCostGbp)}</strong><span>${esc(d.transactionId)} • ${Number(d.shares||0).toLocaleString('en-GB')} shares • ${esc(d.tradeDate||'date pending')}${d.error?' • '+esc(d.error):''}</span></div><div class="queue-side"><span class="status-pill ${d.status==='CONFIRMED'?'pass':d.status==='BACKEND_ERROR'?'block':d.status==='SENDING'?'info':'caution'}">${esc(d.status)}</span><div class="action-row" style="justify-content:flex-end;margin-top:6px"><button class="btn secondary" data-load-draft="${esc(d.id)}">Open</button>${d.status!=='CONFIRMED'?`<button class="btn secondary" data-delete-draft="${esc(d.id)}">Delete</button>`:''}</div></div></article>`).join('');
+    host.innerHTML=rows.map(d=>`<article class="queue-row"><div class="queue-main"><strong>${esc(d.ticker)} â¢ ${accountLabel(d.account)} â¢ ${money(d.totalCostGbp)}</strong><span>${esc(d.transactionId)} â¢ ${Number(d.shares||0).toLocaleString('en-GB')} shares â¢ ${esc(d.tradeDate||'date pending')}${d.error?' â¢ '+esc(d.error):''}</span></div><div class="queue-side"><span class="status-pill ${d.status==='CONFIRMED'?'pass':d.status==='BACKEND_ERROR'?'block':d.status==='SENDING'?'info':'caution'}">${esc(d.status)}</span><div class="action-row" style="justify-content:flex-end;margin-top:6px"><button class="btn secondary" data-load-draft="${esc(d.id)}">Open</button>${d.status!=='CONFIRMED'?`<button class="btn secondary" data-delete-draft="${esc(d.id)}">Delete</button>`:''}</div></div></article>`).join('');
   }
 
   function renderReceipts(state){
     const rows=arr(state.registration?.receipts),host=$('receiptList');set('receiptCount',`${rows.length} receipt${rows.length===1?'':'s'}`);
     if(!host)return;
     if(!rows.length){host.innerHTML='<div class="empty-state compact"><strong>No backend receipts yet</strong><p>Confirmed AuroraData 2 registrations appear here.</p></div>';return}
-    host.innerHTML=rows.slice(0,20).map(r=>`<article class="receipt-row"><div class="receipt-main"><strong>${esc(r.ticker)} • ${accountLabel(r.account)} • ${money(r.totalCostGbp)}</strong><span>${esc(r.transactionId)} • ${new Date(r.confirmedAt).toLocaleString('en-GB')}${r.duplicate?' • duplicate request safely re-read':''}</span></div><span class="status-pill pass">CONFIRMED</span></article>`).join('');
+    host.innerHTML=rows.slice(0,20).map(r=>`<article class="receipt-row"><div class="receipt-main"><strong>${esc(r.ticker)} â¢ ${accountLabel(r.account)} â¢ ${money(r.totalCostGbp)}</strong><span>${esc(r.transactionId)} â¢ ${new Date(r.confirmedAt).toLocaleString('en-GB')}${r.duplicate?' â¢ duplicate request safely re-read':''}</span></div><span class="status-pill pass">CONFIRMED</span></article>`).join('');
   }
 
   function render(){
