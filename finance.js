@@ -645,6 +645,337 @@
     showToast(`Current ${approved} mission cancelled. Finance is ready for a fresh release.`);
   }
 
+  function paydayCompletionKey(paydayDate){
+    return String(paydayDate||'').slice(0,10);
+  }
+
+  function activePaydayCompletions(state=A().core.read()){
+    return (state.finance?.paydayCompletions||[]).filter(x=>!x.reversed);
+  }
+
+  function paydayCompletionFor(state,paydayDate){
+    const key=paydayCompletionKey(paydayDate);
+    return activePaydayCompletions(state).find(x=>paydayCompletionKey(x.paydayDate)===key)||null;
+  }
+
+  function paydayFundingPreview(state,plan){
+    const c=calc(plan,state);
+    const rows=(c.fundingPlan?.rows||[])
+      .map(r=>({
+        id:String(r.id||''),
+        name:String(r.name||'Pot'),
+        amount:Number(Math.max(0,Number(r.amount)||0).toFixed(2)),
+        reason:String(r.reason||'')
+      }))
+      .filter(r=>r.id&&r.amount>.005);
+
+    const goalPotsTotal=Number(rows.reduce((s,r)=>s+r.amount,0).toFixed(2));
+    const holdingContribution=Number((
+      Math.max(0,Number(c.auto.annualHoldingContribution)||0)+
+      Math.max(0,Number(c.auto.holdingTopUp)||0)
+    ).toFixed(2));
+    const total=Number((goalPotsTotal+holdingContribution).toFixed(2));
+
+    return {c,rows,goalPotsTotal,holdingContribution,total};
+  }
+
+  function nextPaydayPlan(plan){
+    const payday=parseLocalDate(plan.paydayDate);
+    const nextDate=payday?dateISO(addDays(payday,PAY_CYCLE_DAYS)):'';
+    const expected=Math.max(0,Number(plan.expectedWages ?? plan.netPay)||0);
+
+    return {
+      ...plan,
+      paydayDate:nextDate,
+      openingCash:0,
+      expectedWages:expected,
+      wagesReceived:expected,
+      netPay:expected,
+      wageDifference:0,
+      wageExtra:0,
+      wageShortfall:0,
+      wageExtraToPots:0,
+      wageExtraRemaining:0,
+      extraCash:0,
+      otherPlanned:0,
+      releaseAmount:0,
+      billsDue:0,
+      potsDue:0,
+      annualBillFunding:0,
+      holdingPotTopUp:0
+    };
+  }
+
+  function ensurePaydayCompleteButtons(){
+    let complete=$('completePaydayFunding'), undo=$('undoPaydayFunding');
+    if(complete&&undo)return {complete,undo};
+
+    const save=$('savePlan'), release=$('releaseMission');
+    const row=save?.closest('.action-row')||release?.closest('.action-row');
+    if(!row)return {complete:null,undo:null};
+
+    if(!complete){
+      complete=document.createElement('button');
+      complete.id='completePaydayFunding';
+      complete.type='button';
+      complete.className='btn primary';
+      complete.textContent='Complete Payday Funding';
+      complete.title='Apply the suggested pot transfers, then roll the planner forward one 4-week payday.';
+      row.appendChild(complete);
+    }
+
+    if(!undo){
+      undo=document.createElement('button');
+      undo.id='undoPaydayFunding';
+      undo.type='button';
+      undo.className='btn secondary';
+      undo.textContent='Undo Last Payday Funding';
+      undo.hidden=true;
+      row.appendChild(undo);
+    }
+
+    return {complete,undo};
+  }
+
+  function latestActivePaydayCompletion(state=A().core.read()){
+    return activePaydayCompletions(state)
+      .slice()
+      .sort((a,b)=>new Date(b.completedAt||0)-new Date(a.completedAt||0))[0]||null;
+  }
+
+  function renderPaydayCompletion(){
+    const {complete,undo}=ensurePaydayCompleteButtons();
+    if(!complete)return;
+
+    const state=A().core.read();
+    const plan=state.finance?.plan||{};
+    const payday=paydayCompletionKey(plan.paydayDate);
+    const already=payday?paydayCompletionFor(state,payday):null;
+    const preview=payday?paydayFundingPreview(state,plan):null;
+
+    complete.disabled=!payday||!!already;
+    complete.textContent=already
+      ?`Payday Funding Completed • ${payday}`
+      :preview&&preview.total>.005
+        ?`Complete Payday Funding • ${money(preview.total)}`
+        :'Complete Payday Funding';
+    complete.title=!payday
+      ?'Choose and save a payday date first.'
+      :already
+        ?`Funding for ${payday} has already been posted.`
+        :`Post ${money(preview?.total||0)} to the pots and roll the planner forward by 28 days. Bills are not auto-marked paid.`;
+
+    const latest=latestActivePaydayCompletion(state);
+    if(undo){
+      undo.hidden=!latest;
+      undo.disabled=!latest;
+      undo.title=latest?`Undo pot funding posted for ${latest.paydayDate}.`:'';
+    }
+  }
+
+  function completePaydayFunding(){
+    const state=A().core.read();
+    const plan=readForm();
+    const payday=paydayCompletionKey(plan.paydayDate);
+
+    if(!payday){
+      alert('Choose a payday date before completing the payday funding.');
+      return;
+    }
+    if(paydayCompletionFor(state,payday)){
+      alert(`Payday funding for ${payday} has already been completed. Aurora will not apply it twice.`);
+      return;
+    }
+
+    const preview=paydayFundingPreview(state,plan);
+    const hp=preview.c.auto.holdingPot;
+    const nextPlan=nextPaydayPlan(preview.c.plan);
+    const nextDate=nextPlan.paydayDate||'the next payday';
+
+    const detail=[
+      ...preview.rows.map(r=>`${r.name}: ${money(r.amount)}`),
+      ...(preview.holdingContribution>.005&&hp
+        ?[`Holding Pot: ${money(preview.holdingContribution)} (${money(preview.c.auto.annualHoldingContribution)} normal${preview.c.auto.holdingTopUp>.005?` + ${money(preview.c.auto.holdingTopUp)} safety`:''})`]
+        :[])
+    ];
+
+    const ok=confirm(
+      `Complete payday funding for ${payday}?\n\n`+
+      `${detail.length?detail.join('\n'):'No pot transfers are scheduled.'}\n\n`+
+      `Total pot funding: ${money(preview.total)}\n\n`+
+      `Aurora will update the pot balances and roll the Payday Planner forward to ${nextDate}. `+
+      `Bills stay separate and are not marked paid automatically.`
+    );
+    if(!ok)return;
+
+    A().core.update(s=>{
+      if(paydayCompletionFor(s,payday))return s;
+
+      const pots=(s.finance?.pots||[]).map(p=>({...p}));
+      const potById=new Map(pots.map((p,i)=>[String(p.id||''),{p,i}]));
+      const applied=[];
+
+      preview.rows.forEach(row=>{
+        const hit=potById.get(String(row.id));
+        if(!hit||row.amount<=.005)return;
+        const before=Number(hit.p.balance)||0;
+        const after=Number((before+row.amount).toFixed(2));
+        pots[hit.i]={
+          ...hit.p,
+          balance:after,
+          updatedAt:isoNow()
+        };
+        applied.push({
+          id:hit.p.id,
+          name:hit.p.name,
+          type:'GOAL_POT',
+          amount:row.amount,
+          beforeBalance:Number(before.toFixed(2)),
+          afterBalance:after
+        });
+      });
+
+      if(hp&&preview.holdingContribution>.005){
+        const hit=potById.get(String(hp.id||''));
+        if(hit){
+          const current=pots[hit.i];
+          const before=Number(current.balance)||0;
+          const after=Number((before+preview.holdingContribution).toFixed(2));
+          pots[hit.i]={
+            ...current,
+            balance:after,
+            updatedAt:isoNow()
+          };
+          applied.push({
+            id:current.id,
+            name:current.name,
+            type:'HOLDING_POT',
+            amount:preview.holdingContribution,
+            normalContribution:Number(preview.c.auto.annualHoldingContribution.toFixed(2)),
+            safetyTopUp:Number(preview.c.auto.holdingTopUp.toFixed(2)),
+            beforeBalance:Number(before.toFixed(2)),
+            afterBalance:after
+          });
+        }
+      }
+
+      const completion={
+        id:A().core.uid('PAYDAY'),
+        paydayDate:payday,
+        nextPaydayDate:nextPlan.paydayDate,
+        completedAt:isoNow(),
+        totalGoalPots:preview.goalPotsTotal,
+        holdingContribution:preview.holdingContribution,
+        totalFunding:preview.total,
+        rows:applied,
+        beforePlan:{...preview.c.plan,releaseAmount:plan.releaseAmount},
+        afterPlan:{...nextPlan},
+        reversed:false
+      };
+
+      return {
+        ...s,
+        finance:{
+          ...s.finance,
+          pots,
+          plan:nextPlan,
+          paydayCompletions:[
+            completion,
+            ...(s.finance?.paydayCompletions||[])
+          ].slice(0,30),
+          lastPaydayCompletedAt:completion.completedAt,
+          lastCalculatedAt:isoNow()
+        },
+        alerts:[
+          {
+            id:A().core.uid('ALERT'),
+            title:`Payday funding completed • ${money(preview.total)}`,
+            note:`Pot balances updated for ${payday}. Next planner date: ${nextPlan.paydayDate||'not set'}.`,
+            when:'now'
+          },
+          ...(s.alerts||[]).filter(a=>!String(a?.title||'').startsWith('Payday funding completed'))
+        ].slice(0,8)
+      };
+    });
+
+    A().funding?.recalc?.();
+    loadForm();
+    renderAll();
+    showToast(`Payday funding posted. Planner rolled forward to ${nextDate}.`);
+  }
+
+  function undoLastPaydayFunding(){
+    const state=A().core.read();
+    const latest=latestActivePaydayCompletion(state);
+    if(!latest){
+      showToast('There is no completed payday funding to undo.');
+      return;
+    }
+
+    const plan=state.finance?.plan||{};
+    if(latest.nextPaydayDate&&String(plan.paydayDate||'')!==String(latest.nextPaydayDate)){
+      alert('The Payday Planner has moved on or been edited since this completion. Aurora will not overwrite newer planning data automatically.');
+      return;
+    }
+
+    const potMap=new Map((state.finance?.pots||[]).map(p=>[String(p.id||''),p]));
+    const changed=latest.rows.find(row=>{
+      const p=potMap.get(String(row.id||''));
+      return !p||Math.abs((Number(p.balance)||0)-(Number(row.afterBalance)||0))>.011;
+    });
+    if(changed){
+      alert(`${changed.name} has changed since this payday was completed. Undo would overwrite newer pot activity, so Aurora has blocked it.`);
+      return;
+    }
+
+    if(!confirm(`Undo payday funding for ${latest.paydayDate}? Pot balances and the previous Payday Plan will be restored.`))return;
+
+    A().core.update(s=>{
+      const completions=[...(s.finance?.paydayCompletions||[])];
+      const ci=completions.findIndex(x=>String(x.id||'')===String(latest.id||''));
+      if(ci<0||completions[ci].reversed)return s;
+
+      const beforeById=new Map(latest.rows.map(r=>[String(r.id||''),r]));
+      const pots=(s.finance?.pots||[]).map(p=>{
+        const row=beforeById.get(String(p.id||''));
+        return row
+          ?{...p,balance:Number(row.beforeBalance)||0,updatedAt:isoNow()}
+          :p;
+      });
+
+      completions[ci]={
+        ...completions[ci],
+        reversed:true,
+        reversedAt:isoNow()
+      };
+
+      return {
+        ...s,
+        finance:{
+          ...s.finance,
+          pots,
+          plan:{...latest.beforePlan},
+          paydayCompletions:completions,
+          lastCalculatedAt:isoNow()
+        }
+      };
+    });
+
+    A().funding?.recalc?.();
+    loadForm();
+    renderAll();
+    showToast(`Payday funding for ${latest.paydayDate} undone.`);
+  }
+
+  function stampFinanceVersion(){
+    const status=document.querySelector('.page-head .status');
+    if(status)status.textContent='FINANCE v1.5.0';
+    const notice=document.querySelector('.content > .notice b');
+    if(notice&&String(notice.textContent||'').startsWith('Finance 2.0')){
+      notice.textContent='Finance 2.0 — Payday Complete v1.5.0.';
+    }
+  }
+
   function renderReleaseGuard(safe){
     const requested=numValue('releaseAmount'), msg=$('releaseGuard'), btn=$('releaseMission');
     if(!msg||!btn)return;
@@ -1228,7 +1559,7 @@
   }
 
   function renderAll(){
-    renderPlan(); renderMission(); renderCancelMission(); renderPots(); renderBills(); renderRecurringRepairNotice(); renderHistory(); renderLastUpdated();
+    renderPlan(); renderMission(); renderCancelMission(); renderPaydayCompletion(); renderPots(); renderBills(); renderRecurringRepairNotice(); renderHistory(); renderLastUpdated();
   }
 
   function loadForm(){
@@ -1266,6 +1597,8 @@
     $('savePlan')?.addEventListener('click',()=>{savePlan();showToast('Payday plan saved locally in Aurora 2.0.');});
     $('releaseMission')?.addEventListener('click',releaseMission);
     $('cancelMission')?.addEventListener('click',cancelCurrentMission);
+    $('completePaydayFunding')?.addEventListener('click',completePaydayFunding);
+    $('undoPaydayFunding')?.addEventListener('click',undoLastPaydayFunding);
 
     $('savePot')?.addEventListener('click',savePot);
     $('cancelPot')?.addEventListener('click',resetPotEditor);
@@ -1295,6 +1628,7 @@
   document.addEventListener('DOMContentLoaded',()=>{
     repairPaidRecurringBills();
     repairLegacyDuplicateGroceries();
+    stampFinanceVersion();
     loadForm(); resetPotEditor(); resetBillEditor(); renderAll(); wire();
   });
   w.addEventListener('aurora2:state',renderAll);
@@ -1303,5 +1637,12 @@
   w.Aurora2.financeMissionControl={
     cancellationBlock:(state=A().core.read(),mission=state.mission)=>missionCancellationBlock(state,mission),
     cancelCurrentMission
+  };
+  w.Aurora2.financePaydayControl={
+    paydayFundingPreview,
+    nextPaydayPlan,
+    completePaydayFunding,
+    undoLastPaydayFunding,
+    completionFor:(state=A().core.read(),paydayDate=state.finance?.plan?.paydayDate)=>paydayCompletionFor(state,paydayDate)
   };
 })(window);
