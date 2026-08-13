@@ -42,6 +42,18 @@
     return validMission(m)?Math.max(0,num(m.approvedBudget)):0;
   }
 
+  function scoutingStrategy(state=A().core.read()){
+    return String(state.scouting?.strategy||'sustainable').toLowerCase()==='maximum'
+      ?'maximum'
+      :'sustainable';
+  }
+  function scoutingStrategyLabel(state=A().core.read()){
+    return scoutingStrategy(state)==='maximum'?'Maximum Income':'Sustainable Income';
+  }
+  function scoutingStrategyReady(state=A().core.read()){
+    return String(state.scouting?.status||'').toUpperCase()==='SCOUTING_READY';
+  }
+
   function targetScore(t,strategy){
     let base;
     if(strategy==='maximum'){
@@ -68,7 +80,8 @@
 
   function autoRoute(){
     const state=A().core.read(),m=mission(state),sc=scouting(state);
-    const settings={strategy:'sustainable',brokerScope:'both',minAllocation:250,increment:25,...(state.transfer?.settings||{})};
+    const settings={brokerScope:'both',minAllocation:250,increment:25,...(state.transfer?.settings||{})};
+    const inheritedStrategy=scoutingStrategy(state);
     if(!validMission(m)){toast('Release a Finance mission first.');return}
     if(sc.status!=='SCOUTING_READY'){toast('Transfer needs a current Scouting-approved shortlist first.');return}
     const engine=A().transferEngine;
@@ -76,7 +89,7 @@
 
     const sim=engine.simulate(state,{
       budget:routeBudget(state),
-      strategy:settings.strategy,
+      strategy:inheritedStrategy,
       brokerScope:settings.brokerScope,
       minAllocation:settings.minAllocation,
       increment:settings.increment,
@@ -90,6 +103,8 @@
       ...sim,
       id:previous?.missionId===m.id?previous.id:A().core.uid('ROUTE'),
       missionId:m.id,
+      scoutingStrategy:inheritedStrategy,
+      scoutingStatusAtBuild:sc.status,
       status:'DRAFT',
       locked:false,
       createdAt:previous?.missionId===m.id?previous.createdAt:now(),
@@ -139,6 +154,11 @@
     if(totals.allocated<=0){toast('Allocate at least one purchase.');return}
     if(totals.allocated>num(m.approvedBudget)+.005){toast('Route is above the Finance ceiling.');return}
     if(r.missionId!==m.id){toast('This route belongs to an older Finance mission. Rebuild it.');return}
+    if(!scoutingStrategyReady(state)){toast('Scouting is no longer approved. Re-approve the shortlist before Transfer approval.');return}
+    if(String(r.strategy||'sustainable')!==scoutingStrategy(state)){
+      toast(`Scouting is now ${scoutingStrategyLabel(state)}. Rebuild the route before approval.`);
+      return;
+    }
     const unresolved=arr(r.allocations).filter(a=>num(a.amount)>0&&accountCode(a.account)==='CHECK');
     if(unresolved.length){toast(`Assign a broker to ${unresolved.map(a=>a.ticker).join(', ')} before approval.`);return}
 
@@ -179,18 +199,21 @@
   }
 
   function setSettings(){
-    const strategy=document.querySelector('input[name="strategy"]:checked')?.value||'sustainable';
     const brokerScope=$('brokerScope')?.value||'both';
     const minAllocation=Math.max(25,num($('minAllocation')?.value)||250);
     const increment=Math.max(1,num($('allocationIncrement')?.value)||25);
-    A().core.update(s=>({
-      ...s,
-      transfer:{
-        ...s.transfer,
-        settings:{...s.transfer.settings,strategy,brokerScope,minAllocation,increment},
-        updatedAt:now()
-      }
-    }));
+    A().core.update(s=>{
+      const previous={...(s.transfer?.settings||{})};
+      delete previous.strategy;
+      return {
+        ...s,
+        transfer:{
+          ...s.transfer,
+          settings:{...previous,brokerScope,minAllocation,increment},
+          updatedAt:now()
+        }
+      };
+    });
   }
 
   function copyInstructions(){
@@ -336,15 +359,30 @@
   }
 
   function renderSettings(state){
-    const st={strategy:'sustainable',brokerScope:'both',minAllocation:250,increment:25,...(state.transfer?.settings||{})};
-    const radio=document.querySelector(`input[name="strategy"][value="${st.strategy}"]`);
-    if(radio)radio.checked=true;
-    $('strategySustainable')?.classList.toggle('active',st.strategy==='sustainable');
-    $('strategyMaximum')?.classList.toggle('active',st.strategy==='maximum');
+    const st={brokerScope:'both',minAllocation:250,increment:25,...(state.transfer?.settings||{})};
+    const strategy=scoutingStrategy(state);
+    const ready=scoutingStrategyReady(state);
+
+    set('scoutingStrategyTitle',strategy==='maximum'?'Maximum Income':'Sustainable Income');
+    set('scoutingStrategyBadge',ready?'APPROVED BY SCOUTING':'AWAITING APPROVAL');
+    set('scoutingStrategyMeta',ready
+      ?`Transfer will inherit ${strategy==='maximum'?'Maximum Income':'Sustainable Income'} automatically from the approved Scouting shortlist.`
+      :`Scouting is ${String(state.scouting?.status||'SCOUTING_REVIEW').replace(/_/g,' ')}. Approve the shortlist before Transfer can deploy this strategy.`
+    );
+
+    const inherited=$('scoutingStrategyCard');
+    if(inherited){
+      inherited.classList.toggle('active',ready);
+      inherited.classList.toggle('strategy-waiting',!ready);
+    }
+
     setValue('brokerScope',st.brokerScope);
     setValue('minAllocation',st.minAllocation);
     setValue('allocationIncrement',st.increment);
-    set('routeStrategyReadout',st.strategy==='maximum'?'Maximum Income':'Sustainable Income');
+    set('routeStrategyReadout',ready
+      ?`${strategy==='maximum'?'Maximum Income':'Sustainable Income'} • inherited`
+      :`${strategy==='maximum'?'Maximum Income':'Sustainable Income'} • not approved`
+    );
     set('routeBrokerReadout',st.brokerScope==='both'?'Both brokers':accountLabel(st.brokerScope));
     set('routeMinimumReadout',money(st.minAllocation));
     set('routeIncrementReadout',money(st.increment));
@@ -409,7 +447,11 @@
       </article>
     `).join('');
 
-    const valid=totals.allocated>0&&totals.allocated<=budget+.005&&unresolved<=.005&&r.missionId===state.mission?.id;
+    const inheritedStrategy=scoutingStrategy(state);
+    const strategyMatches=String(r.strategy||'sustainable')===inheritedStrategy;
+    const scoutingReady=scoutingStrategyReady(state);
+    const valid=totals.allocated>0&&totals.allocated<=budget+.005&&unresolved<=.005&&
+      r.missionId===state.mission?.id&&strategyMatches&&scoutingReady;
     if(approve)approve.disabled=!valid||r.locked;
     if(unlock)unlock.hidden=!r.locked;
 
@@ -418,12 +460,18 @@
       if(totals.allocated>budget+.005){
         guard.className='notice red';
         guard.textContent=`Blocked: route exceeds Finance by ${money(totals.allocated-budget)}.`;
+      }else if(!scoutingReady){
+        guard.className='notice';
+        guard.textContent='Blocked: Scouting is no longer approved. Approve the current shortlist before Transfer can approve this route.';
+      }else if(!strategyMatches){
+        guard.className='notice red';
+        guard.textContent=`Blocked: this draft used ${String(r.strategy||'sustainable')==='maximum'?'Maximum Income':'Sustainable Income'}, but Scouting now owns ${scoutingStrategyLabel(state)}. Rebuild the route.`;
       }else if(unresolved>.005){
         guard.className='notice red';
         guard.textContent=`Blocked: ${money(unresolved)} is allocated to target(s) with no broker assigned. Choose IG or Trading 212 in the deal sheet.`;
       }else{
         guard.className='notice good';
-        guard.textContent=`${money(totals.allocated)} allocated from the locked ${money(budget)} mission • ${money(totals.remaining)} held back.`;
+        guard.textContent=`${money(totals.allocated)} allocated from the locked ${money(budget)} mission • ${money(totals.remaining)} held back • ${scoutingStrategyLabel(state)} inherited from Scouting.`;
       }
     }
   }
@@ -478,7 +526,6 @@
 
   function wire(){
     tabs();
-    document.querySelectorAll('input[name="strategy"]').forEach(r=>r.addEventListener('change',()=>{setSettings();render()}));
     ['brokerScope','minAllocation','allocationIncrement'].forEach(id=>$(id)?.addEventListener('change',()=>{setSettings();render()}));
     $('autoBuildRoute')?.addEventListener('click',()=>{setSettings();autoRoute()});
     $('resetRoute')?.addEventListener('click',resetRoute);
@@ -502,6 +549,7 @@
     routeSummary,
     targetScore,
     chairmanHoldingMetrics,
-    chairmanMateriality
+    chairmanMateriality,
+    scoutingStrategy
   };
 })(window);

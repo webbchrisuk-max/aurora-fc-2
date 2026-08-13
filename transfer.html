@@ -17,6 +17,7 @@
 .transfer-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.transfer-kpi{padding:15px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.024)}.transfer-kpi small{display:block;color:var(--muted);font-size:8px;font-weight:950;text-transform:uppercase;letter-spacing:.8px}.transfer-kpi strong{display:block;font-size:23px;margin-top:7px}.transfer-kpi span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
 .transfer-tabs .tab.active{border-color:rgba(var(--transfer-rgb),.28);background:rgba(var(--transfer-rgb),.08);color:#fff2ed}
 .strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.strategy-card{position:relative;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;background:rgba(255,255,255,.02);cursor:pointer}.strategy-card.active{border-color:rgba(var(--transfer-rgb),.34);background:rgba(var(--transfer-rgb),.07)}.strategy-card input{position:absolute;opacity:0}.strategy-card strong{display:block;font-size:13px}.strategy-card span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}.strategy-card em{display:block;color:#ffc6b7;font-style:normal;font-size:8px;font-weight:900;margin-top:7px}
+.strategy-card.strategy-waiting{opacity:.72;border-style:dashed}.strategy-handoff{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}.strategy-handoff-badge{display:inline-flex;padding:6px 8px;border-radius:999px;border:1px solid rgba(88,233,155,.22);color:#9df0ba;font-size:7px;font-weight:1000}.strategy-waiting .strategy-handoff-badge{border-color:rgba(241,196,90,.22);color:#f7d77d}
 .target-list,.route-list,.draft-list,.chairman-case-list{display:grid;gap:8px}.target-row,.route-row,.draft-row,.chairman-case-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.target-main strong,.route-main strong,.draft-main strong,.chairman-case-main strong{display:block;font-size:12px}.target-main span,.route-main span,.draft-main span,.chairman-case-main span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:4px}.target-side,.route-side,.chairman-case-side{text-align:right}.target-side strong,.route-side strong,.chairman-case-side strong{font-size:14px}.target-side span,.route-side span,.chairman-case-side span{color:var(--muted);font-size:8px}
 .status-pill{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);font-size:7px;font-weight:1000;text-transform:uppercase;letter-spacing:.6px}.status-pill.pass{color:#9df0ba;border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.status-pill.caution{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05)}.status-pill.block{color:#ffb6c2;border-color:rgba(255,112,137,.25);background:rgba(255,112,137,.05)}
 .route-input,.route-account{width:110px;min-height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px;font:inherit;font-size:11px}.route-input{text-align:right}.route-input:focus,.route-account:focus{outline:none;border-color:rgba(var(--transfer-rgb),.45)}.route-edit-stack{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.btn[hidden]{display:none!important}
@@ -55,12 +56,12 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Chairman Materiality Handoff v0.4.</b> Finance budget remains read-only. Chairman now reads canonical Squad positions here and opens the full decision room in Club Control.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">CHAIRMAN LIVE v0.4</span></header>
+<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Scouting Strategy Handoff v0.5.</b> Finance budget remains read-only. Chairman now reads canonical Squad positions here and opens the full decision room in Club Control.</div>
+<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">SCOUTING HANDOFF v0.5</span></header>
 
 <section class="transfer-hero">
   <div class="transfer-hero-grid">
-    <div><span class="eyebrow" style="color:#ffb29f">Deadline Day Command</span><h2>Finance owns the money.<br>Transfer owns the deployment.</h2><p>The Transfer Centre can choose strategy, broker route and allocation sizes, but the authorised Finance amount cannot be increased or replaced here.</p>
+    <div><span class="eyebrow" style="color:#ffb29f">Deadline Day Command</span><h2>Finance owns the money.<br>Transfer owns the deployment.</h2><p>Scouting owns the investment strategy. Transfer inherits that approved lens, then owns broker routing and allocation sizes. The Finance amount remains read-only.</p>
       <div class="action-row"><button class="btn primary" id="openAllocation">Build / Review Route</button><a class="btn secondary" href="finance.html">Open Finance</a></div>
     </div>
     <article class="mission-command"><small>Finance-authorised mission</small><div class="budget" id="missionBudget">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong><span id="missionMeta">Release an investment mission from Finance first.</span><div class="lock" style="margin-top:10px" id="missionLock">Budget is locked to Finance.</div></article>
@@ -113,11 +114,17 @@
 <section id="allocationPanel" class="tab-panel">
   <section class="grid grid-2">
     <article class="card card-pad">
-      <div class="section-head"><h2>Route Strategy</h2><span class="muted">Transfer-owned</span></div>
-      <div class="strategy-grid">
-        <label class="strategy-card" id="strategySustainable"><input type="radio" name="strategy" value="sustainable"><strong>Sustainable Income</strong><span>Safety-first route using the Scouting evidence supplied to Transfer.</span><em>DEFAULT ROUTE</em></label>
-        <label class="strategy-card" id="strategyMaximum"><input type="radio" name="strategy" value="maximum"><strong>Maximum Income</strong><span>Income-led route while preserving Scouting's eligibility gates.</span><em>HIGHER INCOME LENS</em></label>
-      </div>
+      <div class="section-head"><h2>Approved Scouting Strategy</h2><span class="muted">Read-only handoff</span></div>
+      <article class="strategy-card active" id="scoutingStrategyCard">
+        <div class="strategy-handoff">
+          <div>
+            <strong id="scoutingStrategyTitle">Sustainable Income</strong>
+            <span id="scoutingStrategyMeta">Transfer inherits the approved Scouting lens automatically.</span>
+            <em>SCOUTING OWNS STRATEGY • TRANSFER OWNS DEPLOYMENT</em>
+          </div>
+          <span class="strategy-handoff-badge" id="scoutingStrategyBadge">CHECKING</span>
+        </div>
+      </article>
       <div class="field-grid" style="margin-top:12px">
         <div class="field"><label>Broker route</label><select id="brokerScope"><option value="both">Both brokers</option><option value="IG">IG ISA only</option><option value="T212">Trading 212 ISA only</option></select></div>
         <div class="field"><label>Minimum meaningful allocation</label><div class="money-wrap"><input id="minAllocation" type="number" min="25" step="25"></div><small>Stops token-sized buys.</small></div>
@@ -131,7 +138,7 @@
       <div class="section-head"><h2>Route Authority</h2><span class="cyan">BUDGET LOCKED</span></div>
       <div class="notice good"><b>Finance stays authoritative.</b><br>Transfer may change the deployment but cannot increase the approved mission budget.</div>
       <div class="calc-list" style="margin-top:12px">
-        <div class="calc-row"><span>Strategy</span><strong id="routeStrategyReadout">—</strong></div>
+        <div class="calc-row"><span>Scouting strategy</span><strong id="routeStrategyReadout">—</strong></div>
         <div class="calc-row"><span>Broker scope</span><strong id="routeBrokerReadout">—</strong></div>
         <div class="calc-row"><span>Minimum allocation</span><strong id="routeMinimumReadout">—</strong></div>
         <div class="calc-row"><span>Increment</span><strong id="routeIncrementReadout">—</strong></div>
@@ -214,6 +221,6 @@
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#28130f;border:1px solid rgba(255,122,89,.28);color:#ffd1c5;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js?v=9"></script>
 <script src="transfer-engine.js?v=020"></script>
-<script src="transfer.js?v=040"></script>
+<script src="transfer.js?v=050"></script>
 </body>
 </html>
