@@ -52,23 +52,73 @@
   }
   function enterClub(){
     if(entering)return;entering=true;transitionScreen.classList.add('is-active');setTimeout(()=>transitionScreen.classList.add('open'),240);
-    setTimeout(()=>{gameShell.classList.add('is-active');entryApp.classList.add('is-gone');document.body.classList.remove('shell-navigation-open');entering=false;},1180);
+    setTimeout(()=>{gameShell.classList.add('is-active');entryApp.classList.add('is-gone');document.body.classList.add('aurora-entered');document.body.classList.remove('shell-navigation-open');window.scrollTo(0,0);entering=false;},1180);
   }
   function openNav(){document.body.classList.add('shell-navigation-open');menuButton.setAttribute('aria-expanded','true')}
   function closeNav(){document.body.classList.remove('shell-navigation-open');menuButton.setAttribute('aria-expanded','false')}
   function resetEntry(){
-    closeNav();transitionScreen.classList.remove('open','is-active');entryApp.classList.remove('is-gone');gameShell.classList.remove('is-active');entering=false;createParticles();runBoot();
+    closeNav();document.body.classList.remove('aurora-entered');transitionScreen.classList.remove('open','is-active');entryApp.classList.remove('is-gone');gameShell.classList.remove('is-active');window.scrollTo(0,0);entering=false;createParticles();runBoot();
   }
   function updateClock(){
     const d=new Date();document.getElementById('shellClock').textContent=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});document.getElementById('shellDate').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}).toUpperCase();
   }
 
-  enterButton.addEventListener('click',enterClub);menuButton.addEventListener('click',()=>document.body.classList.contains('shell-navigation-open')?closeNav():openNav());navClose.addEventListener('click',closeNav);navOverlay.addEventListener('click',closeNav);replayEntry.addEventListener('click',resetEntry);
-  document.querySelectorAll('.aurora-shell-department-row').forEach(row=>row.addEventListener('click',()=>{
-    document.querySelectorAll('.aurora-shell-department-row').forEach(x=>x.classList.remove('is-current'));row.classList.add('is-current');currentDepartment.textContent=row.dataset.name||'Aurora 2.0';closeNav();
-  }));
-  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&accessScreen.classList.contains('is-active'))enterClub();if(e.key==='Escape')closeNav()});
-  document.getElementById('shellSearch').addEventListener('click',()=>alert('Search is reserved for the production shell. This preview is for shell feel and behaviour only.'));
-  createParticles();runBoot();updateClock();setInterval(updateClock,15000);
+  if(enterButton) enterButton.addEventListener('click',enterClub);
+
+  if(menuButton){
+    menuButton.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      document.body.classList.contains('shell-navigation-open') ? closeNav() : openNav();
+    });
+  }
+
+  if(navClose){
+    navClose.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      closeNav();
+    });
+  }
+
+  if(navOverlay){
+    navOverlay.addEventListener('click',event=>{
+      event.preventDefault();
+      closeNav();
+    });
+  }
+
+  if(replayEntry) replayEntry.addEventListener('click',resetEntry);
+
+  document.addEventListener('click',event=>{
+    const row=event.target.closest('.aurora-shell-department-row');
+    if(!row) return;
+    document.querySelectorAll('.aurora-shell-department-row').forEach(x=>x.classList.remove('is-current'));
+    row.classList.add('is-current');
+    if(currentDepartment) currentDepartment.textContent=row.dataset.name||'Aurora 2.0';
+    closeNav();
+    /* Anchor navigation is intentionally left to the browser. */
+  });
+
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Enter' && accessScreen?.classList.contains('is-active')) enterClub();
+    if(event.key==='Escape') closeNav();
+  });
+
+  const searchButton=document.getElementById('shellSearch');
+  if(searchButton){
+    searchButton.addEventListener('click',()=>alert('Global Aurora search will be enabled after the shared shell rollout.'));
+  }
+
+  /* Public shell controls make later department integration simpler. */
+  window.AuroraShell={
+    openNavigation:openNav,
+    closeNavigation:closeNav
+  };
+
+  createParticles();
+  runBoot();
+  updateClock();
+  setInterval(updateClock,15000);
 }
 })();

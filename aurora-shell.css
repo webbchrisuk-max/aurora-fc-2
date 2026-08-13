@@ -81,3 +81,100 @@ button,a{font:inherit}button{color:inherit}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
 .aurora-shell-department-row{text-decoration:none}.aurora-shell-department-row:visited{color:#d6e3f2}.aurora-shell-department-row.is-current:visited{color:#fff}
+
+
+/* =========================================================
+   AURORA SHELL 2.0 — iPad / Brave interaction fix v2.1.1
+   - body becomes the scroll owner after entering Aurora
+   - shell header stays fixed
+   - navigation remains fixed above content
+   - explicit touch behaviour for iOS/iPadOS
+   ========================================================= */
+body.aurora-entered{
+  width:100%;
+  height:auto;
+  min-height:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:auto;
+}
+
+body.aurora-entered .aurora-game-shell{
+  position:relative;
+  inset:auto;
+  width:100%;
+  height:auto;
+  min-height:100svh;
+  overflow:visible;
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+body.aurora-entered .aurora-shell-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:500;
+  pointer-events:auto;
+}
+
+body.aurora-entered .shell-stage{
+  position:relative;
+  inset:auto;
+  width:100%;
+  min-height:100svh;
+  padding-top:calc(var(--shell-header-height) + var(--safe-top));
+  overflow:visible;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+}
+
+body.aurora-entered .shell-page{
+  min-height:calc(100svh - var(--shell-header-height) - var(--safe-top));
+  padding-bottom:calc(72px + var(--safe-bottom));
+}
+
+#auroraShellMenuButton,
+#auroraShellNavigationClose,
+.aurora-shell-department-row,
+.shell-control{
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+#auroraShellMenuButton{
+  position:relative;
+  z-index:520;
+  pointer-events:auto;
+}
+
+#auroraShellNavigationOverlay{
+  touch-action:none;
+}
+
+#auroraShellNavigation{
+  pointer-events:auto;
+}
+
+.aurora-shell-nav-scroll{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
+}
+
+/* Do not let the hidden entry layer interfere with Nexus after entry. */
+body.aurora-entered .entry-app.is-gone{
+  display:none;
+}
+
+/* Keep navigation completely above the fixed command header. */
+body.shell-navigation-open #auroraShellNavigationOverlay{
+  z-index:880;
+}
+body.shell-navigation-open #auroraShellNavigation{
+  z-index:890;
+}
