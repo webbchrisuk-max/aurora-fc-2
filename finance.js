@@ -521,6 +521,130 @@
     return !!(m&&m.status&&!terminalMission(m));
   }
 
+  function missionCancellationBlock(state,m){
+    if(!m||!missionIsInFlight(m))return '';
+
+    const route=state.transfer?.route;
+    const routeId=route&&String(route.missionId||'')===String(m.id||'')?route.id:null;
+    const drafts=state.transfer?.registrationDrafts||[];
+    const related=drafts.filter(d=>
+      String(d?.missionId||'')===String(m.id||'')||
+      (routeId&&String(d?.routeId||'')===String(routeId))
+    );
+    const protectedStatuses=new Set(['SUBMITTED','PENDING','CONFIRMED','REGISTERED','COMPLETED']);
+    const protectedWork=related.find(d=>protectedStatuses.has(String(d?.status||'').toUpperCase()));
+
+    if(protectedWork){
+      return `Registration work for this mission is already ${String(protectedWork.status||'in progress').toUpperCase()}. Complete or resolve Registration instead of cancelling it here.`;
+    }
+    return '';
+  }
+
+  function ensureCancelMissionButton(){
+    let btn=$('cancelMission');
+    if(btn)return btn;
+
+    const release=$('releaseMission');
+    const row=release?.closest('.action-row');
+    if(!row)return null;
+
+    btn=document.createElement('button');
+    btn.id='cancelMission';
+    btn.type='button';
+    btn.className='btn secondary';
+    btn.textContent='Cancel Current Mission';
+    btn.style.borderColor='rgba(255,112,137,.28)';
+    btn.style.color='#ffb6c2';
+    btn.hidden=true;
+    row.appendChild(btn);
+    return btn;
+  }
+
+  function renderCancelMission(){
+    const btn=ensureCancelMissionButton();
+    if(!btn)return;
+
+    const state=A().core.read(),m=state.mission;
+    const active=missionIsInFlight(m);
+    btn.hidden=!active;
+    if(!active)return;
+
+    const block=missionCancellationBlock(state,m);
+    btn.disabled=!!block;
+    btn.title=block||`Cancel ${money(m.approvedBudget||0)} mission (${m.status}).`;
+  }
+
+  function cancelCurrentMission(){
+    const current=A().core.read(),m=current.mission;
+
+    if(!missionIsInFlight(m)){
+      showToast('There is no active mission to cancel.');
+      return;
+    }
+
+    const block=missionCancellationBlock(current,m);
+    if(block){
+      alert(block);
+      return;
+    }
+
+    const currentRoute=current.transfer?.route;
+    const relatedRoute=currentRoute&&String(currentRoute.missionId||'')===String(m.id||'');
+    const routeId=relatedRoute?currentRoute.id:null;
+    const approved=money(m.approvedBudget||0);
+
+    const ok=confirm(
+      `Cancel the current ${approved} mission (${m.status})?\n\n`+
+      'Your payday plan, pots and bills will stay unchanged. Any unexecuted Transfer route and draft Registration work tied to this mission will be cleared.'
+    );
+    if(!ok)return;
+
+    A().core.update(s=>{
+      const liveMission=s.mission;
+      if(!liveMission||String(liveMission.id||'')!==String(m.id||''))return s;
+
+      const liveRoute=s.transfer?.route;
+      const clearRoute=liveRoute&&String(liveRoute.missionId||'')===String(m.id||'');
+      const clearRouteId=clearRoute?liveRoute.id:routeId;
+
+      const drafts=(s.transfer?.registrationDrafts||[]).filter(d=>{
+        const sameMission=String(d?.missionId||'')===String(m.id||'');
+        const sameRoute=clearRouteId&&String(d?.routeId||'')===String(clearRouteId);
+        return !(sameMission||sameRoute);
+      });
+
+      return {
+        ...s,
+        mission:{
+          ...liveMission,
+          status:'CANCELLED',
+          cancelledAt:isoNow(),
+          cancelledBy:'Finance',
+          cancelReason:'User cancelled before registration',
+          updatedAt:isoNow()
+        },
+        transfer:{
+          ...s.transfer,
+          route:clearRoute?null:liveRoute,
+          registrationDrafts:drafts,
+          updatedAt:isoNow()
+        },
+        alerts:[
+          {
+            id:A().core.uid('ALERT'),
+            title:`Finance cancelled ${approved} mission`,
+            note:'The released investment mission was cancelled before Registration. The payday plan was left unchanged.',
+            when:'now'
+          },
+          ...(s.alerts||[]).filter(a=>!String(a?.title||'').startsWith('Finance cancelled '))
+        ].slice(0,8)
+      };
+    });
+
+    renderAll();
+    showToast(`Current ${approved} mission cancelled. Finance is ready for a fresh release.`);
+  }
+
   function renderReleaseGuard(safe){
     const requested=numValue('releaseAmount'), msg=$('releaseGuard'), btn=$('releaseMission');
     if(!msg||!btn)return;
@@ -1104,7 +1228,7 @@
   }
 
   function renderAll(){
-    renderPlan(); renderMission(); renderPots(); renderBills(); renderRecurringRepairNotice(); renderHistory(); renderLastUpdated();
+    renderPlan(); renderMission(); renderCancelMission(); renderPots(); renderBills(); renderRecurringRepairNotice(); renderHistory(); renderLastUpdated();
   }
 
   function loadForm(){
@@ -1141,6 +1265,7 @@
     }));
     $('savePlan')?.addEventListener('click',()=>{savePlan();showToast('Payday plan saved locally in Aurora 2.0.');});
     $('releaseMission')?.addEventListener('click',releaseMission);
+    $('cancelMission')?.addEventListener('click',cancelCurrentMission);
 
     $('savePot')?.addEventListener('click',savePot);
     $('cancelPot')?.addEventListener('click',resetPotEditor);
@@ -1173,4 +1298,10 @@
     loadForm(); resetPotEditor(); resetBillEditor(); renderAll(); wire();
   });
   w.addEventListener('aurora2:state',renderAll);
+
+  w.Aurora2=w.Aurora2||{};
+  w.Aurora2.financeMissionControl={
+    cancellationBlock:(state=A().core.read(),mission=state.mission)=>missionCancellationBlock(state,mission),
+    cancelCurrentMission
+  };
 })(window);
