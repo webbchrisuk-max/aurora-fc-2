@@ -524,6 +524,17 @@
   function uid(prefix='A2'){
     return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
   }
+  function ensureBrainNav(){
+    document.querySelectorAll('.nav').forEach(nav=>{
+      if(nav.querySelector('a[href="brain.html"]'))return;
+      const link=document.createElement('a');
+      link.href='brain.html';
+      link.textContent='🧠 Aurora Brain';
+      link.setAttribute('data-aurora-brain','1');
+      const hq=nav.querySelector('a[href="index.html"]');
+      if(hq)hq.insertAdjacentElement('afterend',link);else nav.prepend(link);
+    });
+  }
   function setActiveNav(){
     const path=(location.pathname.split('/').pop()||'index.html').toLowerCase();
     document.querySelectorAll('.nav a').forEach(a=>{
@@ -575,5 +586,5 @@
   w.Aurora2=w.Aurora2||{};
   w.Aurora2.core={KEY,VERSION,read,write,update,defaultState,normalize,uid};
   w.Aurora2.ui={money,text,escape};
-  document.addEventListener('DOMContentLoaded',()=>{activateBuiltDepartments();setActiveNav();wireSoon();wireNavigationFallback();});
+  document.addEventListener('DOMContentLoaded',()=>{activateBuiltDepartments();ensureBrainNav();setActiveNav();wireSoon();wireNavigationFallback();});
 })(window);
