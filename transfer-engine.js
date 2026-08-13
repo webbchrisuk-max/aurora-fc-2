@@ -15,6 +15,19 @@
     const u=String(v||'').toUpperCase();
     return u==='IG'||u==='T212'?u:'CHECK';
   }
+
+  function brokerPreference(state,target){
+    const tk=ticker(target?.ticker||target);
+    const raw=state?.transfer?.brokerPreferences?.[tk];
+    const value=raw&&typeof raw==='object'?raw.account:raw;
+    const code=accountCode(value);
+    return code==='IG'||code==='T212'?code:'CHECK';
+  }
+  function effectiveBroker(state,target){
+    const remembered=brokerPreference(state,target);
+    return remembered!=='CHECK'?remembered:accountCode(target?.preferredAccount);
+  }
+
   function targetScore(t,strategy){
     let base;
     if(strategy==='maximum'){
@@ -26,13 +39,14 @@
     if(String(t.status||'').toLowerCase()==='block')return 0;
     return Math.max(0,base);
   }
-  function brokerEligible(t,scope){
+  function brokerEligible(t,scope,state){
     if(scope==='both')return true;
-    return accountCode(t.preferredAccount)===scope;
+    return effectiveBroker(state,t)===scope;
   }
   function roundDown(v,inc){
     return Math.floor((Math.max(0,v)+1e-9)/inc)*inc;
   }
+
   function activeHoldings(state){
     return arr(state?.squad?.holdings).filter(h=>
       ['ACTIVE','LOCKED'].includes(String(h.status||'').toUpperCase())&&num(h.shares)>0
@@ -75,7 +89,6 @@
     const tw=tickerValue/total*100;
     const sw=sector?sectorValue/total*100:0;
 
-    // Deployment shaping only. Scouting still owns the investment score itself.
     let factor=1;
     if(tw>8)factor*=1/(1+(tw-8)/9);
     if(sector&&sw>25)factor*=1/(1+(sw-25)/18);
@@ -90,31 +103,67 @@
     return {allocated,income,remaining:Math.max(0,budget-allocated)};
   }
 
-  function desiredTargetCount(budget,available,maxTargets){
+  /*
+   * Dynamic candidate count:
+   * - affordability comes from the user's meaningful-allocation floor
+   * - a soft cap scales with budget rather than fixed £ thresholds
+   * - the 4th/5th/etc candidate only joins when its opportunity score is
+   *   close enough to the best available candidate
+   */
+  function desiredTargetCount(budget,candidates,maxTargets,requestedMin,inc){
+    const available=arr(candidates).length;
     if(!(budget>0)||available<=0)return 0;
-    let desired=1;
-    if(budget>=300)desired=2;
-    if(budget>=600)desired=3;
-    if(budget>=1000)desired=4;
-    if(budget>=1800)desired=5;
-    if(budget>=3000)desired=6;
-    if(budget>=5000)desired=8;
-    return Math.max(1,Math.min(available,Math.max(1,Math.floor(num(maxTargets)||8)),desired));
+
+    const hardMax=Math.max(1,Math.floor(num(maxTargets)||8));
+    const requestedFloor=Math.max(inc,num(requestedMin)||250);
+    const affordable=Math.max(1,Math.min(
+      available,
+      hardMax,
+      Math.max(1,Math.floor((budget+.001)/requestedFloor))
+    ));
+
+    if(affordable<=1)return affordable;
+
+    const scale=Math.max(1,budget/requestedFloor);
+    const softCap=Math.max(1,Math.min(
+      affordable,
+      Math.round(Math.sqrt(scale)*2)
+    ));
+
+    let minimum=1;
+    if(budget>=requestedFloor*2)minimum=2;
+    if(budget>=requestedFloor*3)minimum=3;
+    minimum=Math.min(minimum,softCap);
+
+    const top=Math.max(.0001,num(candidates[0]?._routeScore));
+    let count=minimum;
+
+    for(let i=minimum;i<softCap;i++){
+      const ratio=Math.max(0,num(candidates[i]?._routeScore))/top;
+      const threshold=i===3?.80:i===4?.74:.70;
+      if(ratio+1e-9>=threshold)count++;
+      else break;
+    }
+
+    return Math.max(1,Math.min(available,hardMax,count));
   }
 
   function effectiveMinimum(budget,count,inc,requested){
     if(!(budget>0)||count<=0)return inc;
-    const autoFloor=roundDown(Math.max(inc,(budget/count)*.45),inc)||inc;
-    const requestedFloor=Math.max(inc,num(requested)||autoFloor);
-    // A stale/manual minimum may tighten sizing, but can never collapse a small mission into one holding.
-    return Math.max(inc,Math.min(requestedFloor,autoFloor));
+    const requestedFloor=Math.max(inc,num(requested)||250);
+
+    // Respect the user's meaningful minimum whenever the chosen basket can afford it.
+    if(budget+1e-9>=requestedFloor*count)return requestedFloor;
+
+    // Only scale down when the selected basket literally cannot afford the requested floor.
+    const scaled=roundDown(Math.max(inc,(budget/count)*.75),inc)||inc;
+    return Math.max(inc,Math.min(requestedFloor,scaled));
   }
 
   function returnPriority(t,strategy){
     const y=Math.max(0,num(t.yieldPct));
     const scout=clamp(targetScore(t,strategy),0,100)/100;
     if(!(y>0)||!(scout>0))return 0;
-    // Maximum Income is driven mainly by income per pound. Sustainable Income gives quality/safety more influence.
     const qualityMultiplier=strategy==='maximum'
       ?(.80+.20*scout)
       :(.55+.45*scout);
@@ -141,6 +190,7 @@
       ...(state?.transfer?.settings||{}),
       ...opts
     };
+
     const budget=Math.max(0,num(opts.budget));
     const strategy=settings.strategy==='maximum'?'maximum':'sustainable';
     const brokerScope=settings.brokerScope||'both';
@@ -154,7 +204,7 @@
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
       .filter(t=>num(t.yieldPct)>0)
       .filter(t=>!exclude||ticker(t.ticker)!==exclude)
-      .filter(t=>brokerEligible(t,brokerScope))
+      .filter(t=>brokerEligible(t,brokerScope,state))
       .filter(t=>!allowedIds||allowedIds.has(String(t.id||ticker(t.ticker))));
 
     candidates=candidates.map(t=>{
@@ -166,7 +216,8 @@
         _routeScore:incomeScore*fitFactor,
         _incomeScore:incomeScore,
         _scoutScore:scoutScore,
-        _fitFactor:fitFactor
+        _fitFactor:fitFactor,
+        _effectiveBroker:effectiveBroker(state,t)
       };
     }).sort((a,b)=>
       b._routeScore-a._routeScore||
@@ -180,24 +231,31 @@
       return {
         financeBudget:budget,strategy,brokerScope,minAllocation:emptyMin,increment:inc,
         requestedMinAllocation:Math.max(inc,num(settings.minAllocation)||250),
-        allocationMode:'RETURN_WEIGHTED_AUTO',
+        allocationMode:'DYNAMIC_OPPORTUNITY_WEIGHTED',
+        targetCount:0,
         allocations:[],allocated:0,income:0,remaining:budget,status:'SIMULATION',
         rotation:!!rotation,reason:budget>0?'NO_ELIGIBLE_TARGETS':'NO_BUDGET'
       };
     }
 
-    const count=desiredTargetCount(budget,candidates.length,settings.maxTargets);
+    const count=desiredTargetCount(
+      budget,candidates,settings.maxTargets,settings.minAllocation,inc
+    );
     candidates=candidates.slice(0,count);
+
     const min=effectiveMinimum(budget,count,inc,settings.minAllocation);
     const requestedMin=Math.max(inc,num(settings.minAllocation)||min);
     const scores=candidates.map(t=>Math.max(.0001,t._routeScore));
-    const idFactory=typeof opts.idFactory==='function'?opts.idFactory:(p=>`${p}-${Math.random().toString(36).slice(2,9)}`);
+    const idFactory=typeof opts.idFactory==='function'
+      ?opts.idFactory
+      :(p=>`${p}-${Math.random().toString(36).slice(2,9)}`);
+
     const allocations=candidates.map((t,i)=>({
       id:idFactory('ALLOC'),
       targetId:t.id,
       ticker:ticker(t.ticker),
       name:t.name||ticker(t.ticker),
-      account:accountCode(t.preferredAccount),
+      account:t._effectiveBroker,
       sector:String(t.sector||'').trim(),
       amount:0,
       yieldPct:Math.max(0,num(t.yieldPct)),
@@ -212,14 +270,12 @@
 
     let remaining=budget;
 
-    // Seed every selected target with a meaningful, budget-scaled floor.
     allocations.forEach(a=>{
       const seed=Math.min(min,remaining);
       a.amount=seed;
       remaining-=seed;
     });
 
-    // Allocate the rest to the strongest expected return per pound, with diminishing priority and concentration caps.
     let guard=0;
     while(remaining>=inc-.001&&guard<10000){
       guard++;
@@ -246,7 +302,6 @@
       remaining-=inc;
     }
 
-    // Use a sub-increment remainder where safe instead of leaving pennies/odd pounds stranded.
     if(remaining>.005){
       const ranked=allocations.map((a,i)=>({
         i,
@@ -254,6 +309,7 @@
         cap:positionCap(budget,count,strategy,a.scoutingStatus,inc)
       })).filter(x=>allocations[x.i].amount+remaining<=x.cap+.005)
         .sort((a,b)=>b.score-a.score);
+
       if(ranked.length){
         allocations[ranked[0].i].amount+=remaining;
         remaining=0;
@@ -272,7 +328,7 @@
       minAllocation:min,
       requestedMinAllocation:requestedMin,
       increment:inc,
-      allocationMode:'RETURN_WEIGHTED_AUTO',
+      allocationMode:'DYNAMIC_OPPORTUNITY_WEIGHTED',
       targetCount:count,
       allocations,
       status:'SIMULATION',
@@ -289,6 +345,7 @@
       sector:String(h.sector||'').trim(),
       value:holdingValue(h)
     })).filter(x=>x.value>0);
+
     const afterRows=(rotation?postSaleBase(state,rotation):beforeRows.map(x=>({...x}))).concat(
       arr(allocations).filter(a=>num(a.amount)>0).map(a=>({
         ticker:ticker(a.ticker),
@@ -299,8 +356,9 @@
 
     function summarise(rows){
       const total=rows.reduce((s,x)=>s+x.value,0);
-      if(!(total>0))return {total:0,largestTicker:'—',largestTickerPct:0,largestSector:'—',largestSectorPct:0};
-
+      if(!(total>0)){
+        return {total:0,largestTicker:'—',largestTickerPct:0,largestSector:'—',largestSectorPct:0};
+      }
       const tickers=new Map(),sectors=new Map();
       rows.forEach(x=>{
         tickers.set(x.ticker,(tickers.get(x.ticker)||0)+x.value);
@@ -328,6 +386,10 @@
     routeSummary,
     targetScore,
     concentrationSnapshot,
+    desiredTargetCount,
+    effectiveMinimum,
+    brokerPreference,
+    effectiveBroker,
     ticker,
     accountCode
   };

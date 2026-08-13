@@ -56,8 +56,8 @@
 </aside>
 
 <main class="main"><div class="content">
-<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Scouting Strategy Handoff v0.5.</b> Finance budget remains read-only. Chairman now reads canonical Squad positions here and opens the full decision room in Club Control.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">SCOUTING HANDOFF v0.5</span></header>
+<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Dynamic Routing + Broker Memory v0.6.</b> Finance budget remains read-only. Chairman now reads canonical Squad positions here and opens the full decision room in Club Control.</div>
+<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">SMART ROUTING v0.6</span></header>
 
 <section class="transfer-hero">
   <div class="transfer-hero-grid">
@@ -126,7 +126,7 @@
         </div>
       </article>
       <div class="field-grid" style="margin-top:12px">
-        <div class="field"><label>Broker route</label><select id="brokerScope"><option value="both">Both brokers</option><option value="IG">IG ISA only</option><option value="T212">Trading 212 ISA only</option></select></div>
+        <div class="field"><label>Broker route</label><select id="brokerScope"><option value="both">Both brokers</option><option value="IG">IG ISA only</option><option value="T212">Trading 212 ISA only</option></select><small>Deal-sheet broker choices are remembered by ticker for future payday routes.</small></div>
         <div class="field"><label>Minimum meaningful allocation</label><div class="money-wrap"><input id="minAllocation" type="number" min="25" step="25"></div><small>Stops token-sized buys.</small></div>
         <div class="field"><label>Allocation increment</label><div class="money-wrap"><input id="allocationIncrement" type="number" min="1" step="1"></div><small>Default £25 steps.</small></div>
       </div>
@@ -142,6 +142,7 @@
         <div class="calc-row"><span>Broker scope</span><strong id="routeBrokerReadout">—</strong></div>
         <div class="calc-row"><span>Minimum allocation</span><strong id="routeMinimumReadout">—</strong></div>
         <div class="calc-row"><span>Increment</span><strong id="routeIncrementReadout">—</strong></div>
+        <div class="calc-row"><span>Candidate count</span><strong>Dynamic • budget + opportunity</strong></div>
       </div>
     </article>
   </section>
@@ -220,7 +221,8 @@
 
 <div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#28130f;border:1px solid rgba(255,122,89,.28);color:#ffd1c5;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js?v=9"></script>
-<script src="transfer-engine.js?v=020"></script>
+<script src="transfer-engine.js?v=060"></script>
+<script src="transfer-broker-memory.js?v=060"></script>
 <script src="transfer.js?v=050"></script>
 </body>
 </html>
