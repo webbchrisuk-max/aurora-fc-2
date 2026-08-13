@@ -48,7 +48,17 @@
   }
   function uid(prefix){return A().core.uid(prefix)}
 
-  // Registration Currency Guard v1.3.0 — hard backend priceUnit guard
+
+  function setExecutionLocked(locked){
+    ['regDate','regShares','regPrice','regPriceUnit','regCurrency','regFx','regFees'].forEach(id=>{
+      const el=$(id);if(el)el.disabled=!!locked;
+    });
+    const save=$('saveDraft'),register=$('registerPurchase');
+    if(save)save.disabled=!!locked;
+    if(register)register.disabled=!!locked;
+  }
+
+  // Registration Currency Guard v1.4.0 — confirmed trade lock + auto advance
   // Prefer explicit route/holding/scouting metadata. ARCC is retained as a
   // safe fallback because legacy Aurora 2 routes did not persist quote currency.
   function normalizeCurrency(v){
@@ -202,11 +212,26 @@
       if(!$('regDate')?.value){const d=new Date();setValue('regDate',`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)}
     }
     syncPriceUnitToCurrency();
+    setExecutionLocked(existing?.status==='CONFIRMED');
     calcExecution();
   }
 
   function calcExecution(){
     const state=currentState(),a=currentAllocation(state);
+    const existing=a?draftForAllocation(state,a.id):null;
+    if(existing?.status==='CONFIRMED'){
+      setExecutionLocked(true);
+      const planned=num(a?.amount),actual=num(existing.totalCostGbp),difference=actual-planned;
+      set('pPlanned',money(planned));set('pActual',money(actual));set('pDifference',`${difference>=0?'+ ':'− '}${money(Math.abs(difference))}`);
+      set('pPreviousShares',num(existing.previousShares).toLocaleString('en-GB',{maximumFractionDigits:6}));
+      set('pNewShares',num(existing.newShares).toLocaleString('en-GB',{maximumFractionDigits:6}));
+      set('pNewAvg',money(num(existing.newAvgCostGbp)));
+      set('executionState','CONFIRMED');
+      const note=$('precheckNote');
+      if(note){note.className='notice good';note.textContent=`Confirmed by AuroraData 2 • ${existing.transactionId} • ${money(actual)}. This allocation is locked against duplicate registration.`}
+      return {a,existing,confirmed:true,ready:false};
+    }
+    setExecutionLocked(false);
     const shares=Math.max(0,num($('regShares')?.value)),price=Math.max(0,num($('regPrice')?.value));
     const priceUnit=String($('regPriceUnit')?.value||'GBP').toUpperCase().trim();
     const currency=normalizeCurrency($('regCurrency')?.value)||'GBP';
@@ -283,6 +308,7 @@
   }
 
   async function registerPurchase(){
+    let confirmedDraft=null;
     saveConnection();
     const c=calcExecution();if(!c.ready)return;
     let draft=saveDraft();if(!draft||draft.status==='CONFIRMED')return;
@@ -359,6 +385,7 @@
           alerts:[{id:A().core.uid('ALERT'),title:'Purchase registered',note:`${draft.ticker} • ${draft.account} • ${money(receipt.totalCostGbp)} confirmed by AuroraData 2.`,when:'now'},...arr(s.alerts).filter(a=>a?.title!=='Purchase registered')].slice(0,8)
         };
       });
+      confirmedDraft=draft;
       toast(result.duplicate?'Existing transaction confirmed — no duplicate write.':'Purchase confirmed and Squad updated.');
       set('executionState','CONFIRMED');
     }catch(err){
@@ -366,7 +393,15 @@
       A().core.update(s=>({...s,registration:{...s.registration,backend:{...s.registration.backend,lastError:msg},updatedAt:now()},transfer:{...s.transfer,registrationDrafts:arr(s.transfer.registrationDrafts).map(d=>d.id===draft.id?{...d,status:'BACKEND_ERROR',error:msg,updatedAt:now()}:d)}}));
       set('precheckNote',msg);toast('Registration failed — Squad was not changed.');
     }finally{
-      $('registerPurchase').disabled=false;render();
+      render();
+      if(confirmedDraft){
+        const updated=currentState();
+        const next=allocations(updated).find(a=>draftForAllocation(updated,a.id)?.status!=='CONFIRMED');
+        if(next)loadAllocation(next.id);
+        else loadAllocation(confirmedDraft.allocationId);
+      }else if($('registerPurchase')){
+        $('registerPurchase').disabled=false;
+      }
     }
   }
 
