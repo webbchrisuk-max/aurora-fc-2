@@ -48,7 +48,7 @@
   }
   function uid(prefix){return A().core.uid(prefix)}
 
-  // Registration Currency Guard v1.2.0 — AuroraData 2 backend compatibility
+  // Registration Currency Guard v1.3.0 — hard backend priceUnit guard
   // Prefer explicit route/holding/scouting metadata. ARCC is retained as a
   // safe fallback because legacy Aurora 2 routes did not persist quote currency.
   function normalizeCurrency(v){
@@ -249,7 +249,7 @@
       transactionId:existing.transactionId||$('transactionId')?.value||uid('TX'),
       clientRequestId:existing.clientRequestId||$('clientRequestId')?.value||uid('REQ'),
       tradeDate:$('regDate')?.value||'',account:accountCode(c.a?.account),ticker:c.a?.ticker||'',name:c.a?.name||c.a?.ticker||'',
-      side:'BUY',shares:c.shares,priceInput:c.price,priceUnit:c.priceUnit,currency:c.currency,fxRateToGbp:c.fx,
+      side:'BUY',shares:c.shares,priceInput:c.price,priceUnit:(c.currency==='GBP'&&c.priceUnit==='PENCE'?'PENCE':'GBP'),currency:c.currency,fxRateToGbp:c.fx,
       grossCostNative:c.grossNative,feesNative:c.fees,totalCostNative:c.totalNative,totalCostGbp:c.totalGbp,
       plannedAmount:c.planned,differenceGbp:c.difference,previousShares:c.previousShares,newShares:c.newShares,
       previousBookCostGbp:c.previousBook,newBookCostGbp:c.newBook,previousAvgCostGbp:num(c.holding?.avgCostGbp),newAvgCostGbp:c.newAvg,
@@ -294,7 +294,7 @@
         transaction:{
           transactionId:draft.transactionId,clientRequestId:draft.clientRequestId,tradeDate:draft.tradeDate,
           account:draft.account,ticker:draft.ticker,name:draft.name,side:'BUY',shares:draft.shares,priceInput:draft.priceInput,
-          priceUnit:draft.priceUnit,currency:draft.currency,fxRateToGbp:draft.fxRateToGbp,feesNative:draft.feesNative,
+          priceUnit:(draft.currency==='GBP'&&draft.priceUnit==='PENCE'?'PENCE':'GBP'),currency:draft.currency,fxRateToGbp:draft.fxRateToGbp,feesNative:draft.feesNative,
           totalCostGbp:draft.totalCostGbp,missionId:draft.missionId,routeId:draft.routeId,allocationId:draft.allocationId,
           strategy:r?.strategy||'',recommendation:target?.recommendation||'',confidence:num(target?.confidence),
           expectedAnnualIncomeGbp:draft.expectedAnnualIncomeGbp
