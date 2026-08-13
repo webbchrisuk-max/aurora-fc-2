@@ -1,126 +1,246 @@
-<!doctype html>
+<!DOCTYPE html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#050a12">
-  <title>Aurora HQ — Aurora FC 2.0</title>
-  <link rel="stylesheet" href="aurora.css?v=matchday-ui-101">
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#020612" name="theme-color"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<title>Aurora City FC — Nexus HQ 2.0</title>
+<link href="aurora-shell.css?v=legacy-shell-200" rel="stylesheet"/>
+<link href="nexus-hq.css?v=nexus-200" rel="stylesheet"/>
+<meta content="legacy-shell-production-candidate-v2-20260813" name="aurora-shell-build"/></head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="crest">A</div>
-      <div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div>
-    </div>
-    <nav class="nav">
-      <a href="index.html">🏟 Aurora HQ</a>
-      <a href="finance.html">💷 Finance</a>
-      <a href="transfer.html">🔄 Transfer</a>
-      <a href="registration.html">📝 Registration</a>
-      <a href="squad.html">⚽ Squad</a>
-      <a href="scouting.html">🔎 Scouting</a>
-      <a href="income.html">💰 Income</a>
-      <a href="#" data-soon="Club Control">⚙ Club Control</a>
-    </nav>
-    <div class="sidebar-foot"><b>Club data protected</b><br>AuroraData 2 remains the canonical registration source. HQ is read-only.</div>
-  </aside>
+&lt;!-- Aurora 2.0 Nexus HQ: shell + HQ are read-only; department logic remains in owning pages. --&gt;
 
-  <main class="main">
-    <div class="content">
-      <div class="hq-topbar">
-        <div class="hq-topbar-left"><span>Aurora City FC</span><span>•</span><span>First Team Operations</span></div>
-        <div class="hq-topbar-right"><span class="hq-dot"></span><span>Club OS online</span><span>•</span><span>Aurora 2.0</span></div>
-      </div>
 
-      <header class="page-head">
-        <div>
-          <span class="eyebrow">Aurora FC 2.0 • Command Centre</span>
-          <h1>Aurora HQ</h1>
-          <p>Your club position, current mission and next operational move — without duplicating department logic.</p>
-        </div>
-        <span class="status" id="connectionState">FOUNDATION</span>
-      </header>
-
-      <section class="hero">
-        <div class="hero-grid">
-          <div>
-            <span class="eyebrow">Club Position</span>
-            <h2>One club.<br>One financial truth.</h2>
-            <p>HQ gives you the matchday view. Finance controls the money, Scouting evaluates targets, Transfer builds the route, Registration records reality, Squad owns the holdings and Income owns the dividend picture.</p>
-
-            <div class="hq-hero-metrics">
-              <div class="hq-hero-metric"><small>Team Value</small><strong id="teamValue">—</strong><span>Active accounts</span></div>
-              <div class="hq-hero-metric"><small>Annual Income</small><strong id="annualIncome">—</strong><span id="monthlyIncome">—</span></div>
-              <div class="hq-hero-metric"><small>Squad Size</small><strong id="squadSize">—</strong><span>Canonical positions</span></div>
-              <div class="hq-hero-metric"><small>Next Dividend</small><strong id="nextDividend">—</strong><span id="nextDividendMeta">Awaiting Income Centre</span></div>
-            </div>
-          </div>
-
-          <article class="decision">
-            <small>Manager Briefing</small>
-            <strong id="decisionTitle">Aurora 2.0 foundation ready</strong>
-            <p id="decisionNote">No investment decision engine is connected yet.</p>
-            <div class="action-row">
-              <a class="btn primary" href="transfer.html">Open Transfer</a>
-              <a class="btn secondary" href="registration.html">Registration</a>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="section grid grid-2">
-        <article class="card card-pad">
-          <div class="section-head"><h2>First Team Leaders</h2><span class="hq-section-tag">Squad intelligence</span></div>
-          <div class="hq-scorecard">
-            <div class="hq-player">
-              <div class="hq-player-label"><span>Best Dividend Player</span><span>INCOME</span></div>
-              <div class="hq-player-value"><strong class="gold" id="bestDividend">—</strong><span id="bestDividendMeta">Awaiting Income Centre</span></div>
-            </div>
-            <div class="hq-player">
-              <div class="hq-player-label"><span>Top Aurora Player</span><span>SCOUTING</span></div>
-              <div class="hq-player-value"><strong class="cyan" id="topPlayer">—</strong><span id="topPlayerMeta">Awaiting Scouting</span></div>
-            </div>
-          </div>
-        </article>
-
-        <article class="card card-pad">
-          <div class="section-head"><h2>Active Mission</h2><strong class="good" id="missionBudget">No active mission</strong></div>
-          <div class="pipeline">
-            <div class="stage" data-stage="FINANCE_APPROVED"><small>01</small><strong>Finance</strong><span>Approve cash</span></div>
-            <div class="stage" data-stage="SCOUTING_READY"><small>02</small><strong>Scouting</strong><span>Clear targets</span></div>
-            <div class="stage" data-stage="TRANSFER_READY"><small>03</small><strong>Transfer</strong><span>Build route</span></div>
-            <div class="stage" data-stage="REGISTERED"><small>04</small><strong>Registered</strong><span>Write purchase</span></div>
-          </div>
-        </article>
-      </section>
-
-      <section class="section card card-pad">
-        <div class="section-head"><h2>Matchday Feed</h2><span class="hq-section-tag">What changed / attention</span></div>
-        <div id="alerts" class="alert-list"></div>
-      </section>
-
-      <section class="section card card-pad">
-        <div class="section-head"><h2>Club Departments</h2><span class="hq-section-tag">One owner per job</span></div>
-        <div class="quick-grid">
-          <a class="quick" href="finance.html"><b>💷 Finance</b><span>Payday, pots, bills, protected cash and house projects.</span></a>
-          <a class="quick" href="scouting.html"><b>🔎 Scouting</b><span>Research, scoring, eligibility and target decisions.</span></a>
-          <a class="quick" href="transfer.html"><b>🔄 Transfer</b><span>Deploy the approved mission budget into a locked route.</span></a>
-          <a class="quick" href="registration.html"><b>📝 Registration</b><span>Record the real broker execution and confirm to AuroraData 2.</span></a>
-          <a class="quick" href="squad.html"><b>⚽ Squad</b><span>Canonical holdings, values, book costs and share counts.</span></a>
-          <a class="quick" href="income.html"><b>💰 Income</b><span>Dividend calendar, annual income and income progression.</span></a>
-        </div>
-      </section>
-
-      <div class="hq-footerline">
-        <span>Aurora FC 2.0 • Matchday UI</span>
-        <span>Last state update: <span id="lastUpdated">—</span></span>
-      </div>
-    </div>
-  </main>
+<div class="entry-app" id="entryApp">
+<div class="stadium"></div><div class="light-rig"></div><div class="beam beam-left"></div><div class="beam beam-right"></div><div class="pitch"></div>
+<div class="particles" id="particles"></div><div class="noise"></div><div class="scanlines"></div><div class="vignette"></div>
+<header class="hud"><div class="hud-cluster"><span class="online-dot"></span><span>Aurora Network</span><span class="hud-rule"></span></div><div class="hud-cluster"><span class="hud-rule"></span><span>Manager Access // 02</span></div></header>
+<section class="entry-screen boot-screen" id="bootScreen">
+<div class="boot-card">
+<div class="boot-mark"><img alt="Aurora City FC crest" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/></div>
+<p class="boot-kicker">Aurora Football Operating System</p>
+<h1 class="boot-title">Initialising Aurora 2.0</h1>
+<p class="boot-message" id="bootMessage">Authenticating manager profile...</p>
+<div class="boot-track"><div class="boot-progress" id="bootProgress"></div></div>
+<div class="boot-meta"><span id="bootPercent">00%</span><span id="bootCode">AUTH // MANAGER</span></div>
 </div>
-<script src="aurora-core.js?v=9"></script>
-<script src="hq.js?v=010"></script>
-</body>
+</section>
+<section class="entry-screen access-screen" id="accessScreen">
+<div class="access-layout">
+<div class="club-stage">
+<p class="access-kicker">Welcome to the future of football</p>
+<div class="crest-shell"><img alt="Aurora City FC crest" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/></div>
+<h1 class="club-name">Aurora City<span>Football Club</span></h1>
+<p class="club-motto">Vision • Intelligence • Legacy</p>
+</div>
+<aside class="access-panel">
+<div class="panel-header"><div><p class="access-kicker">Club Command Access</p><p class="panel-code">ACFC // HQ // 2.0</p></div><div class="live-badge"><span class="online-dot"></span>Systems Live</div></div>
+<div class="manager-profile"><div class="manager-avatar">WB</div><div><p class="manager-label">Authenticated Manager</p><p class="manager-name">Webby</p><p class="profile-status">Aurora 2.0 clearance granted</p></div></div>
+<div class="system-grid">
+<div class="system-tile"><small>Nexus HQ 2.0</small><strong>Ready</strong></div>
+<div class="system-tile"><small>Transfer Centre</small><strong>Connected</strong></div>
+<div class="system-tile"><small>Squad Intelligence</small><strong>Ready</strong></div>
+<div class="system-tile"><small>AuroraData 2</small><strong>Live</strong></div>
+</div>
+<button class="enter-button" id="enterButton" type="button">Enter Aurora City FC</button>
+<div class="button-subline"><span class="keycap">Enter</span><span>or tap to continue</span></div>
+</aside>
+</div>
+</section>
+<section class="entry-screen transition-screen" id="transitionScreen">
+<div class="door door-left"></div><div class="door door-right"></div>
+<div class="transition-copy"><img alt="" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/><h2>Welcome, Manager</h2><p>Opening Nexus HQ 2.0</p></div>
+</section>
+</div>
+<div class="aurora-game-shell" id="gameShell">
+<header class="aurora-shell-header">
+<div class="aurora-shell-header-inner">
+<div class="aurora-shell-brand">
+<button aria-expanded="false" aria-label="Open club navigation" id="auroraShellMenuButton">☰</button>
+<div class="aurora-shell-crest"><img alt="Aurora City FC" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/></div>
+<div class="aurora-shell-copy"><h1>Aurora City FC</h1><p id="currentDepartment">Nexus HQ 2.0</p></div>
+</div>
+<div class="aurora-shell-context">
+<div class="aurora-shell-datetime"><span class="shell-clock" id="shellClock">--:--</span><span class="shell-date" id="shellDate">---</span></div>
+<button class="shell-control" id="shellSearch" title="Search">⌕</button>
+<button class="shell-control" id="replayEntry" title="Replay startup">↻</button>
+<span class="aurora-shell-live">Live</span>
+</div>
+</div>
+</header>
+<div class="shell-stage">
+<main class="shell-page">
+<span class="shell-kicker">Aurora City FC • Club Headquarters</span>
+<section class="nexus-hero">
+<div class="nexus-hero-grid">
+<div>
+<div class="nexus-topline">
+<span class="nexus-badge green" id="hqConnectionBadge">● Club systems live</span>
+<span class="nexus-badge" id="hqStrategyBadge">Strategy • —</span>
+<span class="nexus-badge amber" id="hqMissionBadge">Mission • —</span>
+</div>
+<h2 class="nexus-title">Nexus<br/>Command Centre</h2>
+<p class="nexus-sub">The whole club in one view: financial truth, portfolio position, mission progress, transfer activity, registration, income and the next thing that needs your attention.</p>
+<div class="nexus-kpis">
+<div class="nexus-kpi"><small>Team Value</small><strong id="hqTeamValue">—</strong><span id="hqTeamValueMeta">Canonical squad</span></div>
+<div class="nexus-kpi"><small>Annual Income</small><strong id="hqAnnualIncome">—</strong><span id="hqMonthlyIncome">— / month</span></div>
+<div class="nexus-kpi"><small>Portfolio P/L</small><strong id="hqProfitLoss">—</strong><span id="hqBookCost">Book cost —</span></div>
+<div class="nexus-kpi"><small>Yield on Cost</small><strong id="hqYieldOnCost">—</strong><span>Forward annual income</span></div>
+<div class="nexus-kpi"><small>Squad</small><strong id="hqSquadSize">—</strong><span id="hqPositionMeta">active positions</span></div>
+<div class="nexus-kpi"><small>Next Dividend</small><strong id="hqNextDividend">—</strong><span id="hqNextDividendMeta">Income Centre</span></div>
+</div>
+</div>
+<aside class="nexus-ticket">
+<div>
+<span class="ticket-kicker">Manager Briefing</span>
+<div class="ticket-title" id="hqDecisionTitle">Aurora 2.0 ready</div>
+<p class="ticket-note" id="hqDecisionNote">The next operational move will appear here from the 2.0 state.</p>
+</div>
+<div class="ticket-actions">
+<a class="ticket-btn" href="transfer.html">Open Transfer</a>
+<a class="ticket-btn secondary" href="finance.html">View Finance</a>
+<a class="ticket-btn secondary" href="squad.html">Squad Hub</a>
+</div>
+</aside>
+</div>
+</section>
+<div class="nexus-sections">
+<div class="nexus-grid-wide">
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb green"></span><h3>Active Mission</h3></div>
+<span class="cmd-tag" id="hqMissionBudget">No active mission</span>
+</div>
+<div class="mission-track">
+<div class="mission-step" data-hq-stage="FINANCE_APPROVED"><span class="step-no">01</span><b>Finance</b><span>Budget approved</span></div>
+<div class="mission-step" data-hq-stage="SCOUTING_READY"><span class="step-no">02</span><b>Scouting</b><span>Targets cleared</span></div>
+<div class="mission-step" data-hq-stage="TRANSFER_READY"><span class="step-no">03</span><b>Transfer</b><span>Route built</span></div>
+<div class="mission-step" data-hq-stage="REGISTERED"><span class="step-no">04</span><b>Registered</b><span>Broker reality</span></div>
+</div>
+<div class="cmd-rows" style="margin-top:10px">
+<div class="cmd-row"><div><b>Route status</b><small id="hqRouteMeta">No transfer route</small></div><strong id="hqRouteStatus">—</strong></div>
+<div class="cmd-row"><div><b>Allocated / remaining</b><small>Approved mission budget deployment</small></div><strong id="hqAllocatedRemaining">—</strong></div>
+<div class="cmd-row"><div><b>Registration progress</b><small>Confirmed broker executions</small></div><strong id="hqRegistrationProgress">—</strong></div>
+</div>
+</section>
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb"></span><h3>Finance Command</h3></div>
+<span class="cmd-tag" id="hqPaydayTag">Payday • —</span>
+</div>
+<div class="cmd-rows">
+<div class="cmd-row"><div><b>Net pay</b><small>Current payday plan</small></div><strong id="hqNetPay">—</strong></div>
+<div class="cmd-row"><div><b>Bills + pots due</b><small>Before protected cash</small></div><strong id="hqBillsPots">—</strong></div>
+<div class="cmd-row"><div><b>Protected cash</b><small>Kept outside investment release</small></div><strong id="hqProtectedCash">—</strong></div>
+<div class="cmd-row"><div><b>Available release</b><small>Finance-controlled mission cash</small></div><strong id="hqReleaseAmount" style="color:#59ff9a">—</strong></div>
+</div>
+</section>
+</div>
+<div class="nexus-grid-2">
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb amber"></span><h3>Transfer Desk</h3></div>
+<span class="cmd-tag" id="hqTransferStrategy">Strategy • —</span>
+</div>
+<div class="route-list" id="hqRouteList"><div class="empty-line">No locked transfer route yet.</div></div>
+</section>
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb purple"></span><h3>First Team Leaders</h3></div>
+<span class="cmd-tag">Squad intelligence</span>
+</div>
+<div class="leader-grid">
+<div class="leader"><small>Dividend Leader</small><strong id="hqBestDividend" style="color:#ffd15e">—</strong><span id="hqBestDividendMeta">Awaiting Income</span></div>
+<div class="leader"><small>Aurora Leader</small><strong id="hqTopAurora" style="color:#58f4ff">—</strong><span id="hqTopAuroraMeta">Awaiting Scouting</span></div>
+<div class="leader"><small>Profit Leader</small><strong id="hqProfitLeader" style="color:#59ff9a">—</strong><span id="hqProfitLeaderMeta">Canonical squad</span></div>
+</div>
+</section>
+</div>
+<div class="nexus-grid-wide">
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb green"></span><h3>Income Runway</h3></div>
+<span class="cmd-tag">Forward income</span>
+</div>
+<div class="cmd-rows">
+<div class="cmd-row"><div><b>Current monthly income</b><small>Forward annual income ÷ 12</small></div><strong id="hqIncomeMonthly">—</strong></div>
+<div class="cmd-row"><div><b>Monthly target</b><small>Income Centre setting</small></div><strong id="hqIncomeTarget">—</strong></div>
+<div class="cmd-row"><div><b>Next dividend</b><small id="hqIncomeNextMeta">Calendar pending</small></div><strong id="hqIncomeNext">—</strong></div>
+</div>
+<div class="progress-wrap">
+<div class="progress-line"><i id="hqIncomeProgress"></i></div>
+<div class="progress-meta"><span>Income target progress</span><span id="hqIncomeProgressText">—</span></div>
+</div>
+</section>
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb"></span><h3>Data Guardian</h3></div>
+<span class="cmd-tag" id="hqGuardianTag">Checking</span>
+</div>
+<div class="guardian-grid">
+<div class="guardian" id="gConnection"><small>Club State</small><strong id="gConnectionValue">—</strong><span>Core connection</span></div>
+<div class="guardian" id="gRegistration"><small>Registration</small><strong id="gRegistrationValue">—</strong><span>AuroraData 2</span></div>
+<div class="guardian" id="gIncome"><small>Income</small><strong id="gIncomeValue">—</strong><span>Income backend</span></div>
+<div class="guardian" id="gFreshness"><small>Freshness</small><strong id="gFreshnessValue">—</strong><span id="gFreshnessMeta">State age</span></div>
+</div>
+</section>
+</div>
+<div class="nexus-grid-2">
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb"></span><h3>Club Activity</h3></div>
+<span class="cmd-tag">Latest changes</span>
+</div>
+<div class="activity" id="hqActivity"><div class="empty-line">No current alerts or activity.</div></div>
+</section>
+<section class="cmd-card">
+<div class="cmd-head">
+<div class="cmd-head-left"><span class="cmd-orb purple"></span><h3>Club Departments</h3></div>
+<span class="cmd-tag">One owner per job</span>
+</div>
+<div class="department-grid">
+<div class="department-tile"><b>💷 Finance</b><span>Payday, pots, bills, house and protected cash.</span></div>
+<div class="department-tile"><b>🔎 Scouting</b><span>Eligibility, scoring and target decisions.</span></div>
+<div class="department-tile"><b>🔄 Transfer</b><span>Mission route and allocation.</span></div>
+<div class="department-tile"><b>📝 Registration</b><span>Broker execution and AuroraData 2.</span></div>
+<div class="department-tile"><b>⚽ Squad</b><span>Canonical holdings and book cost.</span></div>
+<div class="department-tile"><b>💰 Income</b><span>Dividends, calendar and progression.</span></div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+<div id="auroraShellNavigationOverlay"></div>
+<aside aria-label="Aurora club navigation" id="auroraShellNavigation">
+<div class="aurora-shell-nav-head">
+<div class="aurora-shell-nav-crest"><img alt="" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/></div>
+<div class="aurora-shell-nav-brand"><strong>Aurora City FC</strong><span>Club Navigation 2.0</span></div>
+<button aria-label="Close navigation" class="nav-close" id="auroraShellNavigationClose">×</button>
+</div>
+<div class="aurora-shell-nav-scroll">
+<div class="aurora-shell-nav-section">Club Command</div>
+<a class="aurora-shell-department-row is-current" data-name="Nexus HQ 2.0" href="index.html"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<div class="aurora-shell-nav-section">Football Operations</div>
+<a class="aurora-shell-department-row" data-name="Finance Command" href="finance.html"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" data-name="Scouting Centre" href="scouting.html"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" data-name="Transfer Centre" href="transfer.html"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy the approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" data-name="Registration" href="registration.html"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" data-name="Squad Hub" href="squad.html"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" data-name="Income Centre" href="income.html"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<div class="aurora-shell-nav-section">Club</div>
+<a class="aurora-shell-department-row" data-name="Club Control" href="club-control.html"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+</div>
+</aside>
+<div class="preview-flag">Aurora 2.0 • Nexus HQ</div>
+</div>
+
+
+<script src="aurora-core.js?v=9"></script><script src="aurora-shell.js?v=200"></script><script src="nexus-hq.js?v=200"></script></body>
 </html>
