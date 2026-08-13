@@ -90,6 +90,47 @@
     return {allocated,income,remaining:Math.max(0,budget-allocated)};
   }
 
+  function desiredTargetCount(budget,available,maxTargets){
+    if(!(budget>0)||available<=0)return 0;
+    let desired=1;
+    if(budget>=300)desired=2;
+    if(budget>=600)desired=3;
+    if(budget>=1000)desired=4;
+    if(budget>=1800)desired=5;
+    if(budget>=3000)desired=6;
+    if(budget>=5000)desired=8;
+    return Math.max(1,Math.min(available,Math.max(1,Math.floor(num(maxTargets)||8)),desired));
+  }
+
+  function effectiveMinimum(budget,count,inc,requested){
+    if(!(budget>0)||count<=0)return inc;
+    const autoFloor=roundDown(Math.max(inc,(budget/count)*.45),inc)||inc;
+    const requestedFloor=Math.max(inc,num(requested)||autoFloor);
+    // A stale/manual minimum may tighten sizing, but can never collapse a small mission into one holding.
+    return Math.max(inc,Math.min(requestedFloor,autoFloor));
+  }
+
+  function returnPriority(t,strategy){
+    const y=Math.max(0,num(t.yieldPct));
+    const scout=clamp(targetScore(t,strategy),0,100)/100;
+    if(!(y>0)||!(scout>0))return 0;
+    // Maximum Income is driven mainly by income per pound. Sustainable Income gives quality/safety more influence.
+    const qualityMultiplier=strategy==='maximum'
+      ?(.80+.20*scout)
+      :(.55+.45*scout);
+    return y*qualityMultiplier;
+  }
+
+  function positionCap(budget,count,strategy,status,inc){
+    if(count<=1)return budget;
+    let pct;
+    if(count===2)pct=.65;
+    else if(strategy==='maximum')pct=budget<1000?.50:budget<2500?.42:.38;
+    else pct=budget<1000?.45:budget<2500?.36:.32;
+    if(String(status||'').toLowerCase()==='caution')pct=Math.min(pct,count===2?.60:.35);
+    return Math.max(inc,roundDown(budget*pct,inc));
+  }
+
   function simulate(state,opts={}){
     const settings={
       strategy:'sustainable',
@@ -103,7 +144,6 @@
     const budget=Math.max(0,num(opts.budget));
     const strategy=settings.strategy==='maximum'?'maximum':'sustainable';
     const brokerScope=settings.brokerScope||'both';
-    const min=Math.max(25,num(settings.minAllocation)||250);
     const inc=Math.max(1,num(settings.increment)||25);
     const exclude=ticker(opts.excludeTicker);
     const allowedIds=opts.targetIds?new Set(arr(opts.targetIds).map(String)):null;
@@ -120,30 +160,37 @@
     candidates=candidates.map(t=>{
       const scoutScore=Math.max(1,targetScore(t,strategy));
       const fitFactor=baseRows?concentrationFactor(baseRows,t,0):1;
-      return {...t,_routeScore:scoutScore*fitFactor,_scoutScore:scoutScore,_fitFactor:fitFactor};
+      const incomeScore=Math.max(.0001,returnPriority(t,strategy));
+      return {
+        ...t,
+        _routeScore:incomeScore*fitFactor,
+        _incomeScore:incomeScore,
+        _scoutScore:scoutScore,
+        _fitFactor:fitFactor
+      };
     }).sort((a,b)=>
       b._routeScore-a._routeScore||
+      b._incomeScore-a._incomeScore||
       b._scoutScore-a._scoutScore||
       num(a.rank)-num(b.rank)
     );
 
     if(!(budget>0)||!candidates.length){
+      const emptyMin=Math.max(inc,num(settings.minAllocation)||250);
       return {
-        financeBudget:budget,strategy,brokerScope,minAllocation:min,increment:inc,
+        financeBudget:budget,strategy,brokerScope,minAllocation:emptyMin,increment:inc,
+        requestedMinAllocation:Math.max(inc,num(settings.minAllocation)||250),
+        allocationMode:'RETURN_WEIGHTED_AUTO',
         allocations:[],allocated:0,income:0,remaining:budget,status:'SIMULATION',
         rotation:!!rotation,reason:budget>0?'NO_ELIGIBLE_TARGETS':'NO_BUDGET'
       };
     }
 
-    let count=Math.min(
-      Math.max(1,Math.floor(num(settings.maxTargets)||8)),
-      candidates.length,
-      Math.max(1,Math.floor(budget/min))
-    );
-    if(budget<min)count=1;
+    const count=desiredTargetCount(budget,candidates.length,settings.maxTargets);
     candidates=candidates.slice(0,count);
-
-    const scores=candidates.map(t=>Math.max(1,t._routeScore));
+    const min=effectiveMinimum(budget,count,inc,settings.minAllocation);
+    const requestedMin=Math.max(inc,num(settings.minAllocation)||min);
+    const scores=candidates.map(t=>Math.max(.0001,t._routeScore));
     const idFactory=typeof opts.idFactory==='function'?opts.idFactory:(p=>`${p}-${Math.random().toString(36).slice(2,9)}`);
     const allocations=candidates.map((t,i)=>({
       id:idFactory('ALLOC'),
@@ -165,26 +212,21 @@
 
     let remaining=budget;
 
-    if(budget>=min*count){
-      allocations.forEach(a=>{
-        const seed=roundDown(min,inc);
-        a.amount=seed;
-        remaining-=seed;
-      });
-    }
-
-    const weightSum=scores.reduce((s,x)=>s+x,0)||1;
-    const extraRaw=allocations.map((a,i)=>remaining*(scores[i]/weightSum));
-    allocations.forEach((a,i)=>{
-      const add=roundDown(extraRaw[i],inc);
-      a.amount+=add;
-      remaining-=add;
+    // Seed every selected target with a meaningful, budget-scaled floor.
+    allocations.forEach(a=>{
+      const seed=Math.min(min,remaining);
+      a.amount=seed;
+      remaining-=seed;
     });
 
+    // Allocate the rest to the strongest expected return per pound, with diminishing priority and concentration caps.
     let guard=0;
-    while(remaining>=inc-.001&&guard<5000){
+    while(remaining>=inc-.001&&guard<10000){
       guard++;
       const ranked=allocations.map((a,i)=>{
+        const cap=positionCap(budget,count,strategy,a.scoutingStatus,inc);
+        if(a.amount+inc>cap+.001)return {i,priority:-Infinity,cap};
+
         let concentration=1;
         if(baseRows){
           const simulated=baseRows.concat(
@@ -194,15 +236,28 @@
           );
           concentration=concentrationFactor(simulated,a,inc);
         }
-        return {i,priority:(scores[i]*concentration)/Math.max(inc,a.amount)};
+        const average=Math.max(inc,budget/Math.max(1,count));
+        const diminishing=1+(a.amount/average)*.65;
+        return {i,priority:(scores[i]*concentration)/diminishing,cap};
       }).sort((a,b)=>b.priority-a.priority);
+
+      if(!ranked.length||!Number.isFinite(ranked[0].priority)||ranked[0].priority<0)break;
       allocations[ranked[0].i].amount+=inc;
       remaining-=inc;
     }
 
-    if(budget<min){
-      allocations[0].amount=roundDown(budget,inc)||budget;
-      remaining=Math.max(0,budget-allocations[0].amount);
+    // Use a sub-increment remainder where safe instead of leaving pennies/odd pounds stranded.
+    if(remaining>.005){
+      const ranked=allocations.map((a,i)=>({
+        i,
+        score:scores[i],
+        cap:positionCap(budget,count,strategy,a.scoutingStatus,inc)
+      })).filter(x=>allocations[x.i].amount+remaining<=x.cap+.005)
+        .sort((a,b)=>b.score-a.score);
+      if(ranked.length){
+        allocations[ranked[0].i].amount+=remaining;
+        remaining=0;
+      }
     }
 
     allocations.forEach(a=>{
@@ -215,7 +270,10 @@
       strategy,
       brokerScope,
       minAllocation:min,
+      requestedMinAllocation:requestedMin,
       increment:inc,
+      allocationMode:'RETURN_WEIGHTED_AUTO',
+      targetCount:count,
       allocations,
       status:'SIMULATION',
       locked:false,
