@@ -2,227 +2,321 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050b16">
-<title>Transfer Centre — Aurora FC 2.0</title>
-<link rel="stylesheet" href="aurora.css">
-<style>
-:root{--transfer:#ff7a59;--transfer2:#f5b84b;--transfer-rgb:255,122,89}
-.transfer-notice{border-color:rgba(var(--transfer-rgb),.24)!important;background:linear-gradient(90deg,rgba(var(--transfer-rgb),.07),rgba(245,184,75,.04))!important;color:#ffd0c4!important}
-.transfer-hero{position:relative;overflow:hidden;padding:24px;border-radius:26px;border:1px solid rgba(var(--transfer-rgb),.25);background:radial-gradient(circle at 0 0,rgba(var(--transfer-rgb),.18),transparent 34%),radial-gradient(circle at 100% 0,rgba(245,184,75,.13),transparent 32%),linear-gradient(145deg,rgba(35,16,20,.96),rgba(8,15,27,.98));box-shadow:var(--shadow)}
-.transfer-hero:after{content:"DEADLINE DAY";position:absolute;right:18px;bottom:-12px;font-size:72px;font-weight:1000;letter-spacing:-4px;color:rgba(255,255,255,.025);pointer-events:none}
-.transfer-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.transfer-hero h2{font-size:clamp(28px,3.3vw,46px);margin:7px 0 0;letter-spacing:-1.5px}.transfer-hero p{color:var(--muted);font-size:11px;line-height:1.6;max-width:760px}
-.transfer-badge{display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(var(--transfer-rgb),.28);background:rgba(var(--transfer-rgb),.08);color:#ffc2b2;font-size:9px;font-weight:1000}
-.mission-command{padding:17px;border-radius:18px;border:1px solid rgba(88,233,155,.18);background:rgba(88,233,155,.045)}.mission-command .budget{font-size:38px;font-weight:1000;letter-spacing:-1.5px;margin:5px 0}.mission-command small{color:#8ff2b7;font-size:8px;font-weight:1000;text-transform:uppercase;letter-spacing:.9px}.mission-command span{display:block;color:var(--muted);font-size:9px;line-height:1.5}
-.transfer-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.transfer-kpi{padding:15px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.024)}.transfer-kpi small{display:block;color:var(--muted);font-size:8px;font-weight:950;text-transform:uppercase;letter-spacing:.8px}.transfer-kpi strong{display:block;font-size:23px;margin-top:7px}.transfer-kpi span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
-.transfer-tabs .tab.active{border-color:rgba(var(--transfer-rgb),.28);background:rgba(var(--transfer-rgb),.08);color:#fff2ed}
-.strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.strategy-card{position:relative;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;background:rgba(255,255,255,.02);cursor:pointer}.strategy-card.active{border-color:rgba(var(--transfer-rgb),.34);background:rgba(var(--transfer-rgb),.07)}.strategy-card input{position:absolute;opacity:0}.strategy-card strong{display:block;font-size:13px}.strategy-card span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}.strategy-card em{display:block;color:#ffc6b7;font-style:normal;font-size:8px;font-weight:900;margin-top:7px}
-.strategy-card.strategy-waiting{opacity:.72;border-style:dashed}.strategy-handoff{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}.strategy-handoff-badge{display:inline-flex;padding:6px 8px;border-radius:999px;border:1px solid rgba(88,233,155,.22);color:#9df0ba;font-size:7px;font-weight:1000}.strategy-waiting .strategy-handoff-badge{border-color:rgba(241,196,90,.22);color:#f7d77d}
-.target-list,.route-list,.draft-list,.chairman-case-list{display:grid;gap:8px}.target-row,.route-row,.draft-row,.chairman-case-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.target-main strong,.route-main strong,.draft-main strong,.chairman-case-main strong{display:block;font-size:12px}.target-main span,.route-main span,.draft-main span,.chairman-case-main span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:4px}.target-side,.route-side,.chairman-case-side{text-align:right}.target-side strong,.route-side strong,.chairman-case-side strong{font-size:14px}.target-side span,.route-side span,.chairman-case-side span{color:var(--muted);font-size:8px}
-.status-pill{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);font-size:7px;font-weight:1000;text-transform:uppercase;letter-spacing:.6px}.status-pill.pass{color:#9df0ba;border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.status-pill.caution{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05)}.status-pill.block{color:#ffb6c2;border-color:rgba(255,112,137,.25);background:rgba(255,112,137,.05)}
-.route-input,.route-account{width:110px;min-height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:7px 9px;font:inherit;font-size:11px}.route-input{text-align:right}.route-input:focus,.route-account:focus{outline:none;border-color:rgba(var(--transfer-rgb),.45)}.route-edit-stack{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.btn[hidden]{display:none!important}
-.broker-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.broker-card{padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(255,255,255,.02)}.broker-card small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:950}.broker-card strong{display:block;font-size:24px;margin-top:6px}.broker-card span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
-.route-progress{height:8px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.06);margin-top:10px}.route-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--transfer),var(--transfer2));border-radius:999px}
-.migration-card{border-color:rgba(169,139,255,.18)!important;background:rgba(169,139,255,.035)!important}
-.registration-preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.registration-stat{padding:11px;border-radius:13px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)}.registration-stat small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.registration-stat strong{display:block;font-size:14px;margin-top:5px}
-.offer-rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.offer-rule{padding:16px;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(255,255,255,.022)}.offer-rule strong{display:block;font-size:17px}.offer-rule span{display:block;color:var(--muted);font-size:9px;line-height:1.6;margin-top:6px}
-
-/* Chairman live handoff */
-.chairman-live-shell{border-color:rgba(243,201,105,.20)!important;background:radial-gradient(circle at 100% 0,rgba(243,201,105,.075),transparent 34%),rgba(255,255,255,.018)!important}
-.chairman-live-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;border:1px solid rgba(88,233,155,.24);background:rgba(88,233,155,.05);color:#9df0ba;font-size:8px;font-weight:1000}.chairman-live-badge:before{content:"";width:7px;height:7px;border-radius:50%;background:#58e99b;box-shadow:0 0 11px rgba(88,233,155,.65)}
-.chairman-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px}.chairman-summary-card{padding:13px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(255,255,255,.018)}.chairman-summary-card small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.chairman-summary-card strong{display:block;margin-top:5px;font-size:20px}.chairman-summary-card span{display:block;margin-top:4px;color:var(--muted);font-size:8px;line-height:1.4}.chairman-summary-card.review strong{color:#f7d77d}.chairman-summary-card.strong strong{color:#9df0ba}.chairman-summary-card.income strong{color:#f3c969}
-.chairman-handoff{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:12px;margin-top:12px}.chairman-callout{padding:15px;border:1px solid rgba(243,201,105,.15);border-radius:16px;background:rgba(243,201,105,.025)}.chairman-callout strong{display:block;font-size:15px}.chairman-callout span{display:block;color:var(--muted);font-size:9px;line-height:1.55;margin-top:6px}
-
-@media(max-width:1100px){.transfer-kpis{grid-template-columns:repeat(3,1fr)}.chairman-summary{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:900px){.transfer-hero-grid,.strategy-grid,.chairman-handoff{grid-template-columns:1fr}.offer-rules{grid-template-columns:1fr}.broker-strip{grid-template-columns:1fr}}
-@media(max-width:680px){.transfer-kpis,.chairman-summary{grid-template-columns:1fr 1fr}.target-row,.route-row,.draft-row,.chairman-case-row{grid-template-columns:1fr}.target-side,.route-side,.chairman-case-side{text-align:left}.registration-preview{grid-template-columns:1fr 1fr}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07060d">
+<title>Aurora City FC — Transfer Centre</title>
+<link rel="stylesheet" href="aurora.css?v=transfer-base">
+<link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
+<link rel="stylesheet" href="transfer-command.css?v=transfer-command-100">
 </head>
-<body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
-  <nav class="nav">
-    <a href="index.html">🏟 Aurora HQ</a>
-    <a href="finance.html">💷 Finance</a>
-    <a class="active" href="transfer.html">🔄 Transfer</a>
-    <a href="registration.html">📝 Registration</a>
-    <a href="squad.html">⚽ Squad</a>
-    <a href="scouting.html">🔎 Scouting</a>
-    <a href="income.html">💰 Income</a>
-    <a href="club-control.html">⚙ Club Control</a>
-  </nav>
-  <div class="sidebar-foot"><b>Transfer owns deployment</b><br>Finance sets the amount. Scouting sets the targets. Transfer builds and locks the route.</div>
-</aside>
 
-<main class="main"><div class="content">
-<div class="notice transfer-notice" style="margin-bottom:14px"><b>Transfer Centre 2.0 — Dynamic Routing + Broker Memory v0.6.</b> Finance budget remains read-only. Chairman now reads canonical Squad positions here and opens the full decision room in Club Control.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--transfer)">Aurora FC 2.0 • Transfer</span><h1>Transfer Centre</h1><p>Turn one approved Finance mission into one accountable broker route. No second budget. No hidden override.</p></div><span class="transfer-badge">SMART ROUTING v0.6</span></header>
+<body class="aurora-entered transfer-command-page">
+<div class="aurora-game-shell is-active" id="gameShell">
 
-<section class="transfer-hero">
-  <div class="transfer-hero-grid">
-    <div><span class="eyebrow" style="color:#ffb29f">Deadline Day Command</span><h2>Finance owns the money.<br>Transfer owns the deployment.</h2><p>Scouting owns the investment strategy. Transfer inherits that approved lens, then owns broker routing and allocation sizes. The Finance amount remains read-only.</p>
-      <div class="action-row"><button class="btn primary" id="openAllocation">Build / Review Route</button><a class="btn secondary" href="finance.html">Open Finance</a></div>
+  <header class="aurora-shell-header">
+    <div class="aurora-shell-header-inner">
+      <div class="aurora-shell-brand">
+        <button id="auroraShellMenuButton" aria-label="Open club navigation" aria-expanded="false">☰</button>
+        <div class="aurora-shell-crest">
+          <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="Aurora City FC">
+        </div>
+        <div class="aurora-shell-copy">
+          <h1>Aurora City FC</h1>
+          <p id="currentDepartment">TRANSFER CENTRE</p>
+        </div>
+      </div>
+
+      <div class="aurora-shell-context">
+        <div class="aurora-shell-datetime">
+          <span class="shell-clock" id="shellClock">--:--</span>
+          <span class="shell-date" id="shellDate">---</span>
+        </div>
+        <a class="shell-control shell-home" href="index.html" title="Nexus HQ">⌂</a>
+        <span class="aurora-shell-live">Live</span>
+      </div>
     </div>
-    <article class="mission-command"><small>Finance-authorised mission</small><div class="budget" id="missionBudget">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong><span id="missionMeta">Release an investment mission from Finance first.</span><div class="lock" style="margin-top:10px" id="missionLock">Budget is locked to Finance.</div></article>
+  </header>
+
+  <div class="shell-stage">
+    <main class="shell-page transfer-shell-page">
+
+      <section class="transfer-command-hero">
+        <div class="transfer-command-copy">
+          <div class="transfer-status-line">
+            <span class="transfer-live-pill">● TRANSFER DESK LIVE</span>
+            <span class="transfer-version-pill">SMART ROUTING v0.6</span>
+          </div>
+
+          <span class="transfer-eyebrow">Aurora City FC • Deadline Day Command</span>
+          <h2>Transfer<br><span>Centre</span></h2>
+          <p>Finance owns the money. Scouting owns the target intelligence. Transfer owns the final deployment route — broker, allocation and approval.</p>
+
+          <div class="transfer-hero-actions">
+            <button class="transfer-btn primary" id="openAllocation">Build / Review Route</button>
+            <a class="transfer-btn secondary" href="finance.html">Open Finance</a>
+            <a class="transfer-btn secondary" href="scouting.html">Open Scouting</a>
+          </div>
+        </div>
+
+        <article class="mission-command-card">
+          <div class="mission-command-head">
+            <span>Finance-authorised mission</span>
+            <i>LOCKED</i>
+          </div>
+          <div class="mission-command-budget" id="missionBudget">£0.00</div>
+          <strong id="missionStatus">NO ACTIVE MISSION</strong>
+          <p id="missionMeta">Release an investment mission from Finance first.</p>
+          <div class="mission-command-lock" id="missionLock">Budget is locked to Finance.</div>
+        </article>
+      </section>
+
+      <section class="transfer-scoreboard">
+        <article class="transfer-score red"><small>Finance Budget</small><strong id="kFinanceBudget">£0.00</strong><span>Authoritative ceiling</span></article>
+        <article class="transfer-score orange"><small>Allocated</small><strong id="kAllocated">£0.00</strong><span>Current deal sheet</span></article>
+        <article class="transfer-score gold"><small>Holdback</small><strong id="kHoldback">£0.00</strong><span>Untransferred cash</span></article>
+        <article class="transfer-score green"><small>Projected Income</small><strong id="kIncome">£0.00</strong><span>Annual from route</span></article>
+        <article class="transfer-score blue"><small>Targets</small><strong id="kTargets">0</strong><span>Scouting-approved list</span></article>
+      </section>
+
+      <div class="tabs transfer-tabs">
+        <button class="tab active" data-tab="overviewPanel">Mission Room</button>
+        <button class="tab" data-tab="allocationPanel">Allocation Room</button>
+        <button class="tab" data-tab="registrationPanel">Registration</button>
+        <button class="tab" data-tab="offersPanel">Chairman Office</button>
+      </div>
+
+      <section id="overviewPanel" class="tab-panel active">
+        <section class="transfer-command-grid two">
+          <article class="transfer-panel handoff-panel">
+            <div class="transfer-panel-head">
+              <div><span class="transfer-panel-kicker">Finance Handoff</span><h3>Mission Authority</h3></div>
+              <span class="handoff-state" id="handoffState">WAITING</span>
+            </div>
+
+            <div class="handoff-grid">
+              <div><small>Mission ID</small><strong id="handoffMissionId">—</strong></div>
+              <div><small>Payday</small><strong id="handoffPayday">—</strong></div>
+              <div><small>Finance Safe Surplus</small><strong id="handoffSafe">—</strong></div>
+              <div><small>Finance Commitments</small><strong id="handoffCommitments">—</strong></div>
+              <div class="ceiling"><small>Transfer Ceiling</small><strong id="handoffBudget">£0.00</strong></div>
+            </div>
+
+            <div class="transfer-notice good"><b>Authority rule:</b> Transfer reads <code>mission.approvedBudget</code>. There is no editable Transfer-budget field.</div>
+          </article>
+
+          <article class="transfer-panel scouting-handoff-panel">
+            <div class="transfer-panel-head">
+              <div><span class="transfer-panel-kicker">Scouting Handoff</span><h3>Recruitment Intelligence</h3></div>
+              <span id="scoutingState" class="handoff-state">CHECKING</span>
+            </div>
+
+            <p class="transfer-copy">Transfer does not create investment research. Scouting owns the scores, eligibility gates and approved shortlist. Transfer deploys Finance-authorised money across those approved targets.</p>
+            <div class="transfer-notice good"><b>One owner per job.</b><br>If the shortlist changes, approve it in Scouting before rebuilding this route.</div>
+            <a class="transfer-link-btn" href="scouting.html">Open Scouting Centre →</a>
+          </article>
+        </section>
+
+        <section class="transfer-panel approved-targets-panel">
+          <div class="transfer-panel-head">
+            <div><span class="transfer-panel-kicker">Recruitment Board</span><h3>Approved Scouting Targets</h3></div>
+            <span class="transfer-panel-note" id="targetSource">Awaiting Scouting</span>
+          </div>
+          <div class="target-list" id="targetList"></div>
+        </section>
+      </section>
+
+      <section id="allocationPanel" class="tab-panel">
+        <section class="transfer-command-grid two">
+          <article class="transfer-panel strategy-panel">
+            <div class="transfer-panel-head">
+              <div><span class="transfer-panel-kicker">Approved Scouting Strategy</span><h3>Inherited Investment Lens</h3></div>
+              <span class="transfer-panel-note">Read-only handoff</span>
+            </div>
+
+            <article class="strategy-card active" id="scoutingStrategyCard">
+              <div class="strategy-handoff">
+                <div>
+                  <strong id="scoutingStrategyTitle">Sustainable Income</strong>
+                  <span id="scoutingStrategyMeta">Transfer inherits the approved Scouting lens automatically.</span>
+                  <em>SCOUTING OWNS STRATEGY • TRANSFER OWNS DEPLOYMENT</em>
+                </div>
+                <span class="strategy-handoff-badge" id="scoutingStrategyBadge">CHECKING</span>
+              </div>
+            </article>
+
+            <div class="transfer-field-grid">
+              <div class="field"><label>Broker route</label><select id="brokerScope"><option value="both">Both brokers</option><option value="IG">IG ISA only</option><option value="T212">Trading 212 ISA only</option></select><small>Broker choices are remembered by ticker for future payday routes.</small></div>
+              <div class="field"><label>Minimum meaningful allocation</label><div class="money-wrap"><input id="minAllocation" type="number" min="25" step="25"></div><small>Stops token-sized buys.</small></div>
+              <div class="field"><label>Allocation increment</label><div class="money-wrap"><input id="allocationIncrement" type="number" min="1" step="1"></div><small>Default £25 steps.</small></div>
+            </div>
+
+            <div class="transfer-actions">
+              <button class="transfer-btn primary" id="autoBuildRoute">Auto Build Route</button>
+              <button class="transfer-btn secondary" id="resetRoute">Reset Draft</button>
+            </div>
+            <div id="routeGuard" class="transfer-notice">Waiting for a Finance mission and Scouting targets.</div>
+          </article>
+
+          <article class="transfer-panel authority-panel">
+            <div class="transfer-panel-head">
+              <div><span class="transfer-panel-kicker">Route Authority</span><h3>Budget Lock</h3></div>
+              <span class="budget-lock-chip">BUDGET LOCKED</span>
+            </div>
+
+            <div class="transfer-notice good"><b>Finance stays authoritative.</b><br>Transfer may change deployment but cannot increase the approved mission budget.</div>
+
+            <div class="authority-grid">
+              <div><small>Scouting Strategy</small><strong id="routeStrategyReadout">—</strong></div>
+              <div><small>Broker Scope</small><strong id="routeBrokerReadout">—</strong></div>
+              <div><small>Minimum Allocation</small><strong id="routeMinimumReadout">—</strong></div>
+              <div><small>Increment</small><strong id="routeIncrementReadout">—</strong></div>
+              <div><small>Candidate Count</small><strong>Dynamic</strong><span>Budget + opportunity</span></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="transfer-panel deal-sheet-panel">
+          <div class="transfer-panel-head">
+            <div><span class="transfer-panel-kicker">Deadline Day Board</span><h3>Final Deal Sheet</h3></div>
+            <span id="routeStatus" class="route-status-chip">NO ROUTE</span>
+          </div>
+
+          <div class="broker-strip">
+            <div class="broker-card ig"><small>IG ISA</small><strong id="brokerIg">£0.00</strong><span>Cash to transfer</span></div>
+            <div class="broker-card t212"><small>Trading 212 ISA</small><strong id="brokerT212">£0.00</strong><span>Cash to transfer</span></div>
+            <div class="broker-card assign"><small>Broker To Assign</small><strong id="brokerUnassigned">£0.00</strong><span>Resolve before approval</span></div>
+            <div class="broker-card hold"><small>Keep Untransferred</small><strong id="brokerHold">£0.00</strong><span>Mission holdback</span></div>
+          </div>
+
+          <div class="route-progress"><i id="routeProgress" style="width:0%"></i></div>
+          <div class="route-list" id="routeList"></div>
+
+          <div class="transfer-actions">
+            <button class="transfer-btn primary" id="approveRoute" disabled>Approve Final Route</button>
+            <button class="transfer-btn secondary" id="unlockRoute" hidden>Unlock Route</button>
+            <button class="transfer-btn secondary" id="copyBrokerInstructions">Copy Broker Instructions</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="registrationPanel" class="tab-panel">
+        <section class="transfer-command-grid two">
+          <article class="transfer-panel registration-handoff-panel">
+            <div class="transfer-panel-head">
+              <div><span class="transfer-panel-kicker">Registration Handoff</span><h3>Execution Boundary</h3></div>
+              <span id="registrationHandoffState" class="handoff-state">WAITING</span>
+            </div>
+
+            <div class="transfer-notice good"><b>Transfer stops here.</b><br>The locked route is the authority for what may be bought. Registration owns broker execution, AuroraData 2 write, read-back confirmation and Squad update.</div>
+
+            <div class="registration-preview">
+              <div class="registration-stat"><small>Route ID</small><strong id="registrationRouteId">—</strong></div>
+              <div class="registration-stat"><small>Mission ID</small><strong id="registrationMissionId">—</strong></div>
+              <div class="registration-stat"><small>Purchase Allocations</small><strong id="registrationAllocations">0</strong></div>
+              <div class="registration-stat"><small>Confirmed</small><strong id="registrationConfirmed">0</strong></div>
+            </div>
+
+            <a class="transfer-link-btn primary-link" href="registration.html">Open Registration Desk →</a>
+          </article>
+
+          <article class="transfer-panel registration-work-panel">
+            <div class="transfer-panel-head">
+              <div><span class="transfer-panel-kicker">Registration Work</span><h3>Live Handoff Queue</h3></div>
+              <span class="transfer-panel-note">READ ONLY HERE</span>
+            </div>
+            <div id="registrationDraftList" class="draft-list"></div>
+            <div class="transfer-notice"><b>No duplicate logic:</b> execution prices, shares, fees and backend confirmation are not edited in Transfer.</div>
+          </article>
+        </section>
+      </section>
+
+      <section id="offersPanel" class="tab-panel">
+        <section class="transfer-panel chairman-live-shell">
+          <div class="transfer-panel-head">
+            <div>
+              <span class="transfer-panel-kicker">Chairman's Office Handoff</span>
+              <h3>Live Rotation Review</h3>
+              <p class="transfer-copy">Transfer shows the live review queue. Club Control owns the final rotation decision.</p>
+            </div>
+            <span class="chairman-live-badge" id="chairmanConnection">SQUAD LIVE</span>
+          </div>
+
+          <div class="chairman-summary">
+            <article class="chairman-summary-card review"><small>Meaningful +6% Cases</small><strong id="chairmanReviewCount">0</strong><span>Micro percentage triggers are muted</span></article>
+            <article class="chairman-summary-card strong"><small>Meaningful +10% Cases</small><strong id="chairmanStrongCount">0</strong><span>Stronger trigger after materiality check</span></article>
+            <article class="chairman-summary-card income"><small>Income Under Review</small><strong id="chairmanIncomeRisk">£0.00</strong><span>Annual income in the review queue</span></article>
+            <article class="chairman-summary-card"><small>Best Current Case</small><strong id="chairmanBestTicker">—</strong><span id="chairmanBestMeta">Waiting for canonical Squad holdings</span></article>
+          </div>
+
+          <div class="chairman-handoff">
+            <div>
+              <div class="transfer-panel-head compact-head">
+                <div><span class="transfer-panel-kicker">Chairman Queue</span><h3>Live Review Queue</h3></div>
+                <span class="transfer-panel-note" id="chairmanQueueMeta">0 cases</span>
+              </div>
+              <div id="chairmanCaseList" class="chairman-case-list"></div>
+            </div>
+
+            <article class="chairman-callout">
+              <strong>Detailed decisions live in Club Control.</strong>
+              <span>Chairman compares capital profit, dividend income surrendered, replacement income, monthly change, ex-date protection and the final rotation verdict. Transfer does not duplicate that logic here.</span>
+              <div class="transfer-actions">
+                <a class="transfer-btn primary" href="club-control.html">Open Chairman's Office</a>
+                <a class="transfer-btn secondary" href="squad.html">Open Squad</a>
+              </div>
+            </article>
+          </div>
+
+          <div class="offer-rules">
+            <article class="offer-rule"><strong>+6% = Review</strong><span>Reaching the activation level opens a Chairman review. It is not an automatic sell.</span></article>
+            <article class="offer-rule"><strong>+10% = Stronger Case</strong><span>A larger gain strengthens the case, but replacement income and dividend timing still decide the verdict.</span></article>
+            <article class="offer-rule"><strong>One Owner Per Job</strong><span>Squad owns the holding. Income owns dividend timing. Scouting owns replacements. Chairman compares. Transfer executes.</span></article>
+          </div>
+        </section>
+      </section>
+
+      <p class="transfer-last-update">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
+    </main>
   </div>
-</section>
 
-<section class="section transfer-kpis">
-  <article class="transfer-kpi"><small>Finance Budget</small><strong id="kFinanceBudget">£0.00</strong><span>Authoritative ceiling</span></article>
-  <article class="transfer-kpi"><small>Allocated</small><strong id="kAllocated">£0.00</strong><span>Current deal sheet</span></article>
-  <article class="transfer-kpi"><small>Holdback</small><strong id="kHoldback">£0.00</strong><span>Untransferred cash</span></article>
-  <article class="transfer-kpi"><small>Projected Income</small><strong id="kIncome">£0.00</strong><span>Annual from route</span></article>
-  <article class="transfer-kpi"><small>Targets</small><strong id="kTargets">0</strong><span>Scouting-approved list</span></article>
-</section>
+  <div id="auroraShellNavigationOverlay"></div>
+  <aside id="auroraShellNavigation" aria-label="Aurora club navigation">
+    <div class="aurora-shell-nav-head">
+      <div class="aurora-shell-nav-crest">
+        <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="">
+      </div>
+      <div class="aurora-shell-nav-brand">
+        <strong>Aurora City FC</strong>
+        <span>Club Navigation 2.0</span>
+      </div>
+      <button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button>
+    </div>
 
-<div class="tabs card transfer-tabs section">
-  <button class="tab active" data-tab="overviewPanel">Mission</button>
-  <button class="tab" data-tab="allocationPanel">Allocation Room</button>
-  <button class="tab" data-tab="registrationPanel">Registration</button>
-  <button class="tab" data-tab="offersPanel">Chairman Office</button>
+    <div class="aurora-shell-nav-scroll">
+      <div class="aurora-shell-nav-section">Club Command</div>
+      <a class="aurora-shell-department-row" href="index.html" data-name="Nexus HQ 2.0"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+      <div class="aurora-shell-nav-section">Football Operations</div>
+      <a class="aurora-shell-department-row" href="finance.html" data-name="Finance Command"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="scouting.html" data-name="Scouting Centre"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row is-current" href="transfer.html" data-name="Transfer Centre"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy the approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="registration.html" data-name="Registration"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="squad.html" data-name="Squad Hub"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="income.html" data-name="Income Centre"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+      <div class="aurora-shell-nav-section">Club</div>
+      <a class="aurora-shell-department-row" href="club-control.html" data-name="Club Control"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    </div>
+  </aside>
 </div>
 
-<section id="overviewPanel" class="tab-panel active">
-  <section class="grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Mission Handoff</h2><span class="good" id="handoffState">WAITING</span></div>
-      <div class="calc-list">
-        <div class="calc-row"><span>Mission ID</span><strong id="handoffMissionId">—</strong></div>
-        <div class="calc-row"><span>Payday</span><strong id="handoffPayday">—</strong></div>
-        <div class="calc-row"><span>Finance safe surplus</span><strong id="handoffSafe">—</strong></div>
-        <div class="calc-row"><span>Finance commitments</span><strong id="handoffCommitments">—</strong></div>
-        <div class="calc-row total"><span>Transfer ceiling</span><strong id="handoffBudget">£0.00</strong></div>
-      </div>
-      <div class="notice good" style="margin-top:12px"><b>Authority rule:</b> Transfer reads <code>mission.approvedBudget</code>. There is no editable transfer-budget field.</div>
-    </article>
+<div id="toast" class="transfer-toast"></div>
 
-    <article class="card card-pad migration-card">
-      <div class="section-head"><h2>Scouting Handoff</h2><span id="scoutingState" class="muted">CHECKING</span></div>
-      <p class="muted" style="font-size:9px;line-height:1.6">Transfer does not create investment research. Scouting owns the scores, eligibility gates and approved shortlist. Transfer only deploys Finance-authorised money across those approved targets.</p>
-      <div class="notice good"><b>One owner per job.</b><br>If the shortlist needs changing, make the change in Scouting and approve it there before rebuilding the route.</div>
-      <div class="action-row"><a class="btn secondary" href="scouting.html">Open Scouting Centre</a></div>
-    </article>
-  </section>
-
-  <section class="section card card-pad">
-    <div class="section-head"><h2>Approved Scouting Targets</h2><span class="muted" id="targetSource">Awaiting Scouting</span></div>
-    <div class="target-list" id="targetList"></div>
-  </section>
-</section>
-
-<section id="allocationPanel" class="tab-panel">
-  <section class="grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Approved Scouting Strategy</h2><span class="muted">Read-only handoff</span></div>
-      <article class="strategy-card active" id="scoutingStrategyCard">
-        <div class="strategy-handoff">
-          <div>
-            <strong id="scoutingStrategyTitle">Sustainable Income</strong>
-            <span id="scoutingStrategyMeta">Transfer inherits the approved Scouting lens automatically.</span>
-            <em>SCOUTING OWNS STRATEGY • TRANSFER OWNS DEPLOYMENT</em>
-          </div>
-          <span class="strategy-handoff-badge" id="scoutingStrategyBadge">CHECKING</span>
-        </div>
-      </article>
-      <div class="field-grid" style="margin-top:12px">
-        <div class="field"><label>Broker route</label><select id="brokerScope"><option value="both">Both brokers</option><option value="IG">IG ISA only</option><option value="T212">Trading 212 ISA only</option></select><small>Deal-sheet broker choices are remembered by ticker for future payday routes.</small></div>
-        <div class="field"><label>Minimum meaningful allocation</label><div class="money-wrap"><input id="minAllocation" type="number" min="25" step="25"></div><small>Stops token-sized buys.</small></div>
-        <div class="field"><label>Allocation increment</label><div class="money-wrap"><input id="allocationIncrement" type="number" min="1" step="1"></div><small>Default £25 steps.</small></div>
-      </div>
-      <div class="action-row"><button class="btn primary" id="autoBuildRoute">Auto Build Route</button><button class="btn secondary" id="resetRoute">Reset Draft</button></div>
-      <div id="routeGuard" class="notice" style="margin-top:10px">Waiting for a Finance mission and Scouting targets.</div>
-    </article>
-
-    <article class="card card-pad">
-      <div class="section-head"><h2>Route Authority</h2><span class="cyan">BUDGET LOCKED</span></div>
-      <div class="notice good"><b>Finance stays authoritative.</b><br>Transfer may change the deployment but cannot increase the approved mission budget.</div>
-      <div class="calc-list" style="margin-top:12px">
-        <div class="calc-row"><span>Scouting strategy</span><strong id="routeStrategyReadout">—</strong></div>
-        <div class="calc-row"><span>Broker scope</span><strong id="routeBrokerReadout">—</strong></div>
-        <div class="calc-row"><span>Minimum allocation</span><strong id="routeMinimumReadout">—</strong></div>
-        <div class="calc-row"><span>Increment</span><strong id="routeIncrementReadout">—</strong></div>
-        <div class="calc-row"><span>Candidate count</span><strong>Dynamic • budget + opportunity</strong></div>
-      </div>
-    </article>
-  </section>
-
-  <section class="section card card-pad">
-    <div class="section-head"><h2>Final Deal Sheet</h2><span id="routeStatus" class="muted">NO ROUTE</span></div>
-    <div class="broker-strip">
-      <div class="broker-card"><small>IG ISA</small><strong id="brokerIg">£0.00</strong><span>Cash to transfer</span></div>
-      <div class="broker-card"><small>Trading 212 ISA</small><strong id="brokerT212">£0.00</strong><span>Cash to transfer</span></div>
-      <div class="broker-card"><small>Broker To Assign</small><strong id="brokerUnassigned">£0.00</strong><span>Must be resolved before approval</span></div>
-      <div class="broker-card"><small>Keep Untransferred</small><strong id="brokerHold">£0.00</strong><span>Mission holdback</span></div>
-    </div>
-    <div class="route-progress"><i id="routeProgress" style="width:0%"></i></div>
-    <div class="route-list section" id="routeList"></div>
-    <div class="action-row"><button class="btn primary" id="approveRoute" disabled>Approve Final Route</button><button class="btn secondary" id="unlockRoute" hidden>Unlock Route</button><button class="btn secondary" id="copyBrokerInstructions">Copy Broker Instructions</button></div>
-  </section>
-</section>
-
-<section id="registrationPanel" class="tab-panel">
-  <section class="grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Registration Handoff</h2><span id="registrationHandoffState" class="muted">WAITING</span></div>
-      <div class="notice good"><b>Transfer stops here.</b><br>The locked route is the authority for what may be bought. Registration owns the real broker execution, AuroraData 2 write, read-back confirmation and Squad update.</div>
-      <div class="calc-list" style="margin-top:12px">
-        <div class="calc-row"><span>Route ID</span><strong id="registrationRouteId">—</strong></div>
-        <div class="calc-row"><span>Mission ID</span><strong id="registrationMissionId">—</strong></div>
-        <div class="calc-row"><span>Purchase allocations</span><strong id="registrationAllocations">0</strong></div>
-        <div class="calc-row"><span>Confirmed registrations</span><strong id="registrationConfirmed">0</strong></div>
-      </div>
-      <div class="action-row"><a class="btn primary" href="registration.html">Open Registration Desk</a></div>
-    </article>
-    <article class="card card-pad">
-      <div class="section-head"><h2>Registration Work</h2><span class="muted">READ ONLY HERE</span></div>
-      <div id="registrationDraftList" class="draft-list"></div>
-      <div class="notice" style="margin-top:12px"><b>No duplicate logic:</b> execution prices, shares, fees and backend confirmation are no longer edited in Transfer.</div>
-    </article>
-  </section>
-</section>
-
-<section id="offersPanel" class="tab-panel">
-  <section class="card card-pad chairman-live-shell">
-    <div class="section-head">
-      <div><h2>Chairman's Office Handoff</h2><p class="muted">Transfer shows the live review queue. Club Control owns the full rotation decision.</p></div>
-      <span class="chairman-live-badge" id="chairmanConnection">SQUAD LIVE</span>
-    </div>
-
-    <div class="chairman-summary">
-      <article class="chairman-summary-card review"><small>Meaningful +6% Cases</small><strong id="chairmanReviewCount">0</strong><span>Micro percentage triggers are muted</span></article>
-      <article class="chairman-summary-card strong"><small>Meaningful +10% Cases</small><strong id="chairmanStrongCount">0</strong><span>Stronger trigger after materiality check</span></article>
-      <article class="chairman-summary-card income"><small>Income Under Review</small><strong id="chairmanIncomeRisk">£0.00</strong><span>Annual income from holdings currently in the review queue</span></article>
-      <article class="chairman-summary-card"><small>Best Current Case</small><strong id="chairmanBestTicker">—</strong><span id="chairmanBestMeta">Waiting for canonical Squad holdings</span></article>
-    </div>
-
-    <div class="chairman-handoff">
-      <div>
-        <div class="section-head" style="margin-top:0"><h2 style="font-size:16px">Live Review Queue</h2><span class="muted" id="chairmanQueueMeta">0 cases</span></div>
-        <div id="chairmanCaseList" class="chairman-case-list"></div>
-      </div>
-      <article class="chairman-callout">
-        <strong>Detailed decisions now live in Club Control.</strong>
-        <span>Chairman compares capital profit, dividend income surrendered, replacement income, monthly change, ex-date protection and the final rotation verdict. Transfer does not duplicate that logic here.</span>
-        <div class="action-row" style="margin-top:12px"><a class="btn primary" href="club-control.html">Open Chairman's Office</a><a class="btn secondary" href="squad.html">Open Squad</a></div>
-      </article>
-    </div>
-
-    <div class="offer-rules section">
-      <article class="offer-rule"><strong>+6% = Review</strong><span>Reaching the activation level opens a Chairman review. It is not an automatic sell.</span></article>
-      <article class="offer-rule"><strong>+10% = Stronger Case</strong><span>A larger gain strengthens the case, but replacement income and dividend timing still decide the verdict.</span></article>
-      <article class="offer-rule"><strong>One Owner Per Job</strong><span>Squad owns the holding. Income owns dividend timing. Scouting owns replacements. Chairman compares. Transfer executes.</span></article>
-    </div>
-  </section>
-</section>
-
-<p class="muted" style="font-size:8px;margin:14px 2px 0">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
-</div></main></div>
-
-<div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#28130f;border:1px solid rgba(255,122,89,.28);color:#ffd1c5;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
 <script src="aurora-core.js?v=9"></script>
 <script src="transfer-engine.js?v=060"></script>
 <script src="transfer-broker-memory.js?v=060"></script>
 <script src="transfer.js?v=050"></script>
+<script src="aurora-page-shell.js?v=100"></script>
+<script src="transfer-command-ui.js?v=100"></script>
 </body>
 </html>
