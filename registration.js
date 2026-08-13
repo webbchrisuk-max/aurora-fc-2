@@ -48,6 +48,56 @@
   }
   function uid(prefix){return A().core.uid(prefix)}
 
+  // Registration Currency Guard v1.1.0
+  // Prefer explicit route/holding/scouting metadata. ARCC is retained as a
+  // safe fallback because legacy Aurora 2 routes did not persist quote currency.
+  function normalizeCurrency(v){
+    const c=String(v||'').trim().toUpperCase();
+    return /^[A-Z]{3}$/.test(c)?c:'';
+  }
+  function firstCurrency(...values){
+    for(const v of values){
+      const c=normalizeCurrency(v);
+      if(c)return c;
+    }
+    return '';
+  }
+  function executionCurrency(state,a){
+    if(!a)return 'GBP';
+    const holding=localHolding(state,a.account,a.ticker);
+    const target=scoutingTarget(state,a.ticker);
+    const explicit=firstCurrency(
+      a.currency,a.tradingCurrency,a.quoteCurrency,a.priceCurrency,a.executionCurrency,
+      target?.currency,target?.tradingCurrency,target?.quoteCurrency,target?.priceCurrency,
+      holding?.currency,holding?.tradingCurrency,holding?.quoteCurrency,holding?.priceCurrency
+    );
+    if(explicit)return explicit;
+    const ticker=String(a.ticker||'').trim().toUpperCase();
+    if(ticker==='ARCC')return 'USD';
+    return 'GBP';
+  }
+  function ensurePriceUnitOption(currency){
+    const select=$('regPriceUnit'),c=normalizeCurrency(currency);
+    if(!select||!c||c==='GBP')return;
+    if(![...select.options].some(o=>String(o.value||'').toUpperCase()===c)){
+      const option=document.createElement('option');
+      option.value=c;
+      option.textContent=`${c} / share`;
+      select.appendChild(option);
+    }
+  }
+  function syncPriceUnitToCurrency(){
+    const currency=normalizeCurrency($('regCurrency')?.value)||'GBP';
+    const unit=String($('regPriceUnit')?.value||'GBP').toUpperCase();
+    if(currency==='GBP'){
+      if(!['GBP','PENCE'].includes(unit))setValue('regPriceUnit','GBP');
+      setValue('regFx','1');
+      return;
+    }
+    ensurePriceUnitOption(currency);
+    if(unit!==currency)setValue('regPriceUnit',currency);
+  }
+
   function loadConnection(){
     const c=D().config();
     setValue('backendEndpoint',c.endpoint);
@@ -123,22 +173,40 @@
     if(!a){clearExecution(false);return}
     const existing=draftForAllocation(state,a.id);
     setValue('regAccount',accountLabel(a.account));setValue('regTicker',a.ticker);
+    const defaultCurrency=executionCurrency(state,a);
+    ensurePriceUnitOption(defaultCurrency);
     if(existing){
       setValue('draftId',existing.id);setValue('transactionId',existing.transactionId);setValue('clientRequestId',existing.clientRequestId);
       setValue('regDate',existing.tradeDate);setValue('regShares',existing.shares||'');setValue('regPrice',existing.priceInput||'');
-      setValue('regPriceUnit',existing.priceUnit||'GBP');setValue('regCurrency',existing.currency||'GBP');setValue('regFx',existing.fxRateToGbp||1);setValue('regFees',existing.feesNative||0);
+      const storedCurrency=normalizeCurrency(existing.currency);
+      const savedCurrency=defaultCurrency!=='GBP'&&(!storedCurrency||storedCurrency==='GBP')
+        ?defaultCurrency
+        :(storedCurrency||defaultCurrency);
+      setValue('regCurrency',savedCurrency);
+      ensurePriceUnitOption(savedCurrency);
+      // Repair legacy contradictory drafts such as ARCC = USD currency but GBP/share.
+      const savedUnit=String(existing.priceUnit||'').toUpperCase();
+      setValue('regPriceUnit',savedCurrency==='GBP'&&['GBP','PENCE'].includes(savedUnit)?savedUnit:savedCurrency);
+      setValue('regFx',savedCurrency==='GBP'?1:(existing.fxRateToGbp||''));
+      setValue('regFees',existing.feesNative||0);
     }else{
       setValue('draftId','');setValue('transactionId','');setValue('clientRequestId','');
-      setValue('regShares','');setValue('regPrice','');setValue('regPriceUnit','GBP');setValue('regCurrency','GBP');setValue('regFx','1');setValue('regFees','0');
+      setValue('regShares','');setValue('regPrice','');
+      setValue('regCurrency',defaultCurrency);
+      setValue('regPriceUnit',defaultCurrency==='GBP'?'GBP':defaultCurrency);
+      setValue('regFx',defaultCurrency==='GBP'?'1':'');
+      setValue('regFees','0');
       if(!$('regDate')?.value){const d=new Date();setValue('regDate',`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)}
     }
+    syncPriceUnitToCurrency();
     calcExecution();
   }
 
   function calcExecution(){
     const state=currentState(),a=currentAllocation(state);
     const shares=Math.max(0,num($('regShares')?.value)),price=Math.max(0,num($('regPrice')?.value));
-    const priceUnit=$('regPriceUnit')?.value||'GBP',currency=String($('regCurrency')?.value||'GBP').toUpperCase().trim();
+    const priceUnit=String($('regPriceUnit')?.value||'GBP').toUpperCase().trim();
+    const currency=normalizeCurrency($('regCurrency')?.value)||'GBP';
     const fx=currency==='GBP'?1:Math.max(0,num($('regFx')?.value)),fees=Math.max(0,num($('regFees')?.value));
     const unitPrice=priceUnit==='PENCE'?price/100:price;
     const grossNative=shares*unitPrice,totalNative=grossNative+fees,totalGbp=totalNative*(currency==='GBP'?1:fx||0);
@@ -154,6 +222,8 @@
     if(a&&!['IG','T212'].includes(accountCode(a.account)))checks.push('Allocation broker is unresolved.');
     if(!(shares>0))checks.push('Shares must be greater than zero.');
     if(!(price>0))checks.push('Execution price must be greater than zero.');
+    if(currency==='GBP'&&!['GBP','PENCE'].includes(priceUnit))checks.push(`Price Unit ${priceUnit} does not match GBP currency.`);
+    if(currency!=='GBP'&&priceUnit!==currency)checks.push(`Price Unit must be ${currency} / share for a ${currency} purchase.`);
     if(currency!=='GBP'&&!(fx>0))checks.push('FX to GBP is required for non-GBP purchases.');
     if(!(totalGbp>0))checks.push('Calculated GBP cost must be greater than zero.');
     const ready=checks.length===0;
@@ -299,7 +369,13 @@
 
   function clearExecution(keepAllocation=true){
     ['draftId','transactionId','clientRequestId','regShares','regPrice'].forEach(id=>setValue(id,''));
-    setValue('regPriceUnit','GBP');setValue('regCurrency','GBP');setValue('regFx','1');setValue('regFees','0');
+    const state=currentState(),a=keepAllocation?currentAllocation(state):null;
+    const currency=a?executionCurrency(state,a):'GBP';
+    ensurePriceUnitOption(currency);
+    setValue('regCurrency',currency);
+    setValue('regPriceUnit',currency==='GBP'?'GBP':currency);
+    setValue('regFx',currency==='GBP'?'1':'');
+    setValue('regFees','0');
     if(!keepAllocation){setValue('regAccount','');setValue('regTicker','')}
     const d=new Date();setValue('regDate',`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
     calcExecution();
@@ -372,7 +448,9 @@
     loadConnection();
     $('saveConnection')?.addEventListener('click',saveConnection);$('testConnection')?.addEventListener('click',testConnection);$('seedSquad')?.addEventListener('click',seedSquad);
     $('regAllocation')?.addEventListener('change',()=>loadAllocation());
-    ['regShares','regPrice','regPriceUnit','regCurrency','regFx','regFees'].forEach(id=>$(id)?.addEventListener('input',calcExecution));
+    ['regShares','regPrice','regPriceUnit','regFx','regFees'].forEach(id=>$(id)?.addEventListener('input',calcExecution));
+    $('regCurrency')?.addEventListener('change',()=>{syncPriceUnitToCurrency();calcExecution();});
+    $('regPriceUnit')?.addEventListener('change',calcExecution);
     $('saveDraft')?.addEventListener('click',saveDraft);$('registerPurchase')?.addEventListener('click',registerPurchase);$('clearExecution')?.addEventListener('click',()=>clearExecution(true));
     $('openExecution')?.addEventListener('click',()=>document.getElementById('executionSection')?.scrollIntoView({behavior:'smooth',block:'start'}));
     document.addEventListener('click',e=>{
