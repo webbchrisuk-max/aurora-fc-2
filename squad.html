@@ -2,180 +2,181 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050b16">
-<title>Squad Hub — Aurora FC 2.0</title>
-<link rel="stylesheet" href="aurora.css">
-<style>
-:root{--squad:#45e0a6;--squad2:#45b6ff;--squad-rgb:69,224,166}
-.squad-notice{border-color:rgba(var(--squad-rgb),.22)!important;background:linear-gradient(90deg,rgba(var(--squad-rgb),.065),rgba(69,182,255,.035))!important;color:#bdf6df!important}
-.squad-hero{position:relative;overflow:hidden;padding:24px;border-radius:26px;border:1px solid rgba(var(--squad-rgb),.22);background:radial-gradient(circle at 0 0,rgba(var(--squad-rgb),.15),transparent 35%),radial-gradient(circle at 100% 0,rgba(69,182,255,.12),transparent 32%),linear-gradient(145deg,rgba(7,34,31,.97),rgba(5,13,25,.99));box-shadow:var(--shadow)}
-.squad-hero:after{content:"FIRST TEAM";position:absolute;right:18px;bottom:-16px;font-size:82px;font-weight:1000;letter-spacing:-5px;color:rgba(255,255,255,.024);pointer-events:none}
-.squad-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.squad-hero h2{font-size:clamp(28px,3.4vw,46px);margin:7px 0 0;letter-spacing:-1.5px}.squad-hero p{color:var(--muted);font-size:11px;line-height:1.6;max-width:760px}
-.squad-badge{display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(var(--squad-rgb),.28);background:rgba(var(--squad-rgb),.07);color:#b8f6dd;font-size:9px;font-weight:1000}
-.squad-command{padding:17px;border-radius:18px;border:1px solid rgba(var(--squad-rgb),.18);background:rgba(var(--squad-rgb),.045)}.squad-command small{display:block;color:#93edc8;font-size:8px;font-weight:1000;text-transform:uppercase;letter-spacing:.9px}.squad-command strong{display:block;font-size:32px;margin-top:6px;letter-spacing:-1px}.squad-command span{display:block;color:var(--muted);font-size:9px;line-height:1.5;margin-top:5px}
-.squad-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.squad-kpi{padding:15px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.024)}.squad-kpi small{display:block;color:var(--muted);font-size:8px;font-weight:950;text-transform:uppercase;letter-spacing:.8px}.squad-kpi strong{display:block;font-size:23px;margin-top:7px}.squad-kpi span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
-.account-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.account-card{padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(255,255,255,.02)}.account-card small{display:block;color:var(--muted);font-size:8px;font-weight:950;text-transform:uppercase}.account-card strong{display:block;font-size:24px;margin-top:6px}.account-card span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
-.squad-tabs .tab.active{border-color:rgba(var(--squad-rgb),.28);background:rgba(var(--squad-rgb),.075);color:#ecfff7}
-.filters{display:grid;grid-template-columns:minmax(220px,1fr) 180px 180px auto;gap:8px;align-items:end}.filters input,.filters select,.editor-grid input,.editor-grid select{width:100%;min-height:41px;border-radius:11px;border:1px solid rgba(255,255,255,.10);background:rgba(2,8,16,.72);color:var(--text);padding:9px 10px;font:inherit;font-size:11px}.filters label,.editor-grid label{display:grid;gap:5px;color:var(--muted);font-size:8px;font-weight:950;text-transform:uppercase}
-.player-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.player-card{position:relative;overflow:hidden;padding:15px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:radial-gradient(circle at 0 0,rgba(var(--squad-rgb),.07),transparent 38%),linear-gradient(145deg,rgba(10,27,39,.96),rgba(5,13,24,.99))}.player-card.locked{border-color:rgba(241,196,90,.28);background:radial-gradient(circle at 0 0,rgba(241,196,90,.09),transparent 38%),linear-gradient(145deg,rgba(31,25,13,.94),rgba(5,13,24,.99))}.player-card.archived{opacity:.55}.player-head{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:11px;align-items:center}.shirt{width:52px;height:58px;display:grid;place-items:center;clip-path:polygon(22% 0,38% 10%,62% 10%,78% 0,100% 18%,84% 33%,84% 100%,16% 100%,16% 33%,0 18%);background:linear-gradient(145deg,var(--squad),var(--squad2));color:#061419;font-weight:1000;font-size:10px}.player-head strong{display:block;font-size:14px}.player-head span{display:block;color:var(--muted);font-size:8px;line-height:1.45;margin-top:4px}.account-pill,.lock-pill{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);font-size:7px;font-weight:1000;white-space:nowrap}.account-pill.ig{color:#afdfff;border-color:rgba(69,182,255,.25);background:rgba(69,182,255,.05)}.account-pill.t212{color:#bcf7d9;border-color:rgba(69,224,166,.25);background:rgba(69,224,166,.05)}.account-pill.review{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05)}.lock-pill{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05);margin-left:5px}
-.player-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:13px}.player-metric{padding:9px;border:1px solid rgba(255,255,255,.055);border-radius:12px;background:rgba(255,255,255,.018)}.player-metric small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.player-metric strong{display:block;font-size:12px;margin-top:4px}.player-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
-.pitch{position:relative;min-height:460px;border:1px solid rgba(var(--squad-rgb),.18);border-radius:22px;overflow:hidden;background:linear-gradient(90deg,rgba(12,71,48,.36) 50%,rgba(9,61,42,.36) 50%),repeating-linear-gradient(90deg,rgba(255,255,255,.015) 0 8.333%,rgba(255,255,255,.005) 8.333% 16.666%),linear-gradient(180deg,#08271f,#061b18)}.pitch:before{content:"";position:absolute;inset:8%;border:1px solid rgba(255,255,255,.15);border-radius:3px}.pitch:after{content:"";position:absolute;left:50%;top:8%;bottom:8%;width:1px;background:rgba(255,255,255,.14)}.centre-circle{position:absolute;left:50%;top:50%;width:100px;height:100px;border:1px solid rgba(255,255,255,.14);border-radius:50%;transform:translate(-50%,-50%)}.pitch-player{position:absolute;z-index:2;width:120px;transform:translate(-50%,-50%);text-align:center}.pitch-player b{display:inline-flex;min-width:72px;justify-content:center;padding:7px 8px;border-radius:12px;border:1px solid rgba(var(--squad-rgb),.28);background:rgba(4,19,16,.88);box-shadow:0 10px 20px rgba(0,0,0,.24);font-size:10px}.pitch-player span{display:block;color:#bcebd8;font-size:7px;margin-top:4px}.pitch-note{position:absolute;left:14px;bottom:12px;color:rgba(255,255,255,.55);font-size:8px;z-index:2}
-.health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.health-card{padding:13px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(255,255,255,.02)}.health-card small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:950}.health-card strong{display:block;margin-top:6px;font-size:19px}.health-card span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}.health-card.warn{border-color:rgba(241,196,90,.2);background:rgba(241,196,90,.035)}.health-card.bad{border-color:rgba(255,112,137,.2);background:rgba(255,112,137,.035)}
-.migration-card{border-color:rgba(169,139,255,.18)!important;background:rgba(169,139,255,.035)!important}.migration-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.migration-stat{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.migration-stat small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.migration-stat strong{display:block;font-size:16px;margin-top:4px}
-.editor-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.editor-grid .wide{grid-column:span 2}.checkline{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:9px}.checkline input{width:auto}.history-list{display:grid;gap:8px}.history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px;border-radius:13px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.history-row strong{font-size:10px}.history-row span{display:block;color:var(--muted);font-size:8px;margin-top:3px}.empty{padding:24px;text-align:center;color:var(--muted);font-size:10px;border:1px dashed rgba(255,255,255,.08);border-radius:15px}
-@media(max-width:1150px){.squad-kpis{grid-template-columns:repeat(3,1fr)}.player-grid{grid-template-columns:1fr}.migration-summary{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:950px){.squad-hero-grid{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.editor-grid{grid-template-columns:1fr 1fr}.account-strip{grid-template-columns:1fr}.health-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:650px){.squad-kpis,.migration-summary,.health-grid,.filters,.editor-grid{grid-template-columns:1fr}.editor-grid .wide{grid-column:auto}.player-metrics{grid-template-columns:1fr 1fr}.pitch{min-height:580px}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#04101d">
+<title>Aurora City FC — Squad Hub</title>
+<link rel="stylesheet" href="aurora.css?v=squad-base">
+<link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
+<link rel="stylesheet" href="squad-command.css?v=squad-command-100">
 </head>
-<body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
-  <nav class="nav">
-    <a href="index.html">🏟 Aurora HQ</a>
-    <a href="finance.html">💷 Finance</a>
-    <a href="transfer.html">🔄 Transfer</a>
-    <a href="registration.html">📝 Registration</a>
-    <a href="squad.html">⚽ Squad</a>
-    <a href="scouting.html">🔎 Scouting</a>
-    <a href="income.html">💰 Income</a>
-    <a href="#" data-soon="Club Control">⚙ Club Control</a>
-  </nav>
-  <div class="sidebar-foot"><b>Squad owns the holdings</b><br>Every account-scoped position, share count and book cost has one canonical home.</div>
-</aside>
+<body class="aurora-entered squad-command-page">
+<div class="aurora-game-shell is-active" id="gameShell">
+<header class="aurora-shell-header"><div class="aurora-shell-header-inner">
+<div class="aurora-shell-brand">
+<button id="auroraShellMenuButton" aria-label="Open club navigation" aria-expanded="false">☰</button>
+<div class="aurora-shell-crest"><img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="Aurora City FC"></div>
+<div class="aurora-shell-copy"><h1>Aurora City FC</h1><p id="currentDepartment">SQUAD HUB</p></div>
+</div>
+<div class="aurora-shell-context">
+<div class="aurora-shell-datetime"><span class="shell-clock" id="shellClock">--:--</span><span class="shell-date" id="shellDate">---</span></div>
+<a class="shell-control shell-home" href="index.html" title="Nexus HQ">⌂</a><span class="aurora-shell-live">Live</span>
+</div></div></header>
 
-<main class="main"><div class="content">
-<div class="notice squad-notice" style="margin-bottom:14px"><b>Squad Hub 2.0 — Canonical Holdings v0.1.2.</b> Market value is derived from canonical shares × live price, and annual income from shares × annual DPS whenever those source fields are available. Stale Aurora 1 totals are never allowed to override newer share counts.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--squad)">Aurora FC 2.0 • Squad</span><h1>Squad Hub</h1><p>One authoritative record of what the club actually owns — separated by broker account, never collapsed when the same ticker exists twice.</p></div><span class="squad-badge">CANONICAL HOLDINGS v0.1.2</span></header>
+<div class="shell-stage"><main class="shell-page squad-shell-page">
+<section class="squad-command-hero">
+<div class="squad-hero-copy">
+<div class="squad-status-line"><span class="squad-live-pill">● FIRST TEAM LIVE</span><span class="squad-version-pill">CANONICAL HOLDINGS v0.1.2</span></div>
+<span class="squad-eyebrow">Aurora City FC • First Team Register</span>
+<h2>Squad<br><span>Hub</span></h2>
+<p>Every holding, share count, account, book cost, live value and dividend income lives here as one canonical first-team record.</p>
+<div class="squad-hero-actions">
+<button class="squad-btn primary" id="openMigration">Import Aurora 1 Holdings</button>
+<button class="squad-btn secondary" id="openEditor">Add / Edit Holding</button>
+<a class="squad-btn secondary" href="transfer.html">Open Transfer</a>
+</div></div>
+<article class="squad-command-card">
+<div class="squad-command-head"><span>Canonical Squad Value</span><i>FIRST TEAM</i></div>
+<div class="squad-command-value" id="heroValue">£0.00</div>
+<strong id="heroMeta">No holdings imported yet.</strong>
+<p>Account-scoped book costs remain separate even when the same ticker exists at more than one broker.</p>
+</article></section>
 
-<section class="squad-hero">
-  <div class="squad-hero-grid">
-    <div><span class="eyebrow" style="color:#a4f1d1">First Team Register</span><h2>Every player. Every account.<br>One financial truth.</h2><p>Squad stores shares, book cost, live value and dividend income. Scouting may rate a player and Transfer may plan a purchase, but neither department owns the holding itself.</p>
-      <div class="action-row"><button class="btn primary" id="openMigration">Import Aurora 1 Holdings</button><button class="btn secondary" id="openEditor">Add / Edit Holding</button></div>
-    </div>
-    <article class="squad-command"><small>Canonical squad value</small><strong id="heroValue">£0.00</strong><span id="heroMeta">No holdings imported yet.</span><div class="lock" style="margin-top:10px">Account-scoped book costs stay separate even when the ticker is the same.</div></article>
-  </div>
+<section class="squad-scoreboard">
+<article class="squad-score cyan"><small>Team Value</small><strong id="kValue">£0.00</strong><span>Active positions</span></article>
+<article class="squad-score blue"><small>Book Cost</small><strong id="kBook">£0.00</strong><span>Account scoped</span></article>
+<article class="squad-score green"><small>Profit / Loss</small><strong id="kProfit">£0.00</strong><span>Value minus book cost</span></article>
+<article class="squad-score gold"><small>Annual Income</small><strong id="kIncome">£0.00</strong><span id="kMonthly">£0.00 monthly</span></article>
+<article class="squad-score purple"><small>Players</small><strong id="kPlayers">0</strong><span id="kPositions">0 account positions</span></article>
+<article class="squad-score teal"><small>Yield on Cost</small><strong id="kYoc">0.00%</strong><span>Annual income / book cost</span></article>
 </section>
 
-<section class="section squad-kpis">
-  <article class="squad-kpi"><small>Team Value</small><strong id="kValue">£0.00</strong><span>Active positions</span></article>
-  <article class="squad-kpi"><small>Book Cost</small><strong id="kBook">£0.00</strong><span>Account scoped</span></article>
-  <article class="squad-kpi"><small>Profit / Loss</small><strong id="kProfit">£0.00</strong><span>Value minus book cost</span></article>
-  <article class="squad-kpi"><small>Annual Income</small><strong id="kIncome">£0.00</strong><span id="kMonthly">£0.00 monthly</span></article>
-  <article class="squad-kpi"><small>Players</small><strong id="kPlayers">0</strong><span id="kPositions">0 account positions</span></article>
-  <article class="squad-kpi"><small>Yield on Cost</small><strong id="kYoc">0.00%</strong><span>Annual income / book cost</span></article>
-</section>
-
-<div class="tabs card squad-tabs section">
-  <button class="tab active" data-tab="squadPanel">Squad Register</button>
-  <button class="tab" data-tab="pitchPanel">Starting XI</button>
-  <button class="tab" data-tab="healthPanel">Data Health</button>
-  <button class="tab" data-tab="migrationPanel">Migration</button>
-  <button class="tab" data-tab="editorPanel">Holding Editor</button>
+<div class="tabs squad-tabs">
+<button class="tab active" data-tab="squadPanel">First Team</button>
+<button class="tab" data-tab="pitchPanel">Starting XI</button>
+<button class="tab" data-tab="healthPanel">Data Health</button>
+<button class="tab" data-tab="migrationPanel">Migration</button>
+<button class="tab" data-tab="editorPanel">Holding Editor</button>
 </div>
 
 <section id="squadPanel" class="tab-panel active">
-  <section class="account-strip">
-    <article class="account-card"><small>IG ISA</small><strong id="igValue">£0.00</strong><span id="igMeta">0 positions</span></article>
-    <article class="account-card"><small>Trading 212 ISA</small><strong id="t212Value">£0.00</strong><span id="t212Meta">0 positions</span></article>
-    <article class="account-card"><small>Account Review</small><strong id="reviewValue">£0.00</strong><span id="reviewMeta">0 positions</span></article>
-  </section>
-  <section class="section card card-pad">
-    <div class="section-head"><h2>First Team Register</h2><span class="muted" id="registerMeta">0 positions</span></div>
-    <div class="filters">
-      <label>Search<input id="holdingSearch" placeholder="Ticker or company"></label>
-      <label>Account<select id="holdingAccountFilter"><option value="ALL">All accounts</option><option value="IG ISA">IG ISA</option><option value="Trading 212 ISA">Trading 212 ISA</option><option value="ACCOUNT REVIEW">Account review</option></select></label>
-      <label>Status<select id="holdingStatusFilter"><option value="ACTIVE">Active / locked</option><option value="ALL">All records</option><option value="LOCKED">Locked only</option><option value="ARCHIVED">Sold / archived</option></select></label>
-      <button class="btn secondary" id="clearFilters">Clear</button>
-    </div>
-    <div class="player-grid section" id="holdingGrid"></div>
-  </section>
+<section class="account-strip">
+<article class="account-card ig"><small>IG ISA</small><strong id="igValue">£0.00</strong><span id="igMeta">0 positions</span></article>
+<article class="account-card t212"><small>Trading 212 ISA</small><strong id="t212Value">£0.00</strong><span id="t212Meta">0 positions</span></article>
+<article class="account-card review"><small>Account Review</small><strong id="reviewValue">£0.00</strong><span id="reviewMeta">0 positions</span></article>
 </section>
+<section class="squad-panel register-panel">
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Canonical Holdings</span><h3>First Team Register</h3></div><span class="squad-panel-note" id="registerMeta">0 positions</span></div>
+<div class="filters">
+<label>Search<input id="holdingSearch" placeholder="Ticker or company"></label>
+<label>Account<select id="holdingAccountFilter"><option value="ALL">All accounts</option><option value="IG ISA">IG ISA</option><option value="Trading 212 ISA">Trading 212 ISA</option><option value="ACCOUNT REVIEW">Account review</option></select></label>
+<label>Status<select id="holdingStatusFilter"><option value="ACTIVE">Active / locked</option><option value="ALL">All records</option><option value="LOCKED">Locked only</option><option value="ARCHIVED">Sold / archived</option></select></label>
+<button class="squad-btn secondary" id="clearFilters">Clear</button>
+</div>
+<div class="player-grid" id="holdingGrid"></div>
+</section></section>
 
 <section id="pitchPanel" class="tab-panel">
-  <section class="grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Starting XI</h2><span class="muted">Largest active positions</span></div>
-      <div class="pitch" id="squadPitch"><div class="centre-circle"></div><span class="pitch-note">Formation is a presentation of the 11 largest positions by market value — not a Scouting recommendation.</span></div>
-    </article>
-    <article class="card card-pad">
-      <div class="section-head"><h2>Bench & Depth</h2><span class="muted">Remaining positions</span></div>
-      <div id="benchList" class="history-list"></div>
-    </article>
-  </section>
-</section>
+<section class="squad-command-grid two">
+<article class="squad-panel pitch-panel">
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Matchday View</span><h3>Starting XI</h3></div><span class="squad-panel-note">Largest active positions</span></div>
+<div class="pitch" id="squadPitch"><div class="centre-circle"></div><span class="pitch-note">Formation shows the 11 largest positions by market value — it is not a Scouting recommendation.</span></div>
+</article>
+<article class="squad-panel bench-panel">
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Squad Depth</span><h3>Bench & Depth</h3></div><span class="squad-panel-note">Remaining positions</span></div>
+<div id="benchList" class="history-list"></div>
+</article></section></section>
 
 <section id="healthPanel" class="tab-panel">
-  <section class="health-grid">
-    <article class="health-card" id="healthAccounts"><small>Account labels</small><strong>—</strong><span>Checking broker scope.</span></article>
-    <article class="health-card" id="healthBook"><small>Book costs</small><strong>—</strong><span>Checking account-scoped cost basis.</span></article>
-    <article class="health-card" id="healthDuplicates"><small>Multi-account tickers</small><strong>—</strong><span>Intentional duplicates are preserved.</span></article>
-    <article class="health-card" id="healthIncome"><small>Dividend income</small><strong>—</strong><span>Checking annual income coverage.</span></article>
-  </section>
-  <section class="section card card-pad">
-    <div class="section-head"><h2>Pending Transfer Registrations</h2><span class="muted">Read only</span></div>
-    <div id="registrationBridge"></div>
-    <div class="notice" style="margin-top:10px"><b>Important:</b> registration drafts do not change Squad holdings. AuroraData 2 must accept the transaction first; then Squad will update from the confirmed canonical transaction.</div>
-  </section>
+<section class="health-grid">
+<article class="health-card" id="healthAccounts"><small>Account Labels</small><strong>—</strong><span>Checking broker scope.</span></article>
+<article class="health-card" id="healthBook"><small>Book Costs</small><strong>—</strong><span>Checking account-scoped cost basis.</span></article>
+<article class="health-card" id="healthDuplicates"><small>Multi-account Tickers</small><strong>—</strong><span>Intentional duplicates are preserved.</span></article>
+<article class="health-card" id="healthIncome"><small>Dividend Income</small><strong>—</strong><span>Checking annual income coverage.</span></article>
 </section>
+<section class="squad-panel registration-bridge-panel">
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Registration Bridge</span><h3>Pending Transfer Registrations</h3></div><span class="squad-panel-note">READ ONLY</span></div>
+<div id="registrationBridge"></div>
+<div class="squad-notice"><b>Important:</b> Registration drafts do not change Squad holdings. AuroraData 2 must accept the transaction first; then Squad updates from the confirmed canonical transaction.</div>
+</section></section>
 
 <section id="migrationPanel" class="tab-panel">
-  <section class="card card-pad migration-card">
-    <div class="section-head"><h2>Aurora 1 Holdings Migration</h2><span id="migrationBadge" class="muted">SCANNING</span></div>
-    <p class="muted" id="migrationText" style="font-size:9px;line-height:1.6">Reading the old AuroraMaster Holdings table without changing Aurora 1.</p>
-    <div class="migration-summary" id="migrationSummary">
-      <div class="migration-stat"><small>Rows found</small><strong id="migRows">0</strong></div>
-      <div class="migration-stat"><small>Active</small><strong id="migActive">0</strong></div>
-      <div class="migration-stat"><small>Missing account</small><strong id="migAccounts">0</strong></div>
-      <div class="migration-stat"><small>Missing book cost</small><strong id="migBook">0</strong></div>
-      <div class="migration-stat"><small>Multi-account ticker</small><strong id="migDuplicates">0</strong></div>
-    </div>
-    <div class="action-row"><button class="btn primary" id="importLegacyHoldings" disabled>Import / Merge Aurora 1 Holdings</button><button class="btn secondary" id="rescanLegacy">Rescan</button></div>
-    <div id="migrationWarnings" style="margin-top:10px"></div>
-  </section>
-</section>
+<section class="squad-panel migration-card">
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Legacy Squad Import</span><h3>Aurora 1 Holdings Migration</h3></div><span id="migrationBadge" class="migration-badge">SCANNING</span></div>
+<p class="squad-copy" id="migrationText">Reading the old AuroraMaster Holdings table without changing Aurora 1.</p>
+<div class="migration-summary" id="migrationSummary">
+<div class="migration-stat"><small>Rows Found</small><strong id="migRows">0</strong></div>
+<div class="migration-stat"><small>Active</small><strong id="migActive">0</strong></div>
+<div class="migration-stat"><small>Missing Account</small><strong id="migAccounts">0</strong></div>
+<div class="migration-stat"><small>Missing Book Cost</small><strong id="migBook">0</strong></div>
+<div class="migration-stat"><small>Multi-account Ticker</small><strong id="migDuplicates">0</strong></div>
+</div>
+<div class="squad-actions"><button class="squad-btn primary" id="importLegacyHoldings" disabled>Import / Merge Aurora 1 Holdings</button><button class="squad-btn secondary" id="rescanLegacy">Rescan</button></div>
+<div id="migrationWarnings"></div>
+</section></section>
 
 <section id="editorPanel" class="tab-panel">
-  <section class="grid grid-2">
-    <article class="card card-pad">
-      <div class="section-head"><h2>Holding Editor</h2><span class="muted">Canonical record</span></div>
-      <input id="editHoldingId" type="hidden">
-      <div class="editor-grid">
-        <label>Ticker<input id="editTicker" placeholder="e.g. UKW"></label>
-        <label>Name<input id="editName" placeholder="Company name"></label>
-        <label>Account<select id="editAccount"><option>IG ISA</option><option>Trading 212 ISA</option><option>ACCOUNT REVIEW</option></select></label>
-        <label>Status<select id="editStatus"><option value="ACTIVE">Active</option><option value="LOCKED">Locked</option><option value="SOLD">Sold</option><option value="ARCHIVED">Archived</option></select></label>
-        <label>Shares<input id="editShares" type="number" min="0" step="0.000001"></label>
-        <label>Book cost GBP<input id="editBook" type="number" min="0" step="0.01"></label>
-        <label>Live price GBP<input id="editPrice" type="number" min="0" step="0.0001"></label>
-        <label>Annual DPS GBP<input id="editDps" type="number" min="0" step="0.000001"></label>
-        <label>Sector<input id="editSector"></label>
-        <label>Role<input id="editRole"></label>
-        <label class="wide">Lock reason<input id="editLockReason" placeholder="e.g. Tesco 2029 legacy holding"></label>
-        <label class="checkline wide"><input id="editLocked" type="checkbox"> Lock this holding from normal Transfer activity</label>
-      </div>
-      <div class="action-row"><button class="btn primary" id="saveHolding">Save Holding</button><button class="btn secondary" id="clearHolding">Clear</button></div>
-      <div id="editorStatus" class="notice" style="margin-top:10px">Squad owns holding quantities and account-scoped book costs.</div>
-    </article>
-    <article class="card card-pad">
-      <div class="section-head"><h2>Calculated Preview</h2><span class="muted">No duplicate maths elsewhere</span></div>
-      <div class="calc-list">
-        <div class="calc-row"><span>Average cost</span><strong id="previewAvg">£0.00</strong></div>
-        <div class="calc-row"><span>Market value</span><strong id="previewValue">£0.00</strong></div>
-        <div class="calc-row"><span>Profit / loss</span><strong id="previewProfit">£0.00</strong></div>
-        <div class="calc-row"><span>Annual income</span><strong id="previewIncome">£0.00</strong></div>
-        <div class="calc-row total"><span>Yield on cost</span><strong id="previewYoc">0.00%</strong></div>
-      </div>
-    </article>
-  </section>
-</section>
+<section class="squad-command-grid two">
+<article class="squad-panel editor-panel">
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Canonical Record</span><h3>Holding Editor</h3></div><span class="squad-panel-note">Squad owns this record</span></div>
+<input id="editHoldingId" type="hidden">
+<div class="editor-grid">
+<label>Ticker<input id="editTicker" placeholder="e.g. UKW"></label>
+<label>Name<input id="editName" placeholder="Company name"></label>
+<label>Account<select id="editAccount"><option>IG ISA</option><option>Trading 212 ISA</option><option>ACCOUNT REVIEW</option></select></label>
+<label>Status<select id="editStatus"><option value="ACTIVE">Active</option><option value="LOCKED">Locked</option><option value="SOLD">Sold</option><option value="ARCHIVED">Archived</option></select></label>
+<label>Shares<input id="editShares" type="number" min="0" step="0.000001"></label>
+<label>Book Cost GBP<input id="editBook" type="number" min="0" step="0.01"></label>
+<label>Live Price GBP<input id="editPrice" type="number" min="0" step="0.0001"></label>
+<label>Annual DPS GBP<input id="editDps" type="number" min="0" step="0.000001"></label>
+<label>Sector<input id="editSector"></label>
+<label>Role<input id="editRole"></label>
+<label class="wide">Lock Reason<input id="editLockReason" placeholder="e.g. Tesco 2029 legacy holding"></label>
+<label class="checkline wide"><input id="editLocked" type="checkbox"> Lock this holding from normal Transfer activity</label>
+</div>
+<div class="squad-actions"><button class="squad-btn primary" id="saveHolding">Save Holding</button><button class="squad-btn secondary" id="clearHolding">Clear</button></div>
+<div id="editorStatus" class="squad-notice">Squad owns holding quantities and account-scoped book costs.</div>
+</article>
+<article class="squad-panel preview-panel">
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Live Preview</span><h3>Calculated Holding</h3></div><span class="squad-panel-note">No duplicate maths elsewhere</span></div>
+<div class="preview-grid">
+<div><small>Average Cost</small><strong id="previewAvg">£0.00</strong></div>
+<div><small>Market Value</small><strong id="previewValue">£0.00</strong></div>
+<div><small>Profit / Loss</small><strong id="previewProfit">£0.00</strong></div>
+<div><small>Annual Income</small><strong id="previewIncome">£0.00</strong></div>
+<div class="preview-yoc"><small>Yield on Cost</small><strong id="previewYoc">0.00%</strong></div>
+</div>
+</article>
+</section></section>
 
-<p class="muted" style="font-size:8px;margin:14px 2px 0">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
-</div></main></div>
-<div id="toast" style="position:fixed;right:18px;bottom:18px;padding:11px 14px;border-radius:12px;background:#0b291f;border:1px solid rgba(69,224,166,.28);color:#c4f9e3;font-size:10px;font-weight:800;opacity:0;transition:.2s;pointer-events:none;z-index:50"></div>
+<p class="squad-last-update">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
+</main></div>
+
+<div id="auroraShellNavigationOverlay"></div>
+<aside id="auroraShellNavigation" aria-label="Aurora club navigation">
+<div class="aurora-shell-nav-head">
+<div class="aurora-shell-nav-crest"><img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt=""></div>
+<div class="aurora-shell-nav-brand"><strong>Aurora City FC</strong><span>Club Navigation 2.0</span></div>
+<button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button>
+</div>
+<div class="aurora-shell-nav-scroll">
+<div class="aurora-shell-nav-section">Club Command</div>
+<a class="aurora-shell-department-row" href="index.html" data-name="Nexus HQ 2.0"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<div class="aurora-shell-nav-section">Football Operations</div>
+<a class="aurora-shell-department-row" href="finance.html" data-name="Finance Command"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" href="scouting.html" data-name="Scouting Centre"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" href="transfer.html" data-name="Transfer Centre"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy the approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" href="registration.html" data-name="Registration"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row is-current" href="squad.html" data-name="Squad Hub"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row" href="income.html" data-name="Income Centre"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<div class="aurora-shell-nav-section">Club</div>
+<a class="aurora-shell-department-row" href="club-control.html" data-name="Club Control"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+</div></aside>
+</div>
+
+<div id="toast" class="squad-toast"></div>
 <script src="aurora-core.js?v=9"></script>
-<script src="squad.js"></script>
+<script src="squad.js?v=012"></script>
+<script src="aurora-page-shell.js?v=100"></script>
+<script src="squad-command-ui.js?v=100"></script>
 </body>
 </html>
