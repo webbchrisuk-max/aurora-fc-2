@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020612">
 <title>Aurora City FC — Finance Command</title>
-<meta name="aurora-finance-ui" content="FINANCE_UI_V1_4_COMMAND_CARDS">
+<meta name="aurora-finance-ui" content="FINANCE_UI_V1_5_STATUS_PROGRESS_CLEANUP">
 <link rel="stylesheet" href="aurora.css?v=finance-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="finance-ui.css?v=314-command-cards">
+<link rel="stylesheet" href="finance-ui.css?v=315-status-progress">
 </head>
 
 <body class="aurora-entered finance-command-page">
@@ -159,7 +159,8 @@
               <button class="mini-link-btn" data-finance-tab="paydayPanel">Edit Payday</button>
             </div>
 
-            <div class="forecast-list">
+            <div id="financeOverviewCommitmentCards" class="finance-overview-command-grid" aria-label="Automatic commitments summary"></div>
+<div class="forecast-list finance-legacy-forecast-list">
               <div><span>Expected wages</span><strong id="breakExpectedWages">£0.00</strong></div>
               <div><span>Wages received</span><strong id="breakWagesReceived">£0.00</strong></div>
               <div><span>Extra wage</span><strong class="positive" id="breakWageExtra">£0.00</strong></div>
@@ -490,6 +491,6 @@
 <script src="finance-house.js?v=042"></script>
 <script src="finance.js?v=130"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="finance-ui.js?v=314-command-cards"></script>
+<script src="finance-ui.js?v=315-status-progress"></script>
 </body>
 </html>

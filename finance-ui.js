@@ -965,8 +965,21 @@ function renderOverview(s,plan,p,runway){
   setText('fv2HoldingProjected',money(runway.holding.remaining));
   setText('fv2CurrentOut',money(runway.current.total));
   setText('fv2CurrentProjected',money(runway.current.remaining));
-  setText('fv2CoveredStatus',runway.allCovered?'COVERED':'CHECK');
-  setText('fv2CoveredMeta',runway.allCovered?'Every known funding source is sufficient':'One or more funding sources need attention');
+  const protectionTone=runway.allCovered?'good':attentionBlocks?'block':'warn';
+  const protectionLabel=runway.allCovered?'COVERED':attentionBlocks?'NOT COVERED':'TOP-UP NEEDED';
+  setText('fv2CoveredStatus',protectionLabel);
+  setText('fv2CoveredMeta',
+    runway.allCovered
+      ?'Every known funding source is sufficient'
+      :attentionBlocks
+        ?'One or more funding sources are short'
+        :'Funding is close but needs topping up before payday'
+  );
+  const protectionStatus=document.getElementById('fv2CoveredStatus');
+  if(protectionStatus){
+    protectionStatus.classList.remove('good','warn','block');
+    protectionStatus.classList.add(protectionTone);
+  }
 
   const totals=sourceTotals(runway);
   setText('fv21OtherPotsOut',money(totals.other));
@@ -988,6 +1001,7 @@ function renderOverview(s,plan,p,runway){
 
 function renderPaydaySummary(s,plan,p,runway){
   const c=p.c||{},auto=c.auto||{};
+  const attentionBlocks=runway.attention.filter(x=>x.tone==='block').length;
   setText('fv2PayTotalCash',money(c.totalCash));
   setText('fv2PayCommitments',money(c.commitments));
   setText('fv2PayProtected',money(plan.protectedCash));
@@ -998,7 +1012,12 @@ function renderPaydaySummary(s,plan,p,runway){
   setText('fv2PayHoldingMove',money(p.holdingContribution));
   setText('fv2PayGoalPots',money(p.goalPotsTotal));
   setText('fv2PayBills',money(auto.billsDue));
-  setText('fv2PayCoverage',runway.allCovered?'COVERED':'CHECK');
+  setText('fv2PayCoverage',runway.allCovered?'COVERED':attentionBlocks?'NOT COVERED':'TOP-UP NEEDED');
+  const payCoverage=document.getElementById('fv2PayCoverage');
+  if(payCoverage){
+    payCoverage.classList.remove('good','warn','block');
+    payCoverage.classList.add(runway.allCovered?'good':attentionBlocks?'block':'warn');
+  }
   setBadge('fv2PaydayStatus',
     num(plan.releaseAmount)>num(c.safeSurplus)+.005?'BLOCKED':runway.allCovered?'FINANCE READY':'CHECK PLAN',
     num(plan.releaseAmount)>num(c.safeSurplus)+.005?'block':runway.allCovered?'good':'warn'
@@ -1267,9 +1286,10 @@ function financeUiPotProgress(s,pv){
       :Math.min(gap,Math.max(0,num(p.fundingPerPayday)));
     const status=potStatus(p,holdingPot(s),pv);
     const deadline=p.deadline?humanDate(p.deadline):'No deadline';
+    const progressTone=pct>=99.5?'funded':pct>=60?'partial':'underfunded';
 
     return `
-      <article class="finance-progress-pot ${holding?'holding':''}">
+      <article class="finance-progress-pot ${holding?'holding':''} ${progressTone}">
         <div class="finance-progress-pot-head">
           <div>
             <small>${holding?'HOLDING POT • PROTECTED CASH':`P${num(p.priority)||2} • ${deadline}`}</small>
@@ -1281,7 +1301,7 @@ function financeUiPotProgress(s,pv){
           <strong>${money(balance)}</strong>
           <span>${target>0?`${money(target)} target`:'No fixed target'}</span>
         </div>
-        <div class="finance-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}">
+        <div class="finance-progress-track ${progressTone}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}">
           <i style="width:${pct.toFixed(1)}%"></i>
         </div>
         <div class="finance-progress-caption">
@@ -1299,8 +1319,11 @@ function financeUiPotProgress(s,pv){
 
 
 function financeUiAutomaticCommitments(s,pv){
-  const host=document.getElementById('financeAutoCommitmentCards');
-  if(!host)return;
+  const hosts=[
+    document.getElementById('financeAutoCommitmentCards'),
+    document.getElementById('financeOverviewCommitmentCards')
+  ].filter(Boolean);
+  if(!hosts.length)return;
 
   const p=s.finance?.plan||{};
   const auto=pv?.c?.auto||{};
@@ -1352,7 +1375,7 @@ function financeUiAutomaticCommitments(s,pv){
     }
   ];
 
-  host.innerHTML=cards.map(c=>`
+  const markup=cards.map(c=>`
     <article class="finance-auto-command-card ${c.tone}">
       <div class="finance-auto-command-top">
         <i>${esc(c.icon)}</i>
@@ -1363,6 +1386,8 @@ function financeUiAutomaticCommitments(s,pv){
       <p>${esc(c.note)}</p>
     </article>
   `).join('');
+
+  hosts.forEach(host=>host.innerHTML=markup);
 }
 
 function financeUiProtectionFlow(s,pv){
@@ -1540,6 +1565,37 @@ function markPlanInputs(){
     });
 }
 
+
+function installAdvancedFundingCollapse(){
+  const panel=document.querySelector('#paydayPanel .funding-panel');
+  if(!panel || panel.dataset.financeAdvancedInstalled==='1')return;
+
+  const head=panel.querySelector('.finance-panel-head');
+  if(!head)return;
+
+  const children=[...panel.children].filter(el=>el!==head);
+  const wrap=document.createElement('div');
+  wrap.className='finance-advanced-funding-content';
+  wrap.hidden=true;
+  children.forEach(el=>wrap.appendChild(el));
+  panel.appendChild(wrap);
+
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='mini-link-btn finance-advanced-toggle';
+  button.textContent='Show advanced rules';
+  button.setAttribute('aria-expanded','false');
+  button.addEventListener('click',()=>{
+    const open=wrap.hidden;
+    wrap.hidden=!open;
+    button.textContent=open?'Hide advanced rules':'Show advanced rules';
+    button.setAttribute('aria-expanded',open?'true':'false');
+  });
+
+  head.appendChild(button);
+  panel.dataset.financeAdvancedInstalled='1';
+}
+
 function start(){
   if(!A()?.core?.read){
     setTimeout(start,200);
@@ -1548,6 +1604,7 @@ function start(){
   markPlanInputs();
   installCompactEditors();
   installNativeListObserver();
+  installAdvancedFundingCollapse();
   scheduleRender(0);
   setTimeout(()=>{
     renderAll();
@@ -1568,4 +1625,4 @@ if(document.readyState==='loading'){
 })(window);
 
 
-window.AuroraFinanceUI = Object.freeze({version:'1.4',release:'FINANCE_UI_V1_4_COMMAND_CARDS'});
+window.AuroraFinanceUI = Object.freeze({version:'1.5',release:'FINANCE_UI_V1_5_STATUS_PROGRESS_CLEANUP'});

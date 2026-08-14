@@ -2978,3 +2978,147 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* =========================================================
+   FINANCE UI v1.5 — STATUS / PROGRESS / CLEANUP
+   ========================================================= */
+
+/* Finance protection state: semantic traffic-light colours. */
+#fv2CoveredStatus.good,
+#fv2PayCoverage.good{
+  color:#6ee7a2!important;
+  text-shadow:0 0 16px rgba(52,211,153,.14);
+}
+#fv2CoveredStatus.warn,
+#fv2PayCoverage.warn{
+  color:#f8d36a!important;
+  text-shadow:0 0 16px rgba(251,191,36,.12);
+}
+#fv2CoveredStatus.block,
+#fv2PayCoverage.block{
+  color:#fb8b9f!important;
+  text-shadow:0 0 16px rgba(251,113,133,.12);
+}
+
+/* Pot progress now changes colour as funding improves.
+   <60% red -> 60–99% yellow -> funded green. */
+.finance-progress-pot.underfunded{
+  border-color:rgba(251,113,133,.22)!important;
+}
+.finance-progress-pot.partial{
+  border-color:rgba(251,191,36,.22)!important;
+}
+.finance-progress-pot.funded{
+  border-color:rgba(52,211,153,.23)!important;
+}
+.finance-progress-track.underfunded i{
+  background:linear-gradient(90deg,#be123c,#fb7185,#fda4af)!important;
+  box-shadow:0 0 16px rgba(251,113,133,.15)!important;
+}
+.finance-progress-track.partial i{
+  background:linear-gradient(90deg,#b45309,#fbbf24,#fde68a)!important;
+  box-shadow:0 0 16px rgba(251,191,36,.15)!important;
+}
+.finance-progress-track.funded i{
+  background:linear-gradient(90deg,#059669,#34d399,#86efac)!important;
+  box-shadow:0 0 16px rgba(52,211,153,.16)!important;
+}
+.finance-progress-pot.underfunded .finance-progress-caption b{color:#fda4af!important}
+.finance-progress-pot.partial .finance-progress-caption b{color:#fde68a!important}
+.finance-progress-pot.funded .finance-progress-caption b{color:#86efac!important}
+
+/* The Holding Pot uses the same semantic progress colours instead of always gold. */
+.finance-progress-pot.holding.underfunded .finance-progress-track i{
+  background:linear-gradient(90deg,#be123c,#fb7185,#fda4af)!important;
+}
+.finance-progress-pot.holding.partial .finance-progress-track i{
+  background:linear-gradient(90deg,#b45309,#fbbf24,#fde68a)!important;
+}
+.finance-progress-pot.holding.funded .finance-progress-track i{
+  background:linear-gradient(90deg,#059669,#34d399,#86efac)!important;
+}
+
+/* Slightly smaller top KPI figures so labels such as "No active route" fit. */
+.fv2-command-card strong{
+  font-size:clamp(24px,2.25vw,31px)!important;
+}
+.fv2-command-card.route strong{
+  font-size:clamp(19px,1.8vw,24px)!important;
+  line-height:1.05!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  word-break:normal;
+}
+.fv2-command-card.route span{
+  white-space:normal!important;
+}
+
+/* Command Overview uses the same clean Automatic Commitments cards;
+   the old verbose forecast list stays in the DOM for compatibility only. */
+.finance-legacy-forecast-list{
+  display:none!important;
+}
+.finance-overview-command-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.finance-overview-command-grid .finance-auto-command-card{
+  min-height:145px;
+  padding:15px;
+}
+.finance-overview-command-grid .finance-auto-command-card:nth-child(5){
+  grid-column:1/-1;
+}
+.finance-overview-command-grid .finance-auto-command-top i{
+  width:38px;
+  height:38px;
+  font-size:17px;
+}
+.finance-overview-command-grid .finance-auto-command-card h4{
+  margin-top:12px;
+  font-size:14px;
+}
+.finance-overview-command-grid .finance-auto-command-card>strong{
+  font-size:24px;
+}
+.finance-overview-command-grid .finance-auto-command-card p{
+  font-size:9px;
+}
+
+/* The detailed 13-pay / dynamic-cycle diagnostics are no longer always visible.
+   They remain available only under one Advanced Funding Rules control. */
+.finance-advanced-funding-content[hidden]{
+  display:none!important;
+}
+.finance-advanced-toggle{
+  margin-left:auto;
+}
+#paydayPanel .funding-panel{
+  min-height:0!important;
+}
+#paydayPanel .funding-panel>.finance-panel-head{
+  margin-bottom:0!important;
+}
+#paydayPanel .funding-panel .finance-panel-head h3:after{
+  content:" • Advanced";
+  color:#70877b;
+  font-size:.58em;
+  font-weight:800;
+}
+.finance-advanced-funding-content{
+  margin-top:16px;
+  padding-top:15px;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+
+@media(max-width:760px){
+  .finance-overview-command-grid{
+    grid-template-columns:1fr;
+  }
+  .finance-overview-command-grid .finance-auto-command-card:nth-child(5){
+    grid-column:auto;
+  }
+}
