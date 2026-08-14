@@ -30,7 +30,6 @@
   ];
   let progress=0,entering=false,bootTimer=null;
 
-
   function createParticles(){
     particles.innerHTML='';
     const count=innerWidth<700?18:34;
@@ -120,5 +119,13 @@
   runBoot();
   updateClock();
   setInterval(updateClock,15000);
+
+  /* AuroraData 2 Canonical Holdings Sync v1 — Nexus sync */
+  if(!document.querySelector('script[data-aurora-holdings-sync]')){
+    const script=document.createElement('script');
+    script.src='aurora-holdings-sync.js?v=100-canonical-holdings';
+    script.dataset.auroraHoldingsSync='1';
+    document.head.appendChild(script);
+  }
 }
 })();

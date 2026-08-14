@@ -1,4 +1,3 @@
-
 (function(){
 'use strict';
 const menuButton=document.getElementById('auroraShellMenuButton');
@@ -17,4 +16,12 @@ navOverlay?.addEventListener('click',e=>{e.preventDefault();closeNav()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav()});
 updateClock();setInterval(updateClock,15000);
 window.AuroraShell={openNavigation:openNav,closeNavigation:closeNav};
+
+/* AuroraData 2 Canonical Holdings Sync v1 — shared department sync */
+if(!document.querySelector('script[data-aurora-holdings-sync]')){
+  const script=document.createElement('script');
+  script.src='aurora-holdings-sync.js?v=100-canonical-holdings';
+  script.dataset.auroraHoldingsSync='1';
+  document.head.appendChild(script);
+}
 })();
