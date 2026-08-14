@@ -1,0 +1,14 @@
+{
+  "release": "FINANCE_UI_V1_3_READABILITY",
+  "date": "2026-08-14",
+  "reference": "Previous Finance Department screenshot supplied by user",
+  "changes": [
+    "larger typography",
+    "larger touch targets",
+    "automatic commitments colour identity",
+    "stronger command-card hierarchy",
+    "larger pot progress",
+    "larger next-five lists"
+  ],
+  "engineChanges": false
+}

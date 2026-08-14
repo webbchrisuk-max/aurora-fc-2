@@ -1494,4 +1494,4 @@ if(document.readyState==='loading'){
 })(window);
 
 
-window.AuroraFinanceUI = Object.freeze({version:'1.2',release:'FINANCE_UI_V1_2_OVERVIEW_FIX'});
+window.AuroraFinanceUI = Object.freeze({version:'1.3',release:'FINANCE_UI_V1_3_READABILITY'});
