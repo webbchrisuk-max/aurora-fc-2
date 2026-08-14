@@ -245,30 +245,74 @@ function renderLineChart(s,m){
 function renderMovers(){
   const market=currentMarket();
   const status=$('hq3MarketStatus');
-  if(!market||market.status!=='READY'||!arr(market.movers).length){
-    if(status){status.textContent='ENGINE PENDING';status.className='hq4-status-chip'}
-    set('hq3BestTicker','—');set('hq3BestPct','—');set('hq3BestImpact','Install / run Nexus Dashboard Engine');
-    set('hq3WorstTicker','—');set('hq3WorstPct','—');set('hq3WorstImpact','No daily market movement available yet');
-    const host=$('hq3MoversList');if(host)host.innerHTML='<div class="hq3-chart-empty" style="position:static;min-height:90px">Today’s movers require previous-close data from the Nexus Dashboard Engine.</div>';
+
+  if(!market||market.status!=='READY'){
+    if(status){status.textContent='PENDING';status.className='hq4-status-chip'}
+    set('hq43PulseMove','—');
+    set('hq43PulsePct','—');
+    set('hq43PulseTone','Daily market engine is waiting for live previous-close data.');
+    set('hq43Advancers','—');
+    set('hq43Decliners','—');
+    set('hq43Flat','—');
+    set('hq43Breadth','—');
+    set('hq43PositiveContribution','Positive contribution —');
+    set('hq43NegativeContribution','Negative contribution —');
+    set('hq43Coverage','Coverage —');
+    set('hq43BreadthMeta','Advancers vs decliners');
+    set('hq43BiggestLift','—');
+    set('hq43BiggestDrag','—');
+    const bar=$('hq43BreadthBar'); if(bar)bar.style.width='50%';
     return;
   }
-  if(status){status.textContent='LIVE';status.className='hq4-status-chip'}
-  const best=market.best||arr(market.movers)[0],worst=market.worst||arr(market.movers).slice(-1)[0];
-  set('hq3BestTicker',best?.ticker||'—');set('hq3BestPct',pct(best?.dayChangePct));set('hq3BestImpact',`${best?.dayChangeGbp>=0?'+':''}${money(best?.dayChangeGbp)} contribution`);
-  set('hq3WorstTicker',worst?.ticker||'—');set('hq3WorstPct',pct(worst?.dayChangePct));set('hq3WorstImpact',`${worst?.dayChangeGbp>=0?'+':''}${money(worst?.dayChangeGbp)} contribution`);
-  const list=[...arr(market.movers)].sort((a,b)=>num(b.dayChangePct)-num(a.dayChangePct));
-  const picks=[...list.slice(0,3),...list.slice(-3).reverse()].filter((x,i,a)=>a.findIndex(y=>y.ticker===x.ticker)===i);
-  const host=$('hq3MoversList');
-  if(host)host.innerHTML=picks.map(x=>`
-    <div class="row ${num(x.dayChangePct)>=0?'up':'down'}">
-      <strong>${esc(x.ticker)}</strong>
-      <span>${esc(x.name||x.accounts?.join(' + ')||'Holding')}</span>
-      <b>${pct(x.dayChangePct)}</b>
-      <em>${x.dayChangeGbp>=0?'+':''}${money(x.dayChangeGbp)}</em>
-    </div>`).join('');
+
+  const movers=arr(market.movers).filter(x=>Number.isFinite(Number(x.dayChangePct)));
+  const adv=movers.filter(x=>num(x.dayChangePct)>0);
+  const dec=movers.filter(x=>num(x.dayChangePct)<0);
+  const flat=movers.filter(x=>num(x.dayChangePct)===0);
+
+  const positive=adv.reduce((sum,x)=>sum+Math.max(0,num(x.dayChangeGbp)),0);
+  const negative=dec.reduce((sum,x)=>sum+Math.min(0,num(x.dayChangeGbp)),0);
+  const totalMove=movers.reduce((sum,x)=>sum+num(x.dayChangeGbp),0);
+
+  const state=A()?.core?.read?.()||{};
+  const hs=activeHoldings(state);
+  const totalValue=hs.reduce((sum,h)=>sum+num(h.marketValueGbp),0);
+  const pct=totalValue?totalMove/(totalValue-totalMove)*100:0;
+
+  const breadthDen=Math.max(1,adv.length+dec.length);
+  const breadthPct=(adv.length/breadthDen)*100;
+
+  let tone='BALANCED';
+  if(totalMove>0 && adv.length>=dec.length) tone='POSITIVE SESSION';
+  else if(totalMove<0 && dec.length>adv.length) tone='PRESSURE SESSION';
+  else if(Math.abs(totalMove)<1) tone='FLAT SESSION';
+
+  if(status){
+    status.textContent='LIVE';
+    status.className='hq4-status-chip';
+  }
+
+  set('hq43PulseMove',`${totalMove>=0?'+':''}${money(totalMove)}`);
+  set('hq43PulsePct',`${pct>=0?'+':''}${pct.toFixed(2)}%`);
+  set('hq43PulseTone',`${tone} • ${adv.length} up / ${dec.length} down`);
+  set('hq43Advancers',String(adv.length));
+  set('hq43Decliners',String(dec.length));
+  set('hq43Flat',String(flat.length));
+  set('hq43Breadth',`${breadthPct.toFixed(0)}%`);
+  set('hq43PositiveContribution',`+${money(positive)} contribution`);
+  set('hq43NegativeContribution',`${money(negative)} contribution`);
+  set('hq43Coverage',`${movers.length} live tickers`);
+  set('hq43BreadthMeta',`${adv.length} advancers vs ${dec.length} decliners`);
+
+  const bar=$('hq43BreadthBar');
+  if(bar)bar.style.width=`${Math.max(0,Math.min(100,breadthPct))}%`;
+
+  const lift=[...movers].sort((a,b)=>num(b.dayChangeGbp)-num(a.dayChangeGbp))[0];
+  const drag=[...movers].sort((a,b)=>num(a.dayChangeGbp)-num(b.dayChangeGbp))[0];
+
+  set('hq43BiggestLift',lift?`${tk(lift.ticker)} • ${num(lift.dayChangeGbp)>=0?'+':''}${money(num(lift.dayChangeGbp))}`:'—');
+  set('hq43BiggestDrag',drag?`${tk(drag.ticker)} • ${money(num(drag.dayChangeGbp))}`:'—');
 }
-
-
 function marketMoveForTicker(ticker){
   const wanted=tk(ticker);
   return arr(currentMarket()?.movers).find(x=>tk(x.ticker)===wanted)||null;

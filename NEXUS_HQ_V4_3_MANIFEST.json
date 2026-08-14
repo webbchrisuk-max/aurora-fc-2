@@ -1,0 +1,20 @@
+{
+  "release": "NEXUS_HQ_V4_3_MARKET_PULSE",
+  "date": "2026-08-14",
+  "change": "Replaced duplicate Best & Worst Today board with Portfolio Pulse",
+  "portfolioPulse": [
+    "today portfolio GBP move",
+    "today portfolio percentage move",
+    "advancers",
+    "decliners",
+    "unchanged",
+    "market breadth",
+    "positive GBP contribution",
+    "negative GBP contribution",
+    "largest GBP lift",
+    "largest GBP drag"
+  ],
+  "kept": "Top 5 Today / Worst 5 Today Daily Squad Form",
+  "backendChanges": false,
+  "calculationOwnership": "Read-only from existing Nexus market feed and canonical Squad values"
+}

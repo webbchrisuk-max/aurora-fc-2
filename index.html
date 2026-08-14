@@ -7,11 +7,11 @@
 <meta content="yes" name="mobile-web-app-capable"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<title>Aurora City FC — Nexus HQ 4.2</title>
-<meta name="aurora-nexus-ui" content="NEXUS_HQ_V4_2_DAILY_FORM">
+<title>Aurora City FC — Nexus HQ 4.3</title>
+<meta name="aurora-nexus-ui" content="NEXUS_HQ_V4_3_MARKET_PULSE">
 <link href="aurora-shell.css?v=legacy-shell-211" rel="stylesheet"/>
 <link href="nexus-hq.css?v=nexus-1100" rel="stylesheet"/>
-<link href="nexus-hq-v4.css?v=420-daily-form" rel="stylesheet"/>
+<link href="nexus-hq-v4.css?v=430-market-pulse" rel="stylesheet"/>
 <meta content="legacy-shell-v2.1.2-session-login-20260814" name="aurora-shell-build"/>
 <script>
 (function(){
@@ -57,7 +57,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 <div class="panel-header"><div><p class="access-kicker">Club Command Access</p><p class="panel-code">ACFC // HQ // 2.0</p></div><div class="live-badge"><span class="online-dot"></span>Systems Live</div></div>
 <div class="manager-profile"><div class="manager-avatar">WB</div><div><p class="manager-label">Authenticated Manager</p><p class="manager-name">Webby</p><p class="profile-status">Aurora 2.0 clearance granted</p></div></div>
 <div class="system-grid">
-<div class="system-tile"><small>Nexus HQ 4.2</small><strong>Ready</strong></div>
+<div class="system-tile"><small>Nexus HQ 4.3</small><strong>Ready</strong></div>
 <div class="system-tile"><small>Transfer Centre</small><strong>Connected</strong></div>
 <div class="system-tile"><small>Squad Intelligence</small><strong>Ready</strong></div>
 <div class="system-tile"><small>AuroraData 2</small><strong>Live</strong></div>
@@ -69,7 +69,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 </section>
 <section class="entry-screen transition-screen" id="transitionScreen">
 <div class="door door-left"></div><div class="door door-right"></div>
-<div class="transition-copy"><img alt="" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/><h2>Welcome, Manager</h2><p>Opening Nexus HQ 4.2</p></div>
+<div class="transition-copy"><img alt="" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/><h2>Welcome, Manager</h2><p>Opening Nexus HQ 4.3</p></div>
 </section>
 </div>
 <div class="aurora-game-shell" id="gameShell">
@@ -98,7 +98,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
       <span class="hq4-chip" id="hq3Strategy">STRATEGY • —</span>
       <span class="hq4-chip" id="hq3DataStamp">DATA • —</span>
     </div>
-    <span class="hq4-eyebrow">Aurora City FC • Nexus HQ 4.2</span>
+    <span class="hq4-eyebrow">Aurora City FC • Nexus HQ 4.3</span>
     <h2>Club<br><span>Headquarters</span></h2>
     <p id="hq3Briefing">Loading the club briefing…</p>
 
@@ -182,31 +182,45 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
     </div>
   </article>
 
-  <article class="hq4-panel hq4-movers-panel">
+  <article class="hq4-panel hq4-movers-panel hq43-market-pulse-panel">
     <div class="hq4-panel-head">
       <div>
-        <small>DAILY MARKET BOARD</small>
-        <h3>Best & Worst Today</h3>
+        <small>MARKET COMMAND</small>
+        <h3>Portfolio Pulse</h3>
+        <p>A manager-level view of the whole portfolio session — without duplicating the Top 5 / Worst 5 tables below.</p>
       </div>
       <span class="hq4-status-chip" id="hq3MarketStatus">CHECKING</span>
     </div>
 
-    <div class="hq4-mover-pair">
-      <div class="hq4-mover best">
-        <small>BEST TODAY</small>
-        <strong id="hq3BestTicker">—</strong>
-        <b id="hq3BestPct">—</b>
-        <span id="hq3BestImpact">Daily market data pending</span>
+    <div class="hq43-pulse-hero">
+      <small>TODAY'S PORTFOLIO MOVE</small>
+      <strong id="hq43PulseMove">—</strong>
+      <b id="hq43PulsePct">—</b>
+      <span id="hq43PulseTone">Waiting for live market breadth…</span>
+    </div>
+
+    <div class="hq43-pulse-grid">
+      <div class="up"><small>Advancers</small><strong id="hq43Advancers">—</strong><span id="hq43PositiveContribution">Positive contribution —</span></div>
+      <div class="down"><small>Decliners</small><strong id="hq43Decliners">—</strong><span id="hq43NegativeContribution">Negative contribution —</span></div>
+      <div class="flat"><small>Unchanged</small><strong id="hq43Flat">—</strong><span id="hq43Coverage">Coverage —</span></div>
+      <div class="breadth"><small>Market Breadth</small><strong id="hq43Breadth">—</strong><span id="hq43BreadthMeta">Advancers vs decliners</span></div>
+    </div>
+
+    <div class="hq43-breadth-track" aria-label="Portfolio breadth">
+      <i id="hq43BreadthBar" style="width:50%"></i>
+    </div>
+
+    <div class="hq43-pulse-footer">
+      <div>
+        <small>Largest £ Lift</small>
+        <strong id="hq43BiggestLift">—</strong>
       </div>
-      <div class="hq4-mover worst">
-        <small>WORST TODAY</small>
-        <strong id="hq3WorstTicker">—</strong>
-        <b id="hq3WorstPct">—</b>
-        <span id="hq3WorstImpact">Daily market data pending</span>
+      <div>
+        <small>Largest £ Drag</small>
+        <strong id="hq43BiggestDrag">—</strong>
       </div>
     </div>
 
-    <div id="hq3MoversList" class="hq3-movers-list"></div>
     <a class="hq4-open-link" href="squad.html">Open Squad Hub →</a>
   </article>
 </section>
@@ -456,7 +470,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 </div>
 <div class="aurora-shell-nav-scroll">
 <div class="aurora-shell-nav-section">Club Command</div>
-<a class="aurora-shell-department-row is-current" data-name="Nexus HQ 4.2" href="index.html"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row is-current" data-name="Nexus HQ 4.3" href="index.html"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
 <div class="aurora-shell-nav-section">Football Operations</div>
 <a class="aurora-shell-department-row" data-name="Finance Command" href="finance.html"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
 <a class="aurora-shell-department-row" data-name="Scouting Centre" href="scouting.html"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
@@ -468,7 +482,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 <a class="aurora-shell-department-row" data-name="Club Control" href="club-control.html"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
 </div>
 </aside>
-<div class="preview-flag">Aurora 2.0 • Nexus HQ 4.2</div>
+<div class="preview-flag">Aurora 2.0 • Nexus HQ 4.3</div>
 </div>
-<script src="aurora-core.js?v=10-stable-core"></script><script src="aurora-data2-client.js?v=011-income-connection"></script><script src="aurora-shell.js?v=220-stable-core"></script><script src="nexus-hq-v4.js?v=420-daily-form"></script></body>
+<script src="aurora-core.js?v=10-stable-core"></script><script src="aurora-data2-client.js?v=011-income-connection"></script><script src="aurora-shell.js?v=220-stable-core"></script><script src="nexus-hq-v4.js?v=430-market-pulse"></script></body>
 </html>

@@ -1873,3 +1873,168 @@
 .hq41-sort,.hq41-portfolio-summary,.hq41-holding-grid{display:none}
 @media(max-width:1180px){.hq42-form-columns{grid-template-columns:1fr}}
 @media(max-width:720px){.hq42-form-row{grid-template-columns:30px minmax(0,1fr) minmax(86px,.7fr) 16px}.hq42-form-value,.hq42-form-income{display:none}.hq42-form-note{display:grid}}
+
+
+/* =========================================================
+   NEXUS HQ 4.3 — PORTFOLIO PULSE
+   Replaces duplicate Best/Worst Today market board.
+   ========================================================= */
+
+.hq43-market-pulse-panel{
+  border-color:rgba(88,244,255,.15);
+  background:
+    radial-gradient(circle at 90% 0%,rgba(88,244,255,.07),transparent 34%),
+    linear-gradient(145deg,rgba(5,17,30,.95),rgba(2,8,18,.97));
+}
+
+.hq43-pulse-hero{
+  min-height:155px;
+  display:grid;
+  align-content:center;
+  padding:18px;
+  border:1px solid rgba(88,244,255,.10);
+  border-radius:15px;
+  background:
+    radial-gradient(circle at 88% 0%,rgba(88,244,255,.08),transparent 35%),
+    rgba(2,8,18,.34);
+}
+
+.hq43-pulse-hero small{
+  color:#6f8798;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.09em;
+}
+
+.hq43-pulse-hero strong{
+  display:block;
+  margin-top:7px;
+  color:#f2f9fd;
+  font-size:39px;
+  font-weight:1000;
+  letter-spacing:-.045em;
+}
+
+.hq43-pulse-hero b{
+  display:block;
+  margin-top:4px;
+  color:#9fdbe5;
+  font-size:20px;
+}
+
+.hq43-pulse-hero span{
+  display:block;
+  margin-top:8px;
+  color:#7890a0;
+  font-size:10px;
+}
+
+.hq43-pulse-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+
+.hq43-pulse-grid>div{
+  min-height:92px;
+  padding:13px;
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:11px;
+  background:rgba(2,8,18,.30);
+}
+
+.hq43-pulse-grid small{
+  display:block;
+  color:#6f8495;
+  font-size:8px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+
+.hq43-pulse-grid strong{
+  display:block;
+  margin-top:6px;
+  color:#edf5fb;
+  font-size:21px;
+}
+
+.hq43-pulse-grid span{
+  display:block;
+  margin-top:5px;
+  color:#728798;
+  font-size:8px;
+}
+
+.hq43-pulse-grid .up{
+  border-color:rgba(89,255,154,.11);
+  background:rgba(6,78,59,.055);
+}
+.hq43-pulse-grid .up strong{color:#aaf7c4}
+
+.hq43-pulse-grid .down{
+  border-color:rgba(255,111,142,.12);
+  background:rgba(136,19,55,.055);
+}
+.hq43-pulse-grid .down strong{color:#ffb4c2}
+
+.hq43-pulse-grid .breadth{
+  border-color:rgba(255,209,94,.10);
+  background:rgba(120,53,15,.045);
+}
+.hq43-pulse-grid .breadth strong{color:#ffe7a5}
+
+.hq43-breadth-track{
+  height:11px;
+  margin-top:10px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.045);
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+}
+
+.hq43-breadth-track i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#ff6f8e 0%,#ffd15e 50%,#59ff9a 100%);
+  transition:width .2s ease;
+}
+
+.hq43-pulse-footer{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+
+.hq43-pulse-footer>div{
+  min-height:73px;
+  padding:11px 12px;
+  border:1px solid rgba(125,211,252,.06);
+  border-radius:10px;
+  background:rgba(2,8,18,.28);
+}
+
+.hq43-pulse-footer small{
+  display:block;
+  color:#6f8394;
+  font-size:8px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+
+.hq43-pulse-footer strong{
+  display:block;
+  margin-top:6px;
+  overflow:hidden;
+  color:#dfeaf1;
+  font-size:13px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+@media(max-width:760px){
+  .hq43-pulse-grid,
+  .hq43-pulse-footer{grid-template-columns:1fr}
+}
