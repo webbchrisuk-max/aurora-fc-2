@@ -1,0 +1,27 @@
+{
+  "release": "INCOME_UI_V1_PROMOTION_COMMAND",
+  "date": "2026-08-14",
+  "baseline": {
+    "income.html": "9c3b1e3f8dcc66520c3dad87b917462c726b0940",
+    "income-command.css": "a6d52ef97d9295982aa9f5503e933b139d1eb0b4",
+    "income-command-ui.js": "bbff185cfbeacc86c0a95fcd83efc82abbd2f44e",
+    "aurora-operations-upgrade.css": "ad141c0f8f9ab4d1fb10bee352880f4d7839be1c"
+  },
+  "changedFiles": [
+    "income.html",
+    "income-ui.css",
+    "income-ui.js"
+  ],
+  "features": [
+    "\u00a3625/month Income Promotion Race",
+    "promotion milestones \u00a3350/\u00a3425/\u00a3500/\u00a3625",
+    "separate Transfer-route projection",
+    "Dividend Matchday / next payment command",
+    "larger account income, first-team and calendar presentation",
+    "Broker Dividend Cash styled as Dividend Treasury",
+    "technical engine/settings visually secondary"
+  ],
+  "businessEnginesChanged": false,
+  "backendChanged": false,
+  "ownership": "Income engine remains dividend truth; UI mirrors published Income outputs."
+}

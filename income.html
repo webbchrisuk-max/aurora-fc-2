@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0714">
-<title>Aurora City FC — Income Centre</title>
+<title>Aurora City FC — Income Command</title>
+<meta name="aurora-income-ui" content="INCOME_UI_V1_PROMOTION_COMMAND">
 <link rel="stylesheet" href="aurora.css?v=income-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="income-command.css?v=income-command-100">
-<link rel="stylesheet" href="aurora-operations-upgrade.css?v=100">
+<link rel="stylesheet" href="income-ui.css?v=300-promotion-command">
 </head>
 
 <body class="aurora-entered income-command-page">
@@ -48,9 +48,9 @@
       <span class="income-version-pill">INCOME ENGINE v0.3.0</span>
     </div>
 
-    <span class="income-eyebrow">Aurora City FC • Dividend Department</span>
+    <span class="income-eyebrow">Aurora City FC • Dividend Department • Income Progression</span>
     <h2>Income<br><span>Centre</span></h2>
-    <p>Squad owns the shares. Income turns those holdings into one canonical forward-income picture, manages the dividend runway and publishes the finished result back to Nexus.</p>
+    <p>Every confirmed Squad holding feeds one dividend picture here. Track the road to £625 per month, upcoming payments, broker dividend cash and the income power of the portfolio.</p>
 
     <div class="income-hero-actions">
       <button class="income-btn primary" id="recalculateIncome">Recalculate Income</button>
@@ -76,10 +76,76 @@
   <article class="income-score cyan"><small>Next Dividend</small><strong id="kNext">—</strong><span id="kNextMeta">Calendar needed</span></article>
 </section>
 
+<section class="income3-command" id="incomePromotionSection">
+  <article class="income3-promotion-card">
+    <div class="income3-panel-head">
+      <div>
+        <small>INCOME PROMOTION RACE</small>
+        <h3>Road to £625 per month</h3>
+        <p>Canonical forward dividend income from the current Squad. Transfer projections are shown separately and never double-count confirmed income.</p>
+      </div>
+      <span id="income3PromotionStatus">IN PROGRESS</span>
+    </div>
+
+    <div class="income3-promotion-layout">
+      <div class="income3-ring" id="income3Ring">
+        <div>
+          <small>CURRENT MONTHLY</small>
+          <strong id="income3Monthly">£0.00</strong>
+          <span id="income3Percent">0.0% of target</span>
+        </div>
+      </div>
+
+      <div class="income3-promotion-detail">
+        <div class="income3-race-kpis">
+          <div><small>Gap to Promotion</small><strong id="income3Gap">£625.00</strong><span>per month remaining</span></div>
+          <div><small>Annual Run Rate</small><strong id="income3Annual">£0.00</strong><span>canonical forward income</span></div>
+          <div><small>Transfer Projection</small><strong id="income3Projected">—</strong><span id="income3ProjectedMeta">No active route uplift</span></div>
+        </div>
+        <div class="income3-progress-track"><i id="income3ProgressBar"></i></div>
+        <p id="income3PromotionNote">Income Centre is calculating the promotion race.</p>
+      </div>
+    </div>
+
+    <div class="income3-milestones" id="income3Milestones">
+      <div data-target="350"><small>DIVISION 1</small><strong>£350/m</strong><span>Foundation income</span></div>
+      <div data-target="425"><small>DIVISION 2</small><strong>£425/m</strong><span>Income strength</span></div>
+      <div data-target="500"><small>DIVISION 3</small><strong>£500/m</strong><span>Promotion push</span></div>
+      <div data-target="625"><small>PREMIER TARGET</small><strong>£625/m</strong><span>March 2028 target</span></div>
+    </div>
+  </article>
+
+  <article class="income3-match-card">
+    <div class="income3-panel-head">
+      <div>
+        <small>DIVIDEND MATCHDAY</small>
+        <h3>Next Income Event</h3>
+        <p>The next recorded payment and the strongest current dividend contributor.</p>
+      </div>
+      <span class="income3-live-chip">LIVE</span>
+    </div>
+
+    <div class="income3-next-dividend">
+      <small>NEXT DIVIDEND</small>
+      <strong id="income3NextTicker">—</strong>
+      <b id="income3NextAmount">—</b>
+      <span id="income3NextMeta">Calendar event required</span>
+    </div>
+
+    <div class="income3-match-grid">
+      <div><small>Top Income Player</small><strong id="income3Best">—</strong><span id="income3BestMeta">—</span></div>
+      <div><small>Yield on Cost</small><strong id="income3Yoc">0.00%</strong><span>income ÷ book cost</span></div>
+      <div><small>Portfolio Yield</small><strong id="income3Yield">0.00%</strong><span>income ÷ market value</span></div>
+      <div><small>Calendar Coverage</small><strong id="income3Coverage">0</strong><span>recorded dividend events</span></div>
+    </div>
+  </article>
+</section>
+
 <nav class="income-jumpbar" aria-label="Income sections">
-  <button type="button" data-income-jump="incomeRunwaySection">Income Runway</button>
+  <button type="button" data-income-jump="incomePromotionSection">Promotion Race</button>
+  <button type="button" data-income-jump="incomeRunwaySection">Income Squad</button>
   <button type="button" data-income-jump="dividendCalendarSection">Dividend Calendar</button>
-  <button type="button" data-income-jump="dividendEngineSection">Update Engine</button>
+  <button type="button" data-income-jump="dividendEngineSection">Dividend Engine</button>
   <button type="button" data-income-jump="incomeSettingsSection">Settings & Health</button>
   <button type="button" data-income-jump="incomeHistorySection">History</button>
 </nav>
@@ -87,7 +153,7 @@
 <section class="income-command-grid two" id="incomeRunwaySection">
   <article class="income-panel">
     <div class="income-panel-head">
-      <div><span class="income-panel-kicker">Account Runway</span><h3>Income by Account</h3></div>
+      <div><span class="income-panel-kicker">Broker Dressing Room</span><h3>Income by Account</h3><p class="income3-head-copy">See how much forward income IG ISA and Trading 212 ISA are each contributing.</p></div>
       <span class="income-panel-note">Squad-derived</span>
     </div>
     <div class="account-grid" id="accountGrid"></div>
@@ -95,7 +161,7 @@
 
   <article class="income-panel growth-panel">
     <div class="income-panel-head">
-      <div><span class="income-panel-kicker">Registration Impact</span><h3>Income Growth</h3></div>
+      <div><span class="income-panel-kicker">Income Growth</span><h3>What Is Moving the Run Rate?</h3><p class="income3-head-copy">Confirmed purchases are already in Squad income. The current Transfer route stays a separate projection until registration.</p></div>
       <span class="income-panel-note">No double counting</span>
     </div>
 
@@ -112,7 +178,7 @@
   <div class="income-panel-head">
     <div>
       <span class="income-panel-kicker">Dividend First Team</span>
-      <h3>Income Leaders</h3>
+      <h3>Top Income Contributors</h3>
       <p class="income-copy">Ranked by current forward annual income, aggregated by ticker across accounts. Income-exempt SAYE/legacy holdings are not ranked.</p>
     </div>
     <span class="income-panel-note" id="playerCount">0 players</span>
@@ -123,8 +189,8 @@
 <section class="income-panel runway-panel">
   <div class="income-panel-head">
     <div>
-      <span class="income-panel-kicker">Dividend Runway</span>
-      <h3>12-Month Dividend Calendar</h3>
+      <span class="income-panel-kicker">Season Runway</span>
+      <h3>12-Month Income Profile</h3>
       <p class="income-copy">Only recorded forecast/confirmed dividend events are included. Income does not invent payment dates.</p>
     </div>
     <span class="income-panel-note" id="calendarCoverage">0 events</span>
@@ -135,7 +201,7 @@
 <section class="income-command-grid two" id="dividendCalendarSection">
   <article class="income-panel calendar-panel">
     <div class="income-panel-head">
-      <div><span class="income-panel-kicker">Next Payments</span><h3>Upcoming Dividends</h3></div>
+      <div><span class="income-panel-kicker">Fixture List</span><h3>Upcoming Dividend Payments</h3><p class="income3-head-copy">Confirmed and forecast payment dates already recorded by Income.</p></div>
       <span class="income-panel-note">Calendar authority</span>
     </div>
     <div class="calendar-list" id="calendarList"></div>
@@ -143,7 +209,7 @@
 
   <article class="income-panel editor-panel">
     <div class="income-panel-head">
-      <div><span class="income-panel-kicker">Calendar Control</span><h3>Dividend Calendar Editor</h3></div>
+      <div><span class="income-panel-kicker">Calendar Control</span><h3>Add or Update a Dividend</h3><p class="income3-head-copy">Use this only when a payment needs manual confirmation or correction.</p></div>
       <span id="editorMode" class="income-panel-note">NEW EVENT</span>
     </div>
 
@@ -204,7 +270,7 @@
   </article>
 </section>
 
-<section class="income-panel engine-panel" id="dividendEngineSection">
+<section class="income-panel engine-panel income3-technical" id="dividendEngineSection">
   <div class="income-panel-head">
     <div>
       <span class="income-panel-kicker">Dividend Intelligence</span>
@@ -233,7 +299,7 @@
   </div>
 </section>
 
-<section class="income-command-grid two" id="incomeSettingsSection">
+<section class="income-command-grid two income3-technical-grid" id="incomeSettingsSection">
   <article class="income-panel settings-panel">
     <div class="income-panel-head">
       <div><span class="income-panel-kicker">Income Preferences</span><h3>Income Settings</h3></div>
@@ -280,7 +346,7 @@
   </article>
 </section>
 
-<section class="income-panel history-panel" id="incomeHistorySection">
+<section class="income-panel history-panel income3-technical" id="incomeHistorySection">
   <div class="income-panel-head">
     <div><span class="income-panel-kicker">Club Record</span><h3>Income History</h3></div>
     <span class="income-panel-note">Automatic snapshots when the forward run-rate changes</span>
@@ -325,6 +391,6 @@
 <script src="income.js?v=030"></script>
 <script src="income-dividend-cash.js?v=100"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="income-command-ui.js?v=100"></script>
+<script src="income-ui.js?v=300-promotion-command"></script>
 </body>
 </html>
