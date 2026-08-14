@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111d">
+<title>Aurora City FC — System Health</title>
+<link rel="stylesheet" href="aurora.css?v=stable-core-health">
+<link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
+<link rel="stylesheet" href="system-health.css?v=100">
+</head>
+<body class="aurora-entered health-page">
+<div class="aurora-game-shell is-active" id="gameShell">
+<header class="aurora-shell-header">
+  <div class="aurora-shell-header-inner">
+    <div class="aurora-shell-brand">
+      <button id="auroraShellMenuButton" aria-label="Open club navigation" aria-expanded="false">☰</button>
+      <div class="aurora-shell-crest"><img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="Aurora City FC"></div>
+      <div class="aurora-shell-copy"><h1>Aurora City FC</h1><p id="currentDepartment">SYSTEM HEALTH</p></div>
+    </div>
+    <div class="aurora-shell-context">
+      <div class="aurora-shell-datetime"><span class="shell-clock" id="shellClock">--:--</span><span class="shell-date" id="shellDate">---</span></div>
+      <a class="shell-control shell-home" href="index.html" title="Nexus HQ">⌂</a>
+      <span class="aurora-shell-live">Live</span>
+    </div>
+  </div>
+</header>
+<div class="shell-stage">
+<main class="shell-page health-shell-page">
+  <section class="health-hero">
+    <div><span class="health-eyebrow">Aurora 2.0 • Stable Core</span><h2>System<br><span>Health</span></h2><p>One place to verify the state, backend, canonical holdings, managed synchronisation and recovery protection without changing department calculations.</p></div>
+    <article class="health-overall"><small>PLATFORM STATUS</small><strong id="overallStatus">CHECKING</strong><span id="overallNote">Running Aurora diagnostics…</span><button id="runCheck" type="button">Run Full Check</button></article>
+  </section>
+
+  <section class="health-kpis">
+    <article><small>Release</small><strong id="releaseName">—</strong><span id="releaseBuild">—</span></article>
+    <article><small>Schema</small><strong id="schemaVersion">—</strong><span>Core state model</span></article>
+    <article><small>AuroraData 2</small><strong id="backendStatus">—</strong><span id="backendMeta">Connection</span></article>
+    <article><small>Holdings Sync</small><strong id="holdingsStatus">—</strong><span id="holdingsMeta">Canonical state</span></article>
+    <article><small>Last Good Backup</small><strong id="backupStatus">—</strong><span id="backupMeta">Local recovery</span></article>
+  </section>
+
+  <section class="health-grid">
+    <article class="health-panel">
+      <div class="health-panel-head"><div><small>CORE INTEGRITY</small><h3>Data Safety Rails</h3></div><span id="integrityBadge" class="health-badge">CHECKING</span></div>
+      <div id="integrityList" class="health-list"></div>
+    </article>
+    <article class="health-panel">
+      <div class="health-panel-head"><div><small>SYNC MANAGER</small><h3>Shared Refresh Services</h3></div><span id="syncBadge" class="health-badge">CHECKING</span></div>
+      <div id="syncList" class="health-list"></div>
+      <div class="health-actions"><button id="syncNow" type="button">Run Sync Now</button></div>
+    </article>
+  </section>
+
+  <section class="health-grid">
+    <article class="health-panel">
+      <div class="health-panel-head"><div><small>DEPARTMENT CONTRACTS</small><h3>Who Owns What</h3></div><span class="health-badge good">LOCKED DESIGN</span></div>
+      <div class="owner-grid">
+        <div><b>Finance</b><span>Finance state + mission approval</span></div><div><b>Scouting</b><span>Targets + recruitment scores</span></div><div><b>Transfer</b><span>Route + allocations</span></div><div><b>Registration</b><span>Execution + canonical holding write path</span></div><div><b>Income</b><span>Dividend events + income summaries</span></div><div><b>Nexus / Squad / Chairman</b><span>Read-only decision views</span></div>
+      </div>
+    </article>
+    <article class="health-panel">
+      <div class="health-panel-head"><div><small>RECOVERY</small><h3>State Backup</h3></div><span id="recoveryBadge" class="health-badge">READY</span></div>
+      <p class="health-copy">Stable Core keeps a last-good local state before writes and automatically preserves the pre-migration v9 state. Restore is only used if you explicitly choose it or if the primary state becomes unreadable.</p>
+      <div class="health-actions"><button id="backupNow" type="button">Create Backup Now</button><button id="restoreBackup" class="danger" type="button">Restore Last Good Backup</button></div>
+    </article>
+  </section>
+
+  <section class="health-panel snapshot-panel">
+    <div class="health-panel-head"><div><small>SUPPORT SNAPSHOT</small><h3>Current Platform Summary</h3></div><span id="lastChecked" class="health-badge">—</span></div>
+    <pre id="supportSnapshot">Loading…</pre>
+  </section>
+</main>
+</div>
+<div id="auroraShellNavigationOverlay"></div>
+<aside id="auroraShellNavigation" aria-label="Aurora club navigation">
+  <div class="aurora-shell-nav-head"><div class="aurora-shell-nav-crest"><img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt=""></div><div class="aurora-shell-nav-brand"><strong>Aurora City FC</strong><span>Club Navigation 2.0</span></div><button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button></div>
+  <div class="aurora-shell-nav-scroll">
+    <div class="aurora-shell-nav-section">Club Command</div>
+    <a class="aurora-shell-department-row" href="index.html" data-name="Nexus HQ"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <div class="aurora-shell-nav-section">Football Operations</div>
+    <a class="aurora-shell-department-row" href="finance.html" data-name="Finance Command"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="scouting.html" data-name="Scouting Centre"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="transfer.html" data-name="Transfer Centre"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="registration.html" data-name="Registration"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="squad.html" data-name="Squad Hub"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="income.html" data-name="Income Centre"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <div class="aurora-shell-nav-section">Club</div>
+    <a class="aurora-shell-department-row" href="club-control.html" data-name="Club Control"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>Chairman's Office</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <div class="aurora-shell-nav-section">System</div>
+    <a class="aurora-shell-department-row is-current" href="system-health.html" data-name="System Health"><div class="aurora-shell-nav-icon">🛡</div><div class="aurora-shell-nav-copy"><strong>System Health</strong><span>Integrity, sync and recovery</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+  </div>
+</aside>
+</div>
+<div id="toast" class="health-toast"></div>
+<script src="aurora-core.js?v=10-stable-core"></script>
+<script src="aurora-data2-client.js?v=011-income-connection"></script>
+<script src="aurora-release.js?v=100-stable-core"></script>
+<script src="aurora-platform.js?v=100-stable-core"></script>
+<script src="aurora-page-shell.js?v=200-stable-core"></script>
+<script src="system-health.js?v=100"></script>
+</body>
+</html>

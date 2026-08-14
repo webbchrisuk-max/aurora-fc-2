@@ -1,7 +1,10 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=9;
+  const VERSION=10;
+  const BACKUP_KEY='aurora2:state:backup:lastgood';
+  const BACKUP_META_KEY='aurora2:state:backup:meta';
+  const BACKUP_INTERVAL_MS=5*60*1000;
   const now=()=>new Date().toISOString();
 
   const defaultState=()=>({
@@ -102,6 +105,13 @@
       migration:null,
       source:'AURORA2',
       updatedAt:null
+    },
+    platform:{
+      version:1,
+      release:'AURORA2_STABLE_CORE_V1',
+      migratedFrom:null,
+      lastMigrationAt:null,
+      recoveredFromBackupAt:null
     },
     mission:null,
     alerts:[]
@@ -424,6 +434,7 @@
       schemaVersion:VERSION,
       connection:{...d.connection,...object(r.connection)},
       portfolio:{...d.portfolio,...object(r.portfolio)},
+      platform:{...d.platform,...object(r.platform),version:1,release:'AURORA2_STABLE_CORE_V1'},
       income:{
         ...d.income,
         ...object(r.income),
@@ -498,18 +509,206 @@
     };
   }
 
-  function read(){return normalize(safeParse(localStorage.getItem(KEY)))}
+  function migrate(raw){
+    const source=object(raw);
+    const from=Math.max(0,Number(source.schemaVersion)||0);
+    let next={...source};
+
+    if(from<VERSION){
+      next={
+        ...next,
+        platform:{
+          ...object(next.platform),
+          version:1,
+          release:'AURORA2_STABLE_CORE_V1',
+          migratedFrom:from||null,
+          lastMigrationAt:now(),
+          recoveredFromBackupAt:object(next.platform).recoveredFromBackupAt||null
+        }
+      };
+    }
+    return next;
+  }
+
+  function backupMeta(){return object(safeParse(localStorage.getItem(BACKUP_META_KEY)))}
+
+  function backupRaw(rawText,reason='periodic',force=false){
+    if(!rawText)return false;
+    const parsed=safeParse(rawText);
+    if(!parsed||typeof parsed!=='object')return false;
+
+    const meta=backupMeta();
+    const last=new Date(meta.at||0).getTime();
+    if(!force&&Number.isFinite(last)&&Date.now()-last<BACKUP_INTERVAL_MS)return false;
+
+    try{
+      localStorage.setItem(BACKUP_KEY,rawText);
+      localStorage.setItem(BACKUP_META_KEY,JSON.stringify({
+        at:now(),reason,schemaVersion:Number(parsed.schemaVersion)||null
+      }));
+      return true;
+    }catch(err){
+      console.warn('Aurora state backup failed:',err);
+      return false;
+    }
+  }
+
+  function backup(reason='manual'){
+    return backupRaw(localStorage.getItem(KEY),reason,true);
+  }
+
+  function validate(input){
+    const state=normalize(input);
+    const errors=[],warnings=[];
+    const push=(list,code,message,detail=null)=>list.push({code,message,detail});
+
+    if(Number(state.schemaVersion)!==VERSION){
+      push(errors,'SCHEMA_VERSION',`Expected schema ${VERSION}, found ${state.schemaVersion}.`);
+    }
+
+    const holdings=Array.isArray(state.squad?.holdings)?state.squad.holdings:[];
+    const activeKeys=new Set();
+    holdings.forEach(h=>{
+      const key=`${String(h.account||'').toUpperCase()}|${String(h.ticker||'').toUpperCase()}`;
+      if(['ACTIVE','LOCKED'].includes(String(h.status||'').toUpperCase())&&Number(h.shares)>0){
+        if(activeKeys.has(key))push(warnings,'DUPLICATE_ACTIVE_HOLDING',`Duplicate active holding ${key}.`,key);
+        activeKeys.add(key);
+      }
+      if(Number(h.shares)<0)push(errors,'NEGATIVE_SHARES',`${key} has negative shares.`,Number(h.shares));
+      if(Number(h.bookCostGbp)<0)push(errors,'NEGATIVE_BOOK_COST',`${key} has negative book cost.`,Number(h.bookCostGbp));
+    });
+
+    const route=state.transfer?.route;
+    if(route&&Array.isArray(route.allocations)){
+      const sum=route.allocations.reduce((x,a)=>x+Math.max(0,Number(a.amount)||0),0);
+      const allocated=Math.max(0,Number(route.allocated)||0);
+      const remaining=Math.max(0,Number(route.remaining)||0);
+      const budget=Math.max(0,Number(route.financeBudget)||0);
+      if(Math.abs(sum-allocated)>1.01){
+        push(warnings,'TRANSFER_ALLOCATED_MISMATCH','Transfer allocation rows do not match route allocated total.',{rows:sum,allocated});
+      }
+      if(budget>0&&Math.abs((allocated+remaining)-budget)>1.01){
+        push(warnings,'TRANSFER_BUDGET_MISMATCH','Transfer allocated + remaining does not match Finance budget.',{allocated,remaining,budget});
+      }
+    }
+
+    const receipts=Array.isArray(state.registration?.receipts)?state.registration.receipts:[];
+    const tx=new Set();
+    receipts.forEach(r=>{
+      const id=String(r.transactionId||'').trim();
+      if(!id)return;
+      if(tx.has(id))push(warnings,'DUPLICATE_RECEIPT_TX',`Duplicate Registration receipt transaction ${id}.`,id);
+      tx.add(id);
+    });
+
+    const ids=(rows,label)=>{
+      const seen=new Set();
+      rows.forEach(x=>{
+        const id=String(x?.id||'').trim();
+        if(!id)return;
+        if(seen.has(id))push(warnings,'DUPLICATE_ID',`${label} contains duplicate id ${id}.`,{label,id});
+        seen.add(id);
+      });
+    };
+    ids(Array.isArray(state.finance?.pots)?state.finance.pots:[],'Finance pots');
+    ids(Array.isArray(state.finance?.bills)?state.finance.bills:[],'Finance bills');
+
+    return {ok:errors.length===0,errors,warnings,checkedAt:now(),schemaVersion:VERSION};
+  }
+
+  function restoreBackup(){
+    const raw=localStorage.getItem(BACKUP_KEY);
+    const parsed=safeParse(raw);
+    if(!parsed||typeof parsed!=='object')throw new Error('No valid Aurora backup is available.');
+    const recovered=normalize({
+      ...migrate(parsed),
+      platform:{...object(parsed.platform),version:1,release:'AURORA2_STABLE_CORE_V1',recoveredFromBackupAt:now()}
+    });
+    const check=validate(recovered);
+    if(!check.ok)throw new Error('Backup failed Aurora integrity validation.');
+    localStorage.setItem(KEY,JSON.stringify(recovered));
+    w.dispatchEvent(new CustomEvent('aurora2:state',{detail:recovered}));
+    return recovered;
+  }
+
+  function read(){
+    const raw=localStorage.getItem(KEY);
+    const parsed=safeParse(raw);
+    if(parsed&&typeof parsed==='object')return normalize(migrate(parsed));
+
+    if(raw){
+      const backupParsed=safeParse(localStorage.getItem(BACKUP_KEY));
+      if(backupParsed&&typeof backupParsed==='object'){
+        console.warn('Aurora state was unreadable. Recovering from last good backup.');
+        return restoreBackup();
+      }
+    }
+    return normalize(defaultState());
+  }
+
   function write(next){
-    const state=normalize({...next,schemaVersion:VERSION,updatedAt:now()});
-    localStorage.setItem(KEY,JSON.stringify(state));
+    const currentRaw=localStorage.getItem(KEY);
+    backupRaw(currentRaw,'pre-write',false);
+
+    const state=normalize({...migrate(next),schemaVersion:VERSION,updatedAt:now()});
+    const check=validate(state);
+    if(!check.ok){
+      console.error('Aurora rejected an invalid state write:',check.errors);
+      throw new Error('Aurora state integrity check failed. Existing state was kept.');
+    }
+
+    try{
+      localStorage.setItem(KEY,JSON.stringify(state));
+    }catch(err){
+      console.error('Aurora state write failed:',err);
+      throw err;
+    }
     w.dispatchEvent(new CustomEvent('aurora2:state',{detail:state}));
     return state;
   }
+
   function update(updater){
     const current=read();
     const next=typeof updater==='function'?updater(current):{...current,...object(updater)};
     return write(next);
   }
+
+  function diagnostics(){
+    const raw=localStorage.getItem(KEY);
+    const state=read();
+    const check=validate(state);
+    const meta=backupMeta();
+    return {
+      key:KEY,
+      version:VERSION,
+      release:'AURORA2_STABLE_CORE_V1',
+      primaryReadable:!raw||Boolean(safeParse(raw)),
+      primaryBytes:raw?raw.length:0,
+      backupAvailable:Boolean(safeParse(localStorage.getItem(BACKUP_KEY))),
+      backupAt:meta.at||null,
+      backupReason:meta.reason||null,
+      validation:check,
+      stateUpdatedAt:state.updatedAt||null
+    };
+  }
+
+  function bootstrapMigration(){
+    const raw=localStorage.getItem(KEY);
+    const parsed=safeParse(raw);
+    if(!parsed||typeof parsed!=='object')return;
+    const from=Math.max(0,Number(parsed.schemaVersion)||0);
+    if(from===VERSION)return;
+    backupRaw(raw,`pre-migration-v${from}-to-v${VERSION}`,true);
+    const migrated=normalize({...migrate(parsed),schemaVersion:VERSION,updatedAt:now()});
+    const check=validate(migrated);
+    if(!check.ok){
+      console.error('Aurora migration validation failed. Original state left untouched.',check.errors);
+      return;
+    }
+    localStorage.setItem(KEY,JSON.stringify(migrated));
+  }
+
+  bootstrapMigration();
   function money(v){
     return Number.isFinite(Number(v))
       ? new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number(v))
@@ -573,7 +772,7 @@
   }
 
   w.Aurora2=w.Aurora2||{};
-  w.Aurora2.core={KEY,VERSION,read,write,update,defaultState,normalize,uid};
+  w.Aurora2.core={KEY,VERSION,BACKUP_KEY,read,write,update,defaultState,normalize,migrate,validate,diagnostics,backup,restoreBackup,uid};
   w.Aurora2.ui={money,text,escape};
   document.addEventListener('DOMContentLoaded',()=>{activateBuiltDepartments();setActiveNav();wireSoon();wireNavigationFallback();});
 })(window);

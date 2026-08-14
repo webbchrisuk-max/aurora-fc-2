@@ -7,6 +7,7 @@
 
   let running=false;
   let bootAttempts=0;
+  let lastStatus={status:'IDLE',lastRunAt:null,lastSuccessAt:null,lastError:null};
 
   const arr=v=>Array.isArray(v)?v:[];
   const num=v=>{
@@ -273,11 +274,14 @@
     }
 
     running=true;
+    lastStatus={...lastStatus,status:'RUNNING',lastRunAt:now(),lastError:null};
     try{
       const snapshot=await post('marketPriceSnapshot',{});
       applySnapshot(snapshot);
+      lastStatus={status:'CONNECTED',lastRunAt:lastStatus.lastRunAt,lastSuccessAt:snapshot?.at||now(),lastError:null};
       return snapshot;
     }catch(err){
+      lastStatus={status:'ERROR',lastRunAt:lastStatus.lastRunAt,lastSuccessAt:lastStatus.lastSuccessAt,lastError:String(err?.message||err)};
       console.warn('Aurora canonical holdings sync failed:',err);
       return null;
     }finally{
@@ -297,11 +301,13 @@
     },SYNC_MS);
   }
 
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',start,{once:true});
-  }else{
-    start();
+  if(!w.AuroraSyncManaged){
+    if(document.readyState==='loading'){
+      document.addEventListener('DOMContentLoaded',start,{once:true});
+    }else{
+      start();
+    }
   }
 
-  w.AuroraHoldingsSync={sync,applySnapshot};
+  w.AuroraHoldingsSync={sync,applySnapshot,status:()=>({...lastStatus}),startLegacy:start};
 })(window);

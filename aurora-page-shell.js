@@ -100,11 +100,43 @@ window.AuroraShell={
   }
 };
 
-/* AuroraData 2 Canonical Holdings Sync v1 — shared department sync */
-if(!document.querySelector('script[data-aurora-holdings-sync]')){
-  const script=document.createElement('script');
-  script.src='aurora-holdings-sync.js?v=100-canonical-holdings';
-  script.dataset.auroraHoldingsSync='1';
-  document.head.appendChild(script);
-}
+  /* Aurora 2 Stable Core — shared platform + managed sync */
+  function auroraLoadShared(src,key){
+    if(document.querySelector(`script[data-aurora-shared="${key}"]`))return;
+    const script=document.createElement('script');
+    script.src=src;
+    script.dataset.auroraShared=key;
+    document.head.appendChild(script);
+  }
+  auroraLoadShared('aurora-release.js?v=100-stable-core','release');
+  auroraLoadShared('aurora-platform.js?v=100-stable-core','platform');
+  auroraLoadShared('aurora-sync-manager.js?v=100-stable-core','sync-manager');
+
+  function ensureSystemHealthNavigation(){
+    const scroll=document.querySelector('.aurora-shell-nav-scroll');
+    if(scroll&&!scroll.querySelector('a[href="system-health.html"]')){
+      const section=document.createElement('div');
+      section.className='aurora-shell-nav-section';
+      section.textContent='System';
+      const row=document.createElement('a');
+      row.className='aurora-shell-department-row';
+      row.href='system-health.html';
+      row.dataset.name='System Health';
+      row.innerHTML='<div class="aurora-shell-nav-icon">🛡</div><div class="aurora-shell-nav-copy"><strong>System Health</strong><span>Integrity, sync and recovery</span></div><div class="aurora-shell-nav-arrow">›</div>';
+      scroll.append(section,row);
+    }
+
+    const context=document.querySelector('.aurora-shell-context');
+    if(context&&!document.getElementById('auroraSystemHealthButton')){
+      const link=document.createElement('a');
+      link.id='auroraSystemHealthButton';
+      link.className='shell-control';
+      link.href='system-health.html';
+      link.title='Aurora System Health';
+      link.textContent='🛡';
+      const live=context.querySelector('.aurora-shell-live');
+      context.insertBefore(link,live||null);
+    }
+  }
+  ensureSystemHealthNavigation();
 })();
