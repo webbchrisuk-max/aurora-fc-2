@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#041117">
-<title>Aurora City FC — Registration Desk</title>
+<title>Aurora City FC — Registration Command</title>
+<meta name="aurora-registration-ui" content="REGISTRATION_UI_V1_COMMAND_FLOW">
 <link rel="stylesheet" href="aurora.css?v=registration-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="registration-command.css?v=registration-command-100">
-<link rel="stylesheet" href="aurora-operations-upgrade.css?v=100">
+<link rel="stylesheet" href="registration-ui.css?v=300-command-flow">
 </head>
 
 <body class="aurora-entered registration-command-page">
@@ -40,9 +40,9 @@
       <span class="registration-live-pill">● REGISTRATION DESK LIVE</span>
       <span class="registration-version-pill">CANONICAL WRITE • AURORADATA 2</span>
     </div>
-    <span class="registration-eyebrow">Aurora City FC • Contracts & Medical</span>
+    <span class="registration-eyebrow">Aurora City FC • Contracts • Broker Confirmation • Canonical Registration</span>
     <h2>Registration<br><span>Desk</span></h2>
-    <p>Transfer says what may be bought. Registration records what actually happened at the broker, writes it to AuroraData 2, reads it back and only then updates the canonical Squad holding.</p>
+    <p>The deal sheet becomes real here. Confirm the broker execution, pass the registration checks, write the trade to AuroraData 2 and only then promote the confirmed holding into the canonical Squad.</p>
     <div class="registration-hero-actions">
       <button class="registration-btn primary" id="openExecution">Register Next Purchase</button>
       <a class="registration-btn secondary" href="transfer.html">Open Transfer</a>
@@ -65,16 +65,67 @@
   <article class="registration-score gold"><small>Remaining</small><strong id="kRemaining">£0.00</strong><span>Still to register</span></article>
   <article class="registration-score purple"><small>Confirmed Purchases</small><strong id="kPurchases">0</strong><span>Backend-confirmed</span></article>
   <article class="registration-score backend"><small>Backend</small><strong id="kBackend">OFFLINE</strong><span id="kBackendMeta">Connect AuroraData 2</span></article>
+
+</section>
+
+<section class="reg3-workflow" id="registrationWorkflow" aria-label="Registration command flow">
+  <div class="reg3-workflow-head">
+    <div>
+      <small>REGISTRATION COMMAND</small>
+      <h3>Deal Completion Flow</h3>
+      <p id="regDeskPriority">Aurora is checking the locked route and broker execution queue.</p>
+    </div>
+    <span id="regDeskStatus" class="reg3-command-chip">CHECKING</span>
+  </div>
+
+  <div class="reg3-flow-grid">
+    <article class="reg3-flow-card" id="regFlowRoute">
+      <i>01</i>
+      <div><small>TRANSFER AUTHORITY</small><strong>Locked Route</strong><span id="regFlowRouteMeta">Checking Transfer…</span></div>
+      <b>WAITING</b>
+    </article>
+    <article class="reg3-flow-card" id="regFlowExecution">
+      <i>02</i>
+      <div><small>BROKER REALITY</small><strong>Execute Trade</strong><span id="regFlowExecutionMeta">Waiting for a route…</span></div>
+      <b>WAITING</b>
+    </article>
+    <article class="reg3-flow-card" id="regFlowBackend">
+      <i>03</i>
+      <div><small>CANONICAL WRITE</small><strong>AuroraData 2</strong><span id="regFlowBackendMeta">Checking backend…</span></div>
+      <b>CHECKING</b>
+    </article>
+    <article class="reg3-flow-card" id="regFlowSquad">
+      <i>04</i>
+      <div><small>FIRST TEAM</small><strong>Squad Confirmed</strong><span id="regFlowSquadMeta">No confirmed registration yet.</span></div>
+      <b>WAITING</b>
+    </article>
+  </div>
+
+  <div class="reg3-next-action">
+    <div><small>NEXT ACTION</small><strong id="regNextAction">Checking Registration Desk…</strong><span id="regNextActionMeta">The next operational step will appear here.</span></div>
+    <button type="button" id="regNextActionButton" class="registration-btn primary">Open Next Step</button>
+  </div>
 </section>
 
 <nav class="registration-jumpbar" aria-label="Registration sections">
-  <button type="button" data-reg-jump="connectionSection">AuroraData 2</button>
+  <button type="button" data-reg-jump="registrationWorkflow">Command Flow</button>
   <button type="button" data-reg-jump="allocationsSection">Approved Route</button>
   <button type="button" data-reg-jump="executionSection">Broker Execution</button>
+  <button type="button" data-reg-jump="registrationOperationsUpgrade">Manual / Reinvest</button>
   <button type="button" data-reg-jump="queueSection">Queue & Receipts</button>
+  <button type="button" id="regConnectionJump">Backend Settings</button>
 </nav>
 
-<section class="registration-command-grid two" id="connectionSection">
+<section class="registration-command-grid two reg3-technical-section" id="connectionSection">
+
+<div class="reg3-technical-banner">
+  <div>
+    <small>SYSTEM CONNECTION</small>
+    <strong>AuroraData 2 backend settings</strong>
+    <span>Normally leave this closed. Open it only to reconnect, test or seed canonical holdings.</span>
+  </div>
+  <button type="button" id="regConnectionClose" class="registration-btn secondary">Hide Settings</button>
+</div>
   <article class="registration-panel backend-panel">
     <div class="registration-panel-head">
       <div><span class="registration-panel-kicker">Canonical Backend</span><h3>AuroraData 2 Connection</h3></div>
@@ -121,7 +172,7 @@
 
 <section class="registration-panel approved-route-panel" id="allocationsSection">
   <div class="registration-panel-head">
-    <div><span class="registration-panel-kicker">Transfer Handoff</span><h3>Approved Route Purchases</h3></div>
+    <div><span class="registration-panel-kicker">Deal Sheet</span><h3>Approved Purchases Waiting for Registration</h3><p class="reg3-head-copy">Only allocations approved and locked by Transfer can enter the broker registration queue.</p></div>
     <span id="allocationCount" class="registration-panel-note">0 allocations</span>
   </div>
   <div id="allocationList" class="alloc-list"></div>
@@ -129,7 +180,7 @@
 
 <section class="registration-panel execution-panel" id="executionSection">
   <div class="registration-panel-head">
-    <div><span class="registration-panel-kicker">Broker Reality</span><h3>Broker Execution</h3></div>
+    <div><span class="registration-panel-kicker">Broker Reality</span><h3>Confirm the Real Trade</h3><p class="reg3-head-copy">Enter exactly what the broker executed. Aurora reconciles the purchase before the canonical write.</p></div>
     <span id="executionState" class="execution-chip">WAITING</span>
   </div>
 
@@ -160,9 +211,13 @@
   </div>
 
   <div id="precheckNote" class="registration-notice">Select a locked-route purchase and enter the broker execution.</div>
-  <div class="registration-actions">
+  <div class="reg3-confirm-banner">
+    <div><small>CANONICAL ACTION</small><strong>Register & Confirm</strong><span>AuroraData 2 must accept the transaction before the Squad record is updated.</span></div>
+    <i>WRITE → READ BACK → SQUAD</i>
+  </div>
+  <div class="registration-actions reg3-execution-actions">
     <button class="registration-btn secondary" id="saveDraft">Save Draft</button>
-    <button class="registration-btn primary" id="registerPurchase">Register & Confirm</button>
+    <button class="registration-btn primary reg3-register-button" id="registerPurchase">Register & Confirm</button>
     <button class="registration-btn secondary" id="clearExecution">Clear</button>
   </div>
 </section>
@@ -170,7 +225,7 @@
 <section class="registration-command-grid two" id="queueSection">
   <article class="registration-panel">
     <div class="registration-panel-head">
-      <div><span class="registration-panel-kicker">Work Queue</span><h3>Registration Queue</h3></div>
+      <div><span class="registration-panel-kicker">Work Queue</span><h3>Awaiting Confirmation</h3><p class="reg3-head-copy">Saved or in-progress registrations stay here until the backend confirms them.</p></div>
       <span id="queueCount" class="registration-panel-note">0 drafts</span>
     </div>
     <div id="queueList" class="queue-list"></div>
@@ -178,7 +233,7 @@
 
   <article class="registration-panel receipts-panel">
     <div class="registration-panel-head">
-      <div><span class="registration-panel-kicker">Canonical Confirmation</span><h3>Backend Receipts</h3></div>
+      <div><span class="registration-panel-kicker">Canonical Confirmation</span><h3>Confirmed Registrations</h3><p class="reg3-head-copy">AuroraData 2 receipts prove the trade was accepted before Squad becomes authoritative.</p></div>
       <span id="receiptCount" class="registration-panel-note">0 receipts</span>
     </div>
     <div id="receiptList" class="receipt-list"></div>
@@ -223,6 +278,6 @@
 <script src="registration-holding-enrichment.js?v=052"></script>
 <script src="registration-operations-upgrade.js?v=100"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="registration-command-ui.js?v=100"></script>
+<script src="registration-ui.js?v=300-command-flow"></script>
 </body>
 </html>
