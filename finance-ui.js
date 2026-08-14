@@ -1297,6 +1297,79 @@ function financeUiPotProgress(s,pv){
   }).join('');
 }
 
+
+function financeUiAutomaticCommitments(s,pv){
+  const host=document.getElementById('financeAutoCommitmentCards');
+  if(!host)return;
+
+  const p=s.finance?.plan||{};
+  const auto=pv?.c?.auto||{};
+  const cards=[
+    {
+      key:'wages',
+      icon:'£',
+      kicker:'INCOME',
+      title:'Expected Wages',
+      value:money(num(p.expectedWages)),
+      note:'Income arriving for the payday cycle.',
+      tone:'cyan'
+    },
+    {
+      key:'bills',
+      icon:'▤',
+      kicker:'AUTOMATIC',
+      title:'13-Pay Bill Funding',
+      value:money(num(p.annualBillFunding)),
+      note:'Recurring commitments protected across the year.',
+      tone:'gold'
+    },
+    {
+      key:'pots',
+      icon:'◈',
+      kicker:'GOAL POTS',
+      title:'Pot Funding',
+      value:money(num(p.potsDue||p.potFundingRequired)),
+      note:'Scheduled goal-pot funding for this payday.',
+      tone:'purple'
+    },
+    {
+      key:'buffer',
+      icon:'▣',
+      kicker:'BUFFER',
+      title:'Protected Spending',
+      value:money(num(p.protectedCash)),
+      note:'Personal cash held back before any release.',
+      tone:'blue'
+    },
+    {
+      key:'surplus',
+      icon:'✓',
+      kicker:'AVAILABLE',
+      title:'Safe Surplus',
+      value:money(num(p.safeSurplus||p.releaseAmount)),
+      note:'Maximum available only after full protection.',
+      tone:'green'
+    }
+  ];
+
+  host.innerHTML=cards.map(c=>`
+    <article class="finance-auto-command-card ${c.tone}">
+      <div class="finance-auto-command-top">
+        <i>${esc(c.icon)}</i>
+        <small>${esc(c.kicker)}</small>
+      </div>
+      <h4>${esc(c.title)}</h4>
+      <strong>${esc(c.value)}</strong>
+      <p>${esc(c.note)}</p>
+    </article>
+  `).join('');
+}
+
+function financeUiProtectionFlow(s,pv){
+  const panel=document.querySelector('#paydayPanel .finance-protection-order, #paydayPanel [data-finance-protection-order]');
+  if(!panel)return;
+}
+
 function financeUiBills(s,runway){
   const summary=document.getElementById('financeBillSummary');
   const host=document.getElementById('financeNextFiveBills');
@@ -1442,6 +1515,7 @@ function renderAll(){
   renderPaydaySummary(s,plan,pv,runway);
   renderPotCommand(s,pv);
   financeUiPotProgress(s,pv);
+  financeUiAutomaticCommitments(s,pv);
   financeUiBills(s,runway);
   financeUiPaymentHistory(s);
   renderHouseCommand(s);
@@ -1494,4 +1568,4 @@ if(document.readyState==='loading'){
 })(window);
 
 
-window.AuroraFinanceUI = Object.freeze({version:'1.3',release:'FINANCE_UI_V1_3_READABILITY'});
+window.AuroraFinanceUI = Object.freeze({version:'1.4',release:'FINANCE_UI_V1_4_COMMAND_CARDS'});

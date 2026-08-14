@@ -2773,3 +2773,208 @@
   .finance-chip-grid.four{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .fv2-command-card strong{font-size:27px!important}
 }
+
+
+/* =========================================================
+   FINANCE UI v1.4 — COMMAND CARDS
+   Inspired by the old Finance Department's Pot Health Radar and House Project
+   cards, while retaining Aurora 2's current engine ownership.
+   ========================================================= */
+
+/* Hide the old flat automatic-commitment chip strip from normal view.
+   It remains in the DOM so existing Finance code can populate it safely. */
+.finance-auto-commitments{
+  display:none!important;
+}
+
+.finance-auto-command-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+  margin:13px 0 4px;
+}
+
+.finance-auto-command-card{
+  position:relative;
+  min-height:190px;
+  overflow:hidden;
+  padding:18px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(255,255,255,.08),transparent 36%),
+    linear-gradient(145deg,rgba(6,22,35,.92),rgba(2,8,18,.97));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 14px 30px rgba(0,0,0,.18);
+}
+.finance-auto-command-card:before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:74px;
+  opacity:.78;
+  pointer-events:none;
+}
+.finance-auto-command-card.cyan:before{
+  background:linear-gradient(135deg,rgba(14,165,233,.34),rgba(34,211,238,.08));
+}
+.finance-auto-command-card.gold:before{
+  background:linear-gradient(135deg,rgba(217,119,6,.38),rgba(251,191,36,.08));
+}
+.finance-auto-command-card.purple:before{
+  background:linear-gradient(135deg,rgba(124,58,237,.34),rgba(168,85,247,.08));
+}
+.finance-auto-command-card.blue:before{
+  background:linear-gradient(135deg,rgba(37,99,235,.34),rgba(96,165,250,.08));
+}
+.finance-auto-command-card.green:before{
+  background:linear-gradient(135deg,rgba(5,150,105,.36),rgba(52,211,153,.08));
+}
+.finance-auto-command-card.cyan{border-bottom:3px solid rgba(88,244,255,.72)}
+.finance-auto-command-card.gold{border-bottom:3px solid rgba(255,209,94,.78)}
+.finance-auto-command-card.purple{border-bottom:3px solid rgba(168,85,247,.68)}
+.finance-auto-command-card.blue{border-bottom:3px solid rgba(96,165,250,.72)}
+.finance-auto-command-card.green{border-bottom:3px solid rgba(89,255,154,.72)}
+
+.finance-auto-command-top{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.finance-auto-command-top i{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:13px;
+  color:#f3f8fb;
+  background:rgba(2,8,18,.34);
+  font-style:normal;
+  font-size:22px;
+  font-weight:1000;
+}
+.finance-auto-command-top small{
+  color:#c5d4dd;
+  font-size:9px!important;
+  font-weight:1000;
+  letter-spacing:.11em;
+}
+.finance-auto-command-card h4{
+  position:relative;
+  z-index:1;
+  margin:17px 0 0;
+  color:#f3f9fc;
+  font-size:17px;
+  line-height:1.15;
+}
+.finance-auto-command-card>strong{
+  position:relative;
+  z-index:1;
+  display:block;
+  margin-top:9px;
+  color:#fff;
+  font-size:30px;
+  font-weight:1000;
+  letter-spacing:-.04em;
+}
+.finance-auto-command-card.cyan>strong{color:#bff8ff}
+.finance-auto-command-card.gold>strong{color:#ffe6a2}
+.finance-auto-command-card.purple>strong{color:#e9d5ff}
+.finance-auto-command-card.blue>strong{color:#dbeafe}
+.finance-auto-command-card.green>strong{color:#bbf7d0}
+.finance-auto-command-card p{
+  position:relative;
+  z-index:1;
+  margin:9px 0 0;
+  color:#8aa0af;
+  font-size:10px;
+  line-height:1.45;
+}
+
+/* Pot cards get some of the old Pot Health Radar visual weight. */
+.finance-progress-pot{
+  min-height:250px;
+  border-radius:18px!important;
+}
+.finance-progress-pot:before{
+  content:"";
+  display:block;
+  height:64px;
+  margin:-17px -17px 14px;
+  border-radius:17px 17px 0 0;
+  background:linear-gradient(135deg,rgba(14,165,233,.18),rgba(52,211,153,.07),rgba(168,85,247,.06));
+}
+.finance-progress-pot.holding:before{
+  background:linear-gradient(135deg,rgba(217,119,6,.30),rgba(251,191,36,.10),rgba(52,211,153,.05));
+}
+.finance-progress-pot-head{
+  margin-top:-52px;
+  position:relative;
+  z-index:1;
+}
+.finance-progress-pot-head h4{
+  font-size:19px!important;
+}
+.finance-progress-amounts{
+  margin-top:24px!important;
+}
+.finance-progress-amounts strong{
+  font-size:34px!important;
+}
+.finance-progress-track{
+  height:14px!important;
+  margin-top:16px!important;
+}
+.finance-progress-caption{
+  margin-top:9px!important;
+}
+.finance-progress-caption b,
+.finance-progress-caption span{
+  font-size:10px!important;
+}
+
+/* House Project / ledger readability influenced by the older House page. */
+#housePanel .house-room{
+  border-radius:16px!important;
+  border-bottom-width:3px!important;
+}
+#housePanel .house-room:nth-child(1){border-bottom-color:rgba(168,85,247,.60)!important}
+#housePanel .house-room:nth-child(2){border-bottom-color:rgba(34,211,238,.60)!important}
+#housePanel .house-room:nth-child(3){border-bottom-color:rgba(251,191,36,.65)!important}
+#housePanel .house-room:nth-child(4){border-bottom-color:rgba(52,211,153,.60)!important}
+#housePanel .house-room:nth-child(5){border-bottom-color:rgba(96,165,250,.65)!important}
+#housePanel .house-room strong{
+  font-size:15px!important;
+}
+#housePanel .house-room span,
+#housePanel .house-room small{
+  font-size:9px!important;
+}
+#houseLedgerList .house-entry{
+  padding:15px!important;
+}
+#houseLedgerList .house-entry-head strong{
+  font-size:14px!important;
+}
+#houseLedgerList .house-entry-meta{
+  font-size:9px!important;
+}
+
+@media(max-width:1250px){
+  .finance-auto-command-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+@media(max-width:850px){
+  .finance-auto-command-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:560px){
+  .finance-auto-command-grid{
+    grid-template-columns:1fr;
+  }
+}
