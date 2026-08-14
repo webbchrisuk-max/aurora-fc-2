@@ -1041,3 +1041,405 @@
     display:grid;
   }
 }
+
+
+/* =========================================================
+   v2.1 DENSE FINANCE WORKFLOW
+   Fixes the oversized legacy lists shown on iPad.
+   ========================================================= */
+
+#potsPanel .finance-command-grid.two{
+  grid-template-columns:1fr!important;
+}
+
+#potsPanel .editor-panel,
+#housePanel #houseEntryEditor{
+  grid-column:1/-1;
+}
+
+.fv21-editor-collapsed{
+  display:none!important;
+}
+
+.fv21-launcher{
+  margin-left:auto;
+  white-space:nowrap;
+}
+
+/* Native Pot list — engine-owned markup, visually reflowed only */
+#potList.fv21-native-pot-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+#potList.fv21-native-pot-grid .finance-item{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  min-width:0;
+  margin:0!important;
+  padding:13px 14px!important;
+  border:1px solid rgba(125,211,252,.10)!important;
+  border-radius:13px!important;
+  background:
+    radial-gradient(circle at 92% 0%,rgba(103,232,249,.055),transparent 38%),
+    linear-gradient(145deg,rgba(5,20,33,.82),rgba(2,8,18,.92))!important;
+  box-shadow:none!important;
+}
+
+#potList.fv21-native-pot-grid .finance-item.fv21-holding-pot{
+  grid-column:1/-1;
+  border-color:rgba(251,191,36,.24)!important;
+  background:
+    radial-gradient(circle at 92% 0%,rgba(251,191,36,.11),transparent 38%),
+    linear-gradient(145deg,rgba(35,26,8,.30),rgba(2,8,18,.94))!important;
+}
+
+#potList .finance-item-title{
+  display:flex!important;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+}
+
+#potList .finance-item-title strong{
+  color:#f3f9fd;
+  font-size:14px!important;
+  line-height:1.15;
+}
+
+#potList .finance-item-title span{
+  display:inline-flex;
+  min-height:22px;
+  align-items:center;
+  padding:0 7px;
+  border-radius:999px;
+  border:1px solid rgba(125,211,252,.13);
+  color:#9eb5c6;
+  background:rgba(8,47,73,.22);
+  font-size:7px!important;
+  font-weight:950;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+#potList .finance-item-meta{
+  margin-top:4px!important;
+  color:#7890a1!important;
+  font-size:8px!important;
+  line-height:1.45!important;
+}
+
+#potList .progress-mini{
+  height:6px!important;
+  margin:8px 0 6px!important;
+  border-radius:999px;
+}
+
+#potList .finance-item-actions{
+  display:flex!important;
+  flex-direction:column;
+  gap:6px!important;
+  min-width:76px;
+}
+
+#potList .finance-item-actions .btn{
+  min-height:32px!important;
+  padding:0 10px!important;
+  font-size:7px!important;
+}
+
+/* Native Bills — compact, readable 2-column radar */
+#billList.fv21-native-bill-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px!important;
+}
+
+#billList.fv21-native-bill-grid .finance-item{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:12px;
+  align-items:start;
+  min-width:0;
+  margin:0!important;
+  padding:13px 14px!important;
+  border:1px solid rgba(125,211,252,.10)!important;
+  border-radius:13px!important;
+  background:
+    linear-gradient(145deg,rgba(5,20,33,.82),rgba(2,8,18,.92))!important;
+  box-shadow:none!important;
+}
+
+#billList.fv21-native-bill-grid .finance-item.fv21-bill-urgent{
+  border-color:rgba(251,191,36,.24)!important;
+  background:
+    radial-gradient(circle at 94% 10%,rgba(251,191,36,.08),transparent 34%),
+    linear-gradient(145deg,rgba(35,27,10,.18),rgba(2,8,18,.94))!important;
+}
+
+#billList .finance-item-title{
+  display:flex!important;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+#billList .finance-item-title strong{
+  color:#f4f9fd!important;
+  font-size:14px!important;
+  line-height:1.15!important;
+}
+
+#billList .finance-item-title span{
+  display:inline-flex!important;
+  min-height:22px!important;
+  align-items:center!important;
+  padding:0 7px!important;
+  border-radius:999px!important;
+  font-size:7px!important;
+  font-weight:1000!important;
+  letter-spacing:.05em!important;
+  text-transform:uppercase!important;
+}
+
+#billList .finance-item-meta{
+  margin-top:5px!important;
+  color:#7890a1!important;
+  font-size:8px!important;
+  line-height:1.45!important;
+}
+
+#billList .finance-item-actions.bill-actions{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(72px,1fr));
+  gap:6px!important;
+  min-width:170px;
+  align-content:start;
+}
+
+#billList .mini-actual{
+  grid-column:1/-1;
+  display:grid!important;
+  grid-template-columns:52px minmax(0,1fr);
+  align-items:center;
+  gap:6px;
+  margin:0!important;
+}
+
+#billList .mini-actual label{
+  color:#6f8495!important;
+  font-size:7px!important;
+  font-weight:900!important;
+  text-transform:uppercase;
+}
+
+#billList .mini-actual input{
+  width:100%!important;
+  min-height:34px!important;
+  padding:0 9px!important;
+  border-radius:8px!important;
+  font-size:10px!important;
+}
+
+#billList .finance-item-actions .btn{
+  min-height:32px!important;
+  padding:0 9px!important;
+  font-size:7px!important;
+  white-space:nowrap;
+}
+
+/* Payment History — no more giant raw text wall */
+#paymentHistory.fv21-payment-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px!important;
+}
+
+#paymentHistory .history-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-width:0;
+  margin:0!important;
+  padding:10px 11px!important;
+  border:1px solid rgba(125,211,252,.08)!important;
+  border-radius:10px!important;
+  background:rgba(2,8,18,.43)!important;
+  line-height:1.2!important;
+}
+
+#paymentHistory .history-row > div:first-child{
+  min-width:0;
+}
+
+#paymentHistory .history-row strong{
+  display:block!important;
+  overflow:hidden;
+  color:#dce9f3!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+#paymentHistory .history-row span{
+  display:block!important;
+  margin-top:3px!important;
+  color:#728697!important;
+  font-size:7px!important;
+  line-height:1.35!important;
+  white-space:normal!important;
+}
+
+#paymentHistory .history-row .btn{
+  min-height:29px!important;
+  padding:0 8px!important;
+  font-size:7px!important;
+}
+
+#paymentHistory .history-row.is-reversed{
+  opacity:.42!important;
+}
+
+#paymentHistory .history-row.is-reversed strong{
+  text-decoration:line-through;
+}
+
+/* House ledger — compact engine-owned cards */
+#houseLedgerList.fv21-house-ledger{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px!important;
+}
+
+#houseLedgerList .house-entry{
+  margin:0!important;
+  padding:12px!important;
+  border:1px solid rgba(167,139,250,.10)!important;
+  border-radius:12px!important;
+  background:
+    linear-gradient(145deg,rgba(12,12,31,.56),rgba(2,8,18,.88))!important;
+  box-shadow:none!important;
+}
+
+#houseLedgerList .house-entry-head{
+  gap:10px!important;
+}
+
+#houseLedgerList .house-entry-head strong{
+  font-size:12px!important;
+}
+
+#houseLedgerList .house-entry-meta{
+  margin-top:4px!important;
+  color:#7b728d!important;
+  font-size:7px!important;
+  line-height:1.45!important;
+}
+
+#houseLedgerList .house-entry-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:6px!important;
+  margin-top:9px!important;
+}
+
+#houseLedgerList .house-entry-actions .btn{
+  min-height:30px!important;
+  padding:0 8px!important;
+  font-size:7px!important;
+}
+
+/* The old two-column editor layout wasted half the screen. */
+#potsPanel .finance-command-grid.two > .finance-panel:has(#potList),
+#potsPanel .finance-command-grid.two > .finance-panel:has(#billList),
+#housePanel .finance-command-grid.two > .finance-panel:has(#houseLedgerList){
+  width:100%;
+  min-width:0;
+}
+
+/* Source-grouped pre-payday explanation */
+.fv21-source-group{
+  overflow:hidden;
+  border:1px solid rgba(125,211,252,.08);
+  border-radius:11px;
+  background:rgba(2,8,18,.26);
+}
+
+.fv21-source-group + .fv21-source-group{
+  margin-top:7px;
+}
+
+.fv21-source-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 11px;
+  border-bottom:1px solid rgba(125,211,252,.06);
+  background:rgba(8,47,73,.14);
+}
+
+.fv21-source-head strong{
+  color:#a9bdca;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.fv21-source-head b{
+  color:#dff7ff;
+  font-size:9px;
+}
+
+.fv21-source-rows{
+  display:grid;
+  gap:0;
+}
+
+.fv21-source-rows .fv2-cashflow-row{
+  border:0!important;
+  border-radius:0!important;
+  border-top:1px solid rgba(125,211,252,.045)!important;
+}
+
+/* Editors appear as focused workbench cards only when opened. */
+#potEditor:not(.fv21-editor-collapsed),
+#billEditor:not(.fv21-editor-collapsed),
+#houseEntryEditor:not(.fv21-editor-collapsed){
+  margin-top:10px;
+  border-color:rgba(96,165,250,.22)!important;
+  box-shadow:0 18px 46px rgba(0,0,0,.22)!important;
+}
+
+/* Avoid giant text inherited from legacy styles on iPad. */
+#potsPanel,
+#housePanel{
+  font-size:12px;
+}
+
+@media(max-width:1100px){
+  #potList.fv21-native-pot-grid,
+  #billList.fv21-native-bill-grid,
+  #paymentHistory.fv21-payment-grid,
+  #houseLedgerList.fv21-house-ledger{
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media(max-width:720px){
+  #billList .finance-item-actions.bill-actions{
+    min-width:0;
+    grid-column:1/-1;
+  }
+  #billList.fv21-native-bill-grid .finance-item,
+  #potList.fv21-native-pot-grid .finance-item{
+    grid-template-columns:1fr!important;
+  }
+}

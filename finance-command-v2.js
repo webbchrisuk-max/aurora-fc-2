@@ -451,11 +451,13 @@ function buildOverview(){
           <div class="fv2-ring" id="fv2CoverageRing"><b id="fv2CoveragePct">0%</b><span>covered</span></div>
         </div>
         <div class="fv2-money-grid">
-          <div><small>Going out before payday</small><strong id="fv2BeforeOut">£0.00</strong><span id="fv2BeforeCount">0 known payments</span></div>
+          <div><small>Total known outgoings</small><strong id="fv2BeforeOut">£0.00</strong><span id="fv2BeforeCount">0 dated payments before payday</span></div>
           <div><small>Holding Pot outgoing</small><strong id="fv2HoldingOut">£0.00</strong><span>Known before payday</span></div>
           <div><small>Projected Holding Pot</small><strong id="fv2HoldingProjected">£0.00</strong><span>After known pre-payday payments</span></div>
           <div><small>Current Account outgoing</small><strong id="fv2CurrentOut">£0.00</strong><span>Before payday</span></div>
           <div><small>Projected Current Account</small><strong id="fv2CurrentProjected">£0.00</strong><span>Opening cash less known payments</span></div>
+          <div><small>Other pots outgoing</small><strong id="fv21OtherPotsOut">£0.00</strong><span>Named pots excluding Holding / House</span></div>
+          <div><small>House Fund outgoing</small><strong id="fv21HouseOut">£0.00</strong><span>Dated reserved House Ledger work</span></div>
           <div><small>Finance protection status</small><strong id="fv2CoveredStatus">—</strong><span id="fv2CoveredMeta">Checking sources</span></div>
         </div>
         <div id="fv2CashflowList" class="fv2-cashflow"></div>
@@ -587,6 +589,173 @@ function setBadge(id,label,tone){
   el.className=`fv2-badge ${tone||''}`.trim();
 }
 
+
+function sourceTotals(runway){
+  let holding=0,current=0,house=0,other=0;
+  arr(runway?.occurrences).forEach(o=>{
+    const amount=Math.max(0,num(o.amount));
+    if(o.sourceType==='HOUSE'){house+=amount;return}
+    if(isHoldingPotName(o.fundingSource)){holding+=amount;return}
+    if(isCurrentAccount(o.fundingSource)){current+=amount;return}
+    other+=amount;
+  });
+  return {
+    holding:Number(holding.toFixed(2)),
+    current:Number(current.toFixed(2)),
+    house:Number(house.toFixed(2)),
+    other:Number(other.toFixed(2))
+  };
+}
+
+function renderPrePaydayBreakdown(runway){
+  const host=document.getElementById('fv2CashflowList');
+  if(!host)return;
+  const rows=arr(runway?.occurrences);
+  if(!rows.length){
+    host.innerHTML='<div class="fv2-empty">No dated commitments are currently scheduled before the next payday.</div>';
+    return;
+  }
+
+  const groups=new Map();
+  rows.forEach(o=>{
+    const label=o.sourceType==='HOUSE'
+      ? 'House Fund'
+      : (o.fundingSource||'Current Account');
+    const key=norm(label)||'current account';
+    const g=groups.get(key)||{label,total:0,rows:[]};
+    g.total+=Math.max(0,num(o.amount));
+    g.rows.push(o);
+    groups.set(key,g);
+  });
+
+  host.innerHTML=[...groups.values()].map(g=>`
+    <section class="fv21-source-group">
+      <div class="fv21-source-head">
+        <strong>${esc(g.label)}</strong>
+        <b>${money(g.total)}</b>
+      </div>
+      <div class="fv21-source-rows">
+        ${g.rows.map(o=>`
+          <div class="fv2-cashflow-row ${o.overdue?'overdue':''}">
+            <div>
+              <strong>${esc(o.name)}</strong>
+              <span>${esc(occurrenceDateLabel(o))}${o.sourceType==='HOUSE'?' • House Ledger':''}</span>
+            </div>
+            <b>− ${money(o.amount)}</b>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+  `).join('');
+}
+
+function decorateNativeFinanceLists(){
+  const potHost=document.getElementById('potList');
+  if(potHost){
+    potHost.classList.add('fv21-native-pot-grid');
+    potHost.querySelectorAll('.finance-item').forEach(card=>{
+      const title=card.querySelector('.finance-item-title strong')?.textContent||'';
+      card.classList.toggle('fv21-holding-pot',isHoldingPotName(title));
+    });
+  }
+
+  const billHost=document.getElementById('billList');
+  if(billHost){
+    billHost.classList.add('fv21-native-bill-grid');
+    billHost.querySelectorAll('.finance-item').forEach(card=>{
+      const status=(card.querySelector('.finance-item-title span')?.textContent||'').toUpperCase();
+      card.classList.toggle('fv21-bill-urgent',/OVERDUE|DUE IN|DUE TODAY/.test(status));
+    });
+  }
+
+  const history=document.getElementById('paymentHistory');
+  if(history)history.classList.add('fv21-payment-grid');
+
+  const house=document.getElementById('houseLedgerList');
+  if(house)house.classList.add('fv21-house-ledger');
+}
+
+function setEditorOpen(editor,open){
+  if(!editor)return;
+  editor.classList.toggle('fv21-editor-collapsed',!open);
+  editor.setAttribute('aria-hidden',open?'false':'true');
+}
+
+function installCompactEditors(){
+  const potEditor=document.getElementById('potEditor');
+  const billEditor=document.getElementById('billEditor');
+  const houseEditor=document.getElementById('houseEntryEditor');
+
+  [potEditor,billEditor,houseEditor].forEach(x=>setEditorOpen(x,false));
+
+  function addLauncher(panelSelector,label,handler){
+    const panel=document.querySelector(panelSelector);
+    const head=panel?.querySelector('.finance-panel-head');
+    if(!head||head.querySelector('.fv21-launcher'))return;
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='mini-link-btn fv21-launcher';
+    button.textContent=label;
+    button.addEventListener('click',handler);
+    head.appendChild(button);
+  }
+
+  addLauncher('#potsPanel .finance-panel:has(#potList)','+ Add Pot',()=>{
+    document.getElementById('cancelPot')?.click();
+    setEditorOpen(potEditor,true);
+    potEditor?.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  addLauncher('#potsPanel .finance-panel:has(#billList)','+ Add Bill',()=>{
+    document.getElementById('cancelBill')?.click();
+    setEditorOpen(billEditor,true);
+    billEditor?.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  addLauncher('#housePanel .finance-panel:has(#houseLedgerList)','+ Add Payment',()=>{
+    document.getElementById('houseClearEntry')?.click();
+    setEditorOpen(houseEditor,true);
+    houseEditor?.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  document.addEventListener('click',event=>{
+    if(event.target.closest('[data-pot-edit]')){
+      setTimeout(()=>{setEditorOpen(potEditor,true);potEditor?.scrollIntoView({behavior:'smooth',block:'center'})},0);
+    }
+    if(event.target.closest('[data-bill-edit]')){
+      setTimeout(()=>{setEditorOpen(billEditor,true);billEditor?.scrollIntoView({behavior:'smooth',block:'center'})},0);
+    }
+    if(event.target.closest('[data-house-edit]')){
+      setTimeout(()=>{setEditorOpen(houseEditor,true);houseEditor?.scrollIntoView({behavior:'smooth',block:'center'})},0);
+    }
+
+    if(event.target.closest('#cancelPot'))setTimeout(()=>setEditorOpen(potEditor,false),0);
+    if(event.target.closest('#cancelBill'))setTimeout(()=>setEditorOpen(billEditor,false),0);
+    if(event.target.closest('#houseClearEntry'))setTimeout(()=>setEditorOpen(houseEditor,false),0);
+
+    if(event.target.closest('#savePot'))setTimeout(()=>setEditorOpen(potEditor,false),80);
+    if(event.target.closest('#saveBill'))setTimeout(()=>setEditorOpen(billEditor,false),80);
+    if(event.target.closest('#houseSaveEntry'))setTimeout(()=>setEditorOpen(houseEditor,false),80);
+  },true);
+}
+
+function installNativeListObserver(){
+  const targets=['potList','billList','paymentHistory','houseLedgerList']
+    .map(id=>document.getElementById(id)).filter(Boolean);
+  if(!targets.length)return;
+
+  let queued=false;
+  const observer=new MutationObserver(()=>{
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{
+      queued=false;
+      decorateNativeFinanceLists();
+    });
+  });
+  targets.forEach(t=>observer.observe(t,{childList:true,subtree:true}));
+}
+
 function renderOverview(s,plan,p,runway){
   const c=p.c||{},auto=c.auto||{},hp=holdingPot(s);
   const hpBalance=Math.max(0,num(hp?.balance));
@@ -622,19 +791,9 @@ function renderOverview(s,plan,p,runway){
   setText('fv2CoveredStatus',runway.allCovered?'COVERED':'CHECK');
   setText('fv2CoveredMeta',runway.allCovered?'Every known funding source is sufficient':'One or more funding sources need attention');
 
-  const flow=document.getElementById('fv2CashflowList');
-  if(flow){
-    if(!runway.occurrences.length){
-      flow.innerHTML='<div class="fv2-empty">No dated commitments are currently scheduled before the next payday.</div>';
-    }else{
-      flow.innerHTML=runway.occurrences.slice(0,10).map(o=>`
-        <div class="fv2-cashflow-row ${o.overdue?'overdue':''}">
-          <div><strong>${esc(o.name)}</strong><span>${esc(occurrenceDateLabel(o))} • ${esc(o.fundingSource)}${o.sourceType==='HOUSE'?' • House Ledger':''}</span></div>
-          <b>− ${money(o.amount)}</b>
-        </div>
-      `).join('');
-    }
-  }
+  const totals=sourceTotals(runway);
+  setText('fv21OtherPotsOut',money(totals.other));
+  setText('fv21HouseOut',money(totals.house));
 
   setText('fv2NextPayday',runway.payday?humanDate(runway.payday):'—');
   setText('fv2NextPaydayMeta',runway.payday
@@ -970,10 +1129,9 @@ function renderAll(){
   renderOverview(s,plan,pv,runway);
   renderPaydaySummary(s,plan,pv,runway);
   renderPotCommand(s,pv);
-  renderPots(s,pv);
-  renderBills(s,plan,runway);
   renderHouseCommand(s);
-  renderHouseLedger(s);
+  decorateNativeFinanceLists();
+  renderPrePaydayBreakdown(runway);
 }
 
 let renderTimer=null;
@@ -999,8 +1157,13 @@ function start(){
     return;
   }
   markPlanInputs();
+  installCompactEditors();
+  installNativeListObserver();
   scheduleRender(0);
-  setTimeout(renderAll,200);
+  setTimeout(()=>{
+    renderAll();
+    decorateNativeFinanceLists();
+  },200);
   w.addEventListener('aurora2:state',()=>scheduleRender(0));
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible')scheduleRender(40);
