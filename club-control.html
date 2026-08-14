@@ -2,100 +2,127 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050b16">
-<title>Chairman's Office — Aurora FC 2.0</title>
-<link rel="stylesheet" href="aurora.css">
-<style>
-:root{--chair:#f3c969;--chair2:#fde7a7;--chair-rgb:243,201,105}
-.chair-notice{border-color:rgba(var(--chair-rgb),.25)!important;background:linear-gradient(90deg,rgba(var(--chair-rgb),.07),rgba(34,211,238,.025))!important;color:#f9edc8!important}
-.chair-badge{display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(var(--chair-rgb),.28);background:rgba(var(--chair-rgb),.07);color:#ffe8a7;font-size:9px;font-weight:1000}
-.chair-hero{position:relative;overflow:hidden;padding:24px;border-radius:26px;border:1px solid rgba(var(--chair-rgb),.23);background:radial-gradient(circle at 0 0,rgba(var(--chair-rgb),.16),transparent 35%),radial-gradient(circle at 100% 0,rgba(34,211,238,.08),transparent 30%),linear-gradient(145deg,rgba(34,25,7,.97),rgba(7,14,25,.99));box-shadow:var(--shadow)}
-.chair-hero:after{content:"BOARD";position:absolute;right:18px;bottom:-18px;font-size:84px;font-weight:1000;letter-spacing:-5px;color:rgba(255,255,255,.023);pointer-events:none}
-.chair-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.chair-hero h2{font-size:clamp(29px,3.4vw,49px);margin:7px 0 0;letter-spacing:-1.5px}.chair-hero p{color:var(--muted);font-size:11px;line-height:1.65;max-width:780px}
-.chair-rule{padding:17px;border-radius:18px;border:1px solid rgba(var(--chair-rgb),.18);background:rgba(var(--chair-rgb),.04)}.chair-rule small{display:block;color:#e8c66d;font-size:8px;font-weight:1000;text-transform:uppercase}.chair-rule strong{display:block;font-size:18px;margin-top:6px}.chair-rule span{display:block;color:var(--muted);font-size:8px;line-height:1.55;margin-top:6px}
-.chair-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.chair-kpi{padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.chair-kpi small{display:block;color:var(--muted);font-size:7px;font-weight:950;text-transform:uppercase}.chair-kpi strong{display:block;font-size:20px;margin-top:6px}.chair-kpi span{display:block;color:var(--muted);font-size:7px;margin-top:4px}
-.market-wrap{overflow:auto;border:1px solid rgba(255,255,255,.06);border-radius:16px}.market-table{width:100%;min-width:1040px;border-collapse:collapse}.market-table th,.market-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);text-align:left;font-size:8px}.market-table th{background:#111006;color:var(--muted);font-size:7px;text-transform:uppercase;position:sticky;top:0}.market-table tr:last-child td{border-bottom:0}.market-table tr:hover td{background:rgba(var(--chair-rgb),.025)}.market-table tr.selected td{background:rgba(var(--chair-rgb),.05)}
-.player strong{display:block;font-size:10px}.player span{display:block;color:var(--muted);font-size:7px;margin-top:2px}
-.trigger{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.09);font-size:7px;font-weight:1000}.trigger.keep{color:#b9c5cf}.trigger.review{color:#f7d77d;border-color:rgba(241,196,90,.24)}.trigger.strong{color:#9df0ba;border-color:rgba(88,233,155,.24)}.trigger.locked{color:#ffb6c2;border-color:rgba(255,112,137,.24)}.trigger.micro{color:#aeb8c2;border-color:rgba(148,163,184,.18)}
-.case-select{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:9px;align-items:end}.case-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.case-stat{padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.case-stat small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase}.case-stat strong{display:block;font-size:17px;margin-top:5px}.case-stat span{display:block;color:var(--muted);font-size:7px;margin-top:4px;line-height:1.45}
-.sale-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.sale-btn{padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.018);color:#dce5ec;text-align:center;cursor:pointer;font-weight:900}.sale-btn.active{border-color:rgba(var(--chair-rgb),.34);background:rgba(var(--chair-rgb),.07);color:#ffe8a7}.sale-btn small{display:block;color:var(--muted);font-size:7px;margin-top:3px}
-.materiality{padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.07);margin-top:10px}.materiality.good{border-color:rgba(88,233,155,.2);background:rgba(88,233,155,.03)}.materiality.micro{border-color:rgba(148,163,184,.16);background:rgba(148,163,184,.025)}.materiality strong{font-size:10px}.materiality span{display:block;color:var(--muted);font-size:8px;margin-top:4px;line-height:1.45}
-.verdict-card{position:relative;overflow:hidden;padding:18px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}.verdict-card strong{display:block;font-size:24px;letter-spacing:-.6px}.verdict-card span{display:block;color:var(--muted);font-size:9px;line-height:1.6;margin-top:6px}.verdict-card.strong{border-color:rgba(88,233,155,.28);background:rgba(88,233,155,.045)}.verdict-card.attractive{border-color:rgba(74,222,128,.22);background:rgba(74,222,128,.035)}.verdict-card.review,.verdict-card.wait{border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.04)}.verdict-card.keep,.verdict-card.micro{border-color:rgba(148,163,184,.15)}.verdict-card.block{border-color:rgba(255,112,137,.25);background:rgba(255,112,137,.035)}
-.lens-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.lens-btn{padding:13px;border-radius:15px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.018);color:#dce5ec;text-align:left;cursor:pointer}.lens-btn.active{border-color:rgba(var(--chair-rgb),.32);background:rgba(var(--chair-rgb),.06)}.lens-btn strong{display:block;font-size:10px}.lens-btn span{display:block;color:var(--muted);font-size:7px;margin-top:4px;line-height:1.45}
-.basket-list{display:grid;gap:8px}.basket-row{display:grid;grid-template-columns:minmax(0,1fr) repeat(5,minmax(80px,.3fr));gap:9px;align-items:center;padding:11px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.basket-row strong{font-size:10px}.basket-row span,.basket-row small{font-size:7px;color:var(--muted)}.basket-num{text-align:right}.basket-num b{display:block;font-size:10px}.basket-num small{display:block;margin-top:2px}
-.custom-pool{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.custom-choice{display:flex;gap:8px;align-items:flex-start;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.016);cursor:pointer}.custom-choice input{margin-top:2px}.custom-choice strong{display:block;font-size:9px}.custom-choice span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
-.compare-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.compare{padding:14px;border-radius:15px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.compare small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase}.compare strong{display:block;font-size:19px;margin-top:6px}.compare span{display:block;color:var(--muted);font-size:7px;margin-top:4px;line-height:1.45}
-.good-text{color:#79eca5!important}.bad-text{color:#ff9fb0!important}.gold-text{color:#f2cc6b!important}
-@media(max-width:1200px){.chair-kpis{grid-template-columns:repeat(3,1fr)}.case-grid{grid-template-columns:repeat(3,1fr)}.compare-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:900px){.chair-hero-grid{grid-template-columns:1fr}.lens-row{grid-template-columns:1fr}.custom-pool{grid-template-columns:1fr 1fr}.basket-row{grid-template-columns:1fr 1fr}.basket-row>div:first-child{grid-column:1/-1}}
-@media(max-width:620px){.chair-kpis,.case-grid,.compare-grid,.custom-pool,.sale-strip{grid-template-columns:1fr 1fr}.case-select{grid-template-columns:1fr}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0904">
+<title>Aurora City FC — Chairman's Office</title>
+<link rel="stylesheet" href="aurora.css?v=club-control-base">
+<link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
+<link rel="stylesheet" href="club-control-command.css?v=club-control-command-100">
 </head>
-<body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
-  <nav class="nav">
-    <a href="index.html">🏟 Aurora HQ</a>
-    <a href="finance.html">💷 Finance</a>
-    <a href="transfer.html">🔄 Transfer</a>
-    <a href="registration.html">📝 Registration</a>
-    <a href="squad.html">⚽ Squad</a>
-    <a href="scouting.html">🔎 Scouting</a>
-    <a href="income.html">💰 Income</a>
-    <a class="active" href="club-control.html">⚙ Club Control</a>
-  </nav>
-  <div class="sidebar-foot"><b>Chairman compares — Transfer simulates deployment</b><br>Squad owns the position. Income owns dividend timing. Scouting owns replacements. Transfer owns the route engine.</div>
-</aside>
 
-<main class="main"><div class="content">
-<div class="notice chair-notice" style="margin-bottom:14px"><b>Chairman's Office v0.2 — Materiality + Partial Sale + Transfer Simulation.</b> Scenario only. Nothing here sells a share or changes the live Transfer route.</div>
+<body class="aurora-entered chairman-command-page">
+<div class="aurora-game-shell is-active" id="gameShell">
 
-<header class="page-head">
-  <div><span class="eyebrow" style="color:var(--chair)">Aurora FC 2.0 • Club Control</span><h1>Chairman's Office</h1><p>Test a trim or full exit against the same deployment engine used by Transfer.</p></div>
-  <span class="chair-badge">ROTATION ENGINE v0.2</span>
+<header class="aurora-shell-header">
+  <div class="aurora-shell-header-inner">
+    <div class="aurora-shell-brand">
+      <button id="auroraShellMenuButton" aria-label="Open club navigation" aria-expanded="false">☰</button>
+      <div class="aurora-shell-crest">
+        <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="Aurora City FC">
+      </div>
+      <div class="aurora-shell-copy">
+        <h1>Aurora City FC</h1>
+        <p id="currentDepartment">CHAIRMAN'S OFFICE</p>
+      </div>
+    </div>
+
+    <div class="aurora-shell-context">
+      <div class="aurora-shell-datetime">
+        <span class="shell-clock" id="shellClock">--:--</span>
+        <span class="shell-date" id="shellDate">---</span>
+      </div>
+      <a class="shell-control shell-home" href="index.html" title="Nexus HQ">⌂</a>
+      <span class="aurora-shell-live">Live</span>
+    </div>
+  </div>
 </header>
 
-<section class="chair-hero">
-  <div class="chair-hero-grid">
-    <div>
-      <span class="eyebrow" style="color:#fbe19b">Board-level decision support</span>
-      <h2>Lock in the profit.<br>Protect the income.</h2>
-      <p>A percentage gain opens the conversation. Materiality decides whether it deserves attention. Then Aurora tests 25%, 50%, 75% or a full exit using Transfer's own allocation engine.</p>
-      <div class="action-row"><a class="btn primary" href="transfer.html">Open Transfer</a><a class="btn secondary" href="scouting.html">Open Scouting</a><a class="btn secondary" href="income.html">Open Income</a></div>
+<div class="shell-stage">
+<main class="shell-page chairman-shell-page">
+
+<section class="chairman-command-hero" id="chairmanOverview">
+  <div class="chairman-hero-copy">
+    <div class="chairman-status-line">
+      <span class="chairman-live-pill">● BOARDROOM LIVE</span>
+      <span class="chairman-version-pill">ROTATION ENGINE v0.2</span>
     </div>
-    <article class="chair-rule">
-      <small>Chairman's rule</small>
-      <strong>+6% opens review. +10% strengthens. Tiny positions are muted.</strong>
-      <span>A close ex-date can turn a rotation into WAIT FOR DIVIDEND. Caution replacements and worsening concentration can cap the verdict at REVIEW.</span>
-    </article>
+
+    <span class="chairman-eyebrow">Aurora City FC • Club Control</span>
+    <h2>Chairman's<br><span>Office</span></h2>
+    <p>Board-level decision support for profit-taking, income protection and squad rotation. Every case is scenario-only until you choose to act elsewhere.</p>
+
+    <div class="chairman-hero-actions">
+      <a class="chairman-btn primary" href="#rotationCase">Open Rotation Case</a>
+      <a class="chairman-btn secondary" href="transfer.html">Open Transfer</a>
+      <a class="chairman-btn secondary" href="scouting.html">Open Scouting</a>
+      <a class="chairman-btn secondary" href="income.html">Open Income</a>
+    </div>
+  </div>
+
+  <article class="chairman-rule-card">
+    <div class="chairman-rule-head"><span>Chairman's Rule</span><i>SCENARIO ONLY</i></div>
+    <strong>+6% opens review.<br>+10% strengthens.</strong>
+    <p>Tiny positions are muted. A close ex-date can turn a rotation into WAIT FOR DIVIDEND. Caution replacements or worsening concentration can cap the verdict at REVIEW.</p>
+    <div class="chairman-rule-lock">Nothing on this page sells shares or changes the live Transfer route.</div>
+  </article>
+</section>
+
+<section class="chairman-scoreboard">
+  <article class="chairman-score gold"><small>Squad Positions</small><strong id="kPositions">0</strong><span>Active / locked</span></article>
+  <article class="chairman-score amber"><small>Meaningful Reviews</small><strong id="kReview">0</strong><span>+6% after materiality</span></article>
+  <article class="chairman-score green"><small>Meaningful Strong</small><strong id="kStrong">0</strong><span>+10% after materiality</span></article>
+  <article class="chairman-score slate"><small>Micro Triggers</small><strong id="kMicro">0</strong><span>Tiny £ impact</span></article>
+  <article class="chairman-score cyan"><small>Active Scouts</small><strong id="kScouts">0</strong><span>Replacement pool</span></article>
+  <article class="chairman-score blue"><small>Global Network</small><strong id="kGlobal">0</strong><span>Scouting monitored</span></article>
+</section>
+
+<nav class="chairman-jumpbar" aria-label="Chairman sections">
+  <button type="button" data-chair-jump="marketBoardSection">Market Board</button>
+  <button type="button" data-chair-jump="rotationCase">Rotation Case</button>
+  <button type="button" data-chair-jump="simulationSection">Transfer Simulation</button>
+  <button type="button" data-chair-jump="comparisonSection">Before vs After</button>
+  <button type="button" data-chair-jump="guardrailsSection">Guardrails</button>
+</nav>
+
+<section class="chairman-panel market-board-panel" id="marketBoardSection">
+  <div class="chairman-panel-head">
+    <div>
+      <span class="chairman-panel-kicker">Board Watchlist</span>
+      <h3>Chairman's Market Board</h3>
+      <p class="chairman-copy">Material cases rank above percentage-only micro positions. Tap Review to load a holding into the boardroom.</p>
+    </div>
+    <span class="chairman-panel-note">LIVE SQUAD</span>
+  </div>
+
+  <div class="market-wrap">
+    <table class="market-table">
+      <thead>
+        <tr>
+          <th>Player</th><th>Account</th><th>Current Value</th><th>Book Cost</th><th>Capital P/L</th>
+          <th>Annual Income</th><th>Gain</th><th>Materiality</th><th>Trigger</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="marketRows"><tr><td colspan="10">Loading Squad…</td></tr></tbody>
+    </table>
   </div>
 </section>
 
-<section class="section chair-kpis">
-  <article class="chair-kpi"><small>Squad Positions</small><strong id="kPositions">0</strong><span>Active / locked positions</span></article>
-  <article class="chair-kpi"><small>Meaningful Reviews</small><strong class="gold-text" id="kReview">0</strong><span>+6% after materiality</span></article>
-  <article class="chair-kpi"><small>Meaningful Strong</small><strong class="good-text" id="kStrong">0</strong><span>+10% after materiality</span></article>
-  <article class="chair-kpi"><small>Micro Triggers</small><strong id="kMicro">0</strong><span>Percentage gain, tiny £ impact</span></article>
-  <article class="chair-kpi"><small>Active Scouts</small><strong id="kScouts">0</strong><span>Replacement pool</span></article>
-  <article class="chair-kpi"><small>Global Network</small><strong id="kGlobal">0</strong><span>Monitored by Scouting</span></article>
-</section>
-
-<section class="section card card-pad">
-  <div class="section-head"><div><h2>Chairman's Market Board</h2><p class="muted">Material cases rank above percentage-only micro positions.</p></div><span class="muted">Tap Review</span></div>
-  <div class="market-wrap"><table class="market-table">
-    <thead><tr><th>Player</th><th>Account</th><th>Current Value</th><th>Book Cost</th><th>Capital P/L</th><th>Annual Income</th><th>Gain</th><th>Materiality</th><th>Trigger</th><th></th></tr></thead>
-    <tbody id="marketRows"><tr><td colspan="10">Loading Squad…</td></tr></tbody>
-  </table></div>
-</section>
-
-<section class="section card card-pad" id="rotationCase">
-  <div class="section-head"><div><h2>Rotation Case</h2><p class="muted">Choose the holding, then choose how much of it to rotate.</p></div><span id="caseBadge" class="chair-badge">SELECT PLAYER</span></div>
+<section class="chairman-panel rotation-case-panel" id="rotationCase">
+  <div class="chairman-panel-head">
+    <div>
+      <span class="chairman-panel-kicker">Board Review</span>
+      <h3>Rotation Case</h3>
+      <p class="chairman-copy">Choose the holding, then choose how much of it to rotate.</p>
+    </div>
+    <span id="caseBadge" class="chairman-case-badge">SELECT PLAYER</span>
+  </div>
 
   <div class="case-select">
-    <div class="field"><label for="holdingSelect">Holding to review</label><select id="holdingSelect"></select></div>
-    <button class="btn secondary" id="refreshCase" type="button">Refresh Case</button>
+    <div class="field">
+      <label for="holdingSelect">Holding to review</label>
+      <select id="holdingSelect"></select>
+    </div>
+    <button class="chairman-btn secondary" id="refreshCase" type="button">Refresh Case</button>
   </div>
 
   <div class="sale-strip">
@@ -105,9 +132,12 @@
     <button class="sale-btn active" data-sale="1" type="button">FULL EXIT<small>100% of position</small></button>
   </div>
 
-  <div class="materiality" id="materialityBox"><strong id="materialityTitle">Materiality checking…</strong><span id="materialityMeta">Aurora considers percentage gain, £ profit, position value and income impact.</span></div>
+  <div class="materiality" id="materialityBox">
+    <strong id="materialityTitle">Materiality checking…</strong>
+    <span id="materialityMeta">Aurora considers percentage gain, £ profit, position value and income impact.</span>
+  </div>
 
-  <div class="case-grid" style="margin-top:10px">
+  <div class="case-grid">
     <div class="case-stat"><small>Shares Sold</small><strong id="caseShares">—</strong><span id="caseSharesMeta">Selected fraction</span></div>
     <div class="case-stat"><small>Cash Released</small><strong id="caseCash">—</strong><span>Transfer simulation budget</span></div>
     <div class="case-stat"><small>Profit Realised</small><strong id="caseProfit">—</strong><span id="caseProfitMeta">Proportional book-cost profit</span></div>
@@ -117,32 +147,67 @@
   </div>
 </section>
 
-<section class="section grid grid-2">
-  <article class="card card-pad">
-    <div class="section-head"><h2>Rotation Lens</h2><span class="muted">Transfer-owned simulation</span></div>
-    <div class="lens-row">
-      <button class="lens-btn active" data-lens="sustainable" type="button"><strong>Sustainable Rotation</strong><span>Transfer routes the released cash using Sustainable Scouting scores.</span></button>
-      <button class="lens-btn" data-lens="maximum" type="button"><strong>Maximum Income</strong><span>Transfer routes the same cash using Maximum Income scores.</span></button>
-      <button class="lens-btn" data-lens="custom" type="button"><strong>Custom Basket</strong><span>Choose eligible Active Scouts; Transfer still sizes the route.</span></button>
+<section class="chairman-command-grid two">
+  <article class="chairman-panel lens-panel">
+    <div class="chairman-panel-head">
+      <div><span class="chairman-panel-kicker">Replacement Strategy</span><h3>Rotation Lens</h3></div>
+      <span class="chairman-panel-note">TRANSFER-OWNED SIMULATION</span>
     </div>
-    <div id="lensNote" class="notice chair-notice" style="margin-top:10px">The live Finance mission and live Transfer route are untouched.</div>
+
+    <div class="lens-row">
+      <button class="lens-btn active" data-lens="sustainable" type="button">
+        <strong>Sustainable Rotation</strong>
+        <span>Transfer routes the released cash using Sustainable Scouting scores.</span>
+      </button>
+      <button class="lens-btn" data-lens="maximum" type="button">
+        <strong>Maximum Income</strong>
+        <span>Transfer routes the same cash using Maximum Income scores.</span>
+      </button>
+      <button class="lens-btn" data-lens="custom" type="button">
+        <strong>Custom Basket</strong>
+        <span>Choose eligible Active Scouts; Transfer still sizes the route.</span>
+      </button>
+    </div>
+
+    <div id="lensNote" class="chairman-notice">The live Finance mission and live Transfer route are untouched.</div>
   </article>
 
   <article class="verdict-card keep" id="verdictCard">
-    <small class="eyebrow" style="color:var(--chair)">Chairman's verdict</small>
+    <span class="chairman-panel-kicker">Chairman's Verdict</span>
     <strong id="verdictTitle">SELECT A PLAYER</strong>
     <span id="verdictReason">Choose a Squad holding to open the rotation case.</span>
   </article>
 </section>
 
-<section class="section card card-pad">
-  <div class="section-head"><div><h2>Transfer Simulation</h2><p class="muted" id="basketMeta">Transfer sizes the hypothetical replacement route.</p></div><div class="action-row"><a class="btn secondary" href="transfer.html">Open Transfer</a><a class="btn secondary" href="scouting.html">Promote More Scouts</a></div></div>
-  <div id="customPool" class="custom-pool" style="display:none;margin-bottom:10px"></div>
-  <div class="basket-list" id="basketList"><div class="empty-state compact"><strong>No case selected</strong><p>Select a holding above.</p></div></div>
+<section class="chairman-panel simulation-panel" id="simulationSection">
+  <div class="chairman-panel-head">
+    <div>
+      <span class="chairman-panel-kicker">Hypothetical Deployment</span>
+      <h3>Transfer Simulation</h3>
+      <p class="chairman-copy" id="basketMeta">Transfer sizes the hypothetical replacement route.</p>
+    </div>
+    <div class="chairman-hero-actions compact">
+      <a class="chairman-btn secondary" href="transfer.html">Open Transfer</a>
+      <a class="chairman-btn secondary" href="scouting.html">Promote More Scouts</a>
+    </div>
+  </div>
+
+  <div id="customPool" class="custom-pool" style="display:none"></div>
+  <div class="basket-list" id="basketList">
+    <div class="empty-state compact"><strong>No case selected</strong><p>Select a holding above.</p></div>
+  </div>
 </section>
 
-<section class="section card card-pad">
-  <div class="section-head"><div><h2>Before vs After</h2><p class="muted">Capital, income and concentration in one decision view.</p></div><span id="comparisonLens" class="chair-badge">SUSTAINABLE</span></div>
+<section class="chairman-panel comparison-panel" id="comparisonSection">
+  <div class="chairman-panel-head">
+    <div>
+      <span class="chairman-panel-kicker">Decision Economics</span>
+      <h3>Before vs After</h3>
+      <p class="chairman-copy">Capital, income and concentration in one board-level view.</p>
+    </div>
+    <span id="comparisonLens" class="chairman-case-badge">SUSTAINABLE</span>
+  </div>
+
   <div class="compare-grid">
     <div class="compare"><small>Old Income Surrendered</small><strong id="oldIncome">—</strong><span>Income attached to the sold fraction</span></div>
     <div class="compare"><small>Replacement Income</small><strong id="newIncome">—</strong><span id="newIncomeMeta">Transfer simulation</span></div>
@@ -159,8 +224,12 @@
   </div>
 </section>
 
-<section class="section card card-pad">
-  <div class="section-head"><h2>Decision Guardrails</h2><span class="muted">No automatic selling</span></div>
+<section class="chairman-panel guardrails-panel" id="guardrailsSection">
+  <div class="chairman-panel-head">
+    <div><span class="chairman-panel-kicker">Board Policy</span><h3>Decision Guardrails</h3></div>
+    <span class="chairman-panel-note">NO AUTOMATIC SELLING</span>
+  </div>
+
   <div class="calc-list">
     <div class="calc-row"><span>Percentage trigger but tiny £ impact</span><strong>MICRO POSITION — mute the noise</strong></div>
     <div class="calc-row"><span>Capital gain +6% or more</span><strong>OPEN REVIEW if materially meaningful</strong></div>
@@ -171,12 +240,42 @@
   </div>
 </section>
 
-<footer class="footer">Aurora FC 2.0 • Chairman compares • Transfer simulates • Scouting recommends • <span id="lastUpdated">—</span></footer>
-</div></main></div>
+<p class="chairman-last-update">Aurora FC 2.0 • Chairman compares • Transfer simulates • Scouting recommends • <span id="lastUpdated">—</span></p>
+</main>
+</div>
 
-<div id="toast" class="toast" style="position:fixed;right:18px;bottom:18px;z-index:100;opacity:0;transition:.2s;padding:10px 13px;border-radius:12px;border:1px solid rgba(243,201,105,.25);background:#171207;color:#fff1c7;font-size:10px;font-weight:850"></div>
+<div id="auroraShellNavigationOverlay"></div>
+<aside id="auroraShellNavigation" aria-label="Aurora club navigation">
+  <div class="aurora-shell-nav-head">
+    <div class="aurora-shell-nav-crest"><img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt=""></div>
+    <div class="aurora-shell-nav-brand"><strong>Aurora City FC</strong><span>Club Navigation 2.0</span></div>
+    <button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button>
+  </div>
+
+  <div class="aurora-shell-nav-scroll">
+    <div class="aurora-shell-nav-section">Club Command</div>
+    <a class="aurora-shell-department-row" href="index.html" data-name="Nexus HQ 2.0"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+    <div class="aurora-shell-nav-section">Football Operations</div>
+    <a class="aurora-shell-department-row" href="finance.html" data-name="Finance Command"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="scouting.html" data-name="Scouting Centre"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="transfer.html" data-name="Transfer Centre"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy the approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="registration.html" data-name="Registration"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="squad.html" data-name="Squad Hub"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="income.html" data-name="Income Centre"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+    <div class="aurora-shell-nav-section">Club</div>
+    <a class="aurora-shell-department-row is-current" href="club-control.html" data-name="Club Control"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>Chairman's Office and rotation review</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+  </div>
+</aside>
+</div>
+
+<div id="toast" class="chairman-toast"></div>
+
 <script src="aurora-core.js?v=9"></script>
 <script src="transfer-engine.js?v=020"></script>
 <script src="club-control.js?v=020"></script>
+<script src="aurora-page-shell.js?v=100"></script>
+<script src="club-control-command-ui.js?v=100"></script>
 </body>
 </html>
