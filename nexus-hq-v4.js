@@ -15,6 +15,8 @@ const set=(id,v)=>{const el=$(id);if(el)el.textContent=v??'—'};
 let dashboard=null;
 let range='1D';
 let makeupMode='BROKER';
+let portfolioSort='income';
+let holdingLookup=new Map();
 
 function parseDate(v){
   if(!v)return null;
@@ -267,6 +269,181 @@ function renderMovers(){
     </div>`).join('');
 }
 
+
+function marketMoveForTicker(ticker){
+  const wanted=tk(ticker);
+  return arr(currentMarket()?.movers).find(x=>tk(x.ticker)===wanted)||null;
+}
+
+function holdingAnnual(h){
+  return holdingIncome(h);
+}
+
+function holdingYieldPct(h){
+  const value=num(h.marketValueGbp),annual=holdingAnnual(h);
+  return value>0?(annual/value)*100:0;
+}
+
+function holdingKey(h,index){
+  return String(h.holdingId||`${h.account||'ACCOUNT'}:${tk(h.ticker)}:${index}`);
+}
+
+function renderPortfolioForm(s,m){
+  const host=$('hq41HoldingStrip');
+  if(!host)return;
+
+  const totalYield=m.value>0?(m.annual/m.value)*100:0;
+  set('hq41PortfolioCount',String(m.hs.length));
+  set('hq41PortfolioValue',money(m.value));
+  set('hq41PortfolioIncome',`${money(m.annual)}/yr`);
+  set('hq41PortfolioYield',`${totalYield.toFixed(2)}%`);
+
+  let rows=m.hs.map((h,index)=>({h,index,key:holdingKey(h,index)}));
+  if(portfolioSort==='value') rows.sort((a,b)=>num(b.h.marketValueGbp)-num(a.h.marketValueGbp));
+  else if(portfolioSort==='yield') rows.sort((a,b)=>holdingYieldPct(b.h)-holdingYieldPct(a.h));
+  else rows.sort((a,b)=>holdingAnnual(b.h)-holdingAnnual(a.h));
+
+  holdingLookup=new Map(rows.map(x=>[x.key,x.h]));
+
+  if(!rows.length){
+    host.innerHTML='<div class="hq41-empty">No active holdings available.</div>';
+    return;
+  }
+
+  host.innerHTML=rows.map(({h,key})=>{
+    const ticker=tk(h.ticker),annual=holdingAnnual(h),value=num(h.marketValueGbp);
+    const y=holdingYieldPct(h),move=marketMoveForTicker(ticker),day=num(move?.dayChangePct);
+    const pl=num(h.profitLossGbp);
+    const tone=move?(day>0?'up':day<0?'down':'flat'):(pl>=0?'up':'down');
+    return `
+      <button class="hq41-holding-card ${tone}" type="button" data-hq41-holding="${esc(key)}">
+        <div class="hq41-holding-top">
+          <span class="hq41-holding-badge">${esc(ticker.slice(0,5))}</span>
+          <div>
+            <strong>${esc(ticker)}</strong>
+            <span>${esc(h.name||ticker)}</span>
+          </div>
+          <i>${esc(h.account||'')}</i>
+        </div>
+        <div class="hq41-holding-main">
+          <div><small>Market Value</small><strong>${money(value)}</strong></div>
+          <div><small>Annual Income</small><strong>${money(annual)}</strong></div>
+        </div>
+        <div class="hq41-holding-foot">
+          <span>${y.toFixed(2)}% yield</span>
+          <b class="${tone}">${move?`${day>=0?'+':''}${day.toFixed(2)}% today`:`${pl>=0?'+':''}${money(pl)} P/L`}</b>
+        </div>
+      </button>
+    `;
+  }).join('');
+}
+
+function openHoldingDrawer(key){
+  const h=holdingLookup.get(String(key));
+  if(!h)return;
+
+  const drawer=$('hq41HoldingDrawer'),backdrop=$('hq41HoldingBackdrop'),content=$('hq41HoldingDrawerContent');
+  if(!drawer||!backdrop||!content)return;
+
+  const ticker=tk(h.ticker),annual=holdingAnnual(h),value=num(h.marketValueGbp),book=num(h.bookCostGbp);
+  const y=holdingYieldPct(h),move=marketMoveForTicker(ticker),day=move?num(move.dayChangePct):null;
+  const pl=num(h.profitLossGbp),shares=num(h.shares),price=num(h.livePriceGbp),dps=num(h.annualDpsGbp);
+
+  content.innerHTML=`
+    <div class="hq41-drawer-hero">
+      <small>${esc(h.account||'Canonical Holding')}</small>
+      <h2>${esc(ticker)}</h2>
+      <p>${esc(h.name||ticker)}</p>
+      <span>${esc(String(h.status||'ACTIVE').toUpperCase())}${h.sector?` • ${esc(h.sector)}`:''}</span>
+    </div>
+
+    <div class="hq41-drawer-metrics">
+      <div><small>Market Value</small><strong>${money(value)}</strong></div>
+      <div class="income"><small>Annual Income</small><strong>${money(annual)}</strong></div>
+      <div><small>Shares / Units</small><strong>${shares.toLocaleString('en-GB',{maximumFractionDigits:4})}</strong></div>
+      <div><small>Live Price</small><strong>${money(price)}</strong></div>
+      <div><small>Book Cost</small><strong>${money(book)}</strong></div>
+      <div class="${pl>=0?'positive':'negative'}"><small>Total P/L</small><strong>${pl>=0?'+':''}${money(pl)}</strong></div>
+      <div><small>Portfolio Yield</small><strong>${y.toFixed(2)}%</strong></div>
+      <div><small>Annual DPS</small><strong>${dps>0?money(dps):'—'}</strong></div>
+    </div>
+
+    <div class="hq41-drawer-section">
+      <h4>Live Form</h4>
+      <div class="hq41-form-line ${day==null?'neutral':day>0?'positive':day<0?'negative':'neutral'}">
+        <i>${day==null?'—':day>0?'W':day<0?'L':'D'}</i>
+        <div>
+          <strong>${day==null?'Daily market move pending':`${day>=0?'+':''}${day.toFixed(2)}% today`}</strong>
+          <span>${move?`${money(num(move.previousCloseGbp))} previous close → ${money(num(move.livePriceGbp))} live`:'Aurora 2 currently stores the live / previous-close session for this holding.'}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hq41-drawer-section">
+      <h4>Canonical Record</h4>
+      <p>${esc(h.role||'Active income-squad holding')}${h.source?` • source ${esc(h.source)}`:''}${h.sourceUpdatedAt?` • updated ${esc(fmtDate(h.sourceUpdatedAt,{day:'2-digit',month:'short',year:'numeric'}))}`:''}</p>
+    </div>
+
+    <div class="hq41-drawer-links">
+      <a href="squad.html">Open Squad Hub</a>
+      <a href="income.html">Open Income Centre</a>
+    </div>
+  `;
+
+  backdrop.hidden=false;
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden','false');
+}
+
+function closeHoldingDrawer(){
+  const drawer=$('hq41HoldingDrawer'),backdrop=$('hq41HoldingBackdrop');
+  if(drawer){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true')}
+  if(backdrop)backdrop.hidden=true;
+}
+
+function renderIncomeRace(s,m){
+  const target=625;
+  const current=m.monthly;
+  const progress=Math.max(0,Math.min(100,(current/target)*100));
+  const gap=Math.max(0,target-current);
+  const route=s.transfer?.route;
+  const routeBoost=routeIncome(route)/12;
+  const projected=current+routeBoost;
+
+  set('hq41IncomeMonthly',money(current));
+  set('hq41IncomeProgress',`${progress.toFixed(1)}% of £625`);
+  set('hq41IncomeGap',gap>0?`${money(gap)}/m`:'TARGET REACHED');
+  set('hq41IncomeAnnual',`${money(m.annual)}/yr`);
+  set('hq41IncomeProjected',routeBoost>0?`${money(projected)}/m`:'No active route');
+
+  const ring=$('hq41IncomeRing');
+  if(ring)ring.style.setProperty('--progress',`${progress*3.6}deg`);
+
+  const summary=$('hq41IncomeRaceSummary');
+  if(summary){
+    summary.textContent=gap>0
+      ?`Current monthly income is ${money(current)}. ${money(gap)} per month remains to promotion. ${routeBoost>0?`The active Transfer route would add ${money(routeBoost)} per month if fully registered.`:'No active Transfer-route income is currently being added to the projection.'}`
+      :`The £625 per month promotion target has been reached on the current canonical income run rate.`;
+  }
+
+  const milestones=[350,425,500,625];
+  let nextMarked=false;
+  const host=$('hq41IncomeMilestones');
+  if(host){
+    host.innerHTML=milestones.map(targetValue=>{
+      const hit=current>=targetValue;
+      const currentStep=!hit&&!nextMarked?(nextMarked=true,true):false;
+      return `
+        <div class="${hit?'hit':currentStep?'current':''}">
+          <small>${hit?'PROMOTED':currentStep?'NEXT DIVISION':'FUTURE DIVISION'}</small>
+          <strong>${money(targetValue)}/m</strong>
+          <span>${hit?'Milestone achieved':`${money(Math.max(0,targetValue-current))} remaining`}</span>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
 function renderDividends(s,m,nd){
   set('hq3DividendTicker',nd?tk(nd.ticker):'—');
   set('hq3DividendAmount',nd?money(nd.amount):'—');
@@ -448,7 +625,9 @@ function render(){
   renderBriefing(s,m,nd,items);
   renderLineChart(s,m);
   renderMovers();
+  renderPortfolioForm(s,m);
   renderDividends(s,m,nd);
+  renderIncomeRace(s,m);
   renderMakeup(s,m);
   renderScouting(s);
   renderAttention(items);
@@ -468,6 +647,22 @@ function wire(){
     const b=e.target.closest('[data-mode]');if(!b)return;
     makeupMode=b.dataset.mode;render();
   });
+
+  $('hq41PortfolioSort')?.addEventListener('click',e=>{
+    const b=e.target.closest('[data-hq41-sort]');if(!b)return;
+    portfolioSort=b.dataset.hq41Sort;
+    document.querySelectorAll('#hq41PortfolioSort button').forEach(x=>x.classList.toggle('active',x===b));
+    render();
+  });
+
+  $('hq41HoldingStrip')?.addEventListener('click',e=>{
+    const card=e.target.closest('[data-hq41-holding]');if(!card)return;
+    openHoldingDrawer(card.dataset.hq41Holding);
+  });
+
+  $('hq41HoldingClose')?.addEventListener('click',closeHoldingDrawer);
+  $('hq41HoldingBackdrop')?.addEventListener('click',closeHoldingDrawer);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHoldingDrawer()});
 }
 
 async function start(){

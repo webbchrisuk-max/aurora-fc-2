@@ -1,0 +1,37 @@
+{
+  "release": "NEXUS_HQ_V4_1_INCOME_PORTFOLIO",
+  "date": "2026-08-14",
+  "features": {
+    "incomePromotionRace": {
+      "targetMonthlyGbp": 625,
+      "milestones": [
+        350,
+        425,
+        500,
+        625
+      ],
+      "source": "current canonical Squad/Income run rate plus active Transfer route projection"
+    },
+    "livePortfolioForm": {
+      "sorts": [
+        "income",
+        "value",
+        "yield"
+      ],
+      "fields": [
+        "market value",
+        "annual income",
+        "yield",
+        "today move or total P/L"
+      ],
+      "clickDrawer": true
+    }
+  },
+  "backendChanges": false,
+  "calculationOwnership": "Nexus remains read-only; values are derived from existing canonical Aurora 2 state/dashboard data.",
+  "files": [
+    "index.html",
+    "nexus-hq-v4.css",
+    "nexus-hq-v4.js"
+  ]
+}
