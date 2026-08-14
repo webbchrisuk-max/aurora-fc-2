@@ -1,0 +1,29 @@
+{
+  "release": "FINANCE_UI_CONSOLIDATED_V1",
+  "date": "2026-08-14",
+  "purpose": "Stage 3 Finance UI consolidation",
+  "preConsolidationGitBlobShas": {
+    "finance.html": "80a8c61f4e4143cfc88dab7b7857b63505b74773",
+    "finance-command.css": "ed5080ba07bbe25a6f09238d297ec785d5413a7c",
+    "finance-command-v2.css": "2a77b9b420221629a66c001ad16194e523746fe5",
+    "finance-command-ui.js": "8f84a998bffe5215514adc7a685fcff7d435a661",
+    "finance-command-v2.js": "7fcc58fc7b8398fe7ad67c2f699389346fcdefa8"
+  },
+  "businessEnginesUnchanged": [
+    "finance.js?v=130",
+    "finance-funding.js?v=140",
+    "finance-house.js?v=042",
+    "aurora-core.js?v=10-stable-core",
+    "aurora-page-shell.js?v=200-stable-core"
+  ],
+  "newPresentationAssets": [
+    "finance-ui.css?v=300-consolidated",
+    "finance-ui.js?v=300-consolidated"
+  ],
+  "obsoleteAfterAcceptance": [
+    "finance-command.css",
+    "finance-command-v2.css",
+    "finance-command-ui.js",
+    "finance-command-v2.js"
+  ]
+}
