@@ -777,43 +777,53 @@ function sourceTotals(runway){
 function renderPrePaydayBreakdown(runway){
   const host=document.getElementById('fv2CashflowList');
   if(!host)return;
+
   const rows=arr(runway?.occurrences);
   if(!rows.length){
     host.innerHTML='<div class="fv2-empty">No dated commitments are currently scheduled before the next payday.</div>';
     return;
   }
 
-  const groups=new Map();
-  rows.forEach(o=>{
-    const label=o.sourceType==='HOUSE'
-      ? 'House Fund'
-      : (o.fundingSource||'Current Account');
-    const key=norm(label)||'current account';
-    const g=groups.get(key)||{label,total:0,rows:[]};
-    g.total+=Math.max(0,num(o.amount));
-    g.rows.push(o);
-    groups.set(key,g);
-  });
+  const totals=sourceTotals(runway);
+  const sourceCards=[
+    {label:'Holding Pot',value:totals.holding,cls:'holding'},
+    {label:'Current Account',value:totals.current,cls:'current'},
+    {label:'Other Pots',value:totals.other,cls:'other'},
+    {label:'House Fund',value:totals.house,cls:'house'}
+  ].filter(x=>x.value>0);
 
-  host.innerHTML=[...groups.values()].map(g=>`
-    <section class="fv21-source-group">
-      <div class="fv21-source-head">
-        <strong>${esc(g.label)}</strong>
-        <b>${money(g.total)}</b>
+  const nextFive=rows.slice(0,5);
+  const hidden=Math.max(0,rows.length-nextFive.length);
+
+  host.innerHTML=`
+    <div class="fv12-runway-summary">
+      ${sourceCards.map(x=>`
+        <div class="fv12-runway-card ${x.cls}">
+          <small>${esc(x.label)}</small>
+          <strong>${money(x.value)}</strong>
+          <span>Going out before payday</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="fv12-next-five">
+      <div class="fv12-next-five-head">
+        <span>Next five before payday</span>
+        <b>${rows.length} known payment${rows.length===1?'':'s'} total</b>
       </div>
-      <div class="fv21-source-rows">
-        ${g.rows.map(o=>`
-          <div class="fv2-cashflow-row ${o.overdue?'overdue':''}">
-            <div>
-              <strong>${esc(o.name)}</strong>
-              <span>${esc(occurrenceDateLabel(o))}${o.sourceType==='HOUSE'?' • House Ledger':''}</span>
-            </div>
-            <b>− ${money(o.amount)}</b>
+      ${nextFive.map((o,index)=>`
+        <div class="fv12-next-five-row ${o.overdue?'overdue':''}">
+          <i>${String(index+1).padStart(2,'0')}</i>
+          <div>
+            <strong>${esc(o.name)}</strong>
+            <span>${esc(occurrenceDateLabel(o))} • ${esc(o.sourceType==='HOUSE'?'House Fund':(o.fundingSource||'Current Account'))}</span>
           </div>
-        `).join('')}
-      </div>
-    </section>
-  `).join('');
+          <b>− ${money(o.amount)}</b>
+        </div>
+      `).join('')}
+      ${hidden?`<div class="fv12-hidden-note">+ ${hidden} more protected commitment${hidden===1?'':'s'} hidden from the dashboard. Open Pots & Bills to manage the full schedule.</div>`:''}
+    </div>
+  `;
 }
 
 function decorateNativeFinanceLists(){
@@ -1484,4 +1494,4 @@ if(document.readyState==='loading'){
 })(window);
 
 
-window.AuroraFinanceUI = Object.freeze({version:'1.1',release:'FINANCE_UI_V1_1_TIDY'});
+window.AuroraFinanceUI = Object.freeze({version:'1.2',release:'FINANCE_UI_V1_2_OVERVIEW_FIX'});

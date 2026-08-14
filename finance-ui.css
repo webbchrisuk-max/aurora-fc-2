@@ -2227,3 +2227,135 @@
   .finance-bill-summary{grid-template-columns:1fr}
   .finance-section-nav{grid-template-columns:1fr}
 }
+
+
+/* =========================================================
+   FINANCE UI v1.2 — OVERVIEW RUNWAY FIX
+   No long outgoing list on Command Overview.
+   ========================================================= */
+.fv12-runway-summary{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+  margin-top:11px;
+}
+.fv12-runway-card{
+  min-width:0;
+  padding:10px 11px;
+  border:1px solid rgba(88,244,255,.075);
+  border-radius:10px;
+  background:rgba(2,8,18,.35);
+}
+.fv12-runway-card.holding{
+  border-color:rgba(255,209,94,.18);
+  background:rgba(120,53,15,.06);
+}
+.fv12-runway-card.current{
+  border-color:rgba(89,255,154,.12);
+  background:rgba(6,78,59,.045);
+}
+.fv12-runway-card small{
+  display:block;
+  color:#687f73;
+  font-size:6px;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.fv12-runway-card strong{
+  display:block;
+  margin-top:5px;
+  overflow:hidden;
+  color:#edf7ff;
+  font-size:15px;
+  font-weight:1000;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.fv12-runway-card.holding strong{color:#ffe8a9}
+.fv12-runway-card span{
+  display:block;
+  margin-top:3px;
+  color:#60746a;
+  font-size:6px;
+}
+
+.fv12-next-five{
+  margin-top:8px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:11px;
+  background:rgba(2,8,18,.26);
+}
+.fv12-next-five-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 11px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  color:#70877b;
+  background:rgba(255,255,255,.01);
+  font-size:6px;
+  font-weight:1000;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.fv12-next-five-head b{
+  color:#63786d;
+  font-size:6px;
+}
+.fv12-next-five-row{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+  padding:9px 11px;
+  border-top:1px solid rgba(255,255,255,.033);
+}
+.fv12-next-five-row:first-of-type{border-top:0}
+.fv12-next-five-row>i{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  color:#789487;
+  background:rgba(89,255,154,.045);
+  font-style:normal;
+  font-size:7px;
+  font-weight:1000;
+}
+.fv12-next-five-row strong{
+  display:block;
+  color:#dfeae5;
+  font-size:8px;
+}
+.fv12-next-five-row span{
+  display:block;
+  margin-top:3px;
+  color:#64796e;
+  font-size:6px;
+}
+.fv12-next-five-row>b{
+  color:#f1abb8;
+  font-size:9px;
+  white-space:nowrap;
+}
+.fv12-next-five-row.overdue{
+  background:rgba(136,19,55,.045);
+}
+.fv12-hidden-note{
+  padding:9px 11px;
+  border-top:1px solid rgba(255,255,255,.04);
+  color:#64796e;
+  background:rgba(255,255,255,.01);
+  font-size:7px;
+  text-align:center;
+}
+
+@media(max-width:1100px){
+  .fv12-runway-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .fv12-runway-summary{grid-template-columns:1fr}
+}
