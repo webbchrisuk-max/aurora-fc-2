@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020612">
 <title>Aurora City FC — Finance Command</title>
-<meta name="aurora-finance-ui" content="FINANCE_UI_CONSOLIDATED_V1">
+<meta name="aurora-finance-ui" content="FINANCE_UI_V1_1_TIDY">
 <link rel="stylesheet" href="aurora.css?v=finance-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="finance-ui.css?v=300-consolidated">
+<link rel="stylesheet" href="finance-ui.css?v=311-tidy">
 </head>
 
 <body class="aurora-entered finance-command-page">
@@ -60,11 +60,11 @@
         </div>
       </section>
 
-      <div class="finance-tabs">
-        <button class="tab active" data-tab="overviewPanel">Command Overview</button>
-        <button class="tab" data-tab="paydayPanel">Payday Control</button>
-        <button class="tab" data-tab="potsPanel">Pots & Bills</button>
-        <button class="tab" data-tab="housePanel">House Projects</button>
+      <div class="finance-tabs finance-section-nav" aria-label="Finance sections">
+        <button class="tab active" data-tab="overviewPanel"><i>⌂</i><span><b>Command Overview</b><small>Live money position</small></span></button>
+        <button class="tab" data-tab="paydayPanel"><i>£</i><span><b>Payday Control</b><small>Protect • fund • release</small></span></button>
+        <button class="tab" data-tab="potsPanel"><i>▰</i><span><b>Pots & Bills</b><small>Progress & next five</small></span></button>
+        <button class="tab" data-tab="housePanel"><i>⌂</i><span><b>House Projects</b><small>Renovation ledger</small></span></button>
       </div>
 
       <section id="overviewPanel" class="tab-panel active">
@@ -292,8 +292,12 @@
 
         <section class="finance-command-grid two">
           <article class="finance-panel">
-            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Protected Savings</span><h3>Pots</h3></div><span class="finance-panel-note">Deadlines = pace only • extra wage P1 → P2 → P3</span></div>
-            <div id="potList"></div>
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Protected Savings</span><h3>Pot Progress</h3></div><span class="finance-panel-note">Visual progress • next payday pace</span></div>
+            <div id="financePotProgressDashboard" class="finance-pot-progress-dashboard"></div>
+            <details class="finance-manager-details" id="financeAllPotsDetails">
+              <summary><span><b>Manage all pots</b><small>Edit, archive and inspect the full pot records</small></span><i>⌄</i></summary>
+              <div class="finance-manager-body"><div id="potList"></div></div>
+            </details>
           </article>
 
           <article class="finance-panel editor-panel" id="potEditor">
@@ -322,9 +326,16 @@
 
         <section class="finance-command-grid two">
           <article class="finance-panel">
-            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Commitment Schedule</span><h3>Bills</h3></div><span class="finance-panel-note">Complete to roll recurring dates</span></div>
-            <div id="recurringRepairNotice" class="finance-notice" style="display:none"></div>
-            <div id="billList"></div>
+            <div class="finance-panel-head"><div><span class="finance-panel-kicker">Commitment Schedule</span><h3>Upcoming Bills</h3></div><span class="finance-panel-note">Next five only • full list stays tucked away</span></div>
+            <div id="financeBillSummary" class="finance-bill-summary"></div>
+            <div id="financeNextFiveBills" class="finance-next-five"></div>
+            <details class="finance-manager-details" id="financeAllBillsDetails">
+              <summary><span><b>Manage all bills</b><small id="financeAllBillsMeta">Full commitment schedule</small></span><i>⌄</i></summary>
+              <div class="finance-manager-body">
+                <div id="recurringRepairNotice" class="finance-notice" style="display:none"></div>
+                <div id="billList"></div>
+              </div>
+            </details>
           </article>
 
           <article class="finance-panel editor-panel" id="billEditor">
@@ -343,9 +354,14 @@
           </article>
         </section>
 
-        <section class="finance-panel">
-          <div class="finance-panel-head"><div><span class="finance-panel-kicker">Audit Trail</span><h3>Payment History</h3></div><span class="finance-panel-note">Safe undo trail</span></div>
-          <div id="paymentHistory"></div>
+        <section class="finance-panel finance-history-panel">
+          <details class="finance-history-details" id="financePaymentHistoryDetails">
+            <summary>
+              <div><span class="finance-panel-kicker">Audit Trail</span><h3>Payment History</h3><small id="financePaymentHistoryMeta">Collapsed • safe undo trail</small></div>
+              <i>⌄</i>
+            </summary>
+            <div class="finance-history-body"><div id="paymentHistory"></div></div>
+          </details>
         </section>
       </section>
 
@@ -473,6 +489,6 @@
 <script src="finance-house.js?v=042"></script>
 <script src="finance.js?v=130"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="finance-ui.js?v=300-consolidated"></script>
+<script src="finance-ui.js?v=311-tidy"></script>
 </body>
 </html>

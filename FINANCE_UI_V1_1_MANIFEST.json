@@ -1,0 +1,18 @@
+{
+  "release": "FINANCE_UI_V1_1_TIDY",
+  "date": "2026-08-14",
+  "changes": [
+    "pot progress bars",
+    "next five bills",
+    "bill source totals",
+    "collapsible full lists",
+    "collapsible payment history",
+    "section nav polish"
+  ],
+  "engineChanges": false,
+  "files": [
+    "finance.html",
+    "finance-ui.css",
+    "finance-ui.js"
+  ]
+}

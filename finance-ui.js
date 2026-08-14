@@ -1211,6 +1211,141 @@ function houseMetrics(s){
     .sort((a,b)=>parseDate(a.due)-parseDate(b.due))[0]||null;
   return {hpj,p,cash,target,reserved,spent,funded,remaining,available,entries,upcoming};
 }
+
+function financeUiNextBills(s){
+  return activeBills(s)
+    .filter(b=>!b.paid&&b.included!==false)
+    .map(b=>({...b,__due:parseDate(b.due)}))
+    .sort((a,b)=>{
+      const ad=a.__due?.getTime()??Infinity;
+      const bd=b.__due?.getTime()??Infinity;
+      if(ad!==bd)return ad-bd;
+      return String(a.name||'').localeCompare(String(b.name||''));
+    });
+}
+
+function financeUiPotProgress(s,pv){
+  const host=document.getElementById('financePotProgressDashboard');
+  if(!host)return;
+
+  const auto=pv?.c?.auto||{};
+  const pots=activePots(s).slice().sort((a,b)=>{
+    if(isHoldingPotName(a.name)!==isHoldingPotName(b.name))return isHoldingPotName(a.name)?-1:1;
+    const pa=num(a.priority)||2,pb=num(b.priority)||2;
+    if(pa!==pb)return pa-pb;
+    const da=parseDate(a.deadline)?.getTime()||Infinity;
+    const db=parseDate(b.deadline)?.getTime()||Infinity;
+    return da-db||String(a.name||'').localeCompare(String(b.name||''));
+  });
+
+  if(!pots.length){
+    host.innerHTML='<div class="fv2-empty">No active Finance pots yet.</div>';
+    return;
+  }
+
+  host.innerHTML=pots.map(p=>{
+    const holding=isHoldingPotName(p.name);
+    const balance=Math.max(0,num(p.balance));
+    const funded=potFunded(p);
+    const target=holding
+      ?Math.max(num(auto.holdingDynamicTarget),num(p.target))
+      :Math.max(0,num(p.target));
+    const pct=target>0?Math.min(100,(funded/target)*100):(funded>0?100:0);
+    const gap=Math.max(0,target-funded);
+    const next=holding
+      ?Math.max(0,num(pv.holdingContribution))
+      :Math.min(gap,Math.max(0,num(p.fundingPerPayday)));
+    const status=potStatus(p,holdingPot(s),pv);
+    const deadline=p.deadline?humanDate(p.deadline):'No deadline';
+
+    return `
+      <article class="finance-progress-pot ${holding?'holding':''}">
+        <div class="finance-progress-pot-head">
+          <div>
+            <small>${holding?'HOLDING POT • PROTECTED CASH':`P${num(p.priority)||2} • ${deadline}`}</small>
+            <h4>${esc(p.name)}</h4>
+          </div>
+          <button class="finance-progress-edit" data-pot-edit="${esc(p.id)}">Edit</button>
+        </div>
+        <div class="finance-progress-amounts">
+          <strong>${money(balance)}</strong>
+          <span>${target>0?`${money(target)} target`:'No fixed target'}</span>
+        </div>
+        <div class="finance-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}">
+          <i style="width:${pct.toFixed(1)}%"></i>
+        </div>
+        <div class="finance-progress-caption">
+          <b>${Math.round(pct)}% funded</b>
+          <span>${gap>0?`${money(gap)} remaining`:'Target reached'}</span>
+        </div>
+        <div class="finance-progress-foot">
+          <div><small>Next payday</small><strong>${money(next)}</strong></div>
+          <div><small>Status</small><strong class="${status.tone}">${esc(status.label)}</strong></div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function financeUiBills(s,runway){
+  const summary=document.getElementById('financeBillSummary');
+  const host=document.getElementById('financeNextFiveBills');
+  if(!summary||!host)return;
+
+  const bills=financeUiNextBills(s);
+  const next=bills.slice(0,5);
+  const holdingOut=Math.max(0,num(runway?.holding?.total));
+  const currentOut=Math.max(0,num(runway?.current?.total));
+  const otherOut=arr(runway?.sources).filter(x=>!isHoldingPotName(x.name)&&!isCurrentAccount(x.name))
+    .reduce((sum,x)=>sum+Math.max(0,num(x.total)),0);
+  const nextFiveTotal=next.reduce((sum,b)=>sum+Math.max(0,num(b.amount)),0);
+
+  summary.innerHTML=`
+    <div class="finance-bill-stat holding"><small>Holding Pot going out</small><strong>${money(holdingOut)}</strong><span>Known before payday</span></div>
+    <div class="finance-bill-stat"><small>Current Account</small><strong>${money(currentOut)}</strong><span>Known before payday</span></div>
+    <div class="finance-bill-stat"><small>Other pots</small><strong>${money(otherOut)}</strong><span>Known before payday</span></div>
+    <div class="finance-bill-stat next"><small>Next five total</small><strong>${money(nextFiveTotal)}</strong><span>${bills.length} active bill${bills.length===1?'':'s'} overall</span></div>
+  `;
+
+  if(!next.length){
+    host.innerHTML='<div class="fv2-empty">No active bills to show.</div>';
+  }else{
+    host.innerHTML=`
+      <div class="finance-next-five-head"><span>Next five commitments</span><b>Amount</b></div>
+      ${next.map((b,index)=>{
+        const due=b.__due;
+        const days=due?dayDiff(today(),due):null;
+        const dueLabel=!due?'Date needed':days<0?`Overdue ${Math.abs(days)}d`:days===0?'Due today':`Due in ${days}d`;
+        const tone=days!=null&&days<0?'overdue':days!=null&&days<=7?'soon':'';
+        return `
+          <div class="finance-next-bill ${tone}">
+            <i>${String(index+1).padStart(2,'0')}</i>
+            <div>
+              <strong>${esc(b.name)}</strong>
+              <span>${esc(dueLabel)}${due?` • ${esc(humanDate(due))}`:''} • ${esc(b.fundingSource||'Current Account')}</span>
+            </div>
+            <b>${money(b.amount)}</b>
+            <button data-bill-edit="${esc(b.id)}" class="finance-next-bill-edit">Edit</button>
+          </div>
+        `;
+      }).join('')}
+    `;
+  }
+
+  setText('financeAllBillsMeta',`${bills.length} active bill${bills.length===1?'':'s'} • expand only when you need the full schedule`);
+}
+
+function financeUiPaymentHistory(s){
+  const rows=arr(s.finance?.payments);
+  const active=rows.filter(p=>!p.reversed).length;
+  const reversed=rows.filter(p=>p.reversed).length;
+  const latest=rows.slice().sort((a,b)=>new Date(b.paidAt||0)-new Date(a.paidAt||0))[0];
+  let text=`${active} payment${active===1?'':'s'}`;
+  if(reversed)text+=` • ${reversed} undone`;
+  if(latest?.name)text+=` • latest ${latest.name}`;
+  setText('financePaymentHistoryMeta',`${text} • tap to open`);
+}
+
 function renderHouseCommand(s){
   const m=houseMetrics(s);
   setText('fv2HouseCash',money(m.cash));
@@ -1296,6 +1431,9 @@ function renderAll(){
   renderOverview(s,plan,pv,runway);
   renderPaydaySummary(s,plan,pv,runway);
   renderPotCommand(s,pv);
+  financeUiPotProgress(s,pv);
+  financeUiBills(s,runway);
+  financeUiPaymentHistory(s);
   renderHouseCommand(s);
   decorateNativeFinanceLists();
   renderPrePaydayBreakdown(runway);
@@ -1346,4 +1484,4 @@ if(document.readyState==='loading'){
 })(window);
 
 
-window.AuroraFinanceUI = Object.freeze({version:1,release:'FINANCE_UI_CONSOLIDATED_V1'});
+window.AuroraFinanceUI = Object.freeze({version:'1.1',release:'FINANCE_UI_V1_1_TIDY'});

@@ -1832,3 +1832,398 @@
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* =========================================================
+   FINANCE UI v1.1 — TIDY POTS, BILLS & HISTORY
+   ========================================================= */
+
+/* Section navigation: clearer destinations without changing tab behaviour. */
+.finance-section-nav{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px!important;
+  padding:8px!important;
+}
+.finance-section-nav .tab{
+  min-width:0;
+  min-height:54px!important;
+  display:grid!important;
+  grid-template-columns:30px minmax(0,1fr);
+  gap:9px;
+  align-items:center;
+  padding:8px 10px!important;
+  text-align:left;
+}
+.finance-section-nav .tab>i{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:rgba(255,255,255,.025);
+  color:#719887;
+  font-style:normal;
+  font-size:11px;
+  font-weight:1000;
+}
+.finance-section-nav .tab.active>i{
+  color:#d9ffe5;
+  background:rgba(89,255,154,.09);
+}
+.finance-section-nav .tab span{
+  min-width:0;
+  display:block;
+}
+.finance-section-nav .tab b{
+  display:block;
+  overflow:hidden;
+  color:inherit;
+  font-size:8px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.finance-section-nav .tab small{
+  display:block;
+  margin-top:3px;
+  overflow:hidden;
+  color:#61766c;
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:0;
+  text-overflow:ellipsis;
+  text-transform:none;
+  white-space:nowrap;
+}
+.finance-section-nav .tab.active small{color:#789888}
+
+/* Pot progress dashboard. */
+.finance-pot-progress-dashboard{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin-top:14px;
+}
+.finance-progress-pot{
+  min-width:0;
+  padding:14px;
+  border:1px solid rgba(89,255,154,.10);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 92% 0%,rgba(89,255,154,.05),transparent 38%),
+    linear-gradient(145deg,rgba(5,20,30,.78),rgba(2,8,18,.90));
+}
+.finance-progress-pot.holding{
+  grid-column:1/-1;
+  border-color:rgba(255,209,94,.21);
+  background:
+    radial-gradient(circle at 92% 0%,rgba(255,209,94,.10),transparent 38%),
+    linear-gradient(145deg,rgba(34,25,8,.27),rgba(2,8,18,.93));
+}
+.finance-progress-pot-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+.finance-progress-pot-head small{
+  color:#70877c;
+  font-size:6px;
+  font-weight:1000;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+}
+.finance-progress-pot-head h4{
+  margin:4px 0 0;
+  color:#eef8fd;
+  font-size:14px;
+}
+.finance-progress-edit,
+.finance-next-bill-edit{
+  flex:0 0 auto;
+  min-height:29px;
+  padding:0 9px;
+  border:1px solid rgba(89,255,154,.12);
+  border-radius:8px;
+  color:#9ddbb0;
+  background:rgba(89,255,154,.025);
+  font:inherit;
+  font-size:7px;
+  font-weight:950;
+  cursor:pointer;
+}
+.finance-progress-amounts{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:13px;
+}
+.finance-progress-amounts strong{
+  color:#f6fbff;
+  font-size:24px;
+  font-weight:1000;
+  letter-spacing:-.04em;
+}
+.finance-progress-pot.holding .finance-progress-amounts strong{color:#fff0b5}
+.finance-progress-amounts span{
+  color:#6d8378;
+  font-size:8px;
+}
+.finance-progress-track{
+  height:10px;
+  margin-top:10px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.035);
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+}
+.finance-progress-track i{
+  display:block;
+  height:100%;
+  min-width:2px;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#22c55e,#59ff9a,#58f4ff);
+  box-shadow:0 0 14px rgba(89,255,154,.13);
+}
+.finance-progress-pot.holding .finance-progress-track i{
+  background:linear-gradient(90deg,#d69e2e,#ffd15e,#59ff9a);
+}
+.finance-progress-caption{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:7px;
+}
+.finance-progress-caption b{color:#b9e7c6;font-size:7px}
+.finance-progress-caption span{color:#6d8378;font-size:7px}
+.finance-progress-foot{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  margin-top:10px;
+}
+.finance-progress-foot>div{
+  padding:8px 9px;
+  border:1px solid rgba(255,255,255,.045);
+  border-radius:9px;
+  background:rgba(2,8,18,.34);
+}
+.finance-progress-foot small{
+  display:block;
+  color:#647a6f;
+  font-size:6px;
+  font-weight:950;
+  text-transform:uppercase;
+}
+.finance-progress-foot strong{
+  display:block;
+  margin-top:4px;
+  color:#dce9e2;
+  font-size:9px;
+}
+.finance-progress-foot strong.good{color:#baffd0}
+.finance-progress-foot strong.warn{color:#ffe39a}
+.finance-progress-foot strong.block{color:#ffb5c3}
+.finance-progress-foot strong.info{color:#b8e7ef}
+
+/* Tucked-away native managers. */
+.finance-manager-details{
+  margin-top:11px;
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:11px;
+  background:rgba(2,8,18,.30);
+}
+.finance-manager-details>summary,
+.finance-history-details>summary{
+  list-style:none;
+  cursor:pointer;
+  user-select:none;
+}
+.finance-manager-details>summary::-webkit-details-marker,
+.finance-history-details>summary::-webkit-details-marker{display:none}
+.finance-manager-details>summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:11px 12px;
+}
+.finance-manager-details>summary span{display:block}
+.finance-manager-details>summary b{
+  display:block;
+  color:#b7c8c0;
+  font-size:8px;
+}
+.finance-manager-details>summary small{
+  display:block;
+  margin-top:3px;
+  color:#66796f;
+  font-size:6px;
+}
+.finance-manager-details>summary>i,
+.finance-history-details>summary>i{
+  color:#6f8b7c;
+  font-style:normal;
+  transition:transform .18s ease;
+}
+.finance-manager-details[open]>summary>i,
+.finance-history-details[open]>summary>i{transform:rotate(180deg)}
+.finance-manager-body{
+  padding:0 10px 10px;
+  border-top:1px solid rgba(255,255,255,.04);
+}
+
+/* Compact Bills summary + next five. */
+.finance-bill-summary{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+  margin-top:14px;
+}
+.finance-bill-stat{
+  min-width:0;
+  padding:11px;
+  border:1px solid rgba(88,244,255,.08);
+  border-radius:11px;
+  background:rgba(2,8,18,.34);
+}
+.finance-bill-stat.holding{
+  border-color:rgba(255,209,94,.18);
+  background:rgba(120,53,15,.06);
+}
+.finance-bill-stat.next{
+  border-color:rgba(89,255,154,.14);
+  background:rgba(6,78,59,.06);
+}
+.finance-bill-stat small{
+  display:block;
+  color:#6d8277;
+  font-size:6px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+.finance-bill-stat strong{
+  display:block;
+  margin-top:5px;
+  overflow:hidden;
+  color:#edf7ff;
+  font-size:17px;
+  font-weight:1000;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.finance-bill-stat.holding strong{color:#ffe6a2}
+.finance-bill-stat span{
+  display:block;
+  margin-top:4px;
+  color:#61746a;
+  font-size:6px;
+}
+.finance-next-five{
+  margin-top:9px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:12px;
+  background:rgba(2,8,18,.28);
+}
+.finance-next-five-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  padding:9px 11px;
+  border-bottom:1px solid rgba(255,255,255,.045);
+  color:#70877b;
+  background:rgba(255,255,255,.012);
+  font-size:6px;
+  font-weight:1000;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+}
+.finance-next-bill{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto auto;
+  gap:9px;
+  align-items:center;
+  padding:10px 11px;
+  border-top:1px solid rgba(255,255,255,.035);
+}
+.finance-next-bill:first-of-type{border-top:0}
+.finance-next-bill>i{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  color:#7ea18e;
+  background:rgba(89,255,154,.055);
+  font-style:normal;
+  font-size:7px;
+  font-weight:1000;
+}
+.finance-next-bill strong{
+  display:block;
+  color:#dce9e2;
+  font-size:9px;
+}
+.finance-next-bill span{
+  display:block;
+  margin-top:3px;
+  color:#66796f;
+  font-size:7px;
+}
+.finance-next-bill>b{
+  color:#eef6f1;
+  font-size:10px;
+  white-space:nowrap;
+}
+.finance-next-bill.soon{background:rgba(120,53,15,.035)}
+.finance-next-bill.overdue{background:rgba(136,19,55,.055)}
+.finance-next-bill.overdue>i{color:#ffb5c3;background:rgba(255,115,142,.08)}
+
+/* Payment history is closed until requested. */
+.finance-history-panel{padding:0!important}
+.finance-history-details>summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+}
+.finance-history-details h3{
+  margin:4px 0 0;
+  color:#edf7ff;
+  font-size:17px;
+}
+.finance-history-details summary small{
+  display:block;
+  margin-top:4px;
+  color:#66796f;
+  font-size:7px;
+}
+.finance-history-body{
+  padding:0 16px 16px;
+  border-top:1px solid rgba(255,255,255,.045);
+}
+.finance-history-body #paymentHistory{margin-top:11px}
+
+/* The native full lists are now secondary management views, not the dashboard. */
+.finance-manager-details:not([open]) #potList,
+.finance-manager-details:not([open]) #billList{display:none!important}
+
+@media(max-width:1100px){
+  .finance-section-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .finance-bill-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .finance-pot-progress-dashboard{grid-template-columns:1fr}
+  .finance-progress-pot.holding{grid-column:auto}
+  .finance-section-nav{grid-template-columns:1fr 1fr}
+  .finance-section-nav .tab small{display:none}
+  .finance-next-bill{grid-template-columns:26px minmax(0,1fr) auto}
+  .finance-next-bill-edit{grid-column:2/-1;width:max-content}
+}
+@media(max-width:520px){
+  .finance-bill-summary{grid-template-columns:1fr}
+  .finance-section-nav{grid-template-columns:1fr}
+}
