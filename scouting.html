@@ -2,159 +2,263 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050b16">
-<title>Scouting Centre — Aurora FC 2.0</title>
-<link rel="stylesheet" href="aurora.css">
-<style>
-:root{--scout:#4ade80;--scout2:#86efac;--scout-rgb:74,222,128}
-.scout-notice{border-color:rgba(var(--scout-rgb),.24)!important;background:linear-gradient(90deg,rgba(var(--scout-rgb),.07),rgba(34,211,238,.035))!important;color:#c9f7d8!important}
-.scout-hero{position:relative;overflow:hidden;padding:24px;border-radius:26px;border:1px solid rgba(var(--scout-rgb),.24);background:radial-gradient(circle at 0 0,rgba(var(--scout-rgb),.17),transparent 35%),radial-gradient(circle at 100% 0,rgba(34,211,238,.10),transparent 30%),linear-gradient(145deg,rgba(5,30,18,.97),rgba(7,14,25,.99));box-shadow:var(--shadow)}
-.scout-hero:after{content:"SCOUT";position:absolute;right:18px;bottom:-18px;font-size:90px;font-weight:1000;letter-spacing:-6px;color:rgba(255,255,255,.025);pointer-events:none}
-.scout-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.scout-hero h2{font-size:clamp(30px,3.5vw,50px);margin:7px 0 0;letter-spacing:-1.7px}.scout-hero p{color:var(--muted);font-size:11px;line-height:1.65;max-width:780px}
-.scout-badge{display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(var(--scout-rgb),.28);background:rgba(var(--scout-rgb),.07);color:#b9f7cf;font-size:9px;font-weight:1000}
-.mission-card{padding:17px;border-radius:18px;border:1px solid rgba(88,233,155,.19);background:rgba(88,233,155,.045)}.mission-card small{display:block;color:#8ff2b7;font-size:8px;font-weight:1000;text-transform:uppercase}.mission-card strong{display:block;font-size:16px;margin-top:6px}.mission-card .budget{font-size:34px;font-weight:1000;letter-spacing:-1px;margin-top:3px}.mission-card span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}
-.scout-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.scout-kpi{padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.scout-kpi small{display:block;color:var(--muted);font-size:7px;font-weight:950;text-transform:uppercase}.scout-kpi strong{display:block;font-size:21px;margin-top:6px}.scout-kpi span{display:block;color:var(--muted);font-size:7px;margin-top:4px}
-.lens-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.lens{position:relative;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);cursor:pointer}.lens.active{border-color:rgba(var(--scout-rgb),.34);background:rgba(var(--scout-rgb),.065)}.lens input{position:absolute;opacity:0}.lens strong{display:block}.lens span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}
-.weights{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.weight{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018);text-align:center}.weight small{display:block;color:var(--muted);font-size:7px}.weight strong{display:block;margin-top:5px;font-size:14px;color:#baf7cf}
-.target-list{display:grid;gap:8px}.target-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.target-card.top{border-color:rgba(var(--scout-rgb),.24);background:rgba(var(--scout-rgb),.035)}.target-copy strong{display:block;font-size:12px}.target-copy span{display:block;color:var(--muted);font-size:8px;line-height:1.55;margin-top:4px}.target-side{text-align:right}.target-score{font-size:23px;font-weight:1000}.target-side small{display:block;color:var(--muted);font-size:7px;margin-top:2px}
-.status-pill{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);font-size:7px;font-weight:1000;text-transform:uppercase;letter-spacing:.5px}.status-pill.pass{color:#9df0ba;border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.status-pill.caution{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05)}.status-pill.block{color:#ffb6c2;border-color:rgba(255,112,137,.25);background:rgba(255,112,137,.05)}
-.score-strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.score-chip{padding:4px 6px;border-radius:8px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);font-size:7px;color:#c9d4df}
-.editor-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.editor-grid .wide{grid-column:span 2}.editor-grid .full{grid-column:1/-1}
-.field small.help{display:block;color:var(--muted);font-size:7px;margin-top:4px;line-height:1.4}
-.health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.health{padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.health small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase}.health strong{display:block;font-size:15px;margin-top:4px}
-.history-list{display:grid;gap:7px}.history-row{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018)}.history-row strong{font-size:9px}.history-row span{display:block;color:var(--muted);font-size:8px;margin-top:4px}
-.locked-box{border-color:rgba(255,112,137,.20)!important;background:rgba(255,112,137,.035)!important}
-@media(max-width:1100px){.scout-kpis{grid-template-columns:repeat(3,1fr)}.weights{grid-template-columns:repeat(3,1fr)}.editor-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:900px){.scout-hero-grid,.lens-grid{grid-template-columns:1fr}.health-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:680px){.scout-kpis{grid-template-columns:1fr 1fr}.target-card{grid-template-columns:1fr}.target-side{text-align:left}.editor-grid{grid-template-columns:1fr}.editor-grid .wide,.editor-grid .full{grid-column:auto}.weights,.health-grid{grid-template-columns:1fr 1fr}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b12">
+<title>Aurora City FC — Scouting Centre</title>
+<link rel="stylesheet" href="aurora.css?v=scouting-base">
+<link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
+<link rel="stylesheet" href="scouting-command.css?v=scouting-command-100">
 </head>
-<body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
-  <nav class="nav">
-    <a href="index.html">🏟 Aurora HQ</a>
-    <a href="finance.html">💷 Finance</a>
-    <a href="transfer.html">🔄 Transfer</a>
-    <a href="squad.html">⚽ Squad</a>
-    <a href="scouting.html">🔎 Scouting</a>
-    <a href="#" data-soon="Income">💰 Income</a>
-    <a href="club-control.html">⚙ Club Control</a>
-  </nav>
-  <div class="sidebar-foot"><b>Scouting owns the recommendation</b><br>Finance sets the money. Scouting clears the targets. Transfer deploys the route.</div>
-</aside>
 
-<main class="main"><div class="content">
-<div class="notice scout-notice" style="margin-bottom:14px"><b>Scouting Centre 2.0 — Auto Bench v0.3.1.</b> Recommendations are calculated from stored evidence. Scouting does not invent missing fundamentals or change the Finance budget.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--scout)">Aurora FC 2.0 • Scouting</span><h1>Scouting Centre</h1><p>Monitor the global market, automatically promote the best evidence-qualified scouts, and hand one approved shortlist to Transfer.</p></div><span class="scout-badge">AUTO BENCH v0.3.1</span></header>
+<body class="aurora-entered scouting-command-page">
+<div class="aurora-game-shell is-active" id="gameShell">
 
-<section class="scout-hero">
-  <div class="scout-hero-grid">
-    <div><span class="eyebrow" style="color:#a7f3c0">Director of Football</span><h2>Find the income.<br>Respect the risk.</h2><p>Sustainable Income balances dividend safety, income, valuation, portfolio fit, dividend growth and business quality. Maximum Income leans harder into income while keeping the same eligibility gates.</p>
-      <div class="action-row"><button class="btn primary" id="runScouting">Run Scouting</button><button class="btn secondary" id="approveShortlist">Approve Shortlist</button><a class="btn secondary" href="transfer.html">Open Transfer</a></div>
+  <header class="aurora-shell-header">
+    <div class="aurora-shell-header-inner">
+      <div class="aurora-shell-brand">
+        <button id="auroraShellMenuButton" aria-label="Open club navigation" aria-expanded="false">☰</button>
+        <div class="aurora-shell-crest">
+          <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="Aurora City FC">
+        </div>
+        <div class="aurora-shell-copy">
+          <h1>Aurora City FC</h1>
+          <p id="currentDepartment">SCOUTING CENTRE</p>
+        </div>
+      </div>
+
+      <div class="aurora-shell-context">
+        <div class="aurora-shell-datetime">
+          <span class="shell-clock" id="shellClock">--:--</span>
+          <span class="shell-date" id="shellDate">---</span>
+        </div>
+        <a class="shell-control shell-home" href="index.html" title="Nexus HQ">⌂</a>
+        <span class="aurora-shell-live">Live</span>
+      </div>
     </div>
-    <article class="mission-card"><small>Finance mission</small><div class="budget" id="missionBudget">£0.00</div><strong id="missionStatus">NO ACTIVE MISSION</strong><span id="missionMeta">Scouting can prepare targets without a mission. Transfer cannot deploy them until Finance releases money.</span><div id="scoutingLock" class="lock" style="margin-top:10px">Scouting editor available.</div></article>
+  </header>
+
+  <div class="shell-stage">
+    <main class="shell-page scouting-shell-page">
+
+      <section class="scouting-command-hero" id="scoutingTop">
+        <div class="scouting-hero-copy">
+          <div class="scouting-status-line">
+            <span class="scouting-live-pill">● RECRUITMENT NETWORK LIVE</span>
+            <span class="scouting-version-pill">AUTO BENCH v0.3.1</span>
+          </div>
+
+          <span class="scouting-eyebrow">Aurora City FC • Director of Football</span>
+          <h2>Scouting<br><span>Centre</span></h2>
+          <p>Monitor the global market, score only the evidence Aurora actually holds, promote the strongest qualified candidates and hand one approved shortlist to Transfer.</p>
+
+          <div class="scouting-hero-actions">
+            <button class="scouting-btn primary" id="runScouting">Run Scouting</button>
+            <button class="scouting-btn secondary" id="approveShortlist">Approve Shortlist</button>
+            <a class="scouting-btn secondary" href="transfer.html">Open Transfer</a>
+          </div>
+        </div>
+
+        <article class="scouting-mission-card">
+          <div class="scouting-mission-head">
+            <span>Finance Mission</span>
+            <i>READ ONLY</i>
+          </div>
+          <div class="scouting-mission-budget" id="missionBudget">£0.00</div>
+          <strong id="missionStatus">NO ACTIVE MISSION</strong>
+          <p id="missionMeta">Scouting can prepare targets without a mission. Transfer cannot deploy them until Finance releases money.</p>
+          <div id="scoutingLock" class="scouting-lock">Active Scouting editor available.</div>
+        </article>
+      </section>
+
+      <section class="scouting-scoreboard">
+        <article class="scouting-score cyan"><small>Candidates</small><strong id="kCandidates">0</strong><span>Scouting universe</span></article>
+        <article class="scouting-score green"><small>Pass</small><strong id="kPass">0</strong><span>Transfer permitted</span></article>
+        <article class="scouting-score gold"><small>Caution</small><strong id="kCaution">0</strong><span>Controlled sizing</span></article>
+        <article class="scouting-score red"><small>Blocked</small><strong id="kBlock">0</strong><span>Not purchasable</span></article>
+        <article class="scouting-score amber"><small>Top Sustainable</small><strong id="kTopSustainable">—</strong><span id="kTopSustainableMeta">—</span></article>
+        <article class="scouting-score purple"><small>Top Maximum</small><strong id="kTopMaximum">—</strong><span id="kTopMaximumMeta">—</span></article>
+      </section>
+
+      <nav class="scouting-jumpbar" aria-label="Scouting sections">
+        <button type="button" data-scout-jump="scoutingLensSection">Strategy Lens</button>
+        <button type="button" data-scout-jump="globalNetworkSection">Global Network</button>
+        <button type="button" data-scout-jump="shortlistSection">Active Shortlist</button>
+        <button type="button" data-scout-jump="candidateLab">Candidate Lab</button>
+        <button type="button" data-scout-jump="decisionHistorySection">Decision History</button>
+      </nav>
+
+      <section class="scouting-command-grid two" id="scoutingLensSection">
+        <article class="scouting-panel lens-panel">
+          <div class="scouting-panel-head">
+            <div><span class="scouting-panel-kicker">Recruitment Strategy</span><h3>Scouting Lens</h3></div>
+            <span class="scouting-panel-note">Display & ranking</span>
+          </div>
+
+          <div class="lens-grid">
+            <label class="lens" id="lensSustainable">
+              <input type="radio" name="scoutLens" value="sustainable">
+              <strong>Sustainable Income</strong>
+              <span>Safety-led, balanced income recommendation. The default Aurora scouting lens.</span>
+            </label>
+            <label class="lens" id="lensMaximum">
+              <input type="radio" name="scoutLens" value="maximum">
+              <strong>Maximum Income</strong>
+              <span>Income-led ranking while the same eligibility gates remain in force.</span>
+            </label>
+          </div>
+
+          <div id="lensNote" class="scouting-notice good">Sustainable Income is the current lens.</div>
+        </article>
+
+        <article class="scouting-panel gates-panel">
+          <div class="scouting-panel-head">
+            <div><span class="scouting-panel-kicker">Pre-Transfer Control</span><h3>Eligibility Gates</h3></div>
+            <span class="scouting-panel-note">Before ranking</span>
+          </div>
+
+          <div class="gate-list">
+            <div><span>Dividend yield</span><strong>REQUIRED</strong></div>
+            <div><span>Dividend safety</span><strong>BLOCK &lt; 35</strong></div>
+            <div><span>Data confidence</span><strong>BLOCK &lt; 50</strong></div>
+            <div><span>Safety / confidence / yield</span><strong>CAUTION &lt;60 / &lt;75 / &gt;10%</strong></div>
+            <div><span>Dividend suspended / very high payout risk</span><strong>BLOCK</strong></div>
+            <div><span>TSCO legacy holding</span><strong>BLOCK</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="scouting-panel weights-panel">
+        <div class="scouting-panel-head">
+          <div><span class="scouting-panel-kicker">Explainable Scoring</span><h3 id="weightsTitle">Sustainable Income Weights</h3></div>
+          <span class="scouting-panel-note">Every point has an owner</span>
+        </div>
+        <div class="weights" id="weights"></div>
+      </section>
+
+      <!-- Global Network is injected here by scouting.js immediately before the ranked shortlist. -->
+
+      <section class="scouting-panel shortlist-panel" id="shortlistSection">
+        <div class="scouting-panel-head">
+          <div>
+            <span class="scouting-panel-kicker">Active Scouting</span>
+            <h3>Ranked Shortlist</h3>
+            <p class="scouting-copy" id="shortlistMeta">Run Scouting to evaluate stored candidates.</p>
+          </div>
+          <span id="scoutingStatus" class="scouting-status-chip">SCOUTING REVIEW</span>
+        </div>
+
+        <div id="editorGuard" class="scouting-notice good">Scouting can be edited. Approving the shortlist hands the current logic result to Transfer.</div>
+        <div class="target-list" id="targetList"></div>
+      </section>
+
+      <section class="scouting-command-grid two" id="candidateLab">
+        <article class="scouting-panel editor-panel">
+          <div class="scouting-panel-head">
+            <div><span class="scouting-panel-kicker">Evidence Room</span><h3>Candidate Editor</h3></div>
+            <span class="scouting-panel-note" id="editorMode">NEW CANDIDATE</span>
+          </div>
+
+          <input id="editId" type="hidden">
+
+          <div class="editor-grid">
+            <div class="field"><label for="editTicker">Ticker</label><input id="editTicker" placeholder="ARCC"></div>
+            <div class="field"><label for="editName">Company</label><input id="editName" placeholder="Company name"></div>
+            <div class="field"><label for="editAccount">Preferred broker</label><select id="editAccount"><option value="CHECK">Platform check</option><option value="IG">IG ISA</option><option value="T212">Trading 212 ISA</option></select></div>
+            <div class="field"><label for="editSector">Sector</label><input id="editSector" placeholder="Infrastructure"></div>
+
+            <div class="field"><label for="editLivePrice">Live price £</label><input id="editLivePrice" type="number" min="0" step="0.0001"><small class="help">Required for new Aurora 2 candidates.</small></div>
+            <div class="field"><label for="editYield">Dividend yield %</label><input id="editYield" type="number" min="0" step="0.01"></div>
+            <div class="field"><label for="editConfidence">Data confidence</label><input id="editConfidence" type="number" min="0" max="100" step="1" value="75"></div>
+            <div class="field"><label for="editSafety">Dividend safety</label><input id="editSafety" type="number" min="0" max="100" step="1" value="60"></div>
+
+            <div class="field"><label for="editIncome">Income score</label><input id="editIncome" type="number" min="0" max="100" step="1" placeholder="Auto from yield"><small class="help">Leave blank to score automatically from yield.</small></div>
+            <div class="field"><label for="editValuation">Valuation</label><input id="editValuation" type="number" min="0" max="100" step="1" value="55"></div>
+            <div class="field"><label for="editFit">Portfolio fit</label><input id="editFit" type="number" min="0" max="100" step="1" placeholder="Auto from Squad"><small class="help">Leave blank to derive from current Squad concentration.</small></div>
+            <div class="field"><label for="editGrowth">Dividend growth</label><input id="editGrowth" type="number" min="0" max="100" step="1" value="50"></div>
+
+            <div class="field"><label for="editQuality">Business quality</label><input id="editQuality" type="number" min="0" max="100" step="1" value="55"></div>
+            <div class="field"><label for="editDividendStatus">Dividend status</label><input id="editDividendStatus" placeholder="Active / suspended"></div>
+            <div class="field"><label for="editPayoutRisk">Payout risk</label><input id="editPayoutRisk" placeholder="Normal / very high"></div>
+          </div>
+
+          <div class="scouting-actions">
+            <button class="scouting-btn primary" id="saveCandidate">Save Candidate</button>
+            <button class="scouting-btn secondary" id="resetCandidate">Clear</button>
+          </div>
+
+          <div id="editorStatus" class="scouting-notice">Missing evidence is not silently invented. It lowers confidence or blocks a new candidate where appropriate.</div>
+        </article>
+
+        <article class="scouting-panel health-panel">
+          <div class="scouting-panel-head">
+            <div><span class="scouting-panel-kicker">Evidence Guardian</span><h3>Data Health</h3></div>
+            <span class="scouting-panel-note">Scouting evidence</span>
+          </div>
+
+          <div class="health-grid">
+            <div class="health"><small>Full evidence</small><strong id="healthFull">0</strong></div>
+            <div class="health"><small>Needs review</small><strong id="healthReview">0</strong></div>
+            <div class="health"><small>Broker check</small><strong id="healthBroker">0</strong></div>
+            <div class="health"><small>Legacy source</small><strong id="healthLegacy">0</strong></div>
+          </div>
+
+          <div id="healthNote" class="scouting-notice">Scouting scores only what is actually stored.</div>
+
+          <div class="scouting-subhead">Aurora 1 Migration</div>
+          <p class="scouting-copy">If the old approved shortlist is still in this browser, Scouting can import it once as candidate evidence. Transfer does not own this migration.</p>
+          <div id="legacySummary" class="scouting-notice">Checking browser storage…</div>
+          <div class="scouting-actions"><button class="scouting-btn secondary" id="importLegacy">Import Aurora 1 Candidates</button></div>
+        </article>
+      </section>
+
+      <section class="scouting-panel history-panel" id="decisionHistorySection">
+        <div class="scouting-panel-head">
+          <div><span class="scouting-panel-kicker">Recruitment Decisions</span><h3>Decision History</h3></div>
+          <span class="scouting-panel-note">Last 20 approvals</span>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+
+      <p class="scouting-last-update">Aurora FC 2.0 • Scouting owns recommendations • Transfer owns deployment • <span id="lastUpdated">—</span></p>
+    </main>
   </div>
-</section>
 
-<section class="section scout-kpis">
-  <article class="scout-kpi"><small>Candidates</small><strong id="kCandidates">0</strong><span>Scouting universe</span></article>
-  <article class="scout-kpi"><small>Pass</small><strong class="good" id="kPass">0</strong><span>Transfer permitted</span></article>
-  <article class="scout-kpi"><small>Caution</small><strong class="gold" id="kCaution">0</strong><span>Controlled sizing</span></article>
-  <article class="scout-kpi"><small>Blocked</small><strong class="red" id="kBlock">0</strong><span>Not purchasable</span></article>
-  <article class="scout-kpi"><small>Top Sustainable</small><strong id="kTopSustainable">—</strong><span id="kTopSustainableMeta">—</span></article>
-  <article class="scout-kpi"><small>Top Maximum</small><strong id="kTopMaximum">—</strong><span id="kTopMaximumMeta">—</span></article>
-</section>
-
-<section class="section grid grid-2">
-  <article class="card card-pad">
-    <div class="section-head"><h2>Scouting Lens</h2><span class="muted">Display & ranking</span></div>
-    <div class="lens-grid">
-      <label class="lens" id="lensSustainable"><input type="radio" name="scoutLens" value="sustainable"><strong>Sustainable Income</strong><span>Safety-led, balanced income recommendation. This is the default Aurora scouting lens.</span></label>
-      <label class="lens" id="lensMaximum"><input type="radio" name="scoutLens" value="maximum"><strong>Maximum Income</strong><span>Income-led ranking, but blocked and caution gates still apply.</span></label>
+  <div id="auroraShellNavigationOverlay"></div>
+  <aside id="auroraShellNavigation" aria-label="Aurora club navigation">
+    <div class="aurora-shell-nav-head">
+      <div class="aurora-shell-nav-crest">
+        <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="">
+      </div>
+      <div class="aurora-shell-nav-brand">
+        <strong>Aurora City FC</strong>
+        <span>Club Navigation 2.0</span>
+      </div>
+      <button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button>
     </div>
-    <div id="lensNote" class="notice good" style="margin-top:10px">Sustainable Income is the current lens.</div>
-  </article>
 
-  <article class="card card-pad">
-    <div class="section-head"><h2>Eligibility Gates</h2><span class="muted">Before ranking</span></div>
-    <div class="calc-list">
-      <div class="calc-row"><span>Dividend yield</span><strong>Required</strong></div>
-      <div class="calc-row"><span>Dividend safety</span><strong>BLOCK &lt; 35</strong></div>
-      <div class="calc-row"><span>Data confidence</span><strong>BLOCK &lt; 50</strong></div>
-      <div class="calc-row"><span>Safety / confidence / yield</span><strong>CAUTION &lt;60 / &lt;75 / &gt;10%</strong></div>
-      <div class="calc-row"><span>Dividend suspended / very high payout risk</span><strong>BLOCK</strong></div>
-      <div class="calc-row"><span>TSCO legacy holding</span><strong>BLOCK</strong></div>
+    <div class="aurora-shell-nav-scroll">
+      <div class="aurora-shell-nav-section">Club Command</div>
+      <a class="aurora-shell-department-row" href="index.html" data-name="Nexus HQ 2.0"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+      <div class="aurora-shell-nav-section">Football Operations</div>
+      <a class="aurora-shell-department-row" href="finance.html" data-name="Finance Command"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row is-current" href="scouting.html" data-name="Scouting Centre"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="transfer.html" data-name="Transfer Centre"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy the approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="registration.html" data-name="Registration"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="squad.html" data-name="Squad Hub"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+      <a class="aurora-shell-department-row" href="income.html" data-name="Income Centre"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+      <div class="aurora-shell-nav-section">Club</div>
+      <a class="aurora-shell-department-row" href="club-control.html" data-name="Club Control"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
     </div>
-  </article>
-</section>
+  </aside>
+</div>
 
-<section class="section card card-pad">
-  <div class="section-head"><h2 id="weightsTitle">Sustainable Income Weights</h2><span class="muted">Explainable scoring</span></div>
-  <div class="weights" id="weights"></div>
-</section>
+<div id="toast" class="scouting-toast"></div>
 
-<section class="section card card-pad">
-  <div class="section-head"><div><h2>Ranked Shortlist</h2><p class="muted" id="shortlistMeta">Run Scouting to evaluate stored candidates.</p></div><span id="scoutingStatus" class="good">SCOUTING REVIEW</span></div>
-  <div id="editorGuard" class="notice good" style="margin-bottom:10px">Scouting can be edited. Approving the shortlist hands the current logic result to Transfer.</div>
-  <div class="target-list" id="targetList"></div>
-</section>
-
-<section class="section grid grid-2">
-  <article class="card card-pad">
-    <div class="section-head"><h2>Candidate Editor</h2><span class="muted" id="editorMode">NEW CANDIDATE</span></div>
-    <input id="editId" type="hidden">
-    <div class="editor-grid">
-      <div class="field"><label for="editTicker">Ticker</label><input id="editTicker" placeholder="ARCC"></div>
-      <div class="field"><label for="editName">Company</label><input id="editName" placeholder="Company name"></div>
-      <div class="field"><label for="editAccount">Preferred broker</label><select id="editAccount"><option value="CHECK">Platform check</option><option value="IG">IG ISA</option><option value="T212">Trading 212 ISA</option></select></div>
-      <div class="field"><label for="editSector">Sector</label><input id="editSector" placeholder="Infrastructure"></div>
-
-      <div class="field"><label for="editLivePrice">Live price £</label><input id="editLivePrice" type="number" min="0" step="0.0001"><small class="help">Required for new Aurora 2 candidates.</small></div>
-      <div class="field"><label for="editYield">Dividend yield %</label><input id="editYield" type="number" min="0" step="0.01"></div>
-      <div class="field"><label for="editConfidence">Data confidence</label><input id="editConfidence" type="number" min="0" max="100" step="1" value="75"></div>
-      <div class="field"><label for="editSafety">Dividend safety</label><input id="editSafety" type="number" min="0" max="100" step="1" value="60"></div>
-
-      <div class="field"><label for="editIncome">Income score</label><input id="editIncome" type="number" min="0" max="100" step="1" placeholder="Auto from yield"><small class="help">Leave blank to score automatically from yield.</small></div>
-      <div class="field"><label for="editValuation">Valuation</label><input id="editValuation" type="number" min="0" max="100" step="1" value="55"></div>
-      <div class="field"><label for="editFit">Portfolio fit</label><input id="editFit" type="number" min="0" max="100" step="1" placeholder="Auto from Squad"><small class="help">Leave blank to derive from current Squad concentration.</small></div>
-      <div class="field"><label for="editGrowth">Dividend growth</label><input id="editGrowth" type="number" min="0" max="100" step="1" value="50"></div>
-      <div class="field"><label for="editQuality">Business quality</label><input id="editQuality" type="number" min="0" max="100" step="1" value="55"></div>
-      <div class="field"><label for="editDividendStatus">Dividend status</label><input id="editDividendStatus" placeholder="Active / suspended"></div>
-      <div class="field"><label for="editPayoutRisk">Payout risk</label><input id="editPayoutRisk" placeholder="Normal / very high"></div>
-    </div>
-    <div class="action-row"><button class="btn primary" id="saveCandidate">Save Candidate</button><button class="btn secondary" id="resetCandidate">Clear</button></div>
-    <div id="editorStatus" class="notice" style="margin-top:10px">Missing evidence is not silently invented. It lowers confidence or blocks a new candidate where appropriate.</div>
-  </article>
-
-  <article class="card card-pad">
-    <div class="section-head"><h2>Data Health</h2><span class="muted">Scouting evidence</span></div>
-    <div class="health-grid">
-      <div class="health"><small>Full evidence</small><strong id="healthFull">0</strong></div>
-      <div class="health"><small>Needs review</small><strong id="healthReview">0</strong></div>
-      <div class="health"><small>Broker check</small><strong id="healthBroker">0</strong></div>
-      <div class="health"><small>Legacy source</small><strong id="healthLegacy">0</strong></div>
-    </div>
-    <div id="healthNote" class="notice" style="margin-top:10px">Scouting scores only what is actually stored.</div>
-
-    <div class="section-head" style="margin-top:18px"><h2>Aurora 1 Migration</h2><span class="muted">Owned here</span></div>
-    <p class="muted" style="font-size:9px;line-height:1.6">If the old approved shortlist is still in this browser, Scouting can import it once as candidate evidence. Transfer no longer owns this migration.</p>
-    <div id="legacySummary" class="notice">Checking browser storage…</div>
-    <div class="action-row"><button class="btn secondary" id="importLegacy">Import Aurora 1 Candidates</button></div>
-  </article>
-</section>
-
-<section class="section card card-pad">
-  <div class="section-head"><h2>Decision History</h2><span class="muted">Last 20 approvals</span></div>
-  <div class="history-list" id="historyList"></div>
-</section>
-
-<footer class="footer">Aurora FC 2.0 • Scouting owns recommendations • Transfer owns deployment • <span id="lastUpdated">—</span></footer>
-</div></main></div>
-<div id="toast" class="toast" style="position:fixed;right:18px;bottom:18px;z-index:100;opacity:0;transition:.2s;padding:10px 13px;border-radius:12px;border:1px solid rgba(74,222,128,.24);background:#07150d;color:#d9fbe5;font-size:10px;font-weight:850"></div>
-<script src="aurora-core.js?v=7"></script>
+<script src="aurora-core.js?v=9"></script>
 <script src="scouting.js?v=031"></script>
+<script src="aurora-page-shell.js?v=100"></script>
+<script src="scouting-command-ui.js?v=100"></script>
 </body>
 </html>
