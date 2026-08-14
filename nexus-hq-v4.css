@@ -1839,3 +1839,37 @@
   .hq41-holding-drawer{width:100vw}
   .hq41-drawer-metrics{grid-template-columns:1fr}
 }
+
+
+/* NEXUS HQ 4.2 — DAILY TOP 5 / WORST 5 */
+.hq42-daily-form{border-color:rgba(106,168,255,.16)}
+.hq42-daily-actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.hq42-form-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.hq42-form-board{min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(2,8,18,.34)}
+.hq42-form-board.best{border-color:rgba(89,255,154,.15);background:radial-gradient(circle at 5% 0%,rgba(89,255,154,.075),transparent 34%),rgba(2,8,18,.38)}
+.hq42-form-board.worst{border-color:rgba(255,111,142,.16);background:radial-gradient(circle at 95% 0%,rgba(255,111,142,.075),transparent 34%),rgba(2,8,18,.38)}
+.hq42-form-head{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:77px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.055)}
+.hq42-form-head small{display:block;color:#718697;font-size:9px;font-weight:1000;letter-spacing:.10em}
+.hq42-form-head h4{margin:5px 0 0;color:#eef6fb;font-size:21px;letter-spacing:-.025em}
+.hq42-form-board.best .hq42-form-head h4{color:#caffda}.hq42-form-board.worst .hq42-form-head h4{color:#ffd2db}
+.hq42-form-head>span{min-height:28px;display:inline-flex;align-items:center;padding:0 9px;border-radius:999px;font-size:8px;font-weight:1000;letter-spacing:.08em}
+.hq42-form-board.best .hq42-form-head>span{color:#a7f3c2;border:1px solid rgba(89,255,154,.16);background:rgba(6,78,59,.13)}
+.hq42-form-board.worst .hq42-form-head>span{color:#ffb6c4;border:1px solid rgba(255,111,142,.17);background:rgba(136,19,55,.12)}
+.hq42-form-list{display:grid}
+.hq42-form-row{width:100%;min-width:0;min-height:91px;display:grid;grid-template-columns:34px minmax(105px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(92px,.7fr) 16px;gap:10px;align-items:center;padding:12px 14px;border:0;border-bottom:1px solid rgba(255,255,255,.045);color:#e9f2f7;background:transparent;text-align:left;font:inherit;cursor:pointer;transition:background .15s ease}
+.hq42-form-row:last-child{border-bottom:0}.hq42-form-row:hover{background:rgba(88,244,255,.035)}
+.hq42-rank{width:30px;height:30px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.075);border-radius:9px;color:#8fa2b0;background:rgba(255,255,255,.025);font-size:9px;font-style:normal;font-weight:1000}
+.hq42-form-row.best .hq42-rank{color:#b6f6ca;border-color:rgba(89,255,154,.12);background:rgba(6,78,59,.09)}
+.hq42-form-row.worst .hq42-rank{color:#ffc0cb;border-color:rgba(255,111,142,.12);background:rgba(136,19,55,.08)}
+.hq42-form-id,.hq42-form-value,.hq42-form-income,.hq42-form-move{min-width:0}
+.hq42-form-id strong{display:block;color:#f2f8fc;font-size:15px}.hq42-form-id span{display:block;margin-top:4px;overflow:hidden;color:#728797;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.hq42-form-value small,.hq42-form-income small{display:block;color:#657b8d;font-size:7px;font-weight:1000;letter-spacing:.06em}
+.hq42-form-value strong,.hq42-form-income strong{display:block;margin-top:5px;overflow:hidden;color:#dce8f0;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.hq42-form-income strong{color:#bfffd4}
+.hq42-form-move{text-align:right}.hq42-form-move strong{display:block;font-size:16px;font-weight:1000}.hq42-form-move span{display:block;margin-top:4px;font-size:8px;white-space:nowrap}
+.hq42-form-move.up strong,.hq42-form-move.up span{color:#7ef3ad}.hq42-form-move.down strong,.hq42-form-move.down span{color:#fda4af}.hq42-form-move.flat strong,.hq42-form-move.flat span{color:#fde68a}
+.hq42-form-row>b{color:#556e80;font-size:19px}
+.hq42-form-empty{min-height:160px;display:grid;place-items:center;padding:24px;color:#718697;font-size:10px;line-height:1.5;text-align:center}
+.hq42-form-note{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:10px;padding:10px 12px;border:1px solid rgba(125,211,252,.06);border-radius:10px;color:#718797;background:rgba(2,8,18,.26);font-size:9px}.hq42-form-note b{color:#8299a9;font-size:8px;font-weight:900}
+.hq41-sort,.hq41-portfolio-summary,.hq41-holding-grid{display:none}
+@media(max-width:1180px){.hq42-form-columns{grid-template-columns:1fr}}
+@media(max-width:720px){.hq42-form-row{grid-template-columns:30px minmax(0,1fr) minmax(86px,.7fr) 16px}.hq42-form-value,.hq42-form-income{display:none}.hq42-form-note{display:grid}}

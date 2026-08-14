@@ -15,7 +15,6 @@ const set=(id,v)=>{const el=$(id);if(el)el.textContent=v??'—'};
 let dashboard=null;
 let range='1D';
 let makeupMode='BROKER';
-let portfolioSort='income';
 let holdingLookup=new Map();
 
 function parseDate(v){
@@ -288,56 +287,67 @@ function holdingKey(h,index){
   return String(h.holdingId||`${h.account||'ACCOUNT'}:${tk(h.ticker)}:${index}`);
 }
 
-function renderPortfolioForm(s,m){
-  const host=$('hq41HoldingStrip');
-  if(!host)return;
-
-  const totalYield=m.value>0?(m.annual/m.value)*100:0;
-  set('hq41PortfolioCount',String(m.hs.length));
-  set('hq41PortfolioValue',money(m.value));
-  set('hq41PortfolioIncome',`${money(m.annual)}/yr`);
-  set('hq41PortfolioYield',`${totalYield.toFixed(2)}%`);
-
-  let rows=m.hs.map((h,index)=>({h,index,key:holdingKey(h,index)}));
-  if(portfolioSort==='value') rows.sort((a,b)=>num(b.h.marketValueGbp)-num(a.h.marketValueGbp));
-  else if(portfolioSort==='yield') rows.sort((a,b)=>holdingYieldPct(b.h)-holdingYieldPct(a.h));
-  else rows.sort((a,b)=>holdingAnnual(b.h)-holdingAnnual(a.h));
-
-  holdingLookup=new Map(rows.map(x=>[x.key,x.h]));
-
-  if(!rows.length){
-    host.innerHTML='<div class="hq41-empty">No active holdings available.</div>';
-    return;
-  }
-
-  host.innerHTML=rows.map(({h,key})=>{
-    const ticker=tk(h.ticker),annual=holdingAnnual(h),value=num(h.marketValueGbp);
-    const y=holdingYieldPct(h),move=marketMoveForTicker(ticker),day=num(move?.dayChangePct);
-    const pl=num(h.profitLossGbp);
-    const tone=move?(day>0?'up':day<0?'down':'flat'):(pl>=0?'up':'down');
-    return `
-      <button class="hq41-holding-card ${tone}" type="button" data-hq41-holding="${esc(key)}">
-        <div class="hq41-holding-top">
-          <span class="hq41-holding-badge">${esc(ticker.slice(0,5))}</span>
-          <div>
-            <strong>${esc(ticker)}</strong>
-            <span>${esc(h.name||ticker)}</span>
-          </div>
-          <i>${esc(h.account||'')}</i>
-        </div>
-        <div class="hq41-holding-main">
-          <div><small>Market Value</small><strong>${money(value)}</strong></div>
-          <div><small>Annual Income</small><strong>${money(annual)}</strong></div>
-        </div>
-        <div class="hq41-holding-foot">
-          <span>${y.toFixed(2)}% yield</span>
-          <b class="${tone}">${move?`${day>=0?'+':''}${day.toFixed(2)}% today`:`${pl>=0?'+':''}${money(pl)} P/L`}</b>
-        </div>
-      </button>
-    `;
-  }).join('');
+function aggregateDailyHolding(ticker,m,move){
+  const rows=m.hs.filter(h=>tk(h.ticker)===tk(ticker));
+  if(!rows.length)return null;
+  const shares=rows.reduce((sum,h)=>sum+num(h.shares),0);
+  const book=rows.reduce((sum,h)=>sum+num(h.bookCostGbp),0);
+  const value=rows.reduce((sum,h)=>sum+num(h.marketValueGbp),0);
+  const annual=rows.reduce((sum,h)=>sum+holdingAnnual(h),0);
+  const pl=rows.reduce((sum,h)=>sum+num(h.profitLossGbp),0);
+  const accounts=[...new Set(rows.map(h=>String(h.account||'').trim()).filter(Boolean))];
+  const sectors=[...new Set(rows.map(h=>String(h.sector||'').trim()).filter(Boolean))];
+  return {
+    holdingId:`NEXUS-DAILY-${tk(ticker)}`,
+    ticker:tk(ticker), name:move?.name||rows[0]?.name||tk(ticker),
+    account:accounts.join(' + ')||'Canonical Squad', shares,
+    bookCostGbp:book, marketValueGbp:value, profitLossGbp:pl,
+    annualDpsGbp:shares>0?annual/shares:0, annualIncomeGbp:annual,
+    livePriceGbp:num(move?.livePriceGbp)||num(rows[0]?.livePriceGbp),
+    sector:sectors.length===1?sectors[0]:(sectors.length?'MULTI-SECTOR':''),
+    role:'Daily Nexus portfolio form', status:'ACTIVE',
+    source:'AURORA2_CANONICAL_DAILY_FORM',
+    sourceUpdatedAt:currentMarket()?.updatedAt||currentMarket()?.generatedAt||''
+  };
 }
 
+function dailyFormRow(move,m,index,side){
+  const h=aggregateDailyHolding(move.ticker,m,move); if(!h)return '';
+  const key=`DAILY:${tk(move.ticker)}`; holdingLookup.set(key,h);
+  const pctMove=num(move.dayChangePct),cashMove=num(move.dayChangeGbp);
+  const annual=holdingAnnual(h),value=num(h.marketValueGbp);
+  const tone=pctMove>0?'up':pctMove<0?'down':'flat';
+  return `
+    <button class="hq42-form-row ${side} ${tone}" type="button" data-hq41-holding="${esc(key)}">
+      <i class="hq42-rank">${index+1}</i>
+      <div class="hq42-form-id"><strong>${esc(tk(move.ticker))}</strong><span>${esc(move.name||h.name||tk(move.ticker))}</span></div>
+      <div class="hq42-form-value"><small>MARKET VALUE</small><strong>${money(value)}</strong></div>
+      <div class="hq42-form-income"><small>ANNUAL INCOME</small><strong>${money(annual)}</strong></div>
+      <div class="hq42-form-move ${tone}"><strong>${pctMove>=0?'+':''}${pctMove.toFixed(2)}%</strong><span>${cashMove>=0?'+':''}${money(cashMove)} today</span></div>
+      <b>›</b>
+    </button>`;
+}
+
+function renderPortfolioForm(s,m){
+  const bestHost=$('hq42BestFive'),worstHost=$('hq42WorstFive');
+  if(!bestHost||!worstHost)return;
+  holdingLookup=new Map();
+  const market=currentMarket();
+  const movers=arr(market?.movers).filter(x=>Number.isFinite(Number(x.dayChangePct))).sort((a,b)=>num(b.dayChangePct)-num(a.dayChangePct));
+  const coverage=$('hq42DailyCoverage'),stamp=$('hq42DailyStamp');
+  if(!market||market.status!=='READY'||!movers.length){
+    if(coverage)coverage.textContent='ENGINE PENDING';
+    bestHost.innerHTML='<div class="hq42-form-empty">Daily form is waiting for live previous-close market data.</div>';
+    worstHost.innerHTML='<div class="hq42-form-empty">Run the Nexus Dashboard Engine to populate today’s ranking.</div>';
+    if(stamp)stamp.textContent='Market movement pending'; return;
+  }
+  const top=movers.slice(0,5);
+  const worst=[...movers].sort((a,b)=>num(a.dayChangePct)-num(b.dayChangePct)).slice(0,5);
+  if(coverage)coverage.textContent=`${movers.length} LIVE`;
+  if(stamp){const at=market.updatedAt||market.generatedAt||market.at;stamp.textContent=at?`Updated ${fmtDate(at,{hour:'2-digit',minute:'2-digit'})}`:'Live previous-close feed';}
+  bestHost.innerHTML=top.map((move,index)=>dailyFormRow(move,m,index,'best')).join('');
+  worstHost.innerHTML=worst.map((move,index)=>dailyFormRow(move,m,index,'worst')).join('');
+}
 function openHoldingDrawer(key){
   const h=holdingLookup.get(String(key));
   if(!h)return;
@@ -648,17 +658,14 @@ function wire(){
     makeupMode=b.dataset.mode;render();
   });
 
-  $('hq41PortfolioSort')?.addEventListener('click',e=>{
-    const b=e.target.closest('[data-hq41-sort]');if(!b)return;
-    portfolioSort=b.dataset.hq41Sort;
-    document.querySelectorAll('#hq41PortfolioSort button').forEach(x=>x.classList.toggle('active',x===b));
-    render();
-  });
-
-  $('hq41HoldingStrip')?.addEventListener('click',e=>{
-    const card=e.target.closest('[data-hq41-holding]');if(!card)return;
-    openHoldingDrawer(card.dataset.hq41Holding);
-  });
+  const bindDailyFormHost=id=>{
+    $(id)?.addEventListener('click',e=>{
+      const card=e.target.closest('[data-hq41-holding]');if(!card)return;
+      openHoldingDrawer(card.dataset.hq41Holding);
+    });
+  };
+  bindDailyFormHost('hq42BestFive');
+  bindDailyFormHost('hq42WorstFive');
 
   $('hq41HoldingClose')?.addEventListener('click',closeHoldingDrawer);
   $('hq41HoldingBackdrop')?.addEventListener('click',closeHoldingDrawer);
