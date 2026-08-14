@@ -2038,3 +2038,42 @@
   .hq43-pulse-grid,
   .hq43-pulse-footer{grid-template-columns:1fr}
 }
+
+
+/* =========================================================
+   NEXUS HQ 4.4 — BROKER PERFORMANCE BOARD
+   Overall + IG ISA + Trading 212 ISA
+   ========================================================= */
+.hq44-chart-controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.hq44-chart-mode{display:flex;gap:4px;padding:4px;border:1px solid rgba(125,211,252,.10);border-radius:10px;background:rgba(2,8,18,.45)}
+.hq44-chart-mode button{min-width:64px;min-height:34px;border:0;border-radius:8px;color:#7b91a1;background:transparent;font:inherit;font-size:9px;font-weight:1000;cursor:pointer}
+.hq44-chart-mode button.active{color:#e7fbff;background:rgba(8,145,178,.23)}
+
+.hq44-broker-metrics>div{position:relative;overflow:hidden}
+.hq44-broker-metrics>div:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;opacity:.75}
+.hq44-broker-metrics .overall:after{background:#58f4ff}
+.hq44-broker-metrics .ig:after{background:#ffd15e}
+.hq44-broker-metrics .t212:after{background:#b985ff}
+.hq44-broker-metrics .today:after{background:#59ff9a}
+.hq44-broker-metrics span{display:block;margin-top:5px;color:#6f8495;font-size:8px;line-height:1.35;white-space:normal}
+
+.hq44-series-legend{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 0;color:#8297a7;font-size:9px;font-weight:900}
+.hq44-series-legend span{display:inline-flex;align-items:center;gap:6px}
+.hq44-series-legend i{width:22px;height:3px;border-radius:999px;background:#58f4ff}
+.hq44-series-legend .ig i{background:#ffd15e}
+.hq44-series-legend .t212 i{background:#b985ff}
+
+.hq44-chart-shell{margin-top:9px}
+.hq44-chart-line{fill:none;stroke-width:3;vector-effect:non-scaling-stroke}
+.hq44-chart-line.overall{stroke:#58f4ff}
+.hq44-chart-line.ig{stroke:#ffd15e}
+.hq44-chart-line.t212{stroke:#b985ff}
+.hq44-chart-dot{stroke-width:2;vector-effect:non-scaling-stroke}
+.hq44-chart-dot.overall{fill:#dffcff;stroke:#0ea5e9}
+.hq44-chart-dot.ig{fill:#fff3c4;stroke:#d49a15}
+.hq44-chart-dot.t212{fill:#efddff;stroke:#8b5cf6}
+.hq44-zero-line{stroke:rgba(255,255,255,.12);stroke-width:1;stroke-dasharray:5 5;vector-effect:non-scaling-stroke}
+.hq44-history-note{margin-top:9px;padding:9px 11px;border:1px solid rgba(125,211,252,.06);border-radius:9px;color:#6f8495;background:rgba(2,8,18,.24);font-size:8px;line-height:1.45}
+
+@media(max-width:900px){.hq44-chart-controls{justify-content:flex-start}.hq44-broker-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.hq44-broker-metrics{grid-template-columns:1fr}.hq44-chart-mode{width:100%}.hq44-chart-mode button{flex:1}}

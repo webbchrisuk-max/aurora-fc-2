@@ -14,6 +14,7 @@ const $=id=>document.getElementById(id);
 const set=(id,v)=>{const el=$(id);if(el)el.textContent=v??'—'};
 let dashboard=null;
 let range='1D';
+let chartMode='RETURN';
 let makeupMode='BROKER';
 let holdingLookup=new Map();
 
@@ -151,7 +152,7 @@ function renderBriefing(s,m,nd,items){
 function renderTop(s,m,nd){
   const market=currentMarket();
   set('currentDepartment','NEXUS HQ • CLUB HEADQUARTERS');
-  document.title='Aurora City FC — Nexus HQ 4.0';
+  document.title='Aurora City FC — Nexus HQ 4.4';
   set('hq3Connection',String(s.connection?.status||'LOCAL').toUpperCase()==='CONNECTED'?'● CLUB SYSTEMS LIVE':'● CLUB SYSTEMS CHECK');
   const strategy=String(s.transfer?.route?.strategy||s.transfer?.settings?.strategy||s.scouting?.strategy||'—').toUpperCase();
   set('hq3Strategy',`STRATEGY • ${strategy}`);
@@ -184,6 +185,40 @@ function renderTop(s,m,nd){
   }
 }
 
+function hq44AccountCode(v){
+  const s=String(v||'').toLowerCase();
+  if(s.includes('212'))return 'T212';
+  if(/\big\b/.test(s)||s.includes('ig isa'))return 'IG';
+  return String(v||'').trim().toUpperCase();
+}
+
+function hq44AccountMetrics(s,account){
+  const hs=activeHoldings(s).filter(h=>hq44AccountCode(h.account)===account);
+  const value=hs.reduce((sum,h)=>sum+num(h.marketValueGbp),0);
+  const book=hs.reduce((sum,h)=>sum+num(h.bookCostGbp),0);
+  const pl=hs.reduce((sum,h)=>sum+num(h.profitLossGbp),0);
+  return {value,book,pl,returnPct:book>0?pl/book*100:0,positions:hs.length};
+}
+
+function hq44ReturnPct(value,book){
+  return num(book)>0?((num(value)-num(book))/num(book))*100:0;
+}
+
+function hq44HistoryValue(row,series,mode){
+  if(series==='overall'){
+    return mode==='VALUE'?num(row.portfolioValueGbp):hq44ReturnPct(row.portfolioValueGbp,row.bookCostGbp);
+  }
+  if(series==='ig'){
+    if(mode==='VALUE')return num(row.igValueGbp);
+    return num(row.igBookCostGbp)>0?hq44ReturnPct(row.igValueGbp,row.igBookCostGbp):null;
+  }
+  if(series==='t212'){
+    if(mode==='VALUE')return num(row.t212ValueGbp);
+    return num(row.t212BookCostGbp)>0?hq44ReturnPct(row.t212ValueGbp,row.t212BookCostGbp):null;
+  }
+  return null;
+}
+
 function historyWindow(rows,windowName){
   const now=Date.now();
   const spans={ '1D':36*3600000,'7D':7*86400000,'30D':30*86400000,'3M':93*86400000,'1Y':366*86400000};
@@ -196,20 +231,35 @@ function historyWindow(rows,windowName){
 }
 
 function renderLineChart(s,m){
-  set('hq3ChartValue',money(m.value));
-  set('hq3Book',money(m.book));
+  const ig=hq44AccountMetrics(s,'IG');
+  const t212=hq44AccountMetrics(s,'T212');
+  const overallReturn=m.book>0?m.pl/m.book*100:0;
+
   set('hq3PL',`${m.pl>=0?'+':''}${money(m.pl)}`);
   const pl=$('hq3PL');if(pl)pl.className=m.pl>=0?'positive':'negative';
+  set('hq44OverallMeta',`${money(m.value)} value • ${pct(overallReturn)} return`);
+
+  set('hq44IgPL',`${ig.pl>=0?'+':''}${money(ig.pl)}`);
+  const igPl=$('hq44IgPL');if(igPl)igPl.className=ig.pl>=0?'positive':'negative';
+  set('hq44IgMeta',`${money(ig.value)} value • ${pct(ig.returnPct)} return`);
+
+  set('hq44T212PL',`${t212.pl>=0?'+':''}${money(t212.pl)}`);
+  const tPl=$('hq44T212PL');if(tPl)tPl.className=t212.pl>=0?'positive':'negative';
+  set('hq44T212Meta',`${money(t212.value)} value • ${pct(t212.returnPct)} return`);
 
   const market=currentMarket();
   if(market&&market.status==='READY'){
     const move=num(market.portfolioTodayChangeGbp);
     set('hq3ChartToday',`${move>=0?'+':'−'}${money(Math.abs(move))}`);
     const e=$('hq3ChartToday');if(e)e.className=move>=0?'positive':'negative';
-  }else set('hq3ChartToday','—');
+    set('hq44TodayMeta',`${pct(market.portfolioTodayChangePct)} today`);
+  }else{
+    set('hq3ChartToday','—');
+    set('hq44TodayMeta','Daily market engine pending');
+  }
 
   const rows=historyWindow(dashboard?.history||[],range);
-  const svg=$('hq3PortfolioChart'),empty=$('hq3ChartEmpty');
+  const svg=$('hq3PortfolioChart'),empty=$('hq3ChartEmpty'),note=$('hq44BrokerHistoryNote');
   if(!svg)return;
   if(rows.length<2){
     svg.innerHTML='';
@@ -218,30 +268,66 @@ function renderLineChart(s,m){
   }
   if(empty)empty.hidden=true;
 
-  const vals=rows.map(r=>num(r.portfolioValueGbp));
-  let min=Math.min(...vals),max=Math.max(...vals);
-  const pad=Math.max(1,(max-min)*.16);
-  min-=pad;max+=pad;
-  const W=800,H=280,L=32,R=18,T=18,B=30;
+  const W=800,H=280,L=42,R=18,T=18,B=30;
   const x=i=>L+(W-L-R)*(i/(rows.length-1));
+  const defs=[
+    {key:'overall',cls:'overall',label:'Overall Portfolio'},
+    {key:'ig',cls:'ig',label:'IG ISA'},
+    {key:'t212',cls:'t212',label:'Trading 212 ISA'}
+  ];
+  const series=defs.map(def=>({
+    ...def,
+    points:rows.map((row,i)=>({i,value:hq44HistoryValue(row,def.key,chartMode)}))
+      .filter(p=>p.value!=null&&Number.isFinite(Number(p.value))&&(def.key==='overall'||chartMode==='RETURN'||num(p.value)>0))
+  })).filter(sx=>sx.points.length>=2);
+
+  const values=series.flatMap(sx=>sx.points.map(p=>num(p.value)));
+  if(!values.length){
+    svg.innerHTML='';
+    if(empty)empty.hidden=false;
+    return;
+  }
+
+  let min=Math.min(...values),max=Math.max(...values);
+  if(chartMode==='RETURN'){
+    min=Math.min(min,0);max=Math.max(max,0);
+  }
+  const spread=Math.max(.5,max-min);
+  const pad=spread*.16;
+  min-=pad;max+=pad;
   const y=v=>T+(H-T-B)*(1-(v-min)/(max-min||1));
-  const pts=rows.map((r,i)=>[x(i),y(num(r.portfolioValueGbp))]);
-  const line=pts.map((p,i)=>`${i?'L':'M'} ${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(' ');
-  const area=`${line} L ${pts[pts.length-1][0]} ${H-B} L ${pts[0][0]} ${H-B} Z`;
+
+  const pathFor=pts=>pts.map((p,j)=>`${j?'L':'M'} ${x(p.i).toFixed(2)} ${y(num(p.value)).toFixed(2)}`).join(' ');
+  const paths=series.map(sx=>{
+    const path=pathFor(sx.points);
+    const last=sx.points[sx.points.length-1];
+    return `<path d="${path}" class="hq44-chart-line ${sx.cls}"></path><circle cx="${x(last.i)}" cy="${y(num(last.value))}" r="3.7" class="hq44-chart-dot ${sx.cls}"></circle>`;
+  }).join('');
+
   const firstDate=new Date(rows[0].timestamp||rows[0].at);
   const lastDate=new Date(rows[rows.length-1].timestamp||rows[rows.length-1].at);
+  const axisTop=chartMode==='VALUE'?money(max):`${max.toFixed(2)}%`;
+  const axisBottom=chartMode==='VALUE'?money(min):`${min.toFixed(2)}%`;
+  const zeroLine=chartMode==='RETURN'&&min<0&&max>0
+    ?`<line x1="${L}" y1="${y(0)}" x2="${W-R}" y2="${y(0)}" class="hq44-zero-line"></line>`:'';
+
   svg.innerHTML=`
-    <defs><linearGradient id="hq3ChartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0ea5e9" stop-opacity=".26"/><stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/></linearGradient></defs>
-    <path d="${area}" class="hq3-chart-area"></path>
-    <path d="${line}" class="hq3-chart-line"></path>
-    <circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="4" class="hq3-chart-dot"></circle>
+    ${zeroLine}
+    ${paths}
     <text x="${L}" y="${H-8}" class="hq3-chart-axis">${esc(firstDate.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</text>
     <text x="${W-R}" y="${H-8}" text-anchor="end" class="hq3-chart-axis">${esc(lastDate.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}))}</text>
-    <text x="${L}" y="${T+10}" class="hq3-chart-axis">${money(max)}</text>
-    <text x="${L}" y="${H-B-6}" class="hq3-chart-axis">${money(min)}</text>
+    <text x="${L}" y="${T+10}" class="hq3-chart-axis">${esc(axisTop)}</text>
+    <text x="${L}" y="${H-B-6}" class="hq3-chart-axis">${esc(axisBottom)}</text>
   `;
-}
 
+  const hasIg=series.some(x=>x.key==='ig');
+  const hasT212=series.some(x=>x.key==='t212');
+  if(note){
+    note.textContent=hasIg&&hasT212
+      ?`${chartMode==='RETURN'?'Return %':'£ value'} history is live for Overall, IG ISA and Trading 212 ISA.`
+      :'Overall history is live. Broker-specific history starts from the first Nexus Dashboard Engine v1.1 snapshot and will build automatically each hour.';
+  }
+}
 function renderMovers(){
   const market=currentMarket();
   const status=$('hq3MarketStatus');
@@ -695,6 +781,12 @@ function wire(){
     const b=e.target.closest('[data-range]');if(!b)return;
     range=b.dataset.range;
     document.querySelectorAll('#hq3Range button').forEach(x=>x.classList.toggle('active',x===b));
+    render();
+  });
+  $('hq44ChartMode')?.addEventListener('click',e=>{
+    const b=e.target.closest('[data-chart-mode]');if(!b)return;
+    chartMode=b.dataset.chartMode;
+    document.querySelectorAll('#hq44ChartMode button').forEach(x=>x.classList.toggle('active',x===b));
     render();
   });
   $('hq3MakeupMode')?.addEventListener('click',e=>{
