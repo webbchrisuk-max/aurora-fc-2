@@ -2,105 +2,140 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050b16">
-<title>Registration Desk — Aurora FC 2.0</title>
-<link rel="stylesheet" href="aurora.css">
-<style>
-:root{--reg:#22d3ee;--reg2:#4ade80;--reg-rgb:34,211,238}
-.reg-notice{border-color:rgba(var(--reg-rgb),.24)!important;background:linear-gradient(90deg,rgba(var(--reg-rgb),.07),rgba(74,222,128,.04))!important;color:#c6f5ff!important}
-.reg-hero{position:relative;overflow:hidden;padding:24px;border-radius:26px;border:1px solid rgba(var(--reg-rgb),.24);background:radial-gradient(circle at 0 0,rgba(var(--reg-rgb),.17),transparent 35%),radial-gradient(circle at 100% 0,rgba(74,222,128,.10),transparent 32%),linear-gradient(145deg,rgba(5,22,34,.98),rgba(6,15,25,.99));box-shadow:var(--shadow)}
-.reg-hero:after{content:"SIGNED";position:absolute;right:18px;bottom:-18px;font-size:86px;font-weight:1000;letter-spacing:-5px;color:rgba(255,255,255,.025);pointer-events:none}
-.reg-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.reg-hero h2{font-size:clamp(30px,3.5vw,50px);margin:7px 0 0;letter-spacing:-1.7px}.reg-hero p{color:var(--muted);font-size:11px;line-height:1.65;max-width:780px}
-.reg-badge{display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(var(--reg-rgb),.28);background:rgba(var(--reg-rgb),.07);color:#bdefff;font-size:9px;font-weight:1000}
-.route-card{padding:17px;border-radius:18px;border:1px solid rgba(34,211,238,.18);background:rgba(34,211,238,.045)}.route-card small{display:block;color:#9beafe;font-size:8px;font-weight:1000;text-transform:uppercase}.route-card .budget{font-size:34px;font-weight:1000;letter-spacing:-1px;margin-top:4px}.route-card strong{display:block;font-size:15px;margin-top:6px}.route-card span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:5px}
-.reg-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.reg-kpi{padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.reg-kpi small{display:block;color:var(--muted);font-size:7px;font-weight:950;text-transform:uppercase}.reg-kpi strong{display:block;font-size:21px;margin-top:6px}.reg-kpi span{display:block;color:var(--muted);font-size:7px;margin-top:4px}
-.connection-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.connection-grid .full{grid-column:1/-1}
-.execution-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.execution-grid .wide{grid-column:span 2}
-.alloc-list,.queue-list,.receipt-list{display:grid;gap:8px}.alloc-row,.queue-row,.receipt-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022)}.alloc-row.ready{border-color:rgba(34,211,238,.22)}.alloc-row.confirmed{border-color:rgba(74,222,128,.22);background:rgba(74,222,128,.035)}.alloc-main strong,.queue-main strong,.receipt-main strong{display:block;font-size:11px}.alloc-main span,.queue-main span,.receipt-main span{display:block;color:var(--muted);font-size:8px;line-height:1.5;margin-top:4px}.alloc-side,.queue-side{text-align:right}
-.status-pill{display:inline-flex;padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.10);font-size:7px;font-weight:1000;text-transform:uppercase;letter-spacing:.5px}.status-pill.pass{color:#9df0ba;border-color:rgba(88,233,155,.25);background:rgba(88,233,155,.05)}.status-pill.caution{color:#f7d77d;border-color:rgba(241,196,90,.25);background:rgba(241,196,90,.05)}.status-pill.block{color:#ffb6c2;border-color:rgba(255,112,137,.25);background:rgba(255,112,137,.05)}.status-pill.info{color:#a7efff;border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.05)}
-.preview-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.preview{padding:11px;border-radius:13px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)}.preview small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:950}.preview strong{display:block;font-size:14px;margin-top:5px}
-.backend-good{border-color:rgba(74,222,128,.2)!important;background:rgba(74,222,128,.035)!important}.backend-bad{border-color:rgba(255,112,137,.20)!important;background:rgba(255,112,137,.035)!important}
-@media(max-width:1100px){.reg-kpis{grid-template-columns:repeat(3,1fr)}.execution-grid{grid-template-columns:1fr 1fr}.preview-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:900px){.reg-hero-grid,.connection-grid{grid-template-columns:1fr}.connection-grid .full{grid-column:auto}}
-@media(max-width:680px){.reg-kpis{grid-template-columns:1fr 1fr}.execution-grid{grid-template-columns:1fr}.execution-grid .wide{grid-column:auto}.preview-grid{grid-template-columns:1fr 1fr}.alloc-row,.queue-row,.receipt-row{grid-template-columns:1fr}.alloc-side,.queue-side{text-align:left}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#041117">
+<title>Aurora City FC — Registration Desk</title>
+<link rel="stylesheet" href="aurora.css?v=registration-base">
+<link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
+<link rel="stylesheet" href="registration-command.css?v=registration-command-100">
 </head>
-<body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><div class="crest">A</div><div><strong>Aurora FC 2.0</strong><small>CLUB OPERATING SYSTEM</small></div></div>
-  <nav class="nav">
-    <a href="index.html">🏟 Aurora HQ</a>
-    <a href="finance.html">💷 Finance</a>
-    <a href="transfer.html">🔄 Transfer</a>
-    <a href="registration.html">📝 Registration</a>
-    <a href="squad.html">⚽ Squad</a>
-    <a href="scouting.html">🔎 Scouting</a>
-    <a href="income.html">💰 Income</a>
-    <a href="#" data-soon="Club Control">⚙ Club Control</a>
-  </nav>
-  <div class="sidebar-foot"><b>Registration owns confirmation</b><br>Transfer says what may be bought. Registration records what actually happened. Squad changes only after AuroraData 2 confirms it.</div>
-</aside>
 
-<main class="main"><div class="content">
-<div class="notice reg-notice" style="margin-bottom:14px"><b>Purchase Registration v0.1.</b> No broker execution changes Squad until AuroraData 2 writes the transaction and returns the canonical holding.</div>
-<header class="page-head"><div><span class="eyebrow" style="color:var(--reg)">Aurora FC 2.0 • Registration</span><h1>Registration Desk</h1><p>Turn the locked Transfer route into confirmed transactions, one real execution at a time.</p></div><span class="reg-badge">CANONICAL WRITE v0.1</span></header>
+<body class="aurora-entered registration-command-page">
+<div class="aurora-game-shell is-active" id="gameShell">
 
-<section class="reg-hero">
-  <div class="reg-hero-grid">
-    <div><span class="eyebrow" style="color:#9beafe">Contract & Medical</span><h2>Plan the transfer.<br>Register the reality.</h2><p>Shares, execution price, fees and FX come from the broker confirmation. Aurora calculates the true GBP cost, writes the transaction to AuroraData 2, reads it back, then updates the exact account holding in Squad.</p>
-      <div class="action-row"><button class="btn primary" id="openExecution">Register Next Purchase</button><a class="btn secondary" href="transfer.html">Open Transfer</a><a class="btn secondary" href="squad.html">Open Squad</a></div>
+<header class="aurora-shell-header">
+  <div class="aurora-shell-header-inner">
+    <div class="aurora-shell-brand">
+      <button id="auroraShellMenuButton" aria-label="Open club navigation" aria-expanded="false">☰</button>
+      <div class="aurora-shell-crest">
+        <img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt="Aurora City FC">
+      </div>
+      <div class="aurora-shell-copy"><h1>Aurora City FC</h1><p id="currentDepartment">REGISTRATION DESK</p></div>
     </div>
-    <article class="route-card"><small>Locked Transfer route</small><div class="budget" id="routeBudget">£0.00</div><strong id="routeStatus">NO LOCKED ROUTE</strong><span id="routeMeta">Approve the Transfer route first.</span><div class="lock" id="routeLock" style="margin-top:10px">Registration cannot create its own budget.</div></article>
+    <div class="aurora-shell-context">
+      <div class="aurora-shell-datetime"><span class="shell-clock" id="shellClock">--:--</span><span class="shell-date" id="shellDate">---</span></div>
+      <a class="shell-control shell-home" href="index.html" title="Nexus HQ">⌂</a>
+      <span class="aurora-shell-live">Live</span>
+    </div>
   </div>
+</header>
+
+<div class="shell-stage">
+<main class="shell-page registration-shell-page">
+
+<section class="registration-command-hero" id="registrationTop">
+  <div class="registration-hero-copy">
+    <div class="registration-status-line">
+      <span class="registration-live-pill">● REGISTRATION DESK LIVE</span>
+      <span class="registration-version-pill">CANONICAL WRITE • AURORADATA 2</span>
+    </div>
+    <span class="registration-eyebrow">Aurora City FC • Contracts & Medical</span>
+    <h2>Registration<br><span>Desk</span></h2>
+    <p>Transfer says what may be bought. Registration records what actually happened at the broker, writes it to AuroraData 2, reads it back and only then updates the canonical Squad holding.</p>
+    <div class="registration-hero-actions">
+      <button class="registration-btn primary" id="openExecution">Register Next Purchase</button>
+      <a class="registration-btn secondary" href="transfer.html">Open Transfer</a>
+      <a class="registration-btn secondary" href="squad.html">Open Squad</a>
+    </div>
+  </div>
+
+  <article class="route-authority-card">
+    <div class="route-authority-head"><span>Locked Transfer Route</span><i>AUTHORITY</i></div>
+    <div class="route-authority-budget" id="routeBudget">£0.00</div>
+    <strong id="routeStatus">NO LOCKED ROUTE</strong>
+    <p id="routeMeta">Approve the Transfer route first.</p>
+    <div class="route-authority-lock" id="routeLock">Registration cannot create its own budget.</div>
+  </article>
 </section>
 
-<section class="section reg-kpis">
-  <article class="reg-kpi"><small>Planned Route</small><strong id="kPlanned">£0.00</strong><span>Transfer authority</span></article>
-  <article class="reg-kpi"><small>Confirmed Cost</small><strong class="good" id="kConfirmed">£0.00</strong><span>AuroraData 2 receipts</span></article>
-  <article class="reg-kpi"><small>Remaining</small><strong id="kRemaining">£0.00</strong><span>Still to register</span></article>
-  <article class="reg-kpi"><small>Confirmed Purchases</small><strong id="kPurchases">0</strong><span>Backend-confirmed</span></article>
-  <article class="reg-kpi"><small>Backend</small><strong id="kBackend">OFFLINE</strong><span id="kBackendMeta">Connect AuroraData 2</span></article>
+<section class="registration-scoreboard">
+  <article class="registration-score cyan"><small>Planned Route</small><strong id="kPlanned">£0.00</strong><span>Transfer authority</span></article>
+  <article class="registration-score green"><small>Confirmed Cost</small><strong id="kConfirmed">£0.00</strong><span>AuroraData 2 receipts</span></article>
+  <article class="registration-score gold"><small>Remaining</small><strong id="kRemaining">£0.00</strong><span>Still to register</span></article>
+  <article class="registration-score purple"><small>Confirmed Purchases</small><strong id="kPurchases">0</strong><span>Backend-confirmed</span></article>
+  <article class="registration-score backend"><small>Backend</small><strong id="kBackend">OFFLINE</strong><span id="kBackendMeta">Connect AuroraData 2</span></article>
 </section>
 
-<section class="section grid grid-2">
-  <article class="card card-pad">
-    <div class="section-head"><h2>AuroraData 2 Connection</h2><span id="connectionState" class="muted">NOT CONNECTED</span></div>
-    <div class="notice"><b>Spreadsheet ready:</b> <a href="https://docs.google.com/spreadsheets/d/1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig/edit" target="_blank" rel="noopener">AuroraData 2</a><br><span style="font-size:8px">ID: 1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig</span></div>
-    <div class="connection-grid" style="margin-top:12px">
+<nav class="registration-jumpbar" aria-label="Registration sections">
+  <button type="button" data-reg-jump="connectionSection">AuroraData 2</button>
+  <button type="button" data-reg-jump="allocationsSection">Approved Route</button>
+  <button type="button" data-reg-jump="executionSection">Broker Execution</button>
+  <button type="button" data-reg-jump="queueSection">Queue & Receipts</button>
+</nav>
+
+<section class="registration-command-grid two" id="connectionSection">
+  <article class="registration-panel backend-panel">
+    <div class="registration-panel-head">
+      <div><span class="registration-panel-kicker">Canonical Backend</span><h3>AuroraData 2 Connection</h3></div>
+      <span id="connectionState" class="connection-chip">NOT CONNECTED</span>
+    </div>
+
+    <div class="backend-identity">
+      <small>Canonical Spreadsheet</small>
+      <strong>AuroraData 2</strong>
+      <span>Transactions → read-back → canonical Squad holding</span>
+    </div>
+
+    <div class="connection-grid">
       <div class="field full"><label for="backendEndpoint">Apps Script web-app URL</label><input id="backendEndpoint" placeholder="https://script.google.com/macros/s/.../exec"></div>
       <div class="field"><label for="backendToken">Private token</label><input id="backendToken" type="password" autocomplete="off" placeholder="AURORA_DATA2_TOKEN"></div>
       <div class="field"><label>Backend mode</label><input value="Write → read-back → Squad" readonly></div>
     </div>
-    <div class="action-row"><button class="btn primary" id="saveConnection">Save Connection</button><button class="btn secondary" id="testConnection">Test Connection</button><button class="btn secondary" id="seedSquad">Seed Squad Holdings</button></div>
-    <div id="connectionNote" class="notice" style="margin-top:10px">Deploy the supplied Apps Script once, paste its web-app URL and private token here, then test.</div>
+
+    <div class="registration-actions">
+      <button class="registration-btn primary" id="saveConnection">Save Connection</button>
+      <button class="registration-btn secondary" id="testConnection">Test Connection</button>
+      <button class="registration-btn secondary" id="seedSquad">Seed Squad Holdings</button>
+    </div>
+    <div id="connectionNote" class="registration-notice">Use the same AuroraData 2 connection as the rest of Aurora.</div>
   </article>
 
-  <article class="card card-pad">
-    <div class="section-head"><h2>Registration Rules</h2><span class="cyan">PRE-CHECKS</span></div>
-    <div class="calc-list">
-      <div class="calc-row"><span>Route</span><strong>Must be locked</strong></div>
-      <div class="calc-row"><span>Broker/account</span><strong>Must match allocation</strong></div>
-      <div class="calc-row"><span>Shares & price</span><strong>&gt; 0</strong></div>
-      <div class="calc-row"><span>FX</span><strong>Required for non-GBP</strong></div>
-      <div class="calc-row"><span>GBP reconciliation</span><strong>Backend re-calculates</strong></div>
-      <div class="calc-row"><span>Duplicate transaction</span><strong>Idempotent / blocked from double write</strong></div>
-      <div class="calc-row"><span>Squad update</span><strong>Only after backend confirmation</strong></div>
+  <article class="registration-panel rules-panel">
+    <div class="registration-panel-head">
+      <div><span class="registration-panel-kicker">Registration Control</span><h3>Pre-Checks</h3></div>
+      <span class="rules-chip">BEFORE WRITE</span>
+    </div>
+
+    <div class="registration-rule-list">
+      <div><i>01</i><span>Route</span><strong>Must be locked</strong></div>
+      <div><i>02</i><span>Broker / account</span><strong>Must match allocation</strong></div>
+      <div><i>03</i><span>Shares & price</span><strong>&gt; 0</strong></div>
+      <div><i>04</i><span>FX</span><strong>Required for non-GBP</strong></div>
+      <div><i>05</i><span>GBP reconciliation</span><strong>Backend recalculates</strong></div>
+      <div><i>06</i><span>Duplicate transaction</span><strong>Idempotent</strong></div>
+      <div><i>07</i><span>Squad update</span><strong>Only after confirmation</strong></div>
     </div>
   </article>
 </section>
 
-<section class="section card card-pad">
-  <div class="section-head"><h2>Approved Route Purchases</h2><span id="allocationCount" class="muted">0 allocations</span></div>
+<section class="registration-panel approved-route-panel" id="allocationsSection">
+  <div class="registration-panel-head">
+    <div><span class="registration-panel-kicker">Transfer Handoff</span><h3>Approved Route Purchases</h3></div>
+    <span id="allocationCount" class="registration-panel-note">0 allocations</span>
+  </div>
   <div id="allocationList" class="alloc-list"></div>
 </section>
 
-<section class="section card card-pad" id="executionSection">
-  <div class="section-head"><h2>Broker Execution</h2><span id="executionState" class="muted">WAITING</span></div>
+<section class="registration-panel execution-panel" id="executionSection">
+  <div class="registration-panel-head">
+    <div><span class="registration-panel-kicker">Broker Reality</span><h3>Broker Execution</h3></div>
+    <span id="executionState" class="execution-chip">WAITING</span>
+  </div>
+
   <input type="hidden" id="draftId">
   <input type="hidden" id="transactionId">
   <input type="hidden" id="clientRequestId">
+
   <div class="execution-grid">
     <div class="field wide"><label for="regAllocation">Route purchase</label><select id="regAllocation"></select></div>
     <div class="field"><label for="regDate">Trade date</label><input id="regDate" type="date"></div>
@@ -114,34 +149,77 @@
     <div class="field"><label for="regFees">Fees</label><input id="regFees" type="number" min="0" step="0.01" value="0"></div>
   </div>
 
-  <div class="preview-grid section">
-    <div class="preview"><small>Planned</small><strong id="pPlanned">£0.00</strong></div>
-    <div class="preview"><small>Actual GBP</small><strong id="pActual">£0.00</strong></div>
-    <div class="preview"><small>Difference</small><strong id="pDifference">£0.00</strong></div>
-    <div class="preview"><small>Previous shares</small><strong id="pPreviousShares">0</strong></div>
-    <div class="preview"><small>Expected new shares</small><strong id="pNewShares">0</strong></div>
-    <div class="preview"><small>Expected new avg</small><strong id="pNewAvg">£0.00</strong></div>
+  <div class="execution-preview">
+    <div><small>Planned</small><strong id="pPlanned">£0.00</strong></div>
+    <div><small>Actual GBP</small><strong id="pActual">£0.00</strong></div>
+    <div><small>Difference</small><strong id="pDifference">£0.00</strong></div>
+    <div><small>Previous shares</small><strong id="pPreviousShares">0</strong></div>
+    <div><small>Expected new shares</small><strong id="pNewShares">0</strong></div>
+    <div><small>Expected new avg</small><strong id="pNewAvg">£0.00</strong></div>
   </div>
-  <div id="precheckNote" class="notice" style="margin-top:10px">Select a locked-route purchase and enter the broker execution.</div>
-  <div class="action-row"><button class="btn secondary" id="saveDraft">Save Draft</button><button class="btn primary" id="registerPurchase">Register & Confirm</button><button class="btn secondary" id="clearExecution">Clear</button></div>
+
+  <div id="precheckNote" class="registration-notice">Select a locked-route purchase and enter the broker execution.</div>
+  <div class="registration-actions">
+    <button class="registration-btn secondary" id="saveDraft">Save Draft</button>
+    <button class="registration-btn primary" id="registerPurchase">Register & Confirm</button>
+    <button class="registration-btn secondary" id="clearExecution">Clear</button>
+  </div>
 </section>
 
-<section class="section grid grid-2">
-  <article class="card card-pad">
-    <div class="section-head"><h2>Registration Queue</h2><span id="queueCount" class="muted">0 drafts</span></div>
+<section class="registration-command-grid two" id="queueSection">
+  <article class="registration-panel">
+    <div class="registration-panel-head">
+      <div><span class="registration-panel-kicker">Work Queue</span><h3>Registration Queue</h3></div>
+      <span id="queueCount" class="registration-panel-note">0 drafts</span>
+    </div>
     <div id="queueList" class="queue-list"></div>
   </article>
-  <article class="card card-pad">
-    <div class="section-head"><h2>Backend Receipts</h2><span id="receiptCount" class="muted">0 receipts</span></div>
+
+  <article class="registration-panel receipts-panel">
+    <div class="registration-panel-head">
+      <div><span class="registration-panel-kicker">Canonical Confirmation</span><h3>Backend Receipts</h3></div>
+      <span id="receiptCount" class="registration-panel-note">0 receipts</span>
+    </div>
     <div id="receiptList" class="receipt-list"></div>
   </article>
 </section>
 
-<footer class="footer">Aurora FC 2.0 • Registration owns canonical purchase confirmation • <span id="lastUpdated">—</span></footer>
-</div></main></div>
-<div id="toast" class="toast" style="position:fixed;right:18px;bottom:18px;z-index:100;opacity:0;transition:.2s;padding:10px 13px;border-radius:12px;border:1px solid rgba(34,211,238,.24);background:#06131b;color:#d9f8ff;font-size:10px;font-weight:850"></div>
+<p class="registration-last-update">Aurora FC 2.0 • Registration owns canonical purchase confirmation • <span id="lastUpdated">—</span></p>
+</main>
+</div>
+
+<div id="auroraShellNavigationOverlay"></div>
+<aside id="auroraShellNavigation" aria-label="Aurora club navigation">
+  <div class="aurora-shell-nav-head">
+    <div class="aurora-shell-nav-crest"><img src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png" alt=""></div>
+    <div class="aurora-shell-nav-brand"><strong>Aurora City FC</strong><span>Club Navigation 2.0</span></div>
+    <button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button>
+  </div>
+
+  <div class="aurora-shell-nav-scroll">
+    <div class="aurora-shell-nav-section">Club Command</div>
+    <a class="aurora-shell-department-row" href="index.html" data-name="Nexus HQ 2.0"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+    <div class="aurora-shell-nav-section">Football Operations</div>
+    <a class="aurora-shell-department-row" href="finance.html" data-name="Finance Command"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="scouting.html" data-name="Scouting Centre"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="transfer.html" data-name="Transfer Centre"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy the approved mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row is-current" href="registration.html" data-name="Registration"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record real broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="squad.html" data-name="Squad Hub"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings and book cost</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="income.html" data-name="Income Centre"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividends, calendar and progression</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+
+    <div class="aurora-shell-nav-section">Club</div>
+    <a class="aurora-shell-department-row" href="club-control.html" data-name="Club Control"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+  </div>
+</aside>
+</div>
+
+<div id="toast" class="registration-toast"></div>
+
 <script src="aurora-core.js?v=9"></script>
-<script src="aurora-data2-client.js?v=010"></script>
-<script src="registration.js?v=014-confirmed-lock"></script>
+<script src="aurora-data2-client.js?v=011-income-connection"></script>
+<script src="registration.js?v=015-currency-guard"></script>
+<script src="aurora-page-shell.js?v=100"></script>
+<script src="registration-command-ui.js?v=100"></script>
 </body>
 </html>
