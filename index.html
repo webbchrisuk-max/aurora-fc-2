@@ -7,10 +7,11 @@
 <meta content="yes" name="mobile-web-app-capable"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<title>Aurora City FC — Nexus HQ 3.0</title>
+<title>Aurora City FC — Nexus HQ 4.0</title>
+<meta name="aurora-nexus-ui" content="NEXUS_HQ_V4_COMMAND_HEADQUARTERS">
 <link href="aurora-shell.css?v=legacy-shell-211" rel="stylesheet"/>
 <link href="nexus-hq.css?v=nexus-1100" rel="stylesheet"/>
-<link href="nexus-hq-v3.css?v=300" rel="stylesheet"/>
+<link href="nexus-hq-v4.css?v=400" rel="stylesheet"/>
 <meta content="legacy-shell-v2.1.2-session-login-20260814" name="aurora-shell-build"/>
 <script>
 (function(){
@@ -56,7 +57,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 <div class="panel-header"><div><p class="access-kicker">Club Command Access</p><p class="panel-code">ACFC // HQ // 2.0</p></div><div class="live-badge"><span class="online-dot"></span>Systems Live</div></div>
 <div class="manager-profile"><div class="manager-avatar">WB</div><div><p class="manager-label">Authenticated Manager</p><p class="manager-name">Webby</p><p class="profile-status">Aurora 2.0 clearance granted</p></div></div>
 <div class="system-grid">
-<div class="system-tile"><small>Nexus HQ 3.0</small><strong>Ready</strong></div>
+<div class="system-tile"><small>Nexus HQ 4.0</small><strong>Ready</strong></div>
 <div class="system-tile"><small>Transfer Centre</small><strong>Connected</strong></div>
 <div class="system-tile"><small>Squad Intelligence</small><strong>Ready</strong></div>
 <div class="system-tile"><small>AuroraData 2</small><strong>Live</strong></div>
@@ -68,7 +69,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 </section>
 <section class="entry-screen transition-screen" id="transitionScreen">
 <div class="door door-left"></div><div class="door door-right"></div>
-<div class="transition-copy"><img alt="" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/><h2>Welcome, Manager</h2><p>Opening Nexus HQ 3.0</p></div>
+<div class="transition-copy"><img alt="" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/><h2>Welcome, Manager</h2><p>Opening Nexus HQ 4.0</p></div>
 </section>
 </div>
 <div class="aurora-game-shell" id="gameShell">
@@ -77,7 +78,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 <div class="aurora-shell-brand">
 <button aria-expanded="false" aria-label="Open club navigation" id="auroraShellMenuButton">☰</button>
 <div class="aurora-shell-crest"><img alt="Aurora City FC" src="https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png"/></div>
-<div class="aurora-shell-copy"><h1>Aurora City FC</h1><p id="currentDepartment">Nexus HQ 2.0</p></div>
+<div class="aurora-shell-copy"><h1>Aurora City FC</h1><p id="currentDepartment">NEXUS HQ • CLUB HEADQUARTERS</p></div>
 </div>
 <div class="aurora-shell-context">
 <div class="aurora-shell-datetime"><span class="shell-clock" id="shellClock">--:--</span><span class="shell-date" id="shellDate">---</span></div>
@@ -88,46 +89,78 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 </div>
 </header>
 <div class="shell-stage">
-<main class="shell-page nexus-v3-page">
-<span class="shell-kicker">Aurora City FC • Club Headquarters</span>
+<main class="shell-page nexus-v4-page">
 
-<section class="hq3-hero">
-  <div class="hq3-hero-copy">
-    <div class="hq3-topline">
-      <span class="hq3-live" id="hq3Connection">● CLUB SYSTEMS LIVE</span>
-      <span class="hq3-chip" id="hq3Strategy">STRATEGY • —</span>
-      <span class="hq3-chip" id="hq3DataStamp">DATA • —</span>
+<section class="hq4-hero">
+  <div class="hq4-hero-main">
+    <div class="hq4-topline">
+      <span class="hq4-live" id="hq3Connection">● CLUB SYSTEMS LIVE</span>
+      <span class="hq4-chip" id="hq3Strategy">STRATEGY • —</span>
+      <span class="hq4-chip" id="hq3DataStamp">DATA • —</span>
     </div>
-    <span class="hq3-eyebrow">Nexus HQ 3.0 • Manager Dashboard</span>
-    <h2>Club<br><span>Intelligence</span></h2>
+    <span class="hq4-eyebrow">Aurora City FC • Nexus HQ 4.0</span>
+    <h2>Club<br><span>Headquarters</span></h2>
     <p id="hq3Briefing">Loading the club briefing…</p>
+
+    <div class="hq4-hero-actions">
+      <a href="finance.html">Finance Command</a>
+      <a href="income.html">Income Centre</a>
+      <a href="system-health.html">System Health</a>
+    </div>
   </div>
 
-  <aside class="hq3-next-action">
-    <small>MANAGER ATTENTION</small>
+  <aside class="hq4-manager-ticket" id="hq4ManagerTicket">
+    <div class="hq4-manager-ticket-head">
+      <span>MANAGER DESK</span>
+      <i id="hq4ManagerPulse">LIVE</i>
+    </div>
+    <small>PRIORITY BRIEFING</small>
     <strong id="hq3AttentionTitle">Checking departments…</strong>
     <p id="hq3AttentionNote">Aurora is reviewing Finance, Scouting, Transfer, Registration, Squad and Income.</p>
-    <div class="hq3-action-links">
-      <a id="hq3AttentionLink" class="hq3-btn primary" href="index.html">Open Nexus</a>
-      <a class="hq3-btn" href="finance.html">Finance</a>
-      <a class="hq3-btn" href="income.html">Income</a>
+    <div class="hq4-ticket-actions">
+      <a id="hq3AttentionLink" class="primary" href="index.html">Open Nexus</a>
+      <a href="system-health.html">Health</a>
     </div>
   </aside>
 </section>
 
-<section class="hq3-kpi-strip">
-  <article><small>PORTFOLIO VALUE</small><strong id="hq3Value">—</strong><span id="hq3ValueMeta">Canonical Squad</span></article>
-  <article class="today"><small>TODAY</small><strong id="hq3Today">—</strong><span id="hq3TodayPct">Daily market engine</span></article>
-  <article class="income"><small>ANNUAL DIVIDEND INCOME</small><strong id="hq3Annual">—</strong><span id="hq3Monthly">— / month</span></article>
-  <article class="dividend"><small>NEXT DIVIDEND</small><strong id="hq3NextDividend">—</strong><span id="hq3NextDividendMeta">Income Centre</span></article>
-  <article class="finance"><small>NEXT SAFE RELEASE</small><strong id="hq3SafeRelease">—</strong><span id="hq3Payday">Payday —</span></article>
+<section class="hq4-command-strip" aria-label="Club headline metrics">
+  <article class="portfolio">
+    <small>PORTFOLIO VALUE</small>
+    <strong id="hq3Value">—</strong>
+    <span id="hq3ValueMeta">Canonical Squad</span>
+  </article>
+  <article class="market">
+    <small>TODAY</small>
+    <strong id="hq3Today">—</strong>
+    <span id="hq3TodayPct">Daily market engine</span>
+  </article>
+  <article class="income">
+    <small>ANNUAL DIVIDEND INCOME</small>
+    <strong id="hq3Annual">—</strong>
+    <span id="hq3Monthly">— / month</span>
+  </article>
+  <article class="dividend">
+    <small>NEXT DIVIDEND</small>
+    <strong id="hq3NextDividend">—</strong>
+    <span id="hq3NextDividendMeta">Income Centre</span>
+  </article>
+  <article class="finance">
+    <small>NEXT SAFE RELEASE</small>
+    <strong id="hq3SafeRelease">—</strong>
+    <span id="hq3Payday">Payday —</span>
+  </article>
 </section>
 
-<section class="hq3-grid top">
-  <article class="hq3-panel performance-panel">
-    <div class="hq3-panel-head">
-      <div><small>PORTFOLIO PERFORMANCE</small><h3>Value Trend</h3></div>
-      <div class="hq3-range" id="hq3Range">
+<section class="hq4-market-grid">
+  <article class="hq4-panel hq4-performance-panel">
+    <div class="hq4-panel-head">
+      <div>
+        <small>PORTFOLIO COMMAND</small>
+        <h3>Performance Board</h3>
+        <p>Real portfolio value history from the Nexus Dashboard Engine.</p>
+      </div>
+      <div class="hq4-range" id="hq3Range">
         <button class="active" data-range="1D">1D</button>
         <button data-range="7D">7D</button>
         <button data-range="30D">30D</button>
@@ -135,124 +168,163 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
         <button data-range="1Y">1Y</button>
       </div>
     </div>
-    <div class="hq3-chart-summary">
+
+    <div class="hq4-chart-metrics">
       <div><small>Current Value</small><strong id="hq3ChartValue">—</strong></div>
       <div><small>Book Cost</small><strong id="hq3Book">—</strong></div>
       <div><small>Total P/L</small><strong id="hq3PL">—</strong></div>
       <div><small>Today</small><strong id="hq3ChartToday">—</strong></div>
     </div>
-    <div class="hq3-chart-shell">
+
+    <div class="hq4-chart-shell">
       <svg id="hq3PortfolioChart" viewBox="0 0 800 280" preserveAspectRatio="none" aria-label="Portfolio value trend"></svg>
-      <div id="hq3ChartEmpty" class="hq3-chart-empty">Portfolio history will build automatically once the Nexus Dashboard Engine is installed.</div>
+      <div id="hq3ChartEmpty" class="hq3-chart-empty">Portfolio history is building from real AuroraData 2 snapshots.</div>
     </div>
   </article>
 
-  <article class="hq3-panel movers-panel">
-    <div class="hq3-panel-head">
-      <div><small>MARKET BOARD</small><h3>Today's Movers</h3></div>
-      <span class="hq3-mini-chip" id="hq3MarketStatus">CHECKING</span>
+  <article class="hq4-panel hq4-movers-panel">
+    <div class="hq4-panel-head">
+      <div>
+        <small>DAILY MARKET BOARD</small>
+        <h3>Best & Worst Today</h3>
+      </div>
+      <span class="hq4-status-chip" id="hq3MarketStatus">CHECKING</span>
     </div>
-    <div class="hq3-mover-pair">
-      <div class="hq3-mover best">
+
+    <div class="hq4-mover-pair">
+      <div class="hq4-mover best">
         <small>BEST TODAY</small>
         <strong id="hq3BestTicker">—</strong>
         <b id="hq3BestPct">—</b>
         <span id="hq3BestImpact">Daily market data pending</span>
       </div>
-      <div class="hq3-mover worst">
+      <div class="hq4-mover worst">
         <small>WORST TODAY</small>
         <strong id="hq3WorstTicker">—</strong>
         <b id="hq3WorstPct">—</b>
         <span id="hq3WorstImpact">Daily market data pending</span>
       </div>
     </div>
+
     <div id="hq3MoversList" class="hq3-movers-list"></div>
-    <a class="hq3-inline-link" href="squad.html">Open Squad Hub →</a>
+    <a class="hq4-open-link" href="squad.html">Open Squad Hub →</a>
   </article>
 </section>
 
-<section class="hq3-grid middle">
-  <article class="hq3-panel dividend-panel">
-    <div class="hq3-panel-head">
-      <div><small>DIVIDEND COMMAND</small><h3>Income Runway</h3></div>
-      <a class="hq3-inline-link" href="income.html">Open Income →</a>
+<section class="hq4-income-command hq4-panel">
+  <div class="hq4-panel-head">
+    <div>
+      <small>DIVIDEND COMMAND</small>
+      <h3>Income Runway</h3>
+      <p>What pays next, what is due soon and how the year is building.</p>
     </div>
-    <div class="hq3-dividend-main">
-      <div class="hq3-next-dividend">
-        <small>NEXT PAYMENT</small>
-        <strong id="hq3DividendTicker">—</strong>
-        <b id="hq3DividendAmount">—</b>
-        <span id="hq3DividendDate">Income calendar pending</span>
-      </div>
-      <div class="hq3-income-metrics">
+    <a class="hq4-open-link" href="income.html">Open Income Centre →</a>
+  </div>
+
+  <div class="hq4-income-layout">
+    <div class="hq4-dividend-ticket">
+      <small>NEXT PAYMENT</small>
+      <strong id="hq3DividendTicker">—</strong>
+      <b id="hq3DividendAmount">—</b>
+      <span id="hq3DividendDate">Income calendar pending</span>
+      <div class="hq4-income-metrics">
         <div><small>Monthly Average</small><strong id="hq3IncomeMonthly">—</strong></div>
         <div><small>Received This Year</small><strong id="hq3IncomeReceived">—</strong></div>
         <div><small>Next 30 Days</small><strong id="hq3Income30">—</strong></div>
       </div>
     </div>
-    <div id="hq3DividendTimeline" class="hq3-dividend-timeline"></div>
-    <div class="hq3-subhead"><span>Monthly dividend profile</span><b id="hq3DividendYear">—</b></div>
-    <div id="hq3DividendBars" class="hq3-dividend-bars"></div>
-  </article>
 
-  <article class="hq3-panel makeup-panel">
-    <div class="hq3-panel-head">
-      <div><small>PORTFOLIO MAKEUP</small><h3>Where The Money Sits</h3></div>
-      <div class="hq3-segment" id="hq3MakeupMode">
+    <div class="hq4-dividend-profile">
+      <div class="hq4-subhead">
+        <span>Monthly Dividend Profile</span>
+        <b id="hq3DividendYear">—</b>
+      </div>
+      <div id="hq3DividendBars" class="hq3-dividend-bars"></div>
+    </div>
+  </div>
+
+  <div class="hq4-subhead runway">
+    <span>Upcoming Dividend Runway</span>
+    <b>Next confirmed / forecast payments</b>
+  </div>
+  <div id="hq3DividendTimeline" class="hq3-dividend-timeline"></div>
+</section>
+
+<section class="hq4-intelligence-grid">
+  <article class="hq4-panel hq4-makeup-panel">
+    <div class="hq4-panel-head">
+      <div>
+        <small>PORTFOLIO STRUCTURE</small>
+        <h3>Where The Money Sits</h3>
+      </div>
+      <div class="hq4-segment" id="hq3MakeupMode">
         <button class="active" data-mode="BROKER">Broker</button>
         <button data-mode="SECTOR">Sector</button>
       </div>
     </div>
-    <div class="hq3-makeup-main">
-      <div class="hq3-donut-wrap">
+
+    <div class="hq4-makeup-main">
+      <div class="hq4-donut-wrap">
         <svg id="hq3Donut" viewBox="0 0 180 180" aria-label="Portfolio allocation"></svg>
         <div><strong id="hq3DonutValue">—</strong><span>portfolio</span></div>
       </div>
       <div id="hq3MakeupLegend" class="hq3-makeup-legend"></div>
     </div>
-    <div class="hq3-subhead"><span>Income concentration</span><b>Annual income by holding</b></div>
+
+    <div class="hq4-subhead">
+      <span>Income Concentration</span>
+      <b>Annual income by holding</b>
+    </div>
     <div id="hq3IncomeConcentration" class="hq3-bar-list"></div>
   </article>
-</section>
 
-<section class="hq3-grid lower">
-  <article class="hq3-panel attention-panel">
-    <div class="hq3-panel-head">
-      <div><small>MANAGER DESK</small><h3>What Needs Attention</h3></div>
-      <span id="hq3AttentionCount" class="hq3-mini-chip">0 ITEMS</span>
+  <article class="hq4-panel hq4-attention-panel">
+    <div class="hq4-panel-head">
+      <div>
+        <small>MANAGER ATTENTION</small>
+        <h3>What Needs You</h3>
+      </div>
+      <span id="hq3AttentionCount" class="hq4-status-chip">0 ITEMS</span>
     </div>
     <div id="hq3AttentionList" class="hq3-attention-list"></div>
   </article>
+</section>
 
-  <article class="hq3-panel scouting-panel-v3">
-    <div class="hq3-panel-head">
+<section class="hq4-operations-grid">
+  <article class="hq4-panel">
+    <div class="hq4-panel-head">
       <div><small>SCOUTING RADAR</small><h3>Recruitment Leaders</h3></div>
-      <a class="hq3-inline-link" href="scouting.html">Open Scouting →</a>
+      <a class="hq4-open-link" href="scouting.html">Open Scouting →</a>
     </div>
     <div id="hq3ScoutingBars" class="hq3-bar-list"></div>
   </article>
 
-  <article class="hq3-panel finance-panel-v3">
-    <div class="hq3-panel-head">
-      <div><small>FINANCE SNAPSHOT</small><h3>Money Protection</h3></div>
-      <a class="hq3-inline-link" href="finance.html">Open Finance →</a>
+  <article class="hq4-panel hq4-finance-panel">
+    <div class="hq4-panel-head">
+      <div><small>FINANCE COMMAND</small><h3>Money Protection</h3></div>
+      <a class="hq4-open-link" href="finance.html">Open Finance →</a>
     </div>
-    <div class="hq3-finance-grid">
+
+    <div class="hq4-finance-grid">
       <div><small>Holding Pot</small><strong id="hq3HoldingPot">—</strong><span>Protected cash</span></div>
       <div><small>Payday</small><strong id="hq3FinancePayday">—</strong><span>Next cycle</span></div>
       <div><small>Commitments</small><strong id="hq3FinanceCommitments">—</strong><span>Bills + pots + safety</span></div>
       <div><small>Safe Surplus</small><strong id="hq3FinanceSurplus">—</strong><span>Maximum releasable</span></div>
     </div>
-    <div id="hq3FinanceStatus" class="hq3-status-note">Finance is loading…</div>
+    <div id="hq3FinanceStatus" class="hq4-finance-note">Finance is loading…</div>
   </article>
 </section>
 
-<section id="hq3MissionPanel" class="hq3-panel mission-panel-v3" hidden>
-  <div class="hq3-panel-head">
-    <div><small>ACTIVE OPERATION</small><h3>Mission Pipeline</h3></div>
-    <div class="hq3-mission-budget"><small>Budget</small><strong id="hq3MissionBudget">—</strong></div>
+<section id="hq3MissionPanel" class="hq4-panel hq4-mission-panel" hidden>
+  <div class="hq4-panel-head">
+    <div>
+      <small>ACTIVE OPERATION</small>
+      <h3>Mission Pipeline</h3>
+    </div>
+    <div class="hq4-mission-budget"><small>Approved Budget</small><strong id="hq3MissionBudget">—</strong></div>
   </div>
-  <div class="hq3-mission-lane">
+
+  <div class="hq4-mission-lane">
     <div data-hq3-stage="FINANCE_APPROVED"><i>01</i><b>Finance</b><span>Approved</span></div>
     <em></em>
     <div data-hq3-stage="SCOUTING_READY"><i>02</i><b>Scouting</b><span>Cleared</span></div>
@@ -261,23 +333,35 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
     <em></em>
     <div data-hq3-stage="REGISTERED"><i>04</i><b>Registered</b><span>Broker reality</span></div>
   </div>
-  <div class="hq3-mission-summary">
+
+  <div class="hq4-mission-summary">
     <div><small>Allocated</small><strong id="hq3MissionAllocated">—</strong></div>
     <div><small>Remaining</small><strong id="hq3MissionRemaining">—</strong></div>
     <div><small>New Income</small><strong id="hq3MissionIncome">—</strong></div>
     <div><small>Registration</small><strong id="hq3MissionRegistration">—</strong></div>
   </div>
-  <a class="hq3-inline-link" href="transfer.html">Open Transfer Centre →</a>
+  <a class="hq4-open-link" href="transfer.html">Open Transfer Centre →</a>
 </section>
 
-<section class="hq3-departments">
-  <a href="finance.html"><i>💷</i><div><strong>Finance Command</strong><span>Cash, payday, pots & bills</span></div><b>›</b></a>
-  <a href="scouting.html"><i>🔎</i><div><strong>Scouting Centre</strong><span>Research & recruitment</span></div><b>›</b></a>
-  <a href="transfer.html"><i>🔄</i><div><strong>Transfer Centre</strong><span>Allocation & deployment</span></div><b>›</b></a>
-  <a href="registration.html"><i>📝</i><div><strong>Registration</strong><span>Broker reality</span></div><b>›</b></a>
-  <a href="squad.html"><i>⚽</i><div><strong>Squad Hub</strong><span>Canonical holdings</span></div><b>›</b></a>
-  <a href="income.html"><i>💰</i><div><strong>Income Centre</strong><span>Dividends & cash flow</span></div><b>›</b></a>
+<section class="hq4-department-command">
+  <div class="hq4-panel-head department-head">
+    <div>
+      <small>CLUB OPERATIONS</small>
+      <h3>Department Command</h3>
+      <p>One glance across every Aurora department.</p>
+    </div>
+  </div>
+
+  <div class="hq4-department-grid">
+    <a class="finance" href="finance.html"><i>£</i><div><small>FINANCE</small><strong>Finance Command</strong><span id="hq4DeptFinance">Checking…</span></div><b>›</b></a>
+    <a class="scouting" href="scouting.html"><i>⌕</i><div><small>SCOUTING</small><strong>Scouting Centre</strong><span id="hq4DeptScouting">Checking…</span></div><b>›</b></a>
+    <a class="transfer" href="transfer.html"><i>↗</i><div><small>TRANSFER</small><strong>Transfer Centre</strong><span id="hq4DeptTransfer">Checking…</span></div><b>›</b></a>
+    <a class="registration" href="registration.html"><i>✓</i><div><small>REGISTRATION</small><strong>Registration Desk</strong><span id="hq4DeptRegistration">Checking…</span></div><b>›</b></a>
+    <a class="squad" href="squad.html"><i>◉</i><div><small>SQUAD</small><strong>Squad Hub</strong><span id="hq4DeptSquad">Checking…</span></div><b>›</b></a>
+    <a class="income" href="income.html"><i>£</i><div><small>INCOME</small><strong>Income Centre</strong><span id="hq4DeptIncome">Checking…</span></div><b>›</b></a>
+  </div>
 </section>
+
 </main>
 </div>
 <div id="auroraShellNavigationOverlay"></div>
@@ -289,7 +373,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 </div>
 <div class="aurora-shell-nav-scroll">
 <div class="aurora-shell-nav-section">Club Command</div>
-<a class="aurora-shell-department-row is-current" data-name="Nexus HQ 3.0" href="index.html"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+<a class="aurora-shell-department-row is-current" data-name="Nexus HQ 4.0" href="index.html"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus HQ</strong><span>Manager command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
 <div class="aurora-shell-nav-section">Football Operations</div>
 <a class="aurora-shell-department-row" data-name="Finance Command" href="finance.html"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Payday, pots, bills and protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
 <a class="aurora-shell-department-row" data-name="Scouting Centre" href="scouting.html"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research, eligibility and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
@@ -301,7 +385,7 @@ html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!imp
 <a class="aurora-shell-department-row" data-name="Club Control" href="club-control.html"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System and preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
 </div>
 </aside>
-<div class="preview-flag">Aurora 2.0 • Nexus HQ</div>
+<div class="preview-flag">Aurora 2.0 • Nexus HQ 4.0</div>
 </div>
-<script src="aurora-core.js?v=10-stable-core"></script><script src="aurora-data2-client.js?v=011-income-connection"></script><script src="aurora-shell.js?v=220-stable-core"></script><script src="nexus-hq-v3.js?v=300"></script></body>
+<script src="aurora-core.js?v=10-stable-core"></script><script src="aurora-data2-client.js?v=011-income-connection"></script><script src="aurora-shell.js?v=220-stable-core"></script><script src="nexus-hq-v4.js?v=400"></script></body>
 </html>
