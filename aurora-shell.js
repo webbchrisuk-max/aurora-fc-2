@@ -2,7 +2,8 @@
 'use strict';
 {
   'use strict';
-  const crestUrl='https://webbchrisuk-max.github.io/aurora-city-fc/assets/aurora-city-fc/icons/icon-512.png';
+
+  const SESSION_KEY='aurora2:session:authenticated';
   const entryApp=document.getElementById('entryApp');
   const gameShell=document.getElementById('gameShell');
   const bootScreen=document.getElementById('bootScreen');
@@ -17,7 +18,7 @@
   const menuButton=document.getElementById('auroraShellMenuButton');
   const navClose=document.getElementById('auroraShellNavigationClose');
   const navOverlay=document.getElementById('auroraShellNavigationOverlay');
-  const replayEntry=document.getElementById('replayEntry');
+  const logoutButton=document.getElementById('logoutButton');
   const currentDepartment=document.getElementById('currentDepartment');
 
   const stages=[
@@ -28,80 +29,174 @@
     {at:83,message:'Preparing Nexus HQ 2.0...',code:'HQ // READY'},
     {at:100,message:'Manager access granted.',code:'ACCESS // GRANTED'}
   ];
+
   let progress=0,entering=false,bootTimer=null;
 
+  function sessionActive(){
+    try{return sessionStorage.getItem(SESSION_KEY)==='1'}
+    catch(_){return false}
+  }
+
+  function setSession(active){
+    try{
+      if(active)sessionStorage.setItem(SESSION_KEY,'1');
+      else sessionStorage.removeItem(SESSION_KEY);
+    }catch(_){}
+  }
+
+  function safeReturnPath(){
+    let value='';
+    try{value=new URLSearchParams(location.search).get('return')||''}catch(_){}
+    if(!value)return '';
+    // Internal Aurora HTML only — never follow an external URL from this parameter.
+    if(!/^[A-Za-z0-9._-]+\.html(?:[?#].*)?$/.test(value))return '';
+    if(/^index\.html(?:[?#].*)?$/i.test(value))return '';
+    return value;
+  }
+
   function createParticles(){
+    if(!particles)return;
     particles.innerHTML='';
     const count=innerWidth<700?18:34;
     const frag=document.createDocumentFragment();
     for(let i=0;i<count;i++){
-      const p=document.createElement('span');p.className='particle';p.style.left=`${Math.random()*100}%`;
-      p.style.setProperty('--duration',`${7+Math.random()*9}s`);p.style.setProperty('--delay',`${-Math.random()*14}s`);p.style.setProperty('--drift',`${-45+Math.random()*90}px`);frag.appendChild(p);
+      const p=document.createElement('span');
+      p.className='particle';
+      p.style.left=`${Math.random()*100}%`;
+      p.style.setProperty('--duration',`${7+Math.random()*9}s`);
+      p.style.setProperty('--delay',`${-Math.random()*14}s`);
+      p.style.setProperty('--drift',`${-45+Math.random()*90}px`);
+      frag.appendChild(p);
     }
     particles.appendChild(frag);
   }
+
   function updateBoot(value){
-    const bounded=Math.min(100,Math.max(0,Math.round(value)));bootProgress.style.width=`${bounded}%`;bootPercent.textContent=`${String(bounded).padStart(2,'0')}%`;
-    const active=[...stages].reverse().find(s=>bounded>=s.at)||stages[0];bootMessage.textContent=active.message;bootCode.textContent=active.code;
+    const bounded=Math.min(100,Math.max(0,Math.round(value)));
+    if(bootProgress)bootProgress.style.width=`${bounded}%`;
+    if(bootPercent)bootPercent.textContent=`${String(bounded).padStart(2,'0')}%`;
+    const active=[...stages].reverse().find(s=>bounded>=s.at)||stages[0];
+    if(bootMessage)bootMessage.textContent=active.message;
+    if(bootCode)bootCode.textContent=active.code;
   }
-  function finishBoot(){updateBoot(100);setTimeout(()=>{bootScreen.classList.add('is-hidden');accessScreen.classList.add('is-active');},320)}
+
+  function finishBoot(){
+    updateBoot(100);
+    setTimeout(()=>{
+      bootScreen?.classList.add('is-hidden');
+      accessScreen?.classList.add('is-active');
+    },320);
+  }
+
   function runBoot(){
-    clearInterval(bootTimer);progress=0;updateBoot(0);bootScreen.classList.remove('is-hidden');accessScreen.classList.remove('is-active');
-    bootTimer=setInterval(()=>{const d=100-progress;const inc=d>28?4+Math.random()*6:d>8?2+Math.random()*3:1+Math.random()*2;progress=Math.min(100,progress+inc);updateBoot(progress);if(progress>=100){clearInterval(bootTimer);finishBoot()}},92);
+    clearInterval(bootTimer);
+    progress=0;
+    updateBoot(0);
+    bootScreen?.classList.remove('is-hidden');
+    accessScreen?.classList.remove('is-active');
+    bootTimer=setInterval(()=>{
+      const d=100-progress;
+      const inc=d>28?4+Math.random()*6:d>8?2+Math.random()*3:1+Math.random()*2;
+      progress=Math.min(100,progress+inc);
+      updateBoot(progress);
+      if(progress>=100){
+        clearInterval(bootTimer);
+        finishBoot();
+      }
+    },92);
   }
+
+  function openNav(){
+    document.body.classList.add('shell-navigation-open');
+    menuButton?.setAttribute('aria-expanded','true');
+  }
+
+  function closeNav(){
+    document.body.classList.remove('shell-navigation-open');
+    menuButton?.setAttribute('aria-expanded','false');
+  }
+
+  function showClubImmediately(){
+    clearInterval(bootTimer);
+    document.documentElement.classList.add('aurora-session-active');
+    entryApp?.classList.add('is-gone');
+    gameShell?.classList.add('is-active');
+    transitionScreen?.classList.remove('open','is-active');
+    document.body.classList.add('aurora-entered');
+    document.body.classList.remove('shell-navigation-open');
+  }
+
   function enterClub(){
-    if(entering)return;entering=true;transitionScreen.classList.add('is-active');setTimeout(()=>transitionScreen.classList.add('open'),240);
-    setTimeout(()=>{gameShell.classList.add('is-active');entryApp.classList.add('is-gone');document.body.classList.add('aurora-entered');document.body.classList.remove('shell-navigation-open');window.scrollTo(0,0);entering=false;},1180);
+    if(entering)return;
+    entering=true;
+    setSession(true);
+
+    transitionScreen?.classList.add('is-active');
+    setTimeout(()=>transitionScreen?.classList.add('open'),240);
+
+    setTimeout(()=>{
+      const returnPath=safeReturnPath();
+      if(returnPath){
+        location.replace(returnPath);
+        return;
+      }
+
+      showClubImmediately();
+      try{
+        if(location.search)history.replaceState(null,'',location.pathname+location.hash);
+      }catch(_){}
+      window.scrollTo(0,0);
+      entering=false;
+    },1180);
   }
-  function openNav(){document.body.classList.add('shell-navigation-open');menuButton.setAttribute('aria-expanded','true')}
-  function closeNav(){document.body.classList.remove('shell-navigation-open');menuButton.setAttribute('aria-expanded','false')}
-  function resetEntry(){
-    closeNav();document.body.classList.remove('aurora-entered');transitionScreen.classList.remove('open','is-active');entryApp.classList.remove('is-gone');gameShell.classList.remove('is-active');window.scrollTo(0,0);entering=false;createParticles();runBoot();
+
+  function logout(){
+    setSession(false);
+    closeNav();
+    // A logout starts a fresh Aurora session, so the boot/login sequence is valid again.
+    location.replace('index.html?logout=1');
   }
+
   function updateClock(){
-    const d=new Date();document.getElementById('shellClock').textContent=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});document.getElementById('shellDate').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}).toUpperCase();
+    const d=new Date();
+    const clock=document.getElementById('shellClock');
+    const date=document.getElementById('shellDate');
+    if(clock)clock.textContent=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    if(date)date.textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}).toUpperCase();
   }
 
-  if(enterButton) enterButton.addEventListener('click',enterClub);
+  if(enterButton)enterButton.addEventListener('click',enterClub);
+  if(logoutButton)logoutButton.addEventListener('click',logout);
 
-  if(menuButton){
-    menuButton.addEventListener('click',event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      document.body.classList.contains('shell-navigation-open') ? closeNav() : openNav();
-    });
-  }
+  menuButton?.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    document.body.classList.contains('shell-navigation-open')?closeNav():openNav();
+  });
 
-  if(navClose){
-    navClose.addEventListener('click',event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      closeNav();
-    });
-  }
+  navClose?.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    closeNav();
+  });
 
-  if(navOverlay){
-    navOverlay.addEventListener('click',event=>{
-      event.preventDefault();
-      closeNav();
-    });
-  }
-
-  if(replayEntry) replayEntry.addEventListener('click',resetEntry);
+  navOverlay?.addEventListener('click',event=>{
+    event.preventDefault();
+    closeNav();
+  });
 
   document.addEventListener('click',event=>{
     const row=event.target.closest('.aurora-shell-department-row');
-    if(!row) return;
+    if(!row)return;
     document.querySelectorAll('.aurora-shell-department-row').forEach(x=>x.classList.remove('is-current'));
     row.classList.add('is-current');
-    if(currentDepartment) currentDepartment.textContent=row.dataset.name||'Aurora 2.0';
+    if(currentDepartment)currentDepartment.textContent=row.dataset.name||'Aurora 2.0';
     closeNav();
-    /* Anchor navigation is intentionally left to the browser. */
   });
 
   document.addEventListener('keydown',event=>{
-    if(event.key==='Enter' && accessScreen?.classList.contains('is-active')) enterClub();
-    if(event.key==='Escape') closeNav();
+    if(event.key==='Enter'&&accessScreen?.classList.contains('is-active'))enterClub();
+    if(event.key==='Escape')closeNav();
   });
 
   const searchButton=document.getElementById('shellSearch');
@@ -109,16 +204,22 @@
     searchButton.addEventListener('click',()=>alert('Global Aurora search will be enabled after the shared shell rollout.'));
   }
 
-  /* Public shell controls make later department integration simpler. */
   window.AuroraShell={
     openNavigation:openNav,
-    closeNavigation:closeNav
+    closeNavigation:closeNav,
+    logout
   };
 
-  createParticles();
-  runBoot();
   updateClock();
   setInterval(updateClock,15000);
+
+  if(sessionActive()){
+    showClubImmediately();
+  }else{
+    document.documentElement.classList.remove('aurora-session-active');
+    createParticles();
+    runBoot();
+  }
 
   /* AuroraData 2 Canonical Holdings Sync v1 — Nexus sync */
   if(!document.querySelector('script[data-aurora-holdings-sync]')){

@@ -10,7 +10,21 @@
 <title>Aurora City FC — Nexus HQ 2.0</title>
 <link href="aurora-shell.css?v=legacy-shell-211" rel="stylesheet"/>
 <link href="nexus-hq.css?v=nexus-1100" rel="stylesheet"/>
-<meta content="legacy-shell-v2.1.1-nexus-hq-v1.1-20260813" name="aurora-shell-build"/></head>
+<meta content="legacy-shell-v2.1.2-session-login-20260814" name="aurora-shell-build"/>
+<script>
+(function(){
+  try{
+    if(sessionStorage.getItem('aurora2:session:authenticated')==='1'){
+      document.documentElement.classList.add('aurora-session-active');
+    }
+  }catch(_){}
+})();
+</script>
+<style>
+html.aurora-session-active #entryApp{display:none!important}
+html.aurora-session-active #gameShell{opacity:1!important;visibility:visible!important}
+</style>
+</head>
 <body>
 &lt;!-- Aurora 2.0 Nexus HQ: shell + HQ are read-only; department logic remains in owning pages. --&gt;
 
@@ -67,7 +81,7 @@
 <div class="aurora-shell-context">
 <div class="aurora-shell-datetime"><span class="shell-clock" id="shellClock">--:--</span><span class="shell-date" id="shellDate">---</span></div>
 <button class="shell-control" id="shellSearch" title="Search">⌕</button>
-<button class="shell-control" id="replayEntry" title="Replay startup">↻</button>
+<button class="shell-control" id="logoutButton" title="Log out of Aurora" style="width:auto;min-width:72px;padding:0 12px;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase">Logout</button>
 <span class="aurora-shell-live">Live</span>
 </div>
 </div>
@@ -293,5 +307,5 @@
 </aside>
 <div class="preview-flag">Aurora 2.0 • Nexus HQ</div>
 </div>
-<script src="aurora-core.js?v=9"></script><script src="aurora-shell.js?v=211"></script><script src="nexus-hq.js?v=1100"></script></body>
+<script src="aurora-core.js?v=9"></script><script src="aurora-shell.js?v=212-session-login"></script><script src="nexus-hq.js?v=1100"></script></body>
 </html>
