@@ -678,13 +678,18 @@ function buildPaydaySummary(){
       <i>→</i>
       <div class="release"><small>Planned release</small><strong id="fv2PayRelease">£0.00</strong><span id="fv2PayReleaseMeta">Awaiting amount</span></div>
     </div>
-    <div class="fv2-payday-mini">
-      <div><span>Next payday</span><strong id="fv2PayDate">—</strong></div>
-      <div><span>Holding Pot move</span><strong id="fv2PayHoldingMove">£0.00</strong></div>
-      <div><span>Goal pot funding</span><strong id="fv2PayGoalPots">£0.00</strong></div>
-      <div><span>Current Account bills</span><strong id="fv2PayBills">£0.00</strong></div>
-      <div><span>Coverage</span><strong id="fv2PayCoverage">—</strong></div>
-    </div>
+    <article class="fv2-next-payday-card">
+      <div class="fv2-next-payday-head">
+        <div><small>NEXT PAYDAY MOVES</small><h4 id="fv2PayDate">—</h4></div>
+        <div class="fv2-next-payday-total"><span>Total moving</span><strong id="fv2PayMovesTotal">£0.00</strong></div>
+      </div>
+      <div class="fv2-payday-mini">
+        <div><span>Holding Pot</span><strong id="fv2PayHoldingMove">£0.00</strong><small>Protected transfer</small></div>
+        <div><span>Goal pots</span><strong id="fv2PayGoalPots">£0.00</strong><small>Scheduled funding</small></div>
+        <div><span>Current Account</span><strong id="fv2PayBills">£0.00</strong><small>Bills due</small></div>
+        <div><span>Coverage</span><strong id="fv2PayCoverage">—</strong><small>After these moves</small></div>
+      </div>
+    </article>
   `;
   panel.insertAdjacentElement('afterbegin',strip);
 
@@ -1012,6 +1017,7 @@ function renderPaydaySummary(s,plan,p,runway){
   setText('fv2PayHoldingMove',money(p.holdingContribution));
   setText('fv2PayGoalPots',money(p.goalPotsTotal));
   setText('fv2PayBills',money(auto.billsDue));
+  setText('fv2PayMovesTotal',money(num(p.holdingContribution)+num(p.goalPotsTotal)+num(auto.billsDue)));
   setText('fv2PayCoverage',runway.allCovered?'COVERED':attentionBlocks?'NOT COVERED':'TOP-UP NEEDED');
   const payCoverage=document.getElementById('fv2PayCoverage');
   if(payCoverage){
@@ -1506,7 +1512,7 @@ function renderHouseLedger(s){
           `:''}
           <button class="btn secondary" data-house-edit="${esc(e.id)}">Edit</button>
           ${e.status==='paid'&&e.deducted?`<button class="btn secondary" data-house-undo="${esc(e.id)}">Undo</button>`:''}
-          <button class="btn secondary" data-house-delete="${esc(e.id)}">Delete</button>
+          <button class="btn danger" data-house-delete="${esc(e.id)}">Delete</button>
         </div>
       </article>
     `;
