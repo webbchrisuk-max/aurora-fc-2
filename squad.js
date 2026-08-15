@@ -342,7 +342,7 @@
       if(acct!=='ALL'&&account(h.account)!==acct)return false;
       if(q&&!norm(`${h.ticker} ${h.name}`).includes(q))return false;
       return true;
-    }).sort((a,b)=>holdingMetrics(b).value-holdingMetrics(a).value||String(a.ticker).localeCompare(String(b.ticker)));
+    }).sort((a,b)=>holdingMetrics(b).profit-holdingMetrics(a).profit||holdingMetrics(b).value-holdingMetrics(a).value||String(a.ticker).localeCompare(String(b.ticker)));
   }
 
   function renderRegister(state){

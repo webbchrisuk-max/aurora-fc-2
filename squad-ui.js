@@ -279,7 +279,7 @@ function renderValueXI(m){
     const [slot,left,top]=squad4Formation[i]||['SUB',50,50];
     const node=document.createElement('div');
     const pl=num(x.value)-num(x.book);
-    node.className='squad4-xi-player';
+    node.className=`squad4-xi-player ${pl>=0?'is-profit':'is-loss'}`;
     node.dataset.squadTicker=x.ticker;
     node.style.left=`${left}%`;
     node.style.top=`${top}%`;
