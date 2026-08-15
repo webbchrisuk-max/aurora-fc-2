@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101d">
 <title>Aurora City FC — Squad Command</title>
-<meta name="aurora-squad-ui" content="SQUAD_UI_V1_FIRST_TEAM_COMMAND">
+<meta name="aurora-squad-ui" content="SQUAD_UI_V1_1_VALUE_XI_REFINEMENT">
 <link rel="stylesheet" href="aurora.css?v=squad-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="squad-ui.css?v=300-first-team-command">
+<link rel="stylesheet" href="squad-ui.css?v=310-value-xi-refinement">
 </head>
 <body class="aurora-entered squad-command-page">
 <div class="aurora-game-shell is-active" id="gameShell">
@@ -31,10 +31,9 @@
 <h2>Squad<br><span>Hub</span></h2>
 <p>Registration confirms the trade. Squad owns the canonical holding. Income reads the finished first team. Every share count, broker, book cost, live value and dividend record stays anchored here.</p>
 <div class="squad-hero-actions">
-<button class="squad-btn primary" id="squad3OpenFirstTeam">Open First Team</button>
+<button class="squad-btn primary" id="squad4OpenValueXI">View Value XI</button>
 <button class="squad-btn secondary" id="openEditor">Add / Edit Holding</button>
 <a class="squad-btn secondary" href="registration.html">Open Registration</a>
-<button class="squad-btn secondary" id="openMigration">Legacy Import</button>
 </div></div>
 <article class="squad-command-card">
 <div class="squad-command-head"><span>Canonical Squad Value</span><i>FIRST TEAM</i></div>
@@ -57,7 +56,7 @@
     <div>
       <small>FIRST TEAM COMMAND</small>
       <h3>Squad Leadership & Balance</h3>
-      <p>The manager view of the canonical first team: biggest holdings, income leadership, P/L form, broker balance, squad depth and data attention.</p>
+      <p>Captains, Core Five, broker balance and data attention — the quickest manager view of the canonical first team.</p>
     </div>
     <span id="squad3Status" class="squad3-status">CHECKING SQUAD</span>
   </div>
@@ -155,7 +154,7 @@
 
 <div class="tabs squad-tabs">
 <button class="tab active" data-tab="squadPanel">First Team</button>
-<button class="tab" data-tab="pitchPanel">Value XI</button>
+<button class="tab" data-tab="pitchPanel">Value XI ⚽</button>
 <button class="tab" data-tab="healthPanel">Data Health</button>
 <button class="tab" data-tab="migrationPanel">Legacy Migration</button>
 <button class="tab" data-tab="editorPanel">Holding Editor</button>
@@ -179,14 +178,45 @@
 </section></section>
 
 <section id="pitchPanel" class="tab-panel">
-<section class="squad-command-grid two">
+<section class="squad-command-grid squad4-value-grid">
 <article class="squad-panel pitch-panel">
-<div class="squad-panel-head"><div><span class="squad-panel-kicker">Matchday View</span><h3>Starting XI — Value Formation</h3><p class="squad3-head-copy">The eleven largest canonical positions by market value, presented as a football formation.</p></div><span class="squad-panel-note">VALUE XI</span></div>
-<div class="pitch" id="squadPitch"><div class="centre-circle"></div><span class="pitch-note">Formation shows the 11 largest positions by market value — it is not a Scouting recommendation.</span></div>
+<div class="squad-panel-head">
+  <div>
+    <span class="squad-panel-kicker">Matchday View</span>
+    <h3>Starting XI — Value Formation</h3>
+    <p class="squad3-head-copy">The eleven largest unique Squad players by canonical market value. Multi-broker holdings stay combined here but remain account-scoped in the First Team Register.</p>
+  </div>
+  <span class="squad-panel-note">UNIQUE PLAYER XI</span>
+</div>
+
+<div class="squad4-xi-summary">
+  <div><small>Starting XI Value</small><strong id="squad4XIValue">£0.00</strong><span id="squad4XIValueMeta">0.0% of Squad</span></div>
+  <div><small>Starting XI Income</small><strong id="squad4XIIncome">£0.00</strong><span>annual forward income</span></div>
+  <div><small>Starting XI P/L</small><strong id="squad4XIProfit">£0.00</strong><span>value minus book cost</span></div>
+  <div><small>Formation</small><strong>4-3-3</strong><span>ranked by market value</span></div>
+</div>
+
+<div class="pitch squad4-pitch" id="squadPitch">
+  <div class="centre-circle"></div>
+  <span class="squad4-centre-spot"></span>
+  <span class="squad4-box top"></span>
+  <span class="squad4-box bottom"></span>
+  <span class="squad4-goal top"></span>
+  <span class="squad4-goal bottom"></span>
+  <span class="pitch-note">Click any player to open its canonical First Team record. The formation is a holdings view, not a Scouting recommendation.</span>
+</div>
 </article>
-<article class="squad-panel bench-panel">
-<div class="squad-panel-head"><div><span class="squad-panel-kicker">Squad Depth</span><h3>Bench & Depth</h3><p class="squad3-head-copy">All active positions outside the Value XI remain visible here.</p></div><span class="squad-panel-note">REMAINING POSITIONS</span></div>
-<div id="benchList" class="history-list"></div>
+
+<article class="squad-panel bench-panel squad4-bench-panel">
+<div class="squad-panel-head">
+  <div>
+    <span class="squad-panel-kicker">Squad Depth</span>
+    <h3>Bench Five</h3>
+    <p class="squad3-head-copy">The remaining unique Squad players after the Value XI.</p>
+  </div>
+  <span class="squad-panel-note" id="squad4BenchMeta">0 PLAYERS</span>
+</div>
+<div id="benchList" class="history-list squad4-bench-list"></div>
 </article></section></section>
 
 <section id="healthPanel" class="tab-panel">
@@ -280,6 +310,6 @@
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="squad.js?v=012"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="squad-ui.js?v=300-first-team-command"></script>
+<script src="squad-ui.js?v=310-value-xi-refinement"></script>
 </body>
 </html>

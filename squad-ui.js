@@ -231,6 +231,84 @@ function filterTicker(ticker){
   setTimeout(()=>$('holdingGrid')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
 }
 
+
+const squad4Formation=[
+  ['ST',50,13],
+  ['LW',19,29],['RW',81,29],
+  ['LCM',27,48],['CM',50,53],['RCM',73,48],
+  ['LB',16,71],['LCB',38,78],['RCB',62,78],['RB',84,71],
+  ['GK',50,91]
+];
+
+function accountsForTicker(m,ticker){
+  const names=new Set(
+    (Array.isArray(m?.active)?m.active:[])
+      .filter(h=>String(h?.ticker||'').toUpperCase().replace(/^LON:/,'').replace(/\.L$/,'')===ticker)
+      .map(h=>accountName(h?.account))
+  );
+  return [...names].join(' + ')||'Squad';
+}
+
+function renderValueXI(m){
+  const pitch=$('squadPitch'),bench=$('benchList');
+  if(!pitch||!bench)return;
+
+  // Use Squad's own grouped ticker metrics: one company = one player.
+  const players=grouped(m)
+    .slice()
+    .sort((a,b)=>num(b.value)-num(a.value)||String(a.ticker).localeCompare(String(b.ticker)));
+
+  const starters=players.slice(0,11);
+  const subs=players.slice(11);
+
+  const xiValue=starters.reduce((s,x)=>s+num(x.value),0);
+  const xiIncome=starters.reduce((s,x)=>s+num(x.income),0);
+  const xiBook=starters.reduce((s,x)=>s+num(x.book),0);
+  const xiProfit=xiValue-xiBook;
+
+  set('squad4XIValue',money(xiValue));
+  set('squad4XIValueMeta',m.value>0?`${(xiValue/num(m.value)*100).toFixed(1)}% of total Squad value`:'0.0% of Squad');
+  set('squad4XIIncome',money(xiIncome));
+  set('squad4XIProfit',`${xiProfit>=0?'+':''}${money(xiProfit)}`);
+  set('squad4BenchMeta',`${subs.length} PLAYER${subs.length===1?'':'S'}`);
+
+  // Remove only dynamically rendered player nodes; keep permanent pitch markings.
+  pitch.querySelectorAll('.pitch-player').forEach(x=>x.remove());
+
+  starters.forEach((x,i)=>{
+    const [slot,left,top]=squad4Formation[i]||['SUB',50,50];
+    const node=document.createElement('div');
+    const pl=num(x.value)-num(x.book);
+    node.className='pitch-player';
+    node.dataset.squadTicker=x.ticker;
+    node.style.left=`${left}%`;
+    node.style.top=`${top}%`;
+    node.innerHTML=`
+      <b><i>${slot}</i><strong>${esc(x.ticker)}</strong></b>
+      <span>${money(x.value)} • ${pl>=0?'+':''}${money(pl)} P/L</span>`;
+    pitch.appendChild(node);
+  });
+
+  if(!subs.length){
+    bench.innerHTML='<div class="empty">All Squad players are in the Value XI.</div>';
+  }else{
+    bench.innerHTML=subs.map((x,i)=>{
+      const pl=num(x.value)-num(x.book);
+      return `<article class="squad4-bench-card" data-squad-ticker="${esc(x.ticker)}">
+        <div class="squad4-bench-head">
+          <strong>${i+12}. ${esc(x.ticker)} — ${esc(x.name||x.ticker)}</strong>
+          <span>${esc(accountsForTicker(m,x.ticker))}</span>
+        </div>
+        <div class="squad4-bench-metrics">
+          <div><small>Value</small><b>${money(x.value)}</b></div>
+          <div><small>P/L</small><b class="${pl>=0?'good':'bad'}">${pl>=0?'+':''}${money(pl)}</b></div>
+          <div><small>Income</small><b>${money(x.income)}/yr</b></div>
+        </div>
+      </article>`;
+    }).join('');
+  }
+}
+
 function renderNext(m,d){
   const status=$('squad3Status');
   if(status)status.className='squad3-status';
@@ -274,13 +352,14 @@ function render(){
   if(!m)return;
   renderLeadership(m);
   renderCore(m);
+  renderValueXI(m);
   const d=renderBalance(m);
   renderNext(m,d);
   set('squad3BalanceMeta',`${m.players} players • ${m.positions} positions`);
 }
 
 function bind(){
-  $('squad3OpenFirstTeam')?.addEventListener('click',()=>openTab('squadPanel'));
+  $('squad4OpenValueXI')?.addEventListener('click',()=>openTab('pitchPanel'));
 
   $('squad3NextButton')?.addEventListener('click',()=>{
     const a=$('squad3NextButton')?.dataset.action;
@@ -291,7 +370,13 @@ function bind(){
 
   document.addEventListener('click',e=>{
     const row=e.target.closest('[data-squad-ticker]');
-    if(row)filterTicker(row.dataset.squadTicker||'');
+    if(row){filterTicker(row.dataset.squadTicker||'');return}
+
+    const tab=e.target.closest('.squad-tabs [data-tab="pitchPanel"]');
+    if(tab){
+      // squad.js renders the hidden tab at boot; repaint once it is actually visible.
+      requestAnimationFrame(()=>requestAnimationFrame(()=>render()));
+    }
   });
 
   // Observe only authoritative existing Squad output cells.

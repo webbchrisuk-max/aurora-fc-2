@@ -693,3 +693,263 @@
   .squad3-core-side{text-align:left}
   .filters{grid-template-columns:1fr}
 }
+
+
+/* =========================================================
+   SQUAD UI v1.1 — VALUE XI + DENSITY REFINEMENT
+   ========================================================= */
+
+/* Tighter command section on iPad */
+.squad3-command{padding:18px}
+.squad3-command-head h3{font-size:25px}
+.squad3-command-head p{margin-top:5px}
+.squad3-leadership{margin-top:13px}
+.squad3-leadership article{min-height:116px;padding:13px}
+.squad3-leadership strong{margin-top:7px;font-size:21px}
+.squad3-leadership b{font-size:13px}
+.squad3-command-grid{margin-top:9px}
+.squad3-board{padding:15px}
+.squad3-core-list{margin-top:10px}
+.squad3-core-row{min-height:66px;padding:9px}
+.squad3-balance-kpis>div{min-height:80px;padding:10px}
+.squad3-chain{margin-top:9px}
+.squad3-chain-flow{padding:8px}
+.squad3-chain-flow>span{padding:8px}
+.squad3-next{padding:10px}
+
+/* Value XI gets more space than bench */
+.squad-command-grid.squad4-value-grid{
+  grid-template-columns:minmax(0,1.42fr) minmax(330px,.58fr);
+  gap:12px;
+  align-items:start;
+}
+
+/* XI summary */
+.squad4-xi-summary{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-top:15px;
+}
+.squad4-xi-summary>div{
+  min-height:92px;
+  padding:12px;
+  border:1px solid rgba(66,232,193,.075);
+  border-radius:11px;
+  background:rgba(66,232,193,.012);
+}
+.squad4-xi-summary small{
+  display:block;
+  color:#718b89;
+  font-size:7px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.squad4-xi-summary strong{
+  display:block;
+  margin-top:6px;
+  color:#e5f8f3;
+  font-size:18px;
+}
+.squad4-xi-summary span{
+  display:block;
+  margin-top:4px;
+  color:#6f8581;
+  font-size:8px;
+}
+
+/* Premium football pitch */
+.squad4-pitch{
+  min-height:640px;
+  margin-top:12px;
+  border-color:rgba(66,232,193,.25);
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.025) 50%,transparent 50%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 8.333%,rgba(255,255,255,.004) 8.333% 16.666%),
+    linear-gradient(180deg,#0b3d2d,#082b24 52%,#071f1c);
+  background-size:100% 100%,100% 100%,100% 100%;
+  box-shadow:inset 0 0 70px rgba(0,0,0,.18);
+}
+.squad4-pitch:before{
+  inset:6%;
+  border-color:rgba(255,255,255,.20);
+}
+.squad4-pitch:after{
+  top:6%;
+  bottom:6%;
+  background:rgba(255,255,255,.18);
+}
+.squad4-pitch .centre-circle{
+  width:118px;
+  height:118px;
+  border-color:rgba(255,255,255,.19);
+}
+.squad4-centre-spot{
+  position:absolute;
+  z-index:1;
+  left:50%;top:50%;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:rgba(255,255,255,.45);
+  transform:translate(-50%,-50%);
+}
+.squad4-box{
+  position:absolute;
+  z-index:1;
+  left:32%;
+  width:36%;
+  height:15%;
+  border:1px solid rgba(255,255,255,.17);
+}
+.squad4-box.top{top:6%;border-top:0}
+.squad4-box.bottom{bottom:6%;border-bottom:0}
+.squad4-goal{
+  position:absolute;
+  z-index:1;
+  left:43%;
+  width:14%;
+  height:3.5%;
+  border:1px solid rgba(255,255,255,.20);
+}
+.squad4-goal.top{top:2.5%}
+.squad4-goal.bottom{bottom:2.5%}
+
+/* New unique-player pitch tiles */
+.squad4-pitch .pitch-player{
+  z-index:5;
+  width:142px;
+  display:block!important;
+  opacity:1!important;
+  cursor:pointer;
+  filter:drop-shadow(0 10px 13px rgba(0,0,0,.24));
+}
+.squad4-pitch .pitch-player>b{
+  position:relative;
+  min-width:92px;
+  min-height:47px;
+  display:inline-grid;
+  place-items:center;
+  padding:7px 11px 6px;
+  border:1px solid rgba(88,244,255,.28);
+  border-radius:13px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(88,244,255,.12),transparent 50%),
+    rgba(2,17,20,.94);
+  color:#e6ffff;
+  box-shadow:0 10px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.04);
+  font-size:12px;
+}
+.squad4-pitch .pitch-player>b i{
+  display:block;
+  margin-bottom:2px;
+  color:#69a69b;
+  font-size:6px;
+  font-style:normal;
+  font-weight:1000;
+  letter-spacing:.10em;
+}
+.squad4-pitch .pitch-player>b strong{
+  display:block;
+  font-size:12px;
+}
+.squad4-pitch .pitch-player>span{
+  display:inline-block;
+  margin-top:4px;
+  padding:4px 6px;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:7px;
+  background:rgba(2,10,13,.78);
+  color:#a6cfc5;
+  font-size:7px;
+  white-space:nowrap;
+}
+.squad4-pitch .pitch-player:hover>b{
+  border-color:rgba(88,244,255,.5);
+  transform:translateY(-1px);
+}
+
+/* Bench becomes a proper five-player list */
+.squad4-bench-list{
+  gap:9px;
+  margin-top:14px;
+}
+.squad4-bench-card{
+  min-height:91px;
+  padding:12px;
+  border:1px solid rgba(78,164,255,.07);
+  border-radius:12px;
+  background:rgba(78,164,255,.012);
+  cursor:pointer;
+}
+.squad4-bench-card:hover{
+  border-color:rgba(78,164,255,.17);
+}
+.squad4-bench-head{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-start;
+}
+.squad4-bench-head strong{
+  color:#e6f1f8;
+  font-size:11px;
+}
+.squad4-bench-head span{
+  color:#7790a1;
+  font-size:7px;
+}
+.squad4-bench-metrics{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  margin-top:9px;
+}
+.squad4-bench-metrics div{
+  padding:7px;
+  border:1px solid rgba(255,255,255,.04);
+  border-radius:8px;
+  background:rgba(255,255,255,.007);
+}
+.squad4-bench-metrics small{
+  display:block;
+  color:#6f8494;
+  font-size:6px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+.squad4-bench-metrics b{
+  display:block;
+  margin-top:3px;
+  color:#cddde7;
+  font-size:9px;
+}
+.squad4-bench-metrics b.good{color:#a9efc3}
+.squad4-bench-metrics b.bad{color:#ff9daf}
+
+/* First Team cards slightly easier to scan */
+.player-card{
+  border-color:rgba(78,164,255,.11);
+}
+.player-card:hover{
+  border-color:rgba(78,164,255,.20);
+}
+.player-metric{
+  min-height:64px;
+}
+
+/* Keep the tabs and page sections closer together */
+.squad-tabs{margin:10px 0}
+.squad-panel{margin-top:10px}
+
+@media(max-width:1100px){
+  .squad-command-grid.squad4-value-grid{grid-template-columns:1fr}
+  .squad4-xi-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .squad4-xi-summary{grid-template-columns:1fr 1fr}
+  .squad4-pitch{min-height:720px}
+}
+@media(max-width:500px){
+  .squad4-xi-summary{grid-template-columns:1fr}
+}
