@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070b12">
 <title>Aurora City FC — Scouting Command</title>
-<meta name="aurora-scouting-ui" content="SCOUTING_UI_V1_2_NOTABLE_INVESTOR_WATCH">
+<meta name="aurora-scouting-ui" content="SCOUTING_UI_V1_3_MULTI_SOURCE_WATCH">
 <link rel="stylesheet" href="aurora.css?v=scouting-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="scouting-ui.css?v=320-notable-investor-watch">
+<link rel="stylesheet" href="scouting-ui.css?v=330-multi-source-watch">
 </head>
 
 <body class="aurora-entered scouting-command-page">
@@ -200,32 +200,33 @@
       <section class="scouting12-watch" id="notableInvestorWatch">
         <div class="scouting12-watch-head">
           <div>
-            <small>EXTERNAL SCOUTING SIGNAL</small>
-            <h3>Notable Investor Watchlist</h3>
-            <p>Track companies that deserve a closer look because a notable investor owns or follows them. This is a scouting signal only — never a Transfer recommendation.</p>
+            <small>EXTERNAL SCOUTING SIGNALS</small>
+            <h3>Scouting Signal Watchlists</h3>
+            <p>Track companies surfaced by notable investors, dividend lists and other external ideas. A source can earn attention — it can never bypass Aurora's evidence or Transfer gates.</p>
           </div>
           <span class="scouting12-signal-chip">SIGNAL ≠ APPROVAL</span>
         </div>
 
         <div class="scouting12-source-card">
           <div>
-            <small>CURRENT SOURCE LIST</small>
-            <strong id="scouting12SourceTitle">Warren Buffett / Berkshire snapshot</strong>
-            <span id="scouting12SourceMeta">27 visible symbols from your 14 Aug 2026 screenshots.</span>
+            <small>MULTI-SOURCE WATCH</small>
+            <strong id="scouting12SourceTitle">Buffett / Berkshire + Dividend Champions</strong>
+            <span id="scouting12SourceMeta">Two screenshot-sourced watchlists • 14 Aug 2026 • overlaps merged automatically.</span>
           </div>
           <div class="scouting12-source-kpis">
-            <div><small>Watchlist</small><strong id="scouting12WatchCount">0</strong></div>
+            <div><small>Unique Companies</small><strong id="scouting12WatchCount">0</strong></div>
+            <div><small>Source Lists</small><strong id="scouting13SourceCount">2</strong></div>
             <div><small>Network Match</small><strong id="scouting12NetworkCount">0</strong></div>
             <div><small>Active Scouting</small><strong id="scouting12ActiveCount">0</strong></div>
-            <div><small>Needs Source Match</small><strong id="scouting12MissingCount">0</strong></div>
+            <div><small>Needs Match</small><strong id="scouting12MissingCount">0</strong></div>
           </div>
         </div>
 
         <div class="scouting12-watch-tools">
           <div class="scouting12-add-form">
             <label>
-              <span>Investor / source</span>
-              <input id="scouting12SourceInput" value="Warren Buffett / Berkshire" placeholder="Investor or watch source">
+              <span>Watch source</span>
+              <input id="scouting12SourceInput" value="Manual Watch" placeholder="Investor, dividend list or idea source">
             </label>
             <label>
               <span>Ticker</span>
@@ -238,13 +239,21 @@
             <button type="button" id="scouting12Add" class="scouting-btn primary">Add to Watchlist</button>
           </div>
           <div class="scouting12-watch-actions">
-            <button type="button" id="scouting12RestoreSeed" class="scouting-btn secondary">Restore Screenshot List</button>
+            <button type="button" id="scouting12RestoreSeed" class="scouting-btn secondary">Restore Source Lists</button>
             <button type="button" id="scouting12Clear" class="scouting-btn secondary">Clear Watchlist</button>
           </div>
         </div>
 
+        <div class="scouting13-source-filter">
+          <span>SOURCE</span>
+          <button type="button" class="scouting13-source active" data-watch-source="all">All Sources</button>
+          <button type="button" class="scouting13-source" data-watch-source="Warren Buffett / Berkshire">Buffett / Berkshire</button>
+          <button type="button" class="scouting13-source" data-watch-source="Dividend Champions">Dividend Champions</button>
+          <button type="button" class="scouting13-source" data-watch-source="Manual Watch">Manual</button>
+        </div>
+
         <div class="scouting12-filter-strip">
-          <button type="button" class="scouting12-filter active" data-watch-filter="all">All</button>
+          <button type="button" class="scouting12-filter active" data-watch-filter="all">All Status</button>
           <button type="button" class="scouting12-filter" data-watch-filter="active">Active Scouting</button>
           <button type="button" class="scouting12-filter" data-watch-filter="network">Network Only</button>
           <button type="button" class="scouting12-filter" data-watch-filter="missing">Needs Match</button>
@@ -254,7 +263,7 @@
 
         <div class="scouting12-boundary">
           <b>Aurora boundary:</b>
-          <span>Notable Investor Watch → Global Network match → evidence review → Active Scouting → approved shortlist → Transfer.</span>
+          <span>External Watchlist → Global Network match → evidence review → Active Scouting → approved shortlist → Transfer.</span>
         </div>
       </section>
 
@@ -459,6 +468,6 @@
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="scouting.js?v=031"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="scouting-ui.js?v=320-notable-investor-watch"></script>
+<script src="scouting-ui.js?v=330-multi-source-watch"></script>
 </body>
 </html>
