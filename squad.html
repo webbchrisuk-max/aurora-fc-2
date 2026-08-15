@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101d">
-<title>Aurora City FC — Squad Hub</title>
+<title>Aurora City FC — Squad Command</title>
+<meta name="aurora-squad-ui" content="SQUAD_UI_V1_FIRST_TEAM_COMMAND">
 <link rel="stylesheet" href="aurora.css?v=squad-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="squad-command.css?v=squad-command-100">
+<link rel="stylesheet" href="squad-ui.css?v=300-first-team-command">
 </head>
 <body class="aurora-entered squad-command-page">
 <div class="aurora-game-shell is-active" id="gameShell">
@@ -26,13 +27,14 @@
 <section class="squad-command-hero">
 <div class="squad-hero-copy">
 <div class="squad-status-line"><span class="squad-live-pill">● FIRST TEAM LIVE</span><span class="squad-version-pill">CANONICAL HOLDINGS v0.1.2</span></div>
-<span class="squad-eyebrow">Aurora City FC • First Team Register</span>
+<span class="squad-eyebrow">Aurora City FC • Canonical First Team • Holdings Command</span>
 <h2>Squad<br><span>Hub</span></h2>
-<p>Every holding, share count, account, book cost, live value and dividend income lives here as one canonical first-team record.</p>
+<p>Registration confirms the trade. Squad owns the canonical holding. Income reads the finished first team. Every share count, broker, book cost, live value and dividend record stays anchored here.</p>
 <div class="squad-hero-actions">
-<button class="squad-btn primary" id="openMigration">Import Aurora 1 Holdings</button>
+<button class="squad-btn primary" id="squad3OpenFirstTeam">Open First Team</button>
 <button class="squad-btn secondary" id="openEditor">Add / Edit Holding</button>
-<a class="squad-btn secondary" href="transfer.html">Open Transfer</a>
+<a class="squad-btn secondary" href="registration.html">Open Registration</a>
+<button class="squad-btn secondary" id="openMigration">Legacy Import</button>
 </div></div>
 <article class="squad-command-card">
 <div class="squad-command-head"><span>Canonical Squad Value</span><i>FIRST TEAM</i></div>
@@ -50,11 +52,112 @@
 <article class="squad-score teal"><small>Yield on Cost</small><strong id="kYoc">0.00%</strong><span>Annual income / book cost</span></article>
 </section>
 
+<section class="squad3-command" id="squadCommand">
+  <div class="squad3-command-head">
+    <div>
+      <small>FIRST TEAM COMMAND</small>
+      <h3>Squad Leadership & Balance</h3>
+      <p>The manager view of the canonical first team: biggest holdings, income leadership, P/L form, broker balance, squad depth and data attention.</p>
+    </div>
+    <span id="squad3Status" class="squad3-status">CHECKING SQUAD</span>
+  </div>
+
+  <div class="squad3-leadership">
+    <article class="value">
+      <small>VALUE CAPTAIN</small>
+      <strong id="squad3ValueCaptain">—</strong>
+      <b id="squad3ValueCaptainValue">—</b>
+      <span id="squad3ValueCaptainMeta">Largest holding by canonical market value</span>
+    </article>
+    <article class="income">
+      <small>INCOME CAPTAIN</small>
+      <strong id="squad3IncomeCaptain">—</strong>
+      <b id="squad3IncomeCaptainValue">—</b>
+      <span id="squad3IncomeCaptainMeta">Largest forward-income contributor</span>
+    </article>
+    <article class="profit">
+      <small>P/L LEADER</small>
+      <strong id="squad3ProfitLeader">—</strong>
+      <b id="squad3ProfitLeaderValue">—</b>
+      <span id="squad3ProfitLeaderMeta">Strongest book-to-market contribution</span>
+    </article>
+    <article class="drag">
+      <small>BIGGEST DRAG</small>
+      <strong id="squad3Drag">—</strong>
+      <b id="squad3DragValue">—</b>
+      <span id="squad3DragMeta">Largest negative book-to-market contribution</span>
+    </article>
+  </div>
+
+  <div class="squad3-command-grid">
+    <article class="squad3-board squad3-core-board">
+      <div class="squad3-board-head">
+        <div>
+          <small>FIRST TEAM CORE</small>
+          <h4>Core Five</h4>
+          <p>The five largest canonical holdings by market value. Click a player to jump into its First Team record.</p>
+        </div>
+        <span id="squad3CoreMeta">0 players</span>
+      </div>
+      <div id="squad3CoreList" class="squad3-core-list"></div>
+    </article>
+
+    <article class="squad3-board squad3-balance-board">
+      <div class="squad3-board-head">
+        <div>
+          <small>SQUAD BALANCE</small>
+          <h4>Broker & Depth Control</h4>
+          <p>Account values come from Squad's existing broker totals. Sector depth is structural and never changes the canonical portfolio valuation.</p>
+        </div>
+        <span id="squad3BalanceMeta">LIVE</span>
+      </div>
+
+      <div class="squad3-balance-kpis">
+        <div><small>Top 5 Value</small><strong id="squad3Top5Concentration">0.0%</strong><span>of total Squad value</span></div>
+        <div><small>Locked Positions</small><strong id="squad3Locked">0</strong><span>protected from normal Transfer activity</span></div>
+        <div><small>Account Review</small><strong id="squad3Review">0</strong><span>positions needing broker scope</span></div>
+        <div><small>Metadata Attention</small><strong id="squad3Metadata">0</strong><span>sector / income records to review</span></div>
+      </div>
+
+      <div class="squad3-balance-split">
+        <section>
+          <small>BROKER SQUADS</small>
+          <div id="squad3BrokerBars" class="squad3-bar-list"></div>
+        </section>
+        <section>
+          <small>SECTOR DEPTH</small>
+          <div id="squad3SectorList" class="squad3-sector-list"></div>
+        </section>
+      </div>
+    </article>
+  </div>
+
+  <div class="squad3-chain">
+    <div class="squad3-chain-flow">
+      <span><i>01</i><b>REGISTRATION</b><em>confirms execution</em></span>
+      <strong>→</strong>
+      <span class="active"><i>02</i><b>SQUAD</b><em>owns holdings</em></span>
+      <strong>→</strong>
+      <span><i>03</i><b>INCOME</b><em>reads dividends</em></span>
+      <strong>→</strong>
+      <span><i>04</i><b>NEXUS</b><em>summarises club</em></span>
+    </div>
+    <div class="squad3-next">
+      <div>
+        <small>NEXT MANAGER ACTION</small>
+        <strong id="squad3NextAction">Checking first-team records…</strong>
+        <span id="squad3NextMeta">Squad will surface the most useful next step.</span>
+      </div>
+      <button type="button" id="squad3NextButton" class="squad-btn primary">Open Next Step</button>
+    </div>
+  </div>
+</section>
+
 <div class="tabs squad-tabs">
 <button class="tab active" data-tab="squadPanel">First Team</button>
-<button class="tab" data-tab="pitchPanel">Starting XI</button>
+<button class="tab" data-tab="pitchPanel">Value XI</button>
 <button class="tab" data-tab="healthPanel">Data Health</button>
-<button class="tab" data-tab="migrationPanel">Migration</button>
+<button class="tab" data-tab="migrationPanel">Legacy Migration</button>
 <button class="tab" data-tab="editorPanel">Holding Editor</button>
 </div>
 
@@ -65,7 +168,7 @@
 <article class="account-card review"><small>Account Review</small><strong id="reviewValue">£0.00</strong><span id="reviewMeta">0 positions</span></article>
 </section>
 <section class="squad-panel register-panel">
-<div class="squad-panel-head"><div><span class="squad-panel-kicker">Canonical Holdings</span><h3>First Team Register</h3></div><span class="squad-panel-note" id="registerMeta">0 positions</span></div>
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Canonical Holdings</span><h3>First Team Register</h3><p class="squad3-head-copy">The complete account-scoped register. Same ticker at two brokers remains two canonical positions.</p></div><span class="squad-panel-note" id="registerMeta">0 positions</span></div>
 <div class="filters">
 <label>Search<input id="holdingSearch" placeholder="Ticker or company"></label>
 <label>Account<select id="holdingAccountFilter"><option value="ALL">All accounts</option><option value="IG ISA">IG ISA</option><option value="Trading 212 ISA">Trading 212 ISA</option><option value="ACCOUNT REVIEW">Account review</option></select></label>
@@ -78,11 +181,11 @@
 <section id="pitchPanel" class="tab-panel">
 <section class="squad-command-grid two">
 <article class="squad-panel pitch-panel">
-<div class="squad-panel-head"><div><span class="squad-panel-kicker">Matchday View</span><h3>Starting XI</h3></div><span class="squad-panel-note">Largest active positions</span></div>
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Matchday View</span><h3>Starting XI — Value Formation</h3><p class="squad3-head-copy">The eleven largest canonical positions by market value, presented as a football formation.</p></div><span class="squad-panel-note">VALUE XI</span></div>
 <div class="pitch" id="squadPitch"><div class="centre-circle"></div><span class="pitch-note">Formation shows the 11 largest positions by market value — it is not a Scouting recommendation.</span></div>
 </article>
 <article class="squad-panel bench-panel">
-<div class="squad-panel-head"><div><span class="squad-panel-kicker">Squad Depth</span><h3>Bench & Depth</h3></div><span class="squad-panel-note">Remaining positions</span></div>
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Squad Depth</span><h3>Bench & Depth</h3><p class="squad3-head-copy">All active positions outside the Value XI remain visible here.</p></div><span class="squad-panel-note">REMAINING POSITIONS</span></div>
 <div id="benchList" class="history-list"></div>
 </article></section></section>
 
@@ -94,7 +197,7 @@
 <article class="health-card" id="healthIncome"><small>Dividend Income</small><strong>—</strong><span>Checking annual income coverage.</span></article>
 </section>
 <section class="squad-panel registration-bridge-panel">
-<div class="squad-panel-head"><div><span class="squad-panel-kicker">Registration Bridge</span><h3>Pending Transfer Registrations</h3></div><span class="squad-panel-note">READ ONLY</span></div>
+<div class="squad-panel-head"><div><span class="squad-panel-kicker">Registration Bridge</span><h3>Pending Transfer Registrations</h3><p class="squad3-head-copy">Registration drafts stay outside the first team until AuroraData 2 confirms the real broker execution.</p></div><span class="squad-panel-note">READ ONLY</span></div>
 <div id="registrationBridge"></div>
 <div class="squad-notice"><b>Important:</b> Registration drafts do not change Squad holdings. AuroraData 2 must accept the transaction first; then Squad updates from the confirmed canonical transaction.</div>
 </section></section>
@@ -177,6 +280,6 @@
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="squad.js?v=012"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="squad-command-ui.js?v=100"></script>
+<script src="squad-ui.js?v=300-first-team-command"></script>
 </body>
 </html>
