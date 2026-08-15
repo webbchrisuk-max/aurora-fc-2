@@ -960,3 +960,376 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 window.addEventListener('aurora2:state',()=>setTimeout(annotate,20));
 })();
+
+
+/* =========================================================
+   CHAIRMAN'S OFFICE UI v1.2 — REPLACEMENT BASKET IMPACT
+   Presentation clarity only. No rotation maths changes.
+   ========================================================= */
+(function(){
+'use strict';
+
+const $=id=>document.getElementById(id);
+const num=v=>{
+  const n=Number(String(v??'').replace(/[^0-9.-]/g,''));
+  return Number.isFinite(n)?n:0;
+};
+
+const STYLE=`
+/* Sale side: visually fixed until holding / trim changes */
+#rotationCase .case-stat.chairman-sale-fixed{
+  border-color:rgba(225,181,85,.14)!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(225,181,85,.045),transparent 38%),
+    rgba(225,181,85,.012)!important;
+}
+#rotationCase .case-stat.chairman-sale-fixed small{
+  color:#b29a68!important;
+}
+#rotationCase .case-stat.chairman-sale-fixed strong{
+  color:#f0d99b!important;
+}
+.chairman-fixed-note{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin:10px 0 0;
+  padding:10px 12px;
+  border:1px solid rgba(225,181,85,.09);
+  border-radius:10px;
+  background:rgba(225,181,85,.012);
+  color:#8c816c;
+  font-size:8px;
+  line-height:1.45;
+}
+.chairman-fixed-note b{
+  color:#e6cb8d;
+  white-space:nowrap;
+}
+
+/* Replacement basket impact */
+#comparisonSection{
+  border-color:rgba(102,209,174,.13)!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(102,209,174,.045),transparent 34%),
+    radial-gradient(circle at 0% 100%,rgba(78,164,255,.025),transparent 30%),
+    linear-gradient(145deg,rgba(4,16,17,.58),rgba(4,8,13,.985))!important;
+}
+.chairman-impact-intro{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(270px,.75fr);
+  gap:10px;
+  margin-top:14px;
+}
+.chairman-impact-message,
+.chairman-impact-basket{
+  min-width:0;
+  padding:13px;
+  border:1px solid rgba(102,209,174,.075);
+  border-radius:12px;
+  background:rgba(102,209,174,.01);
+}
+.chairman-impact-message small,
+.chairman-impact-basket small,
+.chairman-impact-kpis small{
+  display:block;
+  color:#738f88;
+  font-size:7px;
+  font-weight:1000;
+  letter-spacing:.09em;
+}
+.chairman-impact-message strong{
+  display:block;
+  margin-top:5px;
+  color:#dcf4ed;
+  font-size:13px;
+}
+.chairman-impact-message span,
+.chairman-impact-basket span{
+  display:block;
+  margin-top:4px;
+  color:#70847f;
+  font-size:8px;
+  line-height:1.5;
+}
+.chairman-impact-basket strong{
+  display:block;
+  margin-top:5px;
+  color:#c5e6dd;
+  font-size:11px;
+  line-height:1.45;
+}
+.chairman-impact-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+.chairman-impact-kpis>div{
+  position:relative;
+  overflow:hidden;
+  min-height:96px;
+  padding:12px;
+  border:1px solid rgba(102,209,174,.065);
+  border-radius:11px;
+  background:rgba(102,209,174,.009);
+}
+.chairman-impact-kpis>div:before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:#66d1ae;
+}
+.chairman-impact-kpis .annual:before{background:#73dfa1}
+.chairman-impact-kpis .coverage:before{background:#65b8ff}
+.chairman-impact-kpis .yield:before{background:#b985ff}
+.chairman-impact-kpis strong{
+  display:block;
+  margin-top:7px;
+  color:#e6f5f1;
+  font-size:20px;
+  letter-spacing:-.03em;
+}
+.chairman-impact-kpis strong.good{color:#a9efc3}
+.chairman-impact-kpis strong.bad{color:#ff9daf}
+.chairman-impact-kpis span{
+  display:block;
+  margin-top:4px;
+  color:#6f827e;
+  font-size:8px;
+  line-height:1.4;
+}
+
+/* Existing compare cards clearly distinguish fixed inputs from basket outputs */
+#comparisonSection .compare.chairman-input-fixed{
+  opacity:.72;
+  border-style:dashed!important;
+}
+#comparisonSection .compare.chairman-basket-output{
+  border-color:rgba(102,209,174,.10)!important;
+  background:rgba(102,209,174,.012)!important;
+}
+#comparisonSection .compare.chairman-basket-output small{
+  color:#7fa79c!important;
+}
+#comparisonSection .compare.chairman-basket-output strong{
+  color:#e0f5ef!important;
+}
+#comparisonSection .compare.chairman-basket-output strong.good{
+  color:#a9efc3!important;
+}
+#comparisonSection .compare.chairman-basket-output strong.bad{
+  color:#ff9daf!important;
+}
+
+@media(max-width:900px){
+  .chairman-impact-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chairman-impact-intro{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .chairman-impact-kpis{grid-template-columns:1fr}
+}
+`;
+
+function money(v){
+  try{return window.Aurora2?.ui?.money?.(v) || new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(v||0)}
+  catch(_){return `£${(v||0).toFixed(2)}`}
+}
+function text(id){return $(id)?.textContent?.trim()||'—'}
+
+function ensureStyle(){
+  if($('chairmanBasketImpactStyles'))return;
+  const s=document.createElement('style');
+  s.id='chairmanBasketImpactStyles';
+  s.textContent=STYLE;
+  document.head.appendChild(s);
+}
+
+function decorateSaleSide(){
+  const profit=$('caseProfit');
+  const profitCard=profit?.closest('.case-stat');
+  if(profitCard){
+    profitCard.classList.add('chairman-sale-fixed');
+    const label=profitCard.querySelector('small');
+    const meta=profitCard.querySelector('span');
+    if(label)label.textContent='Sale Profit Realised';
+    if(meta)meta.textContent='Fixed by selected holding + trim size';
+  }
+
+  // These are also sale-side inputs; mark them without renaming all labels.
+  ['caseShares','caseCash','caseIncomeLost'].forEach(id=>{
+    $(id)?.closest('.case-stat')?.classList.add('chairman-sale-fixed');
+  });
+
+  const grid=profitCard?.parentElement;
+  if(grid && !$('chairmanFixedSaleNote')){
+    const note=document.createElement('div');
+    note.id='chairmanFixedSaleNote';
+    note.className='chairman-fixed-note';
+    note.innerHTML='<b>SALE SIDE IS FIXED</b><span>Changing replacement stocks does not change the cash/profit created by selling the same holding at the same trim size. Change the holding or 25/50/75/100% trim to change these figures.</span>';
+    grid.after(note);
+  }
+}
+
+function decorateComparison(){
+  const section=$('comparisonSection');
+  if(!section)return;
+
+  const kicker=section.querySelector('.chairman-panel-kicker');
+  const title=section.querySelector('.chairman-panel-head h3');
+  const copy=section.querySelector('.chairman-copy');
+  if(kicker)kicker.textContent='Replacement Economics';
+  if(title)title.textContent='Replacement Basket Impact';
+  if(copy)copy.textContent='These are the figures that should move when you change Sustainable / Maximum / Custom replacement selections. Sale-side figures stay fixed until the holding or trim changes.';
+
+  if(!$('chairmanImpactIntro')){
+    const intro=document.createElement('div');
+    intro.id='chairmanImpactIntro';
+    intro.className='chairman-impact-intro';
+    intro.innerHTML=`
+      <div class="chairman-impact-message">
+        <small>BASKET-SENSITIVE OUTPUT</small>
+        <strong id="chairmanImpactVerdict">Choose a replacement basket</strong>
+        <span id="chairmanImpactVerdictMeta">Aurora will compare the replacement income against the income surrendered by the sale.</span>
+      </div>
+      <div class="chairman-impact-basket">
+        <small>CURRENT REPLACEMENT BASKET</small>
+        <strong id="chairmanImpactBasket">—</strong>
+        <span id="chairmanImpactBasketMeta">Transfer-sized simulation</span>
+      </div>`;
+    const grid=section.querySelector('.compare-grid');
+    grid?.before(intro);
+  }
+
+  if(!$('chairmanImpactKpis')){
+    const kpis=document.createElement('div');
+    kpis.id='chairmanImpactKpis';
+    kpis.className='chairman-impact-kpis';
+    kpis.innerHTML=`
+      <div>
+        <small>Replacement Income</small>
+        <strong id="chairmanImpactIncome">—</strong>
+        <span>changes with selected basket</span>
+      </div>
+      <div class="annual">
+        <small>Net Annual Change</small>
+        <strong id="chairmanImpactAnnual">—</strong>
+        <span>replacement minus surrendered</span>
+      </div>
+      <div class="coverage">
+        <small>Income Coverage</small>
+        <strong id="chairmanImpactCoverage">—</strong>
+        <span>replacement ÷ surrendered</span>
+      </div>
+      <div class="yield">
+        <small>Replacement Yield</small>
+        <strong id="chairmanImpactYield">—</strong>
+        <span>simulated income ÷ released cash</span>
+      </div>`;
+    $('chairmanImpactIntro')?.after(kpis);
+  }
+
+  // Visually tag existing cards.
+  const fixedIds=['oldIncome','profitYears','largestBefore'];
+  const outputIds=[
+    'newIncome','netAnnual','netMonthly','incomeCoverage','profitCushion',
+    'replacementYield','simHoldback','largestAfter','sectorAfter'
+  ];
+  fixedIds.forEach(id=>$(id)?.closest('.compare')?.classList.add('chairman-input-fixed'));
+  outputIds.forEach(id=>$(id)?.closest('.compare')?.classList.add('chairman-basket-output'));
+}
+
+function basketNames(){
+  const host=$('basketList');
+  if(!host)return [];
+  const rows=[...host.querySelectorAll('.basket-row')];
+  return rows.map(row=>{
+    const strong=row.querySelector('strong');
+    const raw=(strong?.textContent||'').trim();
+    return raw.split(/\s+/)[0]||'';
+  }).filter(Boolean);
+}
+
+function updateImpact(){
+  decorateSaleSide();
+  decorateComparison();
+
+  const newIncome=text('newIncome');
+  const annual=text('netAnnual');
+  const coverage=text('incomeCoverage');
+  const replacementYield=text('replacementYield');
+  const monthly=text('netMonthly');
+
+  const set=(id,v)=>{const el=$(id);if(el)el.textContent=v};
+  set('chairmanImpactIncome',newIncome);
+  set('chairmanImpactAnnual',annual);
+  set('chairmanImpactCoverage',coverage);
+  set('chairmanImpactYield',replacementYield);
+
+  const names=basketNames();
+  set('chairmanImpactBasket',names.length?names.join(' • '):'No replacement route');
+  const lens=text('comparisonLens');
+  set('chairmanImpactBasketMeta',`${lens} • ${names.length} replacement${names.length===1?'':'s'} • Transfer-sized`);
+
+  const annualNum=num(annual);
+  const annualEl=$('chairmanImpactAnnual');
+  if(annualEl){
+    annualEl.classList.remove('good','bad');
+    if(annualNum>0.005)annualEl.classList.add('good');
+    if(annualNum<-0.005)annualEl.classList.add('bad');
+  }
+
+  const headline=$('chairmanImpactVerdict');
+  const meta=$('chairmanImpactVerdictMeta');
+  if(headline&&meta){
+    if(!names.length){
+      headline.textContent='No replacement basket selected';
+      meta.textContent='Choose Sustainable, Maximum or Custom replacements to compare the changing basket economics.';
+    }else if(annualNum>0.005){
+      headline.textContent=`Replacement basket improves annual income by ${annual}`;
+      meta.textContent=`The current basket produces ${newIncome} replacement income and ${monthly} net monthly change.`;
+    }else if(annualNum<-0.005){
+      headline.textContent=`Replacement basket reduces annual income by ${annual.replace(/^-/,'')}`;
+      meta.textContent=`The sale profit remains fixed; this basket produces ${newIncome} replacement income and ${coverage} income coverage.`;
+    }else{
+      headline.textContent='Replacement basket broadly maintains annual income';
+      meta.textContent=`Current replacement income is ${newIncome} with ${coverage} coverage.`;
+    }
+  }
+
+  // Add good/bad styling to the existing dynamic annual/monthly cards too.
+  ['netAnnual','netMonthly'].forEach(id=>{
+    const el=$(id);
+    if(!el)return;
+    const n=num(el.textContent);
+    el.classList.remove('good','bad');
+    if(n>0.005)el.classList.add('good');
+    if(n<-0.005)el.classList.add('bad');
+  });
+}
+
+function bind(){
+  ensureStyle();
+  decorateSaleSide();
+  decorateComparison();
+  updateImpact();
+
+  // Watch only source outputs that club-control.js already owns.
+  const observer=new MutationObserver(()=>requestAnimationFrame(updateImpact));
+  [
+    'caseProfit','caseCash','caseIncomeLost','newIncome','netAnnual','netMonthly',
+    'incomeCoverage','replacementYield','simHoldback','largestAfter','sectorAfter',
+    'basketList','comparisonLens'
+  ].forEach(id=>{
+    const el=$(id);
+    if(el)observer.observe(el,{childList:true,subtree:true,characterData:true,attributes:true});
+  });
+
+  document.addEventListener('click',()=>setTimeout(updateImpact,80));
+  window.addEventListener('aurora2:state',()=>setTimeout(updateImpact,20));
+  [80,350,900].forEach(ms=>setTimeout(updateImpact,ms));
+}
+
+document.addEventListener('DOMContentLoaded',bind);
+})();
