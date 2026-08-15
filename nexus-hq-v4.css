@@ -2077,3 +2077,51 @@
 
 @media(max-width:900px){.hq44-chart-controls{justify-content:flex-start}.hq44-broker-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.hq44-broker-metrics{grid-template-columns:1fr}.hq44-chart-mode{width:100%}.hq44-chart-mode button{flex:1}}
+
+/* =========================================================
+   NEXUS HQ 4.5.2 — COLOUR-CODED COMMAND CARDS
+   Give previously neutral cards a department-specific wash so
+   headline information is easier to distinguish at a glance.
+   ========================================================= */
+.hq4-command-strip .portfolio{
+  border-color:rgba(88,244,255,.22);
+  background:radial-gradient(circle at 92% 0%,rgba(88,244,255,.18),transparent 43%),linear-gradient(145deg,rgba(7,43,59,.88),rgba(2,13,24,.97));
+}
+.hq4-command-strip .market{
+  border-color:rgba(106,168,255,.22);
+  background:radial-gradient(circle at 92% 0%,rgba(106,168,255,.19),transparent 43%),linear-gradient(145deg,rgba(13,35,68,.88),rgba(3,12,25,.97));
+}
+.hq4-command-strip .income{
+  border-color:rgba(89,255,154,.20);
+  background:radial-gradient(circle at 92% 0%,rgba(89,255,154,.17),transparent 43%),linear-gradient(145deg,rgba(7,48,38,.86),rgba(2,17,22,.97));
+}
+.hq4-command-strip .dividend{
+  border-color:rgba(255,209,94,.21);
+  background:radial-gradient(circle at 92% 0%,rgba(255,209,94,.17),transparent 43%),linear-gradient(145deg,rgba(55,40,13,.86),rgba(16,13,15,.97));
+}
+.hq4-command-strip .finance{
+  border-color:rgba(185,133,255,.22);
+  background:radial-gradient(circle at 92% 0%,rgba(185,133,255,.19),transparent 43%),linear-gradient(145deg,rgba(39,24,66,.88),rgba(10,9,23,.97));
+}
+
+.hq44-broker-metrics .overall{background:rgba(8,145,178,.10);border-color:rgba(88,244,255,.14)}
+.hq44-broker-metrics .ig{background:rgba(120,53,15,.11);border-color:rgba(255,209,94,.14)}
+.hq44-broker-metrics .t212{background:rgba(91,33,182,.11);border-color:rgba(185,133,255,.15)}
+.hq44-broker-metrics .today{background:rgba(6,78,59,.11);border-color:rgba(89,255,154,.14)}
+
+.hq45-runway-brief .confirmed{background:rgba(6,78,59,.11);border-color:rgba(89,255,154,.14)}
+.hq45-runway-brief .forecast{background:rgba(120,53,15,.11);border-color:rgba(255,209,94,.14)}
+.hq45-runway-brief .coverage{background:rgba(6,78,59,.10);border-color:rgba(64,224,192,.14)}
+.hq45-runway-brief .unscheduled{background:rgba(91,33,182,.11);border-color:rgba(185,133,255,.14)}
+
+.hq451-momentum-kpis .latest{background:rgba(120,53,15,.11);border-color:rgba(255,209,94,.14)}
+.hq451-momentum-kpis .growth{background:rgba(6,78,59,.11);border-color:rgba(89,255,154,.14)}
+.hq451-momentum-kpis .high{background:rgba(6,78,59,.10);border-color:rgba(64,224,192,.14)}
+.hq451-momentum-kpis .history{background:rgba(91,33,182,.11);border-color:rgba(185,133,255,.14)}
+
+.hq4-department-grid a.finance{background:radial-gradient(circle at 0 0,rgba(89,255,154,.13),transparent 48%),rgba(2,17,18,.72)}
+.hq4-department-grid a.scouting{background:radial-gradient(circle at 0 0,rgba(255,209,94,.13),transparent 48%),rgba(22,17,8,.72)}
+.hq4-department-grid a.transfer{background:radial-gradient(circle at 0 0,rgba(255,111,142,.14),transparent 48%),rgba(25,8,16,.72)}
+.hq4-department-grid a.registration{background:radial-gradient(circle at 0 0,rgba(64,224,192,.13),transparent 48%),rgba(3,20,20,.72)}
+.hq4-department-grid a.squad{background:radial-gradient(circle at 0 0,rgba(106,168,255,.15),transparent 48%),rgba(5,14,29,.72)}
+.hq4-department-grid a.income{background:radial-gradient(circle at 0 0,rgba(185,133,255,.15),transparent 48%),rgba(15,9,28,.72)}
