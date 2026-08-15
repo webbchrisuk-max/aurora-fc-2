@@ -418,14 +418,18 @@
 
   function renderMission(state){
     const m=state.mission,b=validMission(m)?num(m.approvedBudget):0;
+    const missionId=String(m?.id||'').trim();
+    const payday=String(m?.paydayDate||'').trim();
     set('missionBudget',money(b));
     set('kFinanceBudget',money(b));
     set('handoffBudget',money(b));
     set('missionStatus',m?.status||'NO ACTIVE MISSION');
-    set('missionMeta',m?`${m.id}${m.paydayDate?' • payday '+m.paydayDate:''}`:'Release an investment mission from Finance first.');
+    set('missionMeta',missionId
+      ?`${missionId}${payday?' • payday '+payday:''}`
+      :m?'Mission details are incomplete. Return to Finance to release a current mission.':'Release an investment mission from Finance first.');
     set('missionLock',m?'Finance-authorised budget is read-only in Transfer.':'Budget is locked to Finance.');
-    set('handoffMissionId',m?.id||'—');
-    set('handoffPayday',m?.paydayDate||'—');
+    set('handoffMissionId',missionId||'—');
+    set('handoffPayday',payday||'—');
     set('handoffSafe',m?.financeSnapshot?.safeSurplus!=null?money(m.financeSnapshot.safeSurplus):'—');
     set('handoffCommitments',m?.financeSnapshot?.commitments!=null?money(m.financeSnapshot.commitments):'—');
     set('handoffState',validMission(m)?'LOADED':'WAITING');
