@@ -666,3 +666,86 @@ function bind(){
 
 document.addEventListener('DOMContentLoaded',bind);
 })();
+
+
+/* =========================================================
+   INCOME UI v1.1.5 — RUNWAY INTELLIGENCE
+   Rendering only; Income Runway Intelligence owns the summary.
+   ========================================================= */
+(function(){
+'use strict';
+
+const A=()=>window.Aurora2;
+const $=id=>document.getElementById(id);
+const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
+const money=v=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(num(v));
+
+function getSummary(){
+  try{
+    const s=A()?.core?.read?.()||{};
+    return A()?.incomeRunway?.summary?.(s)||s.income?.runwaySummary||null;
+  }catch(_){return null}
+}
+function set(id,v){const el=$(id);if(el)el.textContent=v}
+function jump(id){
+  const el=$(id);if(!el)return;
+  const offset=(document.querySelector('.aurora-shell-header')?.offsetHeight||0)+(document.querySelector('.income-jumpbar')?.offsetHeight||0)+18;
+  window.scrollTo({top:Math.max(0,el.getBoundingClientRect().top+window.scrollY-offset),behavior:'smooth'});
+}
+
+function render(){
+  const r=getSummary();
+  if(!r)return;
+
+  set('income15Confirmed',money(r.confirmedGbp));
+  set('income15ConfirmedMeta',`${r.confirmedCount||0} confirmed event${r.confirmedCount===1?'':'s'}`);
+  set('income15Forecast',money(r.forecastGbp));
+  set('income15ForecastMeta',`${r.forecastCount||0} forecast event${r.forecastCount===1?'':'s'}`);
+  set('income15UnscheduledAmount',money(r.unscheduledAnnualGbp));
+  set('income15Mapped',`${num(r.mappedPct).toFixed(1)}%`);
+  set('income15MappedMeta',`${r.confidence||'LOW'} calendar confidence • ${money(r.scheduledGbp)} dated`);
+  set('calendarCoverage',`${(r.confirmedCount||0)+(r.forecastCount||0)} dated • ${money(r.unscheduledAnnualGbp)} unscheduled`);
+  set('income15UnscheduledHeadline',`${money(r.unscheduledAnnualGbp)}/year still needs calendar intelligence`);
+
+  const note=$('income15UnscheduledNote');
+  if(note){
+    note.textContent=num(r.unscheduledAnnualGbp)>0
+      ?'This income is real in the canonical forward run-rate, but Aurora does not yet have a trusted future payment date for it. Dividend Intelligence or a manual update will move it into the dated runway.'
+      :'The full forward annual run-rate is represented by dated confirmed/forecast events in the next 12 months.';
+  }
+
+  const host=$('monthGrid');
+  if(host){
+    host.innerHTML=(r.months||[]).map(m=>{
+      const total=num(m.totalGbp),confirmed=num(m.confirmedGbp),forecast=num(m.forecastGbp);
+      const classes=['month-card','income15-month-card'];
+      if(confirmed>0)classes.push('has-confirmed');
+      if(forecast>0)classes.push('has-forecast');
+      return `<article class="${classes.join(' ')}">
+        <small>${m.label} ${String(m.year).slice(-2)}</small>
+        <strong>${total>0?money(total):'—'}</strong>
+        <span>${total>0?`${(m.confirmedCount||0)+(m.forecastCount||0)} dated payment${((m.confirmedCount||0)+(m.forecastCount||0))===1?'':'s'}`:'No dated events'}</span>
+        ${total>0?`<div class="income15-month-split">
+          <div class="confirmed"><span>Confirmed</span><b>${confirmed>0?money(confirmed):'—'}</b></div>
+          <div class="forecast"><span>Forecast</span><b>${forecast>0?money(forecast):'—'}</b></div>
+        </div>`:'<em class="income15-month-empty">Income stays unscheduled until a reliable date exists.</em>'}
+      </article>`;
+    }).join('');
+  }
+}
+
+function bind(){
+  $('income15RunIntelligence')?.addEventListener('click',()=>{
+    const btn=$('runDividendEngine');
+    if(btn){btn.click();setTimeout(()=>jump('dividendEngineSection'),80)}
+    else jump('dividendEngineSection');
+  });
+  $('income15AddDividend')?.addEventListener('click',()=>jump('dividendCalendarSection'));
+
+  window.addEventListener('aurora2:state',()=>setTimeout(render,0));
+  window.addEventListener('storage',()=>setTimeout(render,30));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(render,30)});
+  [0,100,450,1200].forEach(ms=>setTimeout(render,ms));
+}
+document.addEventListener('DOMContentLoaded',bind);
+})();

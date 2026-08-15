@@ -1783,3 +1783,196 @@
     max-width:none;
   }
 }
+
+
+/* =========================================================
+   INCOME UI v1.1.5 — RUNWAY INTELLIGENCE
+   Confirmed / Forecast / Unscheduled — no invented dates.
+   ========================================================= */
+
+.income15-runway-panel{
+  border-color:rgba(246,196,83,.16);
+  background:
+    radial-gradient(circle at 100% 0%,rgba(246,196,83,.06),transparent 34%),
+    radial-gradient(circle at 0% 100%,rgba(185,133,255,.035),transparent 30%),
+    linear-gradient(145deg,rgba(21,17,10,.56),rgba(5,8,15,.99));
+}
+
+.income15-runway-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-top:17px;
+}
+.income15-runway-kpis article{
+  position:relative;
+  overflow:hidden;
+  min-height:116px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:13px;
+  background:rgba(255,255,255,.011);
+}
+.income15-runway-kpis article:before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+}
+.income15-runway-kpis .confirmed:before{background:#59ff9a}
+.income15-runway-kpis .forecast:before{background:#f6c453}
+.income15-runway-kpis .unscheduled:before{background:#b985ff}
+.income15-runway-kpis .coverage:before{background:#42e8c1}
+.income15-runway-kpis small{
+  display:block;
+  color:#8d826b;
+  font-size:8px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.income15-runway-kpis strong{
+  display:block;
+  margin-top:8px;
+  color:#f4ead0;
+  font-size:25px;
+  letter-spacing:-.035em;
+}
+.income15-runway-kpis span{
+  display:block;
+  margin-top:6px;
+  color:#7c7466;
+  font-size:9px;
+  line-height:1.45;
+}
+
+.income15-runway-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+.income15-runway-legend span{
+  min-height:30px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0 9px;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:999px;
+  color:#8a8172;
+  background:rgba(255,255,255,.009);
+  font-size:8px;
+  font-weight:850;
+}
+.income15-runway-legend i{
+  width:7px;height:7px;border-radius:50%;
+  background:#8a8172;
+}
+.income15-runway-legend .confirmed i{background:#59ff9a}
+.income15-runway-legend .forecast i{background:#f6c453}
+.income15-runway-legend .unscheduled i{background:#b985ff}
+
+.income15-month-grid{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.income15-month-card{
+  min-height:140px!important;
+  padding:14px!important;
+  border-color:rgba(246,196,83,.075)!important;
+}
+.income15-month-card.has-confirmed{
+  border-color:rgba(89,255,154,.12)!important;
+}
+.income15-month-card.has-forecast{
+  border-color:rgba(246,196,83,.13)!important;
+}
+.income15-month-card>small{
+  font-size:9px!important;
+}
+.income15-month-card>strong{
+  margin-top:7px!important;
+  font-size:19px!important;
+}
+.income15-month-card>span{
+  margin-top:5px!important;
+  font-size:9px!important;
+}
+.income15-month-split{
+  display:grid;
+  gap:5px;
+  margin-top:10px;
+}
+.income15-month-split div{
+  display:flex;
+  justify-content:space-between;
+  gap:6px;
+  align-items:center;
+  padding-top:5px;
+  border-top:1px solid rgba(255,255,255,.04);
+  font-size:8px;
+}
+.income15-month-split .confirmed{color:#8bdcac}
+.income15-month-split .forecast{color:#d7b86d}
+.income15-month-empty{
+  display:block;
+  margin-top:10px;
+  color:#6e675e;
+  font-size:8px;
+}
+
+.income15-unscheduled{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:center;
+  margin-top:14px;
+  padding:17px;
+  border:1px solid rgba(185,133,255,.12);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(185,133,255,.06),transparent 36%),
+    rgba(185,133,255,.016);
+}
+.income15-unscheduled small{
+  display:block;
+  color:#a48abf;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.10em;
+}
+.income15-unscheduled strong{
+  display:block;
+  margin-top:6px;
+  color:#eadcf7;
+  font-size:16px;
+}
+.income15-unscheduled span{
+  display:block;
+  max-width:820px;
+  margin-top:5px;
+  color:#81758d;
+  font-size:9px;
+  line-height:1.5;
+}
+.income15-unscheduled-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+@media(max-width:1180px){
+  .income15-runway-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .income15-month-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .income15-month-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .income15-unscheduled{display:grid}
+  .income15-unscheduled-actions{justify-content:flex-start}
+}
+@media(max-width:520px){
+  .income15-runway-kpis,.income15-month-grid{grid-template-columns:1fr}
+}

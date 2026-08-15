@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0714">
 <title>Aurora City FC — Income Command</title>
-<meta name="aurora-income-ui" content="INCOME_UI_V1_1_4_READABILITY_PASS">
+<meta name="aurora-income-ui" content="INCOME_UI_V1_1_5_RUNWAY_INTELLIGENCE">
 <link rel="stylesheet" href="aurora.css?v=income-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="income-ui.css?v=314-readability-pass">
+<link rel="stylesheet" href="income-ui.css?v=315-runway-intelligence">
 </head>
 
 <body class="aurora-entered income-command-page">
@@ -399,16 +399,58 @@
   <div class="player-list" id="playerList"></div>
 </section>
 
-<section class="income-panel runway-panel">
+<section class="income-panel runway-panel income15-runway-panel">
   <div class="income-panel-head">
     <div>
       <span class="income-panel-kicker">Season Runway</span>
-      <h3>12-Month Income Profile</h3>
-      <p class="income-copy">Only recorded forecast/confirmed dividend events are included. Income does not invent payment dates.</p>
+      <h3>12-Month Dividend Runway</h3>
+      <p class="income-copy">Dated dividends stay split into <b>Confirmed</b> and <b>Forecast</b>. Forward income without a reliable payment date remains <b>Unscheduled</b> instead of being spread across fake months.</p>
     </div>
-    <span class="income-panel-note" id="calendarCoverage">0 events</span>
+    <span class="income-panel-note" id="calendarCoverage">0 dated events</span>
   </div>
-  <div class="month-grid" id="monthGrid"></div>
+
+  <div class="income15-runway-kpis">
+    <article class="confirmed">
+      <small>Confirmed in Runway</small>
+      <strong id="income15Confirmed">£0.00</strong>
+      <span id="income15ConfirmedMeta">0 confirmed events</span>
+    </article>
+    <article class="forecast">
+      <small>Forecast in Runway</small>
+      <strong id="income15Forecast">£0.00</strong>
+      <span id="income15ForecastMeta">0 forecast events</span>
+    </article>
+    <article class="unscheduled">
+      <small>Unscheduled Forward Income</small>
+      <strong id="income15UnscheduledAmount">£0.00</strong>
+      <span>waiting for a reliable calendar date</span>
+    </article>
+    <article class="coverage">
+      <small>12-Month Income Mapped</small>
+      <strong id="income15Mapped">0.0%</strong>
+      <span id="income15MappedMeta">Dividend Intelligence building</span>
+    </article>
+  </div>
+
+  <div class="income15-runway-legend">
+    <span class="confirmed"><i></i>CONFIRMED — recorded payment date</span>
+    <span class="forecast"><i></i>FORECAST — dated but not confirmed</span>
+    <span class="unscheduled"><i></i>UNSCHEDULED — income known, date not trusted</span>
+  </div>
+
+  <div class="month-grid income15-month-grid" id="monthGrid"></div>
+
+  <div class="income15-unscheduled">
+    <div>
+      <small>UNSCHEDULED INCOME BUCKET</small>
+      <strong id="income15UnscheduledHeadline">£0.00/year still needs calendar intelligence</strong>
+      <span id="income15UnscheduledNote">Aurora will move income out of this bucket as Dividend Intelligence or a manual update supplies reliable future payment dates.</span>
+    </div>
+    <div class="income15-unscheduled-actions">
+      <button type="button" class="income-btn primary" id="income15RunIntelligence">Run Dividend Intelligence</button>
+      <button type="button" class="income-btn secondary" id="income15AddDividend">Add / Update Dividend</button>
+    </div>
+  </div>
 </section>
 
 <section class="income-command-grid two" id="dividendCalendarSection">
@@ -603,7 +645,8 @@
 <script src="aurora-data2-client.js?v=011-income-connection"></script>
 <script src="income.js?v=030"></script>
 <script src="income-dividend-cash.js?v=100"></script>
+<script src="income-runway-intelligence.js?v=100"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="income-ui.js?v=314-readability-pass"></script>
+<script src="income-ui.js?v=315-runway-intelligence"></script>
 </body>
 </html>
