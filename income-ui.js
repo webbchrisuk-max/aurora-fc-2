@@ -26,38 +26,58 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 /* =========================================================
-   INCOME UI v1 — PROMOTION COMMAND
-   Presentation-only. Reads values published by Income engine.
+   INCOME UI v1.1.2 — PROMOTION ENGINE HOTFIX
+   Reads the owning Income engine directly. DOM text is fallback only.
    ========================================================= */
 (function(){
 'use strict';
 
+const A=()=>window.Aurora2;
 const $=id=>document.getElementById(id);
 const num=v=>{
   const n=Number(String(v??'').replace(/[^0-9.-]/g,''));
   return Number.isFinite(n)?n:0;
 };
 const money=v=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number(v)||0);
+const sourceText=id=>$(id)?.textContent||'';
+const set=(id,value)=>{const el=$(id);if(el)el.textContent=value};
 
-function sourceText(id){return $(id)?.textContent||''}
-function set(id,value){const el=$(id);if(el)el.textContent=value}
+function readIncome(){
+  try{
+    const core=A()?.core;
+    const engine=A()?.income;
+    const state=core?.read?.()||null;
+    const metrics=state&&engine?.metrics?.(state);
+    const next=state&&engine?.nextDividend?.(state);
+    return {state,metrics,next};
+  }catch(_){
+    return {state:null,metrics:null,next:null};
+  }
+}
 
 function renderPromotion(){
-  const monthly=num(sourceText('kMonthly'));
-  const annual=num(sourceText('kAnnual'));
+  const {state,metrics,next}=readIncome();
+
+  // Primary source: Income engine. Scorecard text is fallback only.
+  const monthly=metrics?num(metrics.monthly):num(sourceText('kMonthly'));
+  const annual=metrics?num(metrics.annual):num(sourceText('kAnnual'));
+  const yoc=metrics?num(metrics.yoc):num(sourceText('kYoc'));
+  const yieldPct=metrics?num(metrics.yieldPct):num(sourceText('kYield'));
+  const best=metrics?.best||null;
+
   const target=625;
-  const pct=target>0?Math.max(0,Math.min(100,monthly/target*100)):0;
+  const progress=target>0?Math.max(0,Math.min(100,monthly/target*100)):0;
   const gap=Math.max(0,target-monthly);
 
   set('income3Monthly',money(monthly));
-  set('income3Percent',`${pct.toFixed(1)}% of £625`);
+  set('income3Percent',`${progress.toFixed(1)}% of £625`);
   set('income3Gap',gap>0?money(gap):'TARGET REACHED');
   set('income3Annual',money(annual));
 
   const ring=$('income3Ring');
-  if(ring)ring.style.setProperty('--inc-progress',`${pct*3.6}deg`);
+  if(ring)ring.style.setProperty('--inc-progress',`${progress*3.6}deg`);
   const bar=$('income3ProgressBar');
-  if(bar)bar.style.width=`${pct}%`;
+  if(bar)bar.style.width=`${progress}%`;
 
   const status=$('income3PromotionStatus');
   if(status){
@@ -65,8 +85,12 @@ function renderPromotion(){
     status.textContent=monthly>=target?'PROMOTED':'IN PROGRESS';
   }
 
-  const routeAnnual=num(sourceText('routeUplift'));
+  const route=state?.transfer?.route||null;
+  const routeAnnual=route && String(route.status||'').toUpperCase()!=='REGISTERED'
+    ? num(route.expectedAnnualIncome)
+    : 0;
   const projectedMonthly=monthly+(routeAnnual/12);
+
   if(routeAnnual>0){
     set('income3Projected',`${money(projectedMonthly)}/m`);
     set('income3ProjectedMeta',`includes ${money(routeAnnual)}/yr active Transfer projection`);
@@ -92,37 +116,43 @@ function renderPromotion(){
     else if(!marked){card.classList.add('current');marked=true}
   });
 
-  // Mirror existing authoritative Income outputs — do not recalculate a second answer.
-  set('income3Yoc',sourceText('kYoc')||'0.00%');
-  set('income3Yield',sourceText('kYield')||'0.00%');
-  set('income3Best',sourceText('kBest')||'—');
-  set('income3BestMeta',sourceText('kBestMeta')||'—');
+  // Matchday also reads the owning Income engine directly.
+  set('income3Yoc',`${yoc.toFixed(2)}%`);
+  set('income3Yield',`${yieldPct.toFixed(2)}%`);
+  set('income3Best',best?.ticker||sourceText('kBest')||'—');
+  set(
+    'income3BestMeta',
+    best ? `${money(best.annual)} / year` : (sourceText('kBestMeta')||'—')
+  );
 
-  const nextTicker=sourceText('kNext')||'—';
-  const nextMeta=sourceText('kNextMeta')||'Calendar event required';
+  const nextTicker=next?.ticker||sourceText('kNext')||'—';
+  const nextAmount=next?money(next.amount):'Upcoming';
+  const nextMeta=next
+    ? `${next.account||''}${next.account?' • ':''}${next.date||''}`
+    : (sourceText('kNextMeta')||'Calendar event required');
+
   set('income3NextTicker',nextTicker);
-
-  // kNext may itself carry the amount depending on the current Income renderer.
-  // Preserve its published text; otherwise show the event meta as the detail.
-  const amountMatch=nextMeta.match(/£\s?[\d,.]+/);
-  set('income3NextAmount',amountMatch?amountMatch[0]:'Upcoming');
+  set('income3NextAmount',nextTicker==='—'?'—':nextAmount);
   set('income3NextMeta',nextMeta);
 
-  const coverage=num(sourceText('calendarCoverage'));
-  set('income3Coverage',String(coverage));
+  const calendar=Array.isArray(state?.income?.calendar)?state.income.calendar:[];
+  const activeCalendar=calendar.filter(e=>!['CANCELLED','ARCHIVED'].includes(String(e?.status||'').toUpperCase()));
+  set('income3Coverage',String(activeCalendar.length));
 }
 
 function reorderBrokerCashJump(){
   const nav=document.querySelector('.income-jumpbar');
   const cash=nav?.querySelector('[data-income-jump="brokerDividendCashSection"]');
   const runway=nav?.querySelector('[data-income-jump="incomeRunwaySection"]');
-  if(cash&&runway&&cash.previousElementSibling!==nav.querySelector('[data-income-jump="incomePromotionSection"]')){
+  const promotion=nav?.querySelector('[data-income-jump="incomePromotionSection"]');
+  if(cash&&runway&&cash.previousElementSibling!==promotion){
     nav.insertBefore(cash,runway);
     cash.textContent='Broker Cash';
   }
 }
 
 function bind(){
+  // Observe only the legacy authoritative output cells as a fallback signal.
   const ids=['kMonthly','kAnnual','routeUplift','kYoc','kYield','kBest','kBestMeta','kNext','kNextMeta','calendarCoverage'];
   const observer=new MutationObserver(()=>renderPromotion());
   ids.forEach(id=>{
@@ -130,15 +160,18 @@ function bind(){
     if(el)observer.observe(el,{childList:true,subtree:true,characterData:true});
   });
 
-  setTimeout(()=>{renderPromotion();reorderBrokerCashJump()},80);
-  setTimeout(()=>{renderPromotion();reorderBrokerCashJump()},700);
-  setTimeout(()=>{renderPromotion();reorderBrokerCashJump()},1800);
-
-  document.addEventListener('click',()=>setTimeout(renderPromotion,100));
-  window.addEventListener('storage',()=>setTimeout(renderPromotion,60));
+  window.addEventListener('aurora2:state',()=>setTimeout(renderPromotion,0));
+  window.addEventListener('storage',()=>setTimeout(renderPromotion,40));
   document.addEventListener('visibilitychange',()=>{
-    if(!document.hidden)setTimeout(renderPromotion,80);
+    if(!document.hidden)setTimeout(renderPromotion,40);
   });
+  document.addEventListener('click',()=>setTimeout(renderPromotion,80));
+
+  // Multiple safe passes cover first load and async canonical holdings sync.
+  [0,80,250,700,1600].forEach(ms=>setTimeout(()=>{
+    renderPromotion();
+    reorderBrokerCashJump();
+  },ms));
 }
 
 document.addEventListener('DOMContentLoaded',bind);
