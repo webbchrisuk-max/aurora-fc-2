@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
   const KEY='aurora2:state:v1';
-  const VERSION=10;
+  const VERSION=11;
   const BACKUP_KEY='aurora2:state:backup:lastgood';
   const BACKUP_META_KEY='aurora2:state:backup:meta';
   const BACKUP_INTERVAL_MS=5*60*1000;
@@ -114,6 +114,13 @@
       recoveredFromBackupAt:null
     },
     mission:null,
+    notifications:{
+      version:1,
+      records:[],
+      marketState:{},
+      healthState:{},
+      updatedAt:null
+    },
     alerts:[]
   });
 
@@ -381,6 +388,16 @@
     };
   }
 
+  function normalizeNotifications(rows){
+    const seen=new Set();
+    return (Array.isArray(rows)?rows:[]).filter(record=>{
+      const key=String(record?.key||record?.id||'').trim();
+      if(!key||seen.has(key))return false;
+      seen.add(key);
+      return true;
+    }).slice(0,500);
+  }
+
   function normalizeHolding(h){
     const r=object(h);
     const allowedStatus=['ACTIVE','LOCKED','SOLD','ARCHIVED'];
@@ -406,6 +423,9 @@
       bookCostGbp,
       avgCostGbp,
       livePriceGbp,
+      dayChangePct:Number(r.dayChangePct??r.changePct??r.priceChangePct)||0,
+      priceTargetGbp:Math.max(0,Number(r.priceTargetGbp??r.targetPriceGbp)||0),
+      chairmanTargetGbp:Math.max(0,Number(r.chairmanTargetGbp)||0),
       marketValueGbp:marketValueGbp||(shares*livePriceGbp),
       profitLossGbp:Number.isFinite(Number(r.profitLossGbp))
         ? Number(r.profitLossGbp)
@@ -479,6 +499,14 @@
         ...object(r.squad),
         version:1,
         holdings:Array.isArray(r.squad?.holdings)?r.squad.holdings.map(normalizeHolding):[]
+      },
+      notifications:{
+        ...d.notifications,
+        ...object(r.notifications),
+        version:1,
+        records:normalizeNotifications(r.notifications?.records),
+        marketState:object(r.notifications?.marketState),
+        healthState:object(r.notifications?.healthState)
       },
       finance:{
         ...d.finance,...rf,
