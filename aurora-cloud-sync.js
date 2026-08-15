@@ -40,7 +40,7 @@ const FIRESTORE_BASE='https://firestore.googleapis.com/v1/projects/'+PROJECT_ID+
 
 const CORE_DOMAINS=[
   'finance','scouting','transfer','registration','squad',
-  'income','mission','portfolio','decision','alerts'
+  'income','mission','portfolio','decision','alerts','notifications'
 ];
 const EXTRA_DOMAINS=['signalWatch'];
 const ALL_DOMAINS=[...CORE_DOMAINS,...EXTRA_DOMAINS];
