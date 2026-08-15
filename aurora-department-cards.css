@@ -52,7 +52,13 @@
 
 /* Registration — professional cyan desk, green only after real confirmation. */
 .registration-command-page .route-authority-card,.registration-command-page .registration-panel,.registration-command-page .registration-score,.registration-command-page .execution-preview>div{box-shadow:var(--aurora-card-shadow)}
-.registration-command-page .route-authority-card,.registration-command-page .registration-score{background:radial-gradient(circle at 95% 0,rgba(34,211,238,.15),transparent 42%),linear-gradient(145deg,rgba(6,38,58,.94),rgba(3,13,28,.99));border-color:rgba(34,211,238,.22)}
+.registration-command-page .route-authority-card{
+  background:radial-gradient(circle at 95% 0,rgba(34,211,238,.11),transparent 44%),linear-gradient(145deg,rgba(6,38,58,.34),rgba(3,13,28,.48));
+  border-color:rgba(34,211,238,.24);
+  box-shadow:0 12px 30px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.065);
+  backdrop-filter:blur(8px) saturate(112%);
+}
+.registration-command-page .registration-score{background:radial-gradient(circle at 95% 0,rgba(34,211,238,.15),transparent 42%),linear-gradient(145deg,rgba(6,38,58,.94),rgba(3,13,28,.99));border-color:rgba(34,211,238,.22)}
 .registration-command-page .execution-panel{background:radial-gradient(circle at 100% 0,rgba(45,212,191,.14),transparent 37%),linear-gradient(145deg,rgba(5,43,49,.94),rgba(3,14,27,.99));border-color:rgba(45,212,191,.24)}
 .registration-command-page .registration-score.green,.registration-command-page .receipts-panel .status-pill.pass{background-color:rgba(22,101,52,.18);border-color:rgba(74,222,128,.27)}
 .registration-command-page .registration-notice{background:linear-gradient(100deg,rgba(14,116,144,.12),rgba(3,13,28,.60));border-color:rgba(34,211,238,.18)}
