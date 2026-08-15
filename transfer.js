@@ -246,6 +246,33 @@
     return {value,book,income,profit,profitPct,locked};
   }
 
+  function chairmanOfferDetails(state,h,m){
+    const shares=Math.max(0,num(h.shares));
+    const averagePrice=shares>0?m.book/shares:0;
+    const targetPrice=averagePrice*1.06;
+    const livePrice=shares>0?m.value/shares:Math.max(0,num(h.livePriceGbp));
+    const targetValue=shares*targetPrice;
+    const targetProfit=Math.max(0,targetValue-m.book);
+    const events=arr(state.income?.calendar)
+      .filter(e=>ticker(e.ticker)===ticker(h.ticker))
+      .filter(e=>{
+        const account=accountCode(e.account);
+        return account==='CHECK'||account===accountCode(h.account);
+      })
+      .filter(e=>!['CANCELLED','ARCHIVED','PAID'].includes(String(e.status||'').toUpperCase()))
+      .filter(e=>{
+        const date=new Date(e.exDate||e.ex_date||e.payDate||e.pay_date||'');
+        return !Number.isNaN(date.getTime())&&date.getTime()>=Date.now()-86400000;
+      })
+      .sort((a,b)=>new Date(a.exDate||a.ex_date||a.payDate||a.pay_date)-new Date(b.exDate||b.ex_date||b.payDate||b.pay_date));
+    const next=events[0]||null;
+    const nextDate=next?(next.exDate||next.ex_date||next.payDate||next.pay_date):'';
+    const expected=next?Math.max(0,num(next.expectedAmountGbp||next.expected_amount_gbp||next.grossDividendGbp||next.gross_dividend_gbp)):0;
+    const dps=next?Math.max(0,num(next.dividendPerShareGbp||next.dividend_per_share_gbp)):0;
+    const nextAmount=expected||(dps>0?shares*dps:0);
+    return {shares,averagePrice,targetPrice,livePrice,targetValue,targetProfit,next,nextDate,nextAmount};
+  }
+
   function chairmanMateriality(state,h,m){
     const rows=chairmanHoldings(state).map(x=>chairmanHoldingMetrics(x));
     const totalValue=rows.reduce((s,x)=>s+x.value,0);
@@ -303,19 +330,31 @@
       return;
     }
 
-    host.innerHTML=triggered.slice(0,8).map(({h,m,mat})=>`
-      <article class="chairman-case-row">
-        <div class="chairman-case-main">
-          <strong>${esc(ticker(h.ticker))} — ${esc(h.name||ticker(h.ticker))}</strong>
-          <span>${esc(accountLabel(h.account))} • ${money(m.value)} current value • ${money(m.income)}/yr dividend income${mat.micro?' • MICRO POSITION':''}</span>
+    host.innerHTML=triggered.slice(0,8).map(({h,m,mat},i)=>{
+      const o=chairmanOfferDetails(state,h,m);
+      return `<article class="chairman-case-row ${m.profitPct>=10?'strong':''}">
+        <header class="chairman-offer-header">
+          <div><small>INCOMING OFFER • ${String(i+1).padStart(2,'0')}</small><strong>${esc(ticker(h.ticker))} — ${esc(h.name||ticker(h.ticker))}</strong><span>${esc(accountLabel(h.account))} • rival club enquiry</span></div>
+          <span class="status-pill ${mat.micro?'caution':m.profitPct>=10?'pass':'caution'}">${mat.micro?'MICRO OFFER':m.profitPct>=10?'+10% STRONG':'+6% TARGET MET'}</span>
+        </header>
+        <div class="chairman-offer-price">
+          <div><small>FIXED OFFER PRICE</small><strong>${money(o.livePrice)} <em>/ share</em></strong><span>${m.profitPct>=0?'+':''}${m.profitPct.toFixed(2)}% above average price</span></div>
+          <b>${m.profit>=0?'+':''}${money(m.profit)}<small>profit above book cost</small></b>
         </div>
-        <div class="chairman-case-side">
-          <span class="status-pill ${mat.micro?'caution':m.profitPct>=10?'pass':'caution'}">${mat.micro?'MICRO POSITION':m.profitPct>=10?'+10% STRONG':'+6% REVIEW'}</span>
-          <strong>${m.profitPct>=0?'+':''}${m.profitPct.toFixed(1)}%</strong>
-          <span>${m.profit>=0?'+':''}${money(m.profit)} capital P/L</span>
+        <div class="chairman-offer-data">
+          <div><small>Requested Shares</small><strong>${o.shares.toLocaleString('en-GB',{maximumFractionDigits:6})}</strong></div>
+          <div><small>Average Price</small><strong>${money(o.averagePrice)}</strong></div>
+          <div><small>6% Exit Target</small><strong>${money(o.targetPrice)}</strong></div>
+          <div><small>Current Live Price</small><strong>${money(o.livePrice)}</strong></div>
+          <div><small>Value at Target Exit</small><strong>${money(o.targetValue)}</strong></div>
+          <div><small>Profit at 6% Target</small><strong>+${money(o.targetProfit)}</strong></div>
+          <div><small>Current Offer Value</small><strong>${money(m.value)}</strong></div>
+          <div><small>Annual Income at Stake</small><strong>${money(m.income)}</strong></div>
         </div>
-      </article>
-    `).join('');
+        <div class="chairman-dividend-watch"><span>NEXT DIVIDEND</span><strong>${o.nextDate?new Date(`${o.nextDate}T12:00:00`).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'No upcoming event'}</strong><b>${o.nextAmount?money(o.nextAmount):'Income check required'}</b></div>
+        <footer><span>Scenario only • offer unlocked at +6% • no automatic sale</span><a href="club-control.html#chairmanReviewBoardV11">Open Chairman Review →</a></footer>
+      </article>`;
+    }).join('');
   }
 
   function renderMission(state){
@@ -336,6 +375,10 @@
   function renderTargets(state){
     const sc=scouting(state),targets=arr(sc.targets),host=$('targetList');
     set('kTargets',targets.length);
+    set('targetBoardCount',`${Math.min(targets.length,12)} / 12`);
+    set('targetBoardStrategy',scoutingStrategy(state)==='maximum'?'Maximum Income':'Sustainable');
+    const brokers=[...new Set(targets.map(t=>accountLabel(t.preferredAccount)).filter(x=>x!=='Broker to assign'))];
+    set('targetBoardCoverage',brokers.length?brokers.join(' + '):'Needs assignment');
     set('scoutingState',sc.status||'NOT BUILT');
     set('targetSource',sc.source||'Awaiting Scouting 2.0');
     if(!host)return;
@@ -343,19 +386,26 @@
       host.innerHTML='<div class="empty-state compact"><strong>No approved targets yet</strong><p>Open Scouting, run the logic and approve a shortlist.</p></div>';
       return;
     }
-    host.innerHTML=targets.map((t,i)=>`
-      <article class="target-row">
-        <div class="target-main">
-          <strong>#${t.rank||i+1} • ${esc(ticker(t.ticker))} — ${esc(t.name||ticker(t.ticker))}</strong>
-          <span>${esc(t.reason||'Approved Scouting target')} • ${accountLabel(t.preferredAccount)}</span>
+    host.innerHTML=targets.slice(0,12).map((t,i)=>{
+      const code=ticker(t.ticker),rank=t.rank||i+1;
+      const status=String(t.status||'caution').toLowerCase();
+      const reason=arr(t.eligibilityReasons)[0]||t.reason||'Approved Scouting target';
+      return `<article class="target-row">
+        <header class="target-card-head">
+          <div class="target-identity"><span class="target-crest">${esc(code.slice(0,3))}</span><div><small>DEAL TARGET ${String(rank).padStart(2,'0')}</small><strong>${esc(code)}</strong><span>${esc(t.name||code)}</span></div></div>
+          <span class="status-pill ${esc(status)}">${esc(t.recommendation||t.status||'WATCH')}</span>
+        </header>
+        <div class="target-position"><span>${esc(t.sector||'Income specialist')}</span><b>${accountLabel(t.preferredAccount)}</b></div>
+        <div class="target-metrics">
+          <div><small>DIVIDEND YIELD</small><strong>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</strong></div>
+          <div><small>SAFETY</small><strong>${Math.round(num(t.dividendSafety))||'—'}</strong></div>
+          <div><small>CONFIDENCE</small><strong>${Math.round(num(t.confidence))||'—'}<em>/100</em></strong></div>
         </div>
-        <div class="target-side">
-          <span class="status-pill ${esc(String(t.status||'caution').toLowerCase())}">${esc(t.recommendation||t.status||'WATCH')}</span>
-          <strong>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</strong>
-          <span>S ${Math.round(num(t.sustainableScore))}/100 • M ${Math.round(num(t.maximumScore))}/100</span>
-        </div>
+        <div class="target-scoreline"><span>Sustainable <b>${Math.round(num(t.sustainableScore))}</b></span><i style="--score:${Math.max(0,Math.min(100,num(t.sustainableScore)))}%"></i><span>Maximum <b>${Math.round(num(t.maximumScore))}</b></span></div>
+        <p class="target-scout-note">${esc(reason)}</p>
+        <footer><span><i></i> SCOUTING APPROVED</span><b>RANK #${rank}</b></footer>
       </article>
-    `).join('');
+    `}).join('');
   }
 
   function renderSettings(state){
