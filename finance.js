@@ -1362,17 +1362,17 @@
     const current=A().core.read();
     const bill=(current.finance?.bills||[]).find(b=>b.id===id);
     if(!bill)return;
-    if(!confirm(`Permanently delete "${bill.name}"? Existing payment history will be kept.`))return;
-    A().core.update(s=>({
-      ...s,
-      finance:{
-        ...s.finance,
-        bills:(s.finance?.bills||[]).filter(b=>b.id!==id)
-      }
-    }));
+    if(!confirm(`Permanently delete "${bill.name}"?\n\nThis cannot be undone. Existing payment history and all other bills will be kept.`))return;
+    A().core.update(s=>{
+      const bills=[...(s.finance?.bills||[])];
+      const index=bills.findIndex(candidate=>candidate.id===id);
+      if(index<0)return s;
+      bills.splice(index,1);
+      return {...s,finance:{...s.finance,bills}};
+    });
     if(value('billId')===id)resetBillEditor();
     renderAll();
-    showToast('Bill deleted.');
+    showToast(`${bill.name} permanently deleted.`);
   }
 
   function completeBill(id){

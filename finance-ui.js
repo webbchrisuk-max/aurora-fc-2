@@ -683,12 +683,10 @@ function buildPaydaySummary(){
         <div><small>NEXT PAYDAY MOVES</small><h4 id="fv2PayDate">—</h4></div>
         <div class="fv2-next-payday-total"><span>Total moving</span><strong id="fv2PayMovesTotal">£0.00</strong></div>
       </div>
-      <div class="fv2-payday-mini">
-        <div><span>Holding Pot</span><strong id="fv2PayHoldingMove">£0.00</strong><small>Protected transfer</small></div>
-        <div><span>Goal pots</span><strong id="fv2PayGoalPots">£0.00</strong><small>Scheduled funding</small></div>
-        <div><span>Current Account</span><strong id="fv2PayBills">£0.00</strong><small>Bills due</small></div>
-        <div><span>Coverage</span><strong id="fv2PayCoverage">—</strong><small>After these moves</small></div>
+      <div class="fv2-next-payday-columns" aria-hidden="true">
+        <span>Movement</span><span>Route</span><span>Purpose</span><span>Amount</span>
       </div>
+      <div id="fv2PayMoves" class="fv2-next-payday-moves" aria-live="polite"></div>
     </article>
   `;
   panel.insertAdjacentElement('afterbegin',strip);
@@ -1014,10 +1012,35 @@ function renderPaydaySummary(s,plan,p,runway){
   setText('fv2PayRelease',money(plan.releaseAmount));
   setText('fv2PayReleaseMeta',num(plan.releaseAmount)>num(c.safeSurplus)+.005?'Above safe surplus':'Within Finance limit');
   setText('fv2PayDate',runway.payday?humanDate(runway.payday):'—');
-  setText('fv2PayHoldingMove',money(p.holdingContribution));
-  setText('fv2PayGoalPots',money(p.goalPotsTotal));
-  setText('fv2PayBills',money(auto.billsDue));
-  setText('fv2PayMovesTotal',money(num(p.holdingContribution)+num(p.goalPotsTotal)+num(auto.billsDue)));
+  const goalMoves=arr(p.rows).map(row=>({
+    id:`pot:${row.id}`,
+    destination:row.name||'Pot',
+    amount:num(row.amount),
+    purpose:row.reason||'Scheduled pot funding'
+  })).filter(row=>row.amount>.005);
+  const holding=activePots(s).find(pot=>isHoldingPotName(pot.name));
+  const moves=[
+    ...(num(p.holdingContribution)>.005?[{
+      id:`holding:${holding?.id||'holding-pot'}`,
+      destination:holding?.name||'Holding Pot',
+      amount:num(p.holdingContribution),
+      purpose:num(auto.holdingTopUp)>.005
+        ?`${money(auto.annualHoldingContribution)} regular funding + ${money(auto.holdingTopUp)} safety top-up`
+        :'Regular bill funding'
+    }]:[]),
+    ...goalMoves
+  ];
+  const movesTotal=moves.reduce((sum,row)=>sum+row.amount,0);
+  setText('fv2PayMovesTotal',money(movesTotal));
+  const movesHost=document.getElementById('fv2PayMoves');
+  if(movesHost)movesHost.innerHTML=moves.length?moves.map(row=>`
+    <article class="fv2-next-payday-move" data-payday-move="${esc(row.id)}">
+      <div class="fv2-next-payday-name"><small>Movement</small><strong>${esc(row.destination)}</strong></div>
+      <div class="fv2-next-payday-route"><small>Route</small><span><b>Current Account</b><i aria-hidden="true">→</i><b>${esc(row.destination)}</b></span></div>
+      <div class="fv2-next-payday-purpose"><small>Purpose</small><span>${esc(row.purpose)}</span></div>
+      <strong class="fv2-next-payday-amount"><small>Amount</small>${money(row.amount)}</strong>
+    </article>
+  `).join(''):`<div class="fv2-next-payday-empty"><strong>No movements scheduled</strong><span>Payday pot funding will appear here automatically when the plan creates a movement.</span></div>`;
   setText('fv2PayCoverage',runway.allCovered?'COVERED':attentionBlocks?'NOT COVERED':'TOP-UP NEEDED');
   const payCoverage=document.getElementById('fv2PayCoverage');
   if(payCoverage){

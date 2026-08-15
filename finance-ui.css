@@ -1448,11 +1448,34 @@
 .fv2-next-payday-total{text-align:right}
 .fv2-next-payday-total span{display:block;color:#7293a0;font-size:7px;font-weight:950;text-transform:uppercase;letter-spacing:.09em}
 .fv2-next-payday-total strong{display:block;margin-top:4px;color:#8df8ff;font-size:23px}
-.fv2-next-payday-card .fv2-payday-mini{grid-template-columns:repeat(4,minmax(0,1fr))}
-.fv2-next-payday-card .fv2-payday-mini small{display:block;margin-top:4px;color:#627c89;font-size:7px;letter-spacing:0;text-transform:none}
+.fv2-next-payday-columns,
+.fv2-next-payday-move{display:grid;grid-template-columns:minmax(130px,.8fr) minmax(220px,1.35fr) minmax(180px,1.2fr) minmax(90px,.45fr);gap:14px;align-items:center}
+.fv2-next-payday-columns{padding:16px 13px 7px;color:#5f7b88;font-size:7px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
+.fv2-next-payday-columns span:last-child{text-align:right}
+.fv2-next-payday-moves{display:grid;gap:7px;margin-top:3px}
+.fv2-next-payday-move{min-width:0;padding:12px 13px;border:1px solid rgba(88,244,255,.11);border-radius:11px;background:rgba(7,25,36,.66)}
+.fv2-next-payday-move small{display:none;color:#617d89;font-size:7px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+.fv2-next-payday-name strong{color:#e9fbff;font-size:12px}
+.fv2-next-payday-route span{display:flex;align-items:center;gap:8px;min-width:0;color:#9bb3bd;font-size:9px}
+.fv2-next-payday-route b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fv2-next-payday-route i{flex:none;color:#58f4ff;font-style:normal}
+.fv2-next-payday-purpose span{display:block;color:#829ca7;font-size:9px;line-height:1.4}
+.fv2-next-payday-amount{text-align:right;color:#8df8ff;font-size:14px}
+.fv2-next-payday-empty{padding:18px 13px;border:1px dashed rgba(88,244,255,.15);border-radius:11px;text-align:center}
+.fv2-next-payday-empty strong,.fv2-next-payday-empty span{display:block}
+.fv2-next-payday-empty strong{color:#cce7ed;font-size:11px}.fv2-next-payday-empty span{margin-top:5px;color:#69838e;font-size:9px}
 
 @media(max-width:760px){
-  .fv2-next-payday-card .fv2-payday-mini{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fv2-next-payday-columns{display:none}
+  .fv2-next-payday-move{grid-template-columns:minmax(0,1fr) auto}
+  .fv2-next-payday-move small{display:block;margin-bottom:4px}
+  .fv2-next-payday-route,.fv2-next-payday-purpose{grid-column:1/-1}
+}
+
+@media(max-width:520px){
+  .fv2-next-payday-head{align-items:flex-start}
+  .fv2-next-payday-total strong{font-size:19px}
+  .fv2-next-payday-card{padding:12px}
 }
 
 @media(max-width:520px){
