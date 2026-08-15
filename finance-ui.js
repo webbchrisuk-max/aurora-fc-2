@@ -678,13 +678,6 @@ function buildPaydaySummary(){
       <i>→</i>
       <div class="release"><small>Planned release</small><strong id="fv2PayRelease">£0.00</strong><span id="fv2PayReleaseMeta">Awaiting amount</span></div>
     </div>
-    <div class="fv2-payday-mini">
-      <div><span>Next payday</span><strong id="fv2PayDate">—</strong></div>
-      <div><span>Holding Pot move</span><strong id="fv2PayHoldingMove">£0.00</strong></div>
-      <div><span>Goal pot funding</span><strong id="fv2PayGoalPots">£0.00</strong></div>
-      <div><span>Current Account bills</span><strong id="fv2PayBills">£0.00</strong></div>
-      <div><span>Coverage</span><strong id="fv2PayCoverage">—</strong></div>
-    </div>
   `;
   panel.insertAdjacentElement('afterbegin',strip);
 
@@ -1000,24 +993,13 @@ function renderOverview(s,plan,p,runway){
 }
 
 function renderPaydaySummary(s,plan,p,runway){
-  const c=p.c||{},auto=c.auto||{};
-  const attentionBlocks=runway.attention.filter(x=>x.tone==='block').length;
+  const c=p.c||{};
   setText('fv2PayTotalCash',money(c.totalCash));
   setText('fv2PayCommitments',money(c.commitments));
   setText('fv2PayProtected',money(plan.protectedCash));
   setText('fv2PaySafe',money(c.safeSurplus));
   setText('fv2PayRelease',money(plan.releaseAmount));
   setText('fv2PayReleaseMeta',num(plan.releaseAmount)>num(c.safeSurplus)+.005?'Above safe surplus':'Within Finance limit');
-  setText('fv2PayDate',runway.payday?humanDate(runway.payday):'—');
-  setText('fv2PayHoldingMove',money(p.holdingContribution));
-  setText('fv2PayGoalPots',money(p.goalPotsTotal));
-  setText('fv2PayBills',money(auto.billsDue));
-  setText('fv2PayCoverage',runway.allCovered?'COVERED':attentionBlocks?'NOT COVERED':'TOP-UP NEEDED');
-  const payCoverage=document.getElementById('fv2PayCoverage');
-  if(payCoverage){
-    payCoverage.classList.remove('good','warn','block');
-    payCoverage.classList.add(runway.allCovered?'good':attentionBlocks?'block':'warn');
-  }
   setBadge('fv2PaydayStatus',
     num(plan.releaseAmount)>num(c.safeSurplus)+.005?'BLOCKED':runway.allCovered?'FINANCE READY':'CHECK PLAN',
     num(plan.releaseAmount)>num(c.safeSurplus)+.005?'block':runway.allCovered?'good':'warn'
@@ -1223,6 +1205,36 @@ function renderPotCommand(s,pv){
   const block=!hp&&activeBills(s).some(b=>isHoldingPotName(b.fundingSource));
   const gap=goal.reduce((sum,p)=>sum+potGap(p),0);
   setBadge('fv2PotHealthBadge',block?'HOLDING POT MISSING':gap<=.005?'ALL FUNDED':`${needing.length} FUNDING NEXT`,block?'block':gap<=.005?'good':'warn');
+}
+
+function renderNextPaydayPotMoves(s,pv,plan){
+  const host=document.getElementById('financeNextPaydayPotMoves');
+  if(!host)return;
+  const scheduled=new Map(arr(pv?.rows).map(row=>[String(row.id),Math.max(0,num(row.amount))]));
+  const rows=activePots(s).map(p=>{
+    const holding=isHoldingPotName(p.name);
+    const amount=holding
+      ?Math.max(0,num(pv?.holdingContribution))
+      :Math.max(0,num(scheduled.get(String(p.id))));
+    return {p,holding,amount};
+  }).sort((a,b)=>Number(b.holding)-Number(a.holding)||(num(a.p.priority)||2)-(num(b.p.priority)||2)||String(a.p.name).localeCompare(String(b.p.name)));
+  const total=rows.reduce((sum,row)=>sum+row.amount,0);
+  const payday=nextUpcomingPayday(plan);
+
+  host.innerHTML=`
+    <div class="fv2-pot-moves-head">
+      <div><small>MY POT MOVES</small><h4>${payday?humanDate(payday):'Next payday'}</h4></div>
+      <div><span>Total pot funding</span><strong>${money(total)}</strong></div>
+    </div>
+    <div class="fv2-pot-moves-list">
+      ${rows.length?rows.map(({p,holding,amount})=>`
+        <div class="fv2-pot-move-row ${amount>.005?'is-funded':'is-zero'}">
+          <div><i>${holding?'H':`P${num(p.priority)||2}`}</i><span><strong>${esc(p.name)}</strong><small>${holding?'Protected Holding Pot move':amount>.005?'Funding scheduled':'No funding scheduled'}</small></span></div>
+          <strong>${money(amount)}</strong>
+        </div>
+      `).join(''):'<div class="fv2-empty">No active pots yet. Add a pot in Pots &amp; Bills to schedule its next payday move.</div>'}
+    </div>
+  `;
 }
 
 function houseMetrics(s){
@@ -1506,7 +1518,7 @@ function renderHouseLedger(s){
           `:''}
           <button class="btn secondary" data-house-edit="${esc(e.id)}">Edit</button>
           ${e.status==='paid'&&e.deducted?`<button class="btn secondary" data-house-undo="${esc(e.id)}">Undo</button>`:''}
-          <button class="btn secondary" data-house-delete="${esc(e.id)}">Delete</button>
+          <button class="btn danger" data-house-delete="${esc(e.id)}">Delete</button>
         </div>
       </article>
     `;
@@ -1539,6 +1551,7 @@ function renderAll(){
 
   renderOverview(s,plan,pv,runway);
   renderPaydaySummary(s,plan,pv,runway);
+  renderNextPaydayPotMoves(s,pv,plan);
   renderPotCommand(s,pv);
   financeUiPotProgress(s,pv);
   financeUiAutomaticCommitments(s,pv);

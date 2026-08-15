@@ -1414,6 +1414,53 @@
   }
 }
 
+/* Destructive actions must be unmistakable among the neutral edit controls. */
+.finance-command-page .btn.danger,
+.finance-command-page .btn[data-bill-delete],
+.finance-command-page .btn[data-house-delete],
+.finance-command-page .btn[data-house-room-delete]{
+  border-color:rgba(255,72,105,.55)!important;
+  background:linear-gradient(180deg,rgba(211,34,68,.34),rgba(133,18,43,.28))!important;
+  color:#ffd7df!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 16px rgba(255,46,85,.10);
+}
+.finance-command-page .btn.danger:hover,
+.finance-command-page .btn[data-bill-delete]:hover,
+.finance-command-page .btn[data-house-delete]:hover,
+.finance-command-page .btn[data-house-room-delete]:hover{
+  border-color:rgba(255,91,120,.82)!important;
+  background:linear-gradient(180deg,rgba(232,41,78,.48),rgba(154,20,49,.40))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 20px rgba(255,46,85,.18);
+}
+
+/* Individual pot destinations for the next payday, separate from aggregate commitments. */
+.fv2-pot-moves-card{
+  margin-top:12px;
+  padding:16px;
+  border:1px solid rgba(168,85,247,.22);
+  border-radius:16px;
+  background:radial-gradient(circle at 100% 0,rgba(168,85,247,.11),transparent 40%),linear-gradient(145deg,rgba(21,12,39,.90),rgba(3,10,20,.98));
+  box-shadow:inset 3px 0 #a855f7,0 14px 32px rgba(0,0,0,.20);
+}
+.fv2-pot-moves-head{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.fv2-pot-moves-head>div:last-child{text-align:right}
+.fv2-pot-moves-head small,.fv2-pot-moves-head span{display:block;color:#b990e9;font-size:7px;font-weight:1000;letter-spacing:.12em;text-transform:uppercase}
+.fv2-pot-moves-head h4{margin:5px 0 0;color:#f6edff;font-size:20px}
+.fv2-pot-moves-head strong{display:block;margin-top:4px;color:#e9d5ff;font-size:23px}
+.fv2-pot-moves-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:13px}
+.fv2-pot-move-row{display:flex;align-items:center;justify-content:space-between;gap:14px;min-width:0;padding:11px 12px;border:1px solid rgba(168,85,247,.13);border-radius:11px;background:rgba(3,8,18,.48)}
+.fv2-pot-move-row>div{display:flex;align-items:center;gap:10px;min-width:0}
+.fv2-pot-move-row i{display:grid;place-items:center;flex:0 0 28px;height:28px;border:1px solid rgba(168,85,247,.24);border-radius:9px;background:rgba(168,85,247,.09);color:#d8b4fe;font-size:8px;font-style:normal;font-weight:1000}
+.fv2-pot-move-row span{min-width:0}
+.fv2-pot-move-row span strong{display:block;overflow:hidden;color:#e7edf4;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.fv2-pot-move-row span small{display:block;margin-top:3px;color:#746b82;font-size:7px}
+.fv2-pot-move-row>strong{flex:none;color:#d8b4fe;font-size:15px}
+.fv2-pot-move-row.is-zero{opacity:.58}
+
+@media(max-width:760px){
+  .fv2-pot-moves-list{grid-template-columns:1fr}
+}
+
 @media(max-width:520px){
   .fv2-command-strip,
   .fv2-money-grid,

@@ -8,7 +8,7 @@
 <meta name="aurora-finance-ui" content="FINANCE_UI_V1_5_STATUS_PROGRESS_CLEANUP">
 <link rel="stylesheet" href="aurora.css?v=finance-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="finance-ui.css?v=315-status-progress">
+<link rel="stylesheet" href="finance-ui.css?v=318-pot-moves">
 </head>
 
 <body class="aurora-entered finance-command-page">
@@ -221,8 +221,9 @@
               <div class="auto-chip"><small>Extra left after pots</small><strong id="autoWageRemaining">£0.00</strong><span>Flows into the remaining safe allocation</span></div>
             </div>
 
-            <div class="finance-subhead finance-subhead-auto">Automatic Commitments</div>
+            <div class="finance-subhead finance-subhead-auto">Next Payday Moves</div>
 <div id="financeAutoCommitmentCards" class="finance-auto-command-grid" aria-label="Automatic commitments summary"></div>
+            <article id="financeNextPaydayPotMoves" class="fv2-pot-moves-card" aria-label="Individual pot funding on the next payday"></article>
             <div class="finance-chip-grid five finance-auto-commitments">
               <div class="auto-chip"><small>13-pay bill funding</small><strong id="autoAnnualBills">£0.00</strong><span id="autoAnnualBillsMeta">Annual Holding Pot bills ÷ 13</span></div>
               <div class="auto-chip"><small>Pot funding required</small><strong id="autoPotsDue">£0.00</strong><span id="autoPotsCount">0 pot contributions scheduled</span></div>
@@ -488,9 +489,9 @@
 
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="finance-funding.js?v=140"></script>
-<script src="finance-house.js?v=042"></script>
+<script src="finance-house.js?v=043-red-delete"></script>
 <script src="finance.js?v=131-bill-delete"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="finance-ui.js?v=316-bill-delete"></script>
+<script src="finance-ui.js?v=318-pot-moves"></script>
 </body>
 </html>
