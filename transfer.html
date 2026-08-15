@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07060d">
-<title>Aurora City FC — Transfer Centre</title>
+<title>Aurora City FC — Transfer Command</title>
+<meta name="aurora-transfer-ui" content="TRANSFER_UI_V1_DEADLINE_COMMAND">
 <link rel="stylesheet" href="aurora.css?v=transfer-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="transfer-command.css?v=transfer-command-100">
+<link rel="stylesheet" href="transfer-ui.css?v=300-deadline-command">
 </head>
 
 <body class="aurora-entered transfer-command-page">
@@ -47,9 +48,9 @@
             <span class="transfer-version-pill">SMART ROUTING v0.6</span>
           </div>
 
-          <span class="transfer-eyebrow">Aurora City FC • Deadline Day Command</span>
+          <span class="transfer-eyebrow">Aurora City FC • Deadline Day • Deployment Command</span>
           <h2>Transfer<br><span>Centre</span></h2>
-          <p>Finance owns the money. Scouting owns the target intelligence. Transfer owns the final deployment route — broker, allocation and approval.</p>
+          <p>Finance sets the ceiling. Scouting supplies the approved targets. Transfer turns both into one executable broker route, locks the deal sheet and hands it to Registration.</p>
 
           <div class="transfer-hero-actions">
             <button class="transfer-btn primary" id="openAllocation">Build / Review Route</button>
@@ -78,18 +79,61 @@
         <article class="transfer-score blue"><small>Targets</small><strong id="kTargets">0</strong><span>Scouting-approved list</span></article>
       </section>
 
+      <section class="transfer3-command" id="transferCommandFlow">
+        <div class="transfer3-command-head">
+          <div>
+            <small>TRANSFER WINDOW COMMAND</small>
+            <h3>Deal Completion Flow</h3>
+            <p id="transfer3Priority">Aurora is checking Finance authority, Scouting approval and the current route.</p>
+          </div>
+          <span id="transfer3Status" class="transfer3-status">CHECKING</span>
+        </div>
+
+        <div class="transfer3-flow-grid">
+          <article class="transfer3-flow-card" id="transfer3Finance">
+            <i>01</i>
+            <div><small>FINANCE</small><strong>Mission Budget</strong><span id="transfer3FinanceMeta">Checking authorised cash…</span></div>
+            <b>WAITING</b>
+          </article>
+          <article class="transfer3-flow-card" id="transfer3Scouting">
+            <i>02</i>
+            <div><small>SCOUTING</small><strong>Approved Targets</strong><span id="transfer3ScoutingMeta">Checking shortlist…</span></div>
+            <b>WAITING</b>
+          </article>
+          <article class="transfer3-flow-card" id="transfer3Route">
+            <i>03</i>
+            <div><small>TRANSFER</small><strong>Final Deal Sheet</strong><span id="transfer3RouteMeta">No route built yet.</span></div>
+            <b>WAITING</b>
+          </article>
+          <article class="transfer3-flow-card" id="transfer3Registration">
+            <i>04</i>
+            <div><small>REGISTRATION</small><strong>Broker Execution</strong><span id="transfer3RegistrationMeta">Waiting for route approval.</span></div>
+            <b>WAITING</b>
+          </article>
+        </div>
+
+        <div class="transfer3-next-action">
+          <div>
+            <small>NEXT ACTION</small>
+            <strong id="transfer3NextAction">Checking Transfer Centre…</strong>
+            <span id="transfer3NextMeta">The next operational step will appear here.</span>
+          </div>
+          <button type="button" id="transfer3NextButton" class="transfer-btn primary">Open Next Step</button>
+        </div>
+      </section>
+
       <div class="tabs transfer-tabs">
-        <button class="tab active" data-tab="overviewPanel">Mission Room</button>
-        <button class="tab" data-tab="allocationPanel">Allocation Room</button>
-        <button class="tab" data-tab="registrationPanel">Registration</button>
-        <button class="tab" data-tab="offersPanel">Chairman Office</button>
+        <button class="tab active" data-tab="overviewPanel">Mission & Targets</button>
+        <button class="tab" data-tab="allocationPanel">Build Deal Sheet</button>
+        <button class="tab" data-tab="registrationPanel">Registration Handoff</button>
+        <button class="tab" data-tab="offersPanel">Chairman Review</button>
       </div>
 
       <section id="overviewPanel" class="tab-panel active">
         <section class="transfer-command-grid two">
           <article class="transfer-panel handoff-panel">
             <div class="transfer-panel-head">
-              <div><span class="transfer-panel-kicker">Finance Handoff</span><h3>Mission Authority</h3></div>
+              <div><span class="transfer-panel-kicker">Finance Handoff</span><h3>Authorised Transfer Budget</h3><p class="transfer3-head-copy">The ceiling comes directly from Finance and cannot be increased here.</p></div>
               <span class="handoff-state" id="handoffState">WAITING</span>
             </div>
 
@@ -106,7 +150,7 @@
 
           <article class="transfer-panel scouting-handoff-panel">
             <div class="transfer-panel-head">
-              <div><span class="transfer-panel-kicker">Scouting Handoff</span><h3>Recruitment Intelligence</h3></div>
+              <div><span class="transfer-panel-kicker">Scouting Handoff</span><h3>Approved Recruitment Intelligence</h3><p class="transfer3-head-copy">Only the current Scouting shortlist is eligible for this route.</p></div>
               <span id="scoutingState" class="handoff-state">CHECKING</span>
             </div>
 
@@ -118,7 +162,7 @@
 
         <section class="transfer-panel approved-targets-panel">
           <div class="transfer-panel-head">
-            <div><span class="transfer-panel-kicker">Recruitment Board</span><h3>Approved Scouting Targets</h3></div>
+            <div><span class="transfer-panel-kicker">Recruitment Board</span><h3>Eligible Deal Targets</h3><p class="transfer3-head-copy">The approved pool Transfer can actually deploy money into.</p></div>
             <span class="transfer-panel-note" id="targetSource">Awaiting Scouting</span>
           </div>
           <div class="target-list" id="targetList"></div>
@@ -129,7 +173,7 @@
         <section class="transfer-command-grid two">
           <article class="transfer-panel strategy-panel">
             <div class="transfer-panel-head">
-              <div><span class="transfer-panel-kicker">Approved Scouting Strategy</span><h3>Inherited Investment Lens</h3></div>
+              <div><span class="transfer-panel-kicker">Scouting Strategy</span><h3>Inherited Investment Lens</h3><p class="transfer3-head-copy">Strategy remains owned by Scouting; Transfer only controls deployment.</p></div>
               <span class="transfer-panel-note">Read-only handoff</span>
             </div>
 
@@ -159,7 +203,7 @@
 
           <article class="transfer-panel authority-panel">
             <div class="transfer-panel-head">
-              <div><span class="transfer-panel-kicker">Route Authority</span><h3>Budget Lock</h3></div>
+              <div><span class="transfer-panel-kicker">Route Authority</span><h3>Deployment Rules</h3><p class="transfer3-head-copy">Broker scope and allocation sizing may change. Finance budget may not.</p></div>
               <span class="budget-lock-chip">BUDGET LOCKED</span>
             </div>
 
@@ -177,7 +221,7 @@
 
         <section class="transfer-panel deal-sheet-panel">
           <div class="transfer-panel-head">
-            <div><span class="transfer-panel-kicker">Deadline Day Board</span><h3>Final Deal Sheet</h3></div>
+            <div><span class="transfer-panel-kicker">Deadline Day Board</span><h3>Final Broker Deal Sheet</h3><p class="transfer3-head-copy">This is the route that will become Registration authority when approved.</p></div>
             <span id="routeStatus" class="route-status-chip">NO ROUTE</span>
           </div>
 
@@ -191,8 +235,16 @@
           <div class="route-progress"><i id="routeProgress" style="width:0%"></i></div>
           <div class="route-list" id="routeList"></div>
 
-          <div class="transfer-actions">
-            <button class="transfer-btn primary" id="approveRoute" disabled>Approve Final Route</button>
+          <div class="transfer3-approval-banner">
+            <div>
+              <small>DEADLINE-DAY DECISION</small>
+              <strong>Approve Final Route</strong>
+              <span>Locking the deal sheet creates Registration authority. Actual broker execution still happens in Registration.</span>
+            </div>
+            <i>TRANSFER → REGISTRATION</i>
+          </div>
+          <div class="transfer-actions transfer3-route-actions">
+            <button class="transfer-btn primary transfer3-approve" id="approveRoute" disabled>Approve Final Route</button>
             <button class="transfer-btn secondary" id="unlockRoute" hidden>Unlock Route</button>
             <button class="transfer-btn secondary" id="copyBrokerInstructions">Copy Broker Instructions</button>
           </div>
@@ -317,6 +369,6 @@
 <script src="transfer-broker-memory.js?v=060"></script>
 <script src="transfer.js?v=050"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="transfer-command-ui.js?v=100"></script>
+<script src="transfer-ui.js?v=300-deadline-command"></script>
 </body>
 </html>
