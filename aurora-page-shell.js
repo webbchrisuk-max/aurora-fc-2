@@ -111,6 +111,7 @@ window.AuroraShell={
   auroraLoadShared('aurora-release.js?v=100-stable-core','release');
   auroraLoadShared('aurora-platform.js?v=100-stable-core','platform');
   auroraLoadShared('aurora-sync-manager.js?v=100-stable-core','sync-manager');
+  auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
 
   function ensureSystemHealthNavigation(){
     const scroll=document.querySelector('.aurora-shell-nav-scroll');

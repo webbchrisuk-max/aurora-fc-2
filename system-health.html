@@ -7,7 +7,7 @@
 <title>Aurora City FC — System Health</title>
 <link rel="stylesheet" href="aurora.css?v=stable-core-health">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="system-health.css?v=100">
+<link rel="stylesheet" href="system-health.css?v=110-cloud-state">
 </head>
 <body class="aurora-entered health-page">
 <div class="aurora-game-shell is-active" id="gameShell">
@@ -28,7 +28,7 @@
 <div class="shell-stage">
 <main class="shell-page health-shell-page">
   <section class="health-hero">
-    <div><span class="health-eyebrow">Aurora 2.0 • Stable Core</span><h2>System<br><span>Health</span></h2><p>One place to verify the state, backend, canonical holdings, managed synchronisation and recovery protection without changing department calculations.</p></div>
+    <div><span class="health-eyebrow">Aurora 2.0 • Stable Core • Cross-Device Cloud</span><h2>System<br><span>Health</span></h2><p>One place to verify Stable Core, AuroraData 2, canonical holdings, recovery protection and the new cross-device Aurora Cloud without changing department calculations.</p></div>
     <article class="health-overall"><small>PLATFORM STATUS</small><strong id="overallStatus">CHECKING</strong><span id="overallNote">Running Aurora diagnostics…</span><button id="runCheck" type="button">Run Full Check</button></article>
   </section>
 
@@ -37,6 +37,7 @@
     <article><small>Schema</small><strong id="schemaVersion">—</strong><span>Core state model</span></article>
     <article><small>AuroraData 2</small><strong id="backendStatus">—</strong><span id="backendMeta">Connection</span></article>
     <article><small>Holdings Sync</small><strong id="holdingsStatus">—</strong><span id="holdingsMeta">Canonical state</span></article>
+    <article class="cloud-kpi"><small>Aurora Cloud</small><strong id="cloudKpiStatus">—</strong><span id="cloudKpiMeta">Cross-device state</span></article>
     <article><small>Last Good Backup</small><strong id="backupStatus">—</strong><span id="backupMeta">Local recovery</span></article>
   </section>
 
@@ -51,6 +52,111 @@
       <div class="health-actions"><button id="syncNow" type="button">Run Sync Now</button></div>
     </article>
   </section>
+
+
+  <section class="health-panel cloud-panel" id="auroraCloudPanel">
+    <div class="health-panel-head">
+      <div>
+        <small>AURORA CLOUD</small>
+        <h3>Cross-Device State</h3>
+        <p class="health-copy">One Aurora 2 working state across your iPad, phone and PC. A new device cannot upload starter data until you deliberately choose its first cloud action.</p>
+      </div>
+      <span id="cloudBadge" class="health-badge">CHECKING</span>
+    </div>
+
+    <div class="cloud-command-grid">
+      <article class="cloud-status-card">
+        <small>CLOUD STATUS</small>
+        <strong id="cloudStatusTitle">Checking Aurora Cloud…</strong>
+        <span id="cloudStatusMeta">Waiting for the cloud engine.</span>
+        <div class="cloud-sync-track"><i id="cloudSyncTrack"></i></div>
+      </article>
+
+      <article class="cloud-mini-card">
+        <small>CURRENT DEVICE</small>
+        <strong id="cloudDeviceDisplay">—</strong>
+        <span id="cloudDeviceId">—</span>
+      </article>
+
+      <article class="cloud-mini-card">
+        <small>CLOUD ACCOUNT</small>
+        <strong id="cloudAccount">Not signed in</strong>
+        <span id="cloudCloudMeta">Separate from Manager Access</span>
+      </article>
+
+      <article class="cloud-mini-card">
+        <small>LAST CLOUD WRITER</small>
+        <strong id="cloudLastWriter">—</strong>
+        <span id="cloudLastWriterMeta">No Aurora 2 cloud state inspected</span>
+      </article>
+    </div>
+
+    <div class="cloud-auth-box" id="cloudSignInBox">
+      <div>
+        <small>CLOUD SIGN-IN</small>
+        <strong>Use your Aurora Cloud account</strong>
+        <span>If this device used the old Aurora cloud, Aurora 2 will automatically reuse that saved Firebase session where possible.</span>
+      </div>
+      <div class="cloud-auth-fields">
+        <label>Email<input id="cloudEmail" type="email" autocomplete="username" placeholder="Aurora Cloud email"></label>
+        <label>Password<input id="cloudPassword" type="password" autocomplete="current-password" placeholder="Password"></label>
+        <button id="cloudSignIn" type="button">Sign In</button>
+      </div>
+    </div>
+
+    <div class="cloud-signed-box" id="cloudSignedInBox" hidden>
+      <div class="cloud-device-editor">
+        <label>
+          <span>Device name</span>
+          <input id="cloudDeviceNameInput" type="text" maxlength="60" placeholder="Aurora iPad">
+        </label>
+        <button id="cloudSaveDevice" type="button">Save Device Name</button>
+        <button id="cloudSignOut" class="secondary" type="button">Sign Out Cloud</button>
+      </div>
+
+      <div class="cloud-bootstrap" id="cloudBootstrapBox">
+        <div>
+          <small>FIRST-TIME SAFETY</small>
+          <strong id="cloudBootstrapTitle">Choose how this device joins Aurora Cloud</strong>
+          <span id="cloudBootstrapMeta">Aurora will never guess which copy should become master.</span>
+        </div>
+      </div>
+
+      <div class="cloud-actions">
+        <button id="cloudUploadMaster" class="master" type="button">Upload This Device as Master</button>
+        <button id="cloudDownload" type="button">Download Cloud to This Device</button>
+        <button id="cloudSyncNow" type="button">Sync Now</button>
+        <button id="cloudAutoSync" class="secondary" type="button">Auto Sync: ON</button>
+      </div>
+
+      <div class="cloud-timeline">
+        <div><small>Cloud Revision</small><strong id="cloudRevision">—</strong><span>Current saved generation</span></div>
+        <div><small>Last Sync</small><strong id="cloudLastSync">Never</strong><span>Upload or download</span></div>
+        <div><small>Last Upload</small><strong id="cloudLastUpload">Never</strong><span>This device</span></div>
+        <div><small>Last Download</small><strong id="cloudLastDownload">Never</strong><span>This device</span></div>
+      </div>
+    </div>
+
+    <div class="cloud-conflict" id="cloudConflictBox" hidden>
+      <div>
+        <small>CONFLICT PROTECTION</small>
+        <strong>Two devices changed the same Aurora department</strong>
+        <span id="cloudConflictMeta">Aurora stopped before overwriting either copy.</span>
+      </div>
+      <div class="cloud-conflict-actions">
+        <button id="cloudUseCloud" type="button">Use Cloud Copy</button>
+        <button id="cloudUseDevice" class="danger" type="button">Replace Cloud with This Device</button>
+      </div>
+    </div>
+
+    <div class="cloud-safety-grid">
+      <div><b>✓ Stable Core backup first</b><span>Every cloud apply protects the current browser state before replacing departments.</span></div>
+      <div><b>✓ Department conflict checks</b><span>Finance, Scouting, Transfer, Registration, Squad and Income are compared separately.</span></div>
+      <div><b>✓ Secrets stay local</b><span>AuroraData 2 endpoint/token and your Cloud password are never included in the cloud-state payload.</span></div>
+      <div><b>✓ Old Aurora separated</b><span>Aurora 2 uses its own Firestore document, so the old Aurora cloud master is not replaced.</span></div>
+    </div>
+  </section>
+
 
   <section class="health-grid">
     <article class="health-panel">
@@ -98,6 +204,6 @@
 <script src="aurora-release.js?v=100-stable-core"></script>
 <script src="aurora-platform.js?v=100-stable-core"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="system-health.js?v=100"></script>
+<script src="system-health.js?v=110-cloud-state"></script>
 </body>
 </html>
