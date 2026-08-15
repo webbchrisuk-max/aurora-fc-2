@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0714">
 <title>Aurora City FC — Income Command</title>
-<meta name="aurora-income-ui" content="INCOME_UI_V1_PROMOTION_COMMAND">
+<meta name="aurora-income-ui" content="INCOME_UI_V1_1_DIVIDEND_COMMAND_ROOM">
 <link rel="stylesheet" href="aurora.css?v=income-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="income-ui.css?v=300-promotion-command">
+<link rel="stylesheet" href="income-ui.css?v=310-dividend-command-room">
 </head>
 
 <body class="aurora-entered income-command-page">
@@ -141,7 +141,170 @@
   </article>
 </section>
 
+<section class="income11-command-room" id="incomeCommandRoom">
+  <div class="income11-command-head">
+    <div>
+      <small>DIVIDEND COMMAND ROOM</small>
+      <h3>Income Reliability & Progress</h3>
+      <p>One operational view of dividend reliability, income concentration, broker cash and the route toward £625 per month — built from Income's existing canonical outputs.</p>
+    </div>
+    <span id="income11CommandStatus" class="income11-command-status">CHECKING</span>
+  </div>
+
+  <div class="income11-command-kpis">
+    <article>
+      <small>Calendar Coverage</small>
+      <strong id="income11Coverage">0%</strong>
+      <span id="income11CoverageMeta">No dividend players</span>
+    </article>
+    <article>
+      <small>Confirmed / Paid</small>
+      <strong id="income11Reliable">0</strong>
+      <span id="income11ReliableMeta">0 recorded events</span>
+    </article>
+    <article class="risk">
+      <small>Late Payments</small>
+      <strong id="income11Late">0</strong>
+      <span id="income11LateMeta">No late items</span>
+    </article>
+    <article class="gold">
+      <small>Top 5 Concentration</small>
+      <strong id="income11Top5">0.0%</strong>
+      <span id="income11Top5Meta">of forward income</span>
+    </article>
+    <article class="teal">
+      <small>Broker Dividend Cash</small>
+      <strong id="income11Cash">£0.00</strong>
+      <span id="income11CashMeta">IG + Trading 212</span>
+    </article>
+  </div>
+
+  <div class="income11-command-grid">
+    <article class="income11-board income11-reliability">
+      <div class="income11-board-head">
+        <div>
+          <small>DIVIDEND RELIABILITY</small>
+          <h4>Payment Status Board</h4>
+          <p>Uses the Income calendar's recorded statuses and dates. A payment only becomes LATE when its recorded payment date has passed without PAID status.</p>
+        </div>
+        <span id="income11ReliabilityBadge">CALENDAR</span>
+      </div>
+
+      <div class="income11-reliability-counts">
+        <div class="paid"><small>Paid</small><strong id="income11Paid">0</strong></div>
+        <div class="confirmed"><small>Confirmed</small><strong id="income11Confirmed">0</strong></div>
+        <div class="forecast"><small>Forecast</small><strong id="income11Forecast">0</strong></div>
+        <div class="late"><small>Late</small><strong id="income11LateCount">0</strong></div>
+        <div class="cancelled"><small>Cancelled</small><strong id="income11Cancelled">0</strong></div>
+      </div>
+
+      <div id="income11ReliabilityList" class="income11-reliability-list"></div>
+    </article>
+
+    <article class="income11-board income11-concentration">
+      <div class="income11-board-head">
+        <div>
+          <small>INCOME CONCENTRATION</small>
+          <h4>Where the Income Comes From</h4>
+          <p>Ticker and broker figures come directly from Income metrics. Sector grouping uses the same dividend-eligible canonical Squad holdings.</p>
+        </div>
+        <span id="income11ConcentrationBadge">LIVE</span>
+      </div>
+
+      <div class="income11-concentration-summary">
+        <div><small>Largest Player</small><strong id="income11LargestPlayer">—</strong><span id="income11LargestPlayerMeta">—</span></div>
+        <div><small>Largest Broker</small><strong id="income11LargestBroker">—</strong><span id="income11LargestBrokerMeta">—</span></div>
+        <div><small>Largest Sector</small><strong id="income11LargestSector">—</strong><span id="income11LargestSectorMeta">—</span></div>
+      </div>
+
+      <div class="income11-split">
+        <section>
+          <small>TOP INCOME PLAYERS</small>
+          <div id="income11PlayerBars" class="income11-bar-list"></div>
+        </section>
+        <section>
+          <small>BROKER MIX</small>
+          <div id="income11BrokerBars" class="income11-bar-list"></div>
+        </section>
+        <section>
+          <small>SECTOR MIX</small>
+          <div id="income11SectorBars" class="income11-bar-list"></div>
+        </section>
+      </div>
+    </article>
+  </div>
+
+  <div class="income11-command-grid lower">
+    <article class="income11-board income11-cash-cycle">
+      <div class="income11-board-head">
+        <div>
+          <small>DIVIDEND CASH CYCLE</small>
+          <h4>From Payment to Reinvestment</h4>
+          <p>The broker cash engine remains authoritative for settlements, balances and deployment plans.</p>
+        </div>
+        <span id="income11CashCycleBadge">TREASURY</span>
+      </div>
+
+      <div class="income11-cycle">
+        <div id="income11CyclePaid">
+          <i>01</i><small>CALENDAR</small><strong>Dividend Paid</strong><span id="income11CyclePaidMeta">0 paid events</span>
+        </div>
+        <b>→</b>
+        <div id="income11CycleRecorded">
+          <i>02</i><small>TREASURY</small><strong>Settlement Recorded</strong><span id="income11CycleRecordedMeta">0 visible records</span>
+        </div>
+        <b>→</b>
+        <div id="income11CycleCash">
+          <i>03</i><small>BROKER CASH</small><strong>Cash Available</strong><span id="income11CycleCashMeta">£0.00 available</span>
+        </div>
+        <b>→</b>
+        <div id="income11CycleDeploy">
+          <i>04</i><small>REINVESTMENT</small><strong>Deployment Plan</strong><span id="income11CycleDeployMeta">No active plan</span>
+        </div>
+      </div>
+
+      <button type="button" id="income11OpenTreasury" class="income-btn secondary">Open Dividend Treasury</button>
+    </article>
+
+    <article class="income11-board income11-forecast">
+      <div class="income11-board-head">
+        <div>
+          <small>PROMOTION FORECAST</small>
+          <h4>Road to £625</h4>
+          <p>Current income is canonical. Transfer uplift stays a separate scenario. Pace forecasting only appears when Income has enough real history.</p>
+        </div>
+        <span id="income11ForecastBadge">£625 / MONTH</span>
+      </div>
+
+      <div class="income11-forecast-kpis">
+        <div><small>Current</small><strong id="income11ForecastCurrent">£0.00/m</strong><span>confirmed Squad income</span></div>
+        <div><small>After Active Route</small><strong id="income11ForecastRoute">£0.00/m</strong><span id="income11ForecastRouteMeta">No route uplift</span></div>
+        <div><small>Observed Pace</small><strong id="income11ForecastPace">Building</strong><span id="income11ForecastPaceMeta">Needs 14+ days of history</span></div>
+        <div><small>Estimated Arrival</small><strong id="income11ForecastDate">—</strong><span id="income11ForecastDateMeta">Historical pace only</span></div>
+      </div>
+
+      <div class="income11-target-line">
+        <div><small>TARGET DATE</small><strong>1 Mar 2028</strong></div>
+        <span id="income11TargetVerdict">Building enough history to judge pace.</span>
+      </div>
+    </article>
+  </div>
+
+  <article class="income11-board income11-change-feed">
+    <div class="income11-board-head">
+      <div>
+        <small>INCOME CHANGE LOG</small>
+        <h4>What Changed My Income?</h4>
+        <p>Uses the automatic Income snapshots already created when the forward run-rate changes. No cause is invented when the engine only recorded a generic change.</p>
+      </div>
+      <span id="income11ChangeCount">0 CHANGES</span>
+    </div>
+    <div id="income11ChangeList" class="income11-change-list"></div>
+  </article>
+</section>
+
 <nav class="income-jumpbar" aria-label="Income sections">
+  <button type="button" data-income-jump="incomeCommandRoom">Command Room</button>
   <button type="button" data-income-jump="incomePromotionSection">Promotion Race</button>
   <button type="button" data-income-jump="incomeRunwaySection">Income Squad</button>
   <button type="button" data-income-jump="dividendCalendarSection">Dividend Calendar</button>
@@ -391,6 +554,6 @@
 <script src="income.js?v=030"></script>
 <script src="income-dividend-cash.js?v=100"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="income-ui.js?v=300-promotion-command"></script>
+<script src="income-ui.js?v=310-dividend-command-room"></script>
 </body>
 </html>

@@ -708,3 +708,537 @@
   .income-shell-page{width:min(100% - 18px,1580px)}
   .income-scoreboard,.income3-milestones,.income3-match-grid{grid-template-columns:1fr}
 }
+
+
+/* =========================================================
+   INCOME UI v1.1 — DIVIDEND COMMAND ROOM
+   Presentation intelligence over existing Income outputs.
+   ========================================================= */
+
+.income11-command-room{
+  position:relative;
+  overflow:hidden;
+  margin-top:13px;
+  padding:22px;
+  border:1px solid rgba(185,133,255,.15);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 0% 0%,rgba(185,133,255,.085),transparent 31%),
+    radial-gradient(circle at 100% 0%,rgba(246,196,83,.065),transparent 31%),
+    radial-gradient(circle at 100% 100%,rgba(66,232,193,.035),transparent 28%),
+    linear-gradient(145deg,rgba(17,11,28,.97),rgba(4,8,15,.995));
+  box-shadow:0 20px 52px rgba(0,0,0,.26);
+}
+.income11-command-head{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+}
+.income11-command-head small,.income11-board-head small,.income11-split>section>small{
+  display:block;
+  color:#c3a3e9;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+.income11-command-head h3{
+  margin:5px 0 0;
+  color:#f5effb;
+  font-size:27px;
+  letter-spacing:-.035em;
+}
+.income11-command-head p{
+  max-width:900px;
+  margin:7px 0 0;
+  color:#91849c;
+  font-size:10px;
+  line-height:1.55;
+}
+.income11-command-status{
+  min-height:31px;
+  display:inline-flex;
+  align-items:center;
+  padding:0 10px;
+  border:1px solid rgba(246,196,83,.17);
+  border-radius:999px;
+  background:rgba(120,53,15,.08);
+  color:#ffe19b;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.08em;
+}
+.income11-command-status.good{
+  color:#baffd0;
+  border-color:rgba(89,255,154,.17);
+  background:rgba(6,78,59,.09);
+}
+.income11-command-status.warn{
+  color:#ffbdc7;
+  border-color:rgba(255,113,136,.17);
+  background:rgba(136,19,55,.07);
+}
+
+.income11-command-kpis{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  margin-top:16px;
+}
+.income11-command-kpis article{
+  position:relative;
+  overflow:hidden;
+  min-height:106px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:13px;
+  background:rgba(255,255,255,.011);
+}
+.income11-command-kpis article:before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:var(--inc-purple);
+}
+.income11-command-kpis article.risk:before{background:#ff7188}
+.income11-command-kpis article.gold:before{background:var(--inc-gold)}
+.income11-command-kpis article.teal:before{background:var(--inc-teal)}
+.income11-command-kpis small{
+  display:block;
+  color:#83778e;
+  font-size:8px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.income11-command-kpis strong{
+  display:block;
+  margin-top:8px;
+  color:#f2edf7;
+  font-size:24px;
+  letter-spacing:-.04em;
+}
+.income11-command-kpis span{
+  display:block;
+  margin-top:5px;
+  color:#776e80;
+  font-size:8px;
+  line-height:1.4;
+}
+
+.income11-command-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
+  gap:11px;
+  margin-top:11px;
+}
+.income11-command-grid.lower{
+  grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+}
+.income11-board{
+  min-width:0;
+  padding:18px;
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:17px;
+  background:rgba(255,255,255,.010);
+}
+.income11-reliability{border-color:rgba(88,244,255,.10)}
+.income11-concentration{border-color:rgba(246,196,83,.10)}
+.income11-cash-cycle{border-color:rgba(66,232,193,.10)}
+.income11-forecast{border-color:rgba(185,133,255,.12)}
+.income11-change-feed{
+  margin-top:11px;
+  border-color:rgba(106,168,255,.09);
+}
+.income11-board-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.income11-board-head h4{
+  margin:4px 0 0;
+  color:#f0edf4;
+  font-size:19px;
+  letter-spacing:-.025em;
+}
+.income11-board-head p{
+  max-width:760px;
+  margin:5px 0 0;
+  color:#7d7385;
+  font-size:9px;
+  line-height:1.5;
+}
+.income11-board-head>span{
+  color:#887b94;
+  font-size:8px;
+  white-space:nowrap;
+}
+
+/* Reliability */
+.income11-reliability-counts{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:7px;
+  margin-top:13px;
+}
+.income11-reliability-counts>div{
+  min-height:72px;
+  padding:11px;
+  border:1px solid rgba(255,255,255,.045);
+  border-radius:10px;
+  background:rgba(255,255,255,.011);
+}
+.income11-reliability-counts small{
+  display:block;
+  color:#77858b;
+  font-size:7px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+.income11-reliability-counts strong{
+  display:block;
+  margin-top:6px;
+  font-size:19px;
+}
+.income11-reliability-counts .paid strong{color:#baffd0}
+.income11-reliability-counts .confirmed strong{color:#bffbff}
+.income11-reliability-counts .forecast strong{color:#ffe19b}
+.income11-reliability-counts .late strong{color:#ffb6c3}
+.income11-reliability-counts .cancelled strong{color:#9b8f9f}
+
+.income11-reliability-list{
+  display:grid;
+  gap:7px;
+  margin-top:11px;
+}
+.income11-reliability-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  min-height:64px;
+  padding:11px;
+  border:1px solid rgba(255,255,255,.045);
+  border-radius:10px;
+  background:rgba(255,255,255,.009);
+}
+.income11-reliability-row strong{
+  display:block;
+  color:#e8edf0;
+  font-size:10px;
+}
+.income11-reliability-row span{
+  display:block;
+  margin-top:4px;
+  color:#748187;
+  font-size:8px;
+}
+.income11-state{
+  min-height:26px;
+  display:inline-flex;
+  align-items:center;
+  padding:0 7px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:999px;
+  font-size:7px;
+  font-weight:1000;
+}
+.income11-state.paid{color:#baffd0;border-color:rgba(89,255,154,.14);background:rgba(89,255,154,.025)}
+.income11-state.confirmed{color:#bffbff;border-color:rgba(88,244,255,.14);background:rgba(88,244,255,.025)}
+.income11-state.forecast{color:#ffe19b;border-color:rgba(246,196,83,.14);background:rgba(246,196,83,.025)}
+.income11-state.late{color:#ffb6c3;border-color:rgba(255,113,136,.15);background:rgba(255,113,136,.025)}
+.income11-state.cancelled{color:#a89cae;border-color:rgba(168,156,174,.10);background:rgba(168,156,174,.02)}
+
+/* Concentration */
+.income11-concentration-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin-top:13px;
+}
+.income11-concentration-summary>div{
+  min-height:83px;
+  padding:11px;
+  border:1px solid rgba(246,196,83,.06);
+  border-radius:10px;
+  background:rgba(246,196,83,.012);
+}
+.income11-concentration-summary small{
+  display:block;
+  color:#8a7d61;
+  font-size:7px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+.income11-concentration-summary strong{
+  display:block;
+  margin-top:6px;
+  color:#f6e7bd;
+  font-size:14px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.income11-concentration-summary span{
+  display:block;
+  margin-top:4px;
+  color:#776f60;
+  font-size:8px;
+}
+.income11-split{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  margin-top:12px;
+}
+.income11-split>section{
+  min-width:0;
+  padding:11px;
+  border:1px solid rgba(255,255,255,.04);
+  border-radius:10px;
+  background:rgba(255,255,255,.008);
+}
+.income11-split>section>small{
+  color:#7d7287;
+  font-size:7px;
+}
+.income11-bar-list{
+  display:grid;
+  gap:8px;
+  margin-top:9px;
+}
+.income11-bar-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 48px;
+  gap:7px;
+  align-items:center;
+}
+.income11-bar-copy strong{
+  display:block;
+  color:#dcd7e0;
+  font-size:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.income11-bar-copy span{
+  display:block;
+  margin-top:3px;
+  color:#706878;
+  font-size:7px;
+}
+.income11-bar{
+  height:5px;
+  overflow:hidden;
+  margin-top:5px;
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+}
+.income11-bar i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,var(--inc-purple),var(--inc-gold));
+}
+.income11-bar-row>b{
+  color:#aaa0af;
+  font-size:8px;
+  text-align:right;
+}
+
+/* Cash Cycle */
+.income11-cycle{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr) 18px minmax(0,1fr) 18px minmax(0,1fr);
+  gap:5px;
+  align-items:stretch;
+  margin-top:14px;
+}
+.income11-cycle>div{
+  min-height:128px;
+  padding:12px;
+  border:1px solid rgba(66,232,193,.07);
+  border-radius:11px;
+  background:rgba(66,232,193,.012);
+}
+.income11-cycle>div.good{
+  border-color:rgba(89,255,154,.13);
+  background:rgba(89,255,154,.02);
+}
+.income11-cycle>div.active{
+  border-color:rgba(246,196,83,.13);
+  background:rgba(246,196,83,.02);
+}
+.income11-cycle>div i{
+  width:27px;height:27px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:rgba(66,232,193,.06);
+  color:#aee9da;
+  font-style:normal;
+  font-size:8px;
+  font-weight:1000;
+}
+.income11-cycle>div small{
+  display:block;
+  margin-top:9px;
+  color:#6e8a82;
+  font-size:7px;
+  font-weight:1000;
+  letter-spacing:.08em;
+}
+.income11-cycle>div strong{
+  display:block;
+  margin-top:4px;
+  color:#e2f2ed;
+  font-size:10px;
+}
+.income11-cycle>div span{
+  display:block;
+  margin-top:5px;
+  color:#72867f;
+  font-size:8px;
+  line-height:1.4;
+}
+.income11-cycle>b{
+  display:grid;
+  place-items:center;
+  color:#5e7770;
+  font-size:14px;
+}
+
+/* Forecast */
+.income11-forecast-kpis{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  margin-top:13px;
+}
+.income11-forecast-kpis>div{
+  min-height:91px;
+  padding:12px;
+  border:1px solid rgba(185,133,255,.07);
+  border-radius:10px;
+  background:rgba(185,133,255,.012);
+}
+.income11-forecast-kpis small{
+  display:block;
+  color:#877794;
+  font-size:7px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+.income11-forecast-kpis strong{
+  display:block;
+  margin-top:6px;
+  color:#eadcf7;
+  font-size:17px;
+}
+.income11-forecast-kpis span{
+  display:block;
+  margin-top:4px;
+  color:#766d7d;
+  font-size:8px;
+  line-height:1.4;
+}
+.income11-target-line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-top:10px;
+  padding:11px 12px;
+  border:1px solid rgba(246,196,83,.08);
+  border-radius:10px;
+  background:rgba(246,196,83,.014);
+}
+.income11-target-line small{
+  display:block;
+  color:#887b60;
+  font-size:7px;
+  font-weight:1000;
+}
+.income11-target-line strong{
+  display:block;
+  margin-top:4px;
+  color:#ffe19b;
+  font-size:12px;
+}
+.income11-target-line>span{
+  color:#867b68;
+  font-size:8px;
+  text-align:right;
+}
+
+/* Change Feed */
+.income11-change-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  margin-top:12px;
+}
+.income11-change-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  min-height:68px;
+  padding:11px;
+  border:1px solid rgba(106,168,255,.055);
+  border-radius:10px;
+  background:rgba(106,168,255,.01);
+}
+.income11-change-row strong{
+  display:block;
+  color:#e4eaf2;
+  font-size:10px;
+}
+.income11-change-row span{
+  display:block;
+  margin-top:4px;
+  color:#717c89;
+  font-size:8px;
+}
+.income11-change-delta{
+  text-align:right;
+  font-size:11px;
+  font-weight:1000;
+}
+.income11-change-delta.good{color:#baffd0}
+.income11-change-delta.bad{color:#ffb6c3}
+.income11-change-delta small{
+  display:block;
+  margin-top:3px;
+  color:#738078;
+  font-size:7px;
+  font-weight:700;
+}
+.income11-empty{
+  grid-column:1/-1;
+  padding:18px;
+  border:1px dashed rgba(255,255,255,.06);
+  border-radius:10px;
+  color:#766f7b;
+  font-size:9px;
+  text-align:center;
+}
+
+@media(max-width:1250px){
+  .income11-command-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .income11-command-grid,.income11-command-grid.lower{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .income11-split{grid-template-columns:1fr}
+  .income11-cycle{grid-template-columns:1fr}
+  .income11-cycle>b{display:none}
+  .income11-change-list{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+  .income11-command-kpis{grid-template-columns:1fr 1fr}
+  .income11-reliability-counts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .income11-concentration-summary,.income11-forecast-kpis{grid-template-columns:1fr}
+  .income11-command-head{display:grid}
+}
