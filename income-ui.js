@@ -529,18 +529,37 @@ function bind(){
     if(el)observer.observe(el,{childList:true,subtree:true,characterData:true});
   });
 
-  // Treasury is injected dynamically; attach once it appears.
-  const bodyObserver=new MutationObserver(()=>{
-    ['cashBalanceIG','cashBalanceT212','cashLedger','cashPlan'].forEach(id=>{
+  // Treasury is injected dynamically. Watch only until it appears,
+  // attach observers to its live values once, then disconnect the body watcher.
+  // Never render from an always-on body observer: rendering this UI changes the
+  // DOM itself and would otherwise create a self-triggering render loop.
+  const treasuryIds=['cashBalanceIG','cashBalanceT212','cashLedger','cashPlan'];
+  const attachTreasuryObservers=()=>{
+    let found=0;
+    treasuryIds.forEach(id=>{
       const el=$(id);
-      if(el&&!el.dataset.income11Observed){
+      if(!el)return;
+      found++;
+      if(!el.dataset.income11Observed){
         el.dataset.income11Observed='1';
         observer.observe(el,{childList:true,subtree:true,characterData:true});
       }
     });
-    render();
-  });
-  bodyObserver.observe(document.body,{childList:true,subtree:true});
+    return found===treasuryIds.length || !!$('brokerDividendCashSection');
+  };
+
+  if(attachTreasuryObservers()){
+    setTimeout(render,0);
+  }else{
+    const bodyObserver=new MutationObserver(()=>{
+      if(!attachTreasuryObservers())return;
+      bodyObserver.disconnect();
+      setTimeout(render,0);
+    });
+    bodyObserver.observe(document.body,{childList:true,subtree:true});
+    // Safety stop if the treasury module never injects.
+    setTimeout(()=>bodyObserver.disconnect(),5000);
+  }
 
   window.addEventListener('storage',()=>setTimeout(render,70));
   window.addEventListener('aurora2:state',()=>setTimeout(render,40));
