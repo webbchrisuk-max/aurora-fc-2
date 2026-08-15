@@ -77,3 +77,47 @@ body:after{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;opac
     background-position:center,var(--aurora-hero-mobile-position,var(--aurora-hero-tablet-position,70% center))!important;
   }
 }
+
+/* Aurora 2 cinematic heroes: information floats over the department artwork. */
+.aurora-hero-art{
+  min-height:clamp(390px,42vw,590px)!important;
+  align-items:end!important;
+  isolation:isolate;
+  text-shadow:0 2px 12px rgba(0,0,0,.96),0 1px 2px rgba(0,0,0,.95);
+}
+.aurora-hero-art:before{
+  content:"";position:absolute!important;z-index:0!important;inset:0!important;pointer-events:none;
+  background:radial-gradient(ellipse 62% 82% at 13% 68%,rgba(1,5,12,.78),transparent 74%),radial-gradient(ellipse 46% 70% at 88% 65%,rgba(1,5,12,.58),transparent 76%);
+}
+.aurora-hero-art.aurora-hero-art{
+  background-image:linear-gradient(180deg,rgba(2,7,15,.08),rgba(2,7,15,.18) 54%,rgba(2,7,15,.56)),var(--aurora-hero-image)!important;
+}
+.aurora-hero-art :is(.hq4-hero-main,.finance-command-hero-copy,.transfer-command-copy,.squad-hero-copy,.scouting-hero-copy,.registration-hero-copy,.income-hero-copy,.chairman-hero-copy)>p{color:rgba(235,242,248,.88)!important;text-shadow:0 2px 10px #000}
+.aurora-hero-facts,
+.aurora-hero-art :is(.hq4-manager-ticket,.finance-command-rule,.mission-command-card,.squad-command-card,.scouting-mission-card,.route-authority-card,.income-command-card,.chairman-rule-card,.health-overall){
+  align-self:end!important;padding:6px 2px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;backdrop-filter:none!important;overflow:visible!important;
+}
+.aurora-hero-facts:before,.aurora-hero-facts:after{display:none!important}
+.aurora-hero-facts>p{max-width:430px;color:rgba(226,235,241,.82)!important;text-shadow:0 2px 10px #000}
+.aurora-fact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;margin:15px 0}
+.aurora-fact-grid>div{min-width:0;padding:0!important;border:0!important;background:none!important}
+.aurora-fact-grid span{display:block;color:rgba(211,224,233,.78);font-size:7px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+.aurora-fact-grid strong{display:block;margin-top:5px!important;color:#f7fbff;font-size:clamp(17px,2vw,28px)!important;line-height:1.05;letter-spacing:-.035em;text-shadow:0 2px 13px #000;white-space:normal!important;overflow:visible!important}
+/* Ticker remains the only full-width information rail in the Transfer hero. */
+.transfer-market-ticker{z-index:3!important;margin:-1px -1px auto!important;align-self:start!important}
+.transfer-command-hero{grid-template-rows:auto 1fr!important}
+.transfer-command-copy,.payday-mission-card{align-self:end!important}
+@media(max-width:1024px){
+ .aurora-hero-art{min-height:520px!important;grid-template-columns:minmax(0,1.12fr) minmax(260px,.88fr)!important}
+ .aurora-hero-art.aurora-hero-art{background-image:linear-gradient(180deg,rgba(2,7,15,.08),rgba(2,7,15,.15) 45%,rgba(2,7,15,.66)),var(--aurora-hero-image)!important}
+}
+@media(max-width:760px){
+ .aurora-hero-art{min-height:680px!important;display:flex!important;flex-direction:column;justify-content:flex-end;align-items:stretch!important;padding:20px!important}
+ .aurora-hero-art.aurora-hero-art{background-image:linear-gradient(180deg,rgba(2,7,15,.08),rgba(2,7,15,.16) 34%,rgba(2,7,15,.88) 74%,rgba(2,7,15,.96)),var(--aurora-hero-image)!important}
+ .aurora-hero-art> :first-child{margin-top:auto}
+ .transfer-command-hero>.transfer-market-ticker{order:-1;margin:-1px -1px auto!important;width:calc(100% + 2px)}
+ .aurora-fact-grid{gap:12px 18px;margin:11px 0}
+ .aurora-fact-grid strong{font-size:18px!important}
+ .aurora-hero-facts{margin-top:16px!important}
+}
+@media(max-width:430px){.aurora-hero-art{min-height:720px!important}.aurora-fact-grid{grid-template-columns:1fr 1fr}.aurora-hero-art h2{font-size:46px!important}}
