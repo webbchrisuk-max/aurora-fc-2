@@ -100,18 +100,32 @@
     const host=$('transferTicker'),fresh=$('tickerFreshness'),r=state.transfer?.route;
     if(!host)return;
     const allocations=arr(r?.allocations).filter(a=>num(a.amount)>0);
+    const totals=r?routeSummary(r):{allocated:0,income:0,remaining:routeBudget(state)};
+    const current=incomeBaseline(state),post=current+totals.income,budget=routeBudget(state);
     const relevant=allocations.length?allocations:arr(state.scouting?.targets).slice(0,6);
-    const items=relevant.map(a=>{const e=routeEvidence(state,a),stamp=e.updatedAt?Date.parse(e.updatedAt):NaN,stale=!Number.isFinite(stamp)||Date.now()-stamp>24*60*60*1000;
+    const items=[];
+    if(budget>0){
+      items.push({html:`<span><b>PAYDAY PLAN</b> ${money(budget)} READY</span>`,stale:false});
+      items.push({html:`<span><b>${esc(scoutingStrategyLabel(state).toUpperCase())}</b> ${allocations.length} PROPOSED BUY${allocations.length===1?'':'S'}</span>`,stale:false});
+      items.push({html:`<span><b>ALLOCATED</b> ${money(totals.allocated)} • <b>UNALLOCATED</b> ${money(totals.remaining)}</span>`,stale:false});
+      items.push({html:`<span><b>EST. INCOME</b> +${money(totals.income)}/YEAR</span>`,stale:false});
+      items.push({html:`<span><b>POST-TRANSFER INCOME</b> ${money(post)}/YEAR</span>`,stale:false});
+      const brokerTotals=['IG','T212'].map(code=>({code,total:allocations.filter(a=>accountCode(a.account)===code).reduce((s,a)=>s+num(a.amount),0)})).filter(x=>x.total>0);
+      if(brokerTotals.length)items.push({html:`<span><b>BROKER ROUTE</b> ${brokerTotals.map(x=>`${esc(accountLabel(x.code))} ${money(x.total)}`).join(' • ')}</span>`,stale:false});
+    }
+    relevant.forEach(a=>{const e=routeEvidence(state,a),stamp=e.updatedAt?Date.parse(e.updatedAt):NaN,stale=!Number.isFinite(stamp)||Date.now()-stamp>24*60*60*1000;
       const px=e.price>0?(e.price<2?`${(e.price*100).toFixed(1)}p`:money(e.price)):'PRICE UNAVAILABLE';
       const movement=e.move==null?'MOVE UNAVAILABLE':`${e.move>=0?'▲':'▼'} ${Math.abs(e.move).toFixed(2)}%`;
-      return {html:`<span><b>${esc(ticker(a.ticker))}</b> ${px} <i class="${e.move>=0?'up':'down'}">${movement}</i></span>`,stale,stamp};
+      items.push({html:`<span><b>${esc(ticker(a.ticker))}</b> ${px} <i class="${e.move==null?'':e.move>=0?'up':'down'}">${movement}</i>${stale?' • STALE':''}</span>`,stale,stamp});
     });
     const next=arr(state.income?.calendar).filter(e=>!['CANCELLED','ARCHIVED','PAID'].includes(String(e.status||'').toUpperCase())&&relevant.some(a=>ticker(a.ticker)===ticker(e.ticker))).sort((a,b)=>String(a.payDate||'9999').localeCompare(String(b.payDate||'9999')))[0];
-    if(next)items.push({html:`<span><b>${next.exDate?'EX-DIV':'NEXT DIVIDEND'}</b> ${esc(ticker(next.ticker))} • ${esc(next.exDate||next.payDate||'DATE PENDING')}</span>`,stale:false});
+    if(next)items.push({html:`<span><b>${next.exDate?'EX-DIV':'NEXT DIVIDEND'}</b> ${esc(ticker(next.ticker))} • ${esc(next.exDate||next.payDate||'DATE PENDING')}${num(next.expectedAmountGbp)>0?` • ${money(next.expectedAmountGbp)}`:''}</span>`,stale:false});
+    const chairman=chairmanHoldings(state).map(h=>({h,m:chairmanHoldingMetrics(h)})).filter(x=>x.m.triggered&&chairmanMateriality(state,x.h,x.m).meaningful).sort((a,b)=>b.m.profitPct-a.m.profitPct)[0];
+    if(chairman)items.push({html:`<span><b>CHAIRMAN'S OFFER</b> ${esc(ticker(chairman.h.ticker))} REVIEW REQUIRED • +${chairman.m.profitPct.toFixed(1)}%</span>`,stale:false});
     const wire=items.map(x=>x.html).join('<em>•</em>')||'<span>No recommendation is currently available.</span>';
     host.innerHTML=`${wire}<em>•</em>${wire}`;
     const stale=items.some(x=>x.stale); const stamps=items.map(x=>x.stamp).filter(Number.isFinite);
-    fresh.textContent=stale?`STALE / ${stamps.length?new Date(Math.max(...stamps)).toLocaleString('en-GB'):'UPDATE UNKNOWN'}`:'CURRENT';
+    fresh.textContent=stale?`MARKET DATA STALE / ${stamps.length?new Date(Math.max(...stamps)).toLocaleString('en-GB'):'UPDATE UNKNOWN'}`:'CURRENT';
     fresh.classList.toggle('stale',stale);
   }
   function renderImpact(state){
@@ -124,13 +138,18 @@
     if($('impactKpis'))$('impactKpis').innerHTML=[['Current annual income',money(current)],['Estimated additional income',`+${money(totals.income)} / year`],['New annual income',money(post)],['Monthly equivalent',`${money(current/12)} → ${money(post/12)}`],['Transfer income yield',`${yieldPct.toFixed(2)}%`],['Income per £1,000',`${money(efficiency)} / year`]].map(x=>`<div><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('');
     const monthlyTarget=num(state.income?.settings?.monthlyTarget), annualTarget=monthlyTarget*12;
     if($('incomeMissionProgress'))$('incomeMissionProgress').innerHTML=annualTarget>0?`<strong>${money(post)} of ${money(annualTarget)} annual target</strong><div class="mission-progress"><i style="width:${Math.min(100,post/annualTarget*100)}%"></i></div><span>${money(current)} current • +${money(totals.income)} transfer • ${money(Math.max(0,annualTarget-post))} remaining</span>`:'<div class="empty-state compact"><strong>No income target configured</strong><p>Set a monthly target in Income Centre; Transfer will not invent a milestone.</p></div>';
-    if($('portfolioComparison'))$('portfolioComparison').innerHTML=[['Annual income',current,post],['Monthly income',current/12,post/12],['Portfolio value',value,value+totals.allocated],['Positions',holdings.length,new Set(holdings.map(h=>`${accountCode(h.account)}|${ticker(h.ticker)}`).concat(allocations.map(a=>`${accountCode(a.account)}|${ticker(a.ticker)}`))).size],['Portfolio income yield',value?current/value*100:0,(value+totals.allocated)?post/(value+totals.allocated)*100:0],['IG value',accounts('IG'),accounts('IG')+allocations.filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0)],['Trading 212 value',accounts('T212'),accounts('T212')+allocations.filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0)]].map((x,i)=>`<div><small>${x[0]}</small><strong>${i===3?x[1]:i===4?num(x[1]).toFixed(2)+'%':money(x[1])} <b>→</b> ${i===3?x[2]:i===4?num(x[2]).toFixed(2)+'%':money(x[2])}</strong></div>`).join('');
+    if($('portfolioComparison'))$('portfolioComparison').innerHTML=[['Annual income',current,post],['Monthly income',current/12,post/12],['Portfolio value',value,value+totals.allocated],['Positions',holdings.length,new Set(holdings.map(h=>`${accountCode(h.account)}|${ticker(h.ticker)}`).concat(allocations.map(a=>`${accountCode(a.account)}|${ticker(a.ticker)}`))).size],['Portfolio income yield',value?current/value*100:0,(value+totals.allocated)?post/(value+totals.allocated)*100:0],['IG ISA value',accounts('IG'),accounts('IG')+allocations.filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0)],['Trading 212 ISA value',accounts('T212'),accounts('T212')+allocations.filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0)]].map((x,i)=>`<div><small>${x[0]}</small><span class="before-value">${i===3?x[1]:i===4?num(x[1]).toFixed(2)+'%':money(x[1])}</span><b>→</b><strong>${i===3?x[2]:i===4?num(x[2]).toFixed(2)+'%':money(x[2])}</strong></div>`).join('');
+    if($('previewCashStrip'))$('previewCashStrip').innerHTML=`<div><small>Transfer cash</small><strong>${money(routeBudget(state))}</strong></div><div><small>Allocated</small><strong>${money(totals.allocated)}</strong></div><div class="${totals.remaining>.005?'warning':''}"><small>Remaining cash</small><strong>${money(totals.remaining)}</strong></div>`;
     renderInstructions(state,allocations,totals,current,post,confirmed,complete);
   }
   function renderInstructions(state,allocations,totals,current,post,confirmed,complete){
     const body=$('allocationInstructions');
-    if(body)body.innerHTML=allocations.length?[...allocations].sort((a,b)=>num(b.expectedAnnualIncome)-num(a.expectedAnnualIncome)).map((a,i)=>{const e=routeEvidence(state,a), existing=e.holdings.reduce((s,h)=>s+holdingValue(h),0), shares=e.price>0?Math.floor(num(a.amount)/e.price):null, next=e.calendar?[e.calendar.exDate&&`Ex ${e.calendar.exDate}`,e.calendar.payDate&&`Pay ${e.calendar.payDate}`].filter(Boolean).join(' • '):'No dividend dates recorded'; const reason=a.reason||e.target.reason||arr(e.target.eligibilityReasons)[0]||'Scouting-approved allocation'; return `<tr><td data-label="Holding"><strong>${esc(ticker(a.ticker))} — ${esc(a.name)}</strong><span>#${i+1} income contribution • ${esc(reason)}</span></td><td data-label="Broker">${esc(accountLabel(a.account))}</td><td data-label="Allocation">${money(a.amount)}</td><td data-label="Est. price">${e.price>0?(e.price<2?(e.price*100).toFixed(1)+'p':money(e.price)):'Unavailable'}</td><td data-label="Shares">${shares==null?'—':shares.toLocaleString('en-GB')}</td><td data-label="Annual income">+${money(a.expectedAnnualIncome)}</td><td data-label="Yield">${num(a.yieldPct).toFixed(2)}%</td><td data-label="Context">${money(existing)} → ${money(existing+num(a.amount))}<span>${esc(next)}</span></td></tr>`}).join(''):'<tr><td colspan="8">Build a route to see exact buy instructions.</td></tr>';
+    const ranked=[...allocations].sort((a,b)=>num(b.expectedAnnualIncome)-num(a.expectedAnnualIncome));
+    if(body)body.innerHTML=ranked.length?ranked.map((a,i)=>{const e=routeEvidence(state,a), existing=e.holdings.reduce((s,h)=>s+holdingValue(h),0), existingShares=e.holdings.reduce((s,h)=>s+num(h.shares),0), shares=e.price>0?Math.floor(num(a.amount)/e.price):null, next=e.calendar?[e.calendar.exDate&&`Ex ${e.calendar.exDate}`,e.calendar.payDate&&`Pay ${e.calendar.payDate}`,shares!=null&&num(e.calendar.dividendPerShareGbp)>0&&`Est. next payment ${money(shares*num(e.calendar.dividendPerShareGbp))}`].filter(Boolean).join(' • '):'No dividend dates recorded'; const reason=a.reason||e.target.reason||arr(e.target.eligibilityReasons)[0]||'Scouting-approved allocation'; return `<tr class="allocation-priority-${Math.min(i+1,4)}"><td data-label="Holding"><strong>${esc(ticker(a.ticker))} — ${esc(a.name||ticker(a.ticker))}</strong><span>#${i+1} income contribution • ${esc(reason)}</span></td><td data-label="Broker">${esc(accountLabel(a.account))}</td><td data-label="Allocation"><strong>${money(a.amount)}</strong></td><td data-label="Est. price">${e.price>0?(e.price<2?(e.price*100).toFixed(1)+'p':money(e.price)):'Unavailable'}</td><td data-label="Shares">${shares==null?'—':`Buy ~${shares.toLocaleString('en-GB')}<span>${existingShares.toLocaleString('en-GB')} → ${(existingShares+shares).toLocaleString('en-GB')}</span>`}</td><td data-label="Annual income"><strong>+${money(a.expectedAnnualIncome)}</strong></td><td data-label="Yield">${num(a.yieldPct).toFixed(2)}%</td><td data-label="Exposure">${money(existing)} → ${money(existing+num(a.amount))}<span>${esc(next)}</span></td></tr>`}).join(''):'<tr><td colspan="8">Build a route to see exact buy instructions.</td></tr>';
     if($('allocationTotals'))$('allocationTotals').innerHTML=`<div><small>Transfer cash</small><strong>${money(num(state.mission?.approvedBudget))}</strong></div><div><small>Total allocated</small><strong>${money(totals.allocated)}</strong></div><div class="${totals.remaining>.005?'unallocated':''}"><small>Unallocated cash</small><strong>${money(totals.remaining)}</strong></div>`;
+    const brokerRows=['IG','T212'].map(code=>({label:accountLabel(code),amount:allocations.filter(a=>accountCode(a.account)===code).reduce((s,a)=>s+num(a.amount),0)})).filter(x=>x.amount>0);
+    if($('brokerRouteSummary'))$('brokerRouteSummary').innerHTML=brokerRows.length?`${brokerRows.map(x=>`<div><small>${esc(x.label)}</small><strong>${money(x.amount)}</strong></div>`).join('')}<div class="route-total"><small>Total routed</small><strong>${money(totals.allocated)}</strong></div>`:'<div class="empty-state compact">Build a route to see broker destinations.</div>';
+    if($('incomeContribution'))$('incomeContribution').innerHTML=ranked.length?ranked.map((a,i)=>`<div><b>${i+1}</b><span>${esc(ticker(a.ticker))}</span><strong>+${money(a.expectedAnnualIncome)}<small>/year</small></strong></div>`).join(''):'<div class="empty-state compact">No proposed income contributions yet.</div>';
     const checks=state.transfer?.executionChecks||{}; if($('executionChecklist'))$('executionChecklist').innerHTML=allocations.length?allocations.map(a=>{const d=confirmedFor(state,state.transfer?.route,a),checked=!!d||!!checks[a.id];return `<label class="execution-check ${d?'registered':checked?'desk-complete':''}"><input type="checkbox" data-execution-check="${esc(a.id)}" ${checked?'checked':''} ${d?'disabled':''}><span>${d?'✓':'○'} ${esc(ticker(a.ticker))} • ${esc(accountLabel(a.account))} • ${money(a.amount)}</span><b>${d?'REGISTERED':checked?'DESK CHECKED — REGISTRATION PENDING':'PENDING'}</b></label>`}).join(''):'<div class="empty-state compact">No planned purchases.</div>';
     const actual=confirmed.reduce((s,d)=>s+num(d.totalCostGbp),0), actualIncome=confirmed.reduce((s,d)=>s+num(d.expectedAnnualIncomeGbp),0);
     const fills=confirmed.map(d=>`${ticker(d.ticker)} ${num(d.shares).toLocaleString('en-GB')} @ ${d.priceUnit==='PENCE'?num(d.priceInput).toFixed(2)+'p':money(num(d.priceInput))}`).join(' • ');
@@ -418,16 +437,23 @@
 
   function renderMission(state){
     const m=state.mission,b=validMission(m)?num(m.approvedBudget):0;
+    const r=state.transfer?.route,totals=r?routeSummary(r):{allocated:0,remaining:b};
+    const allocations=arr(r?.allocations).filter(a=>num(a.amount)>0);
+    const complete=allocations.length>0&&allocations.every(a=>!!confirmedFor(state,r,a));
     const missionId=String(m?.id||'').trim();
     const payday=String(m?.paydayDate||'').trim();
     set('missionBudget',money(b));
     set('kFinanceBudget',money(b));
     set('handoffBudget',money(b));
-    set('missionStatus',m?.status||'NO ACTIVE MISSION');
+    set('missionStatus',complete?'TRANSFER COMPLETE':m?.status||'NO ACTIVE MISSION');
     set('missionMeta',missionId
       ?`${missionId}${payday?' • payday '+payday:''}`
       :m?'Mission details are incomplete. Return to Finance to release a current mission.':'Release an investment mission from Finance first.');
     set('missionLock',m?'Finance-authorised budget is read-only in Transfer.':'Budget is locked to Finance.');
+    set('missionPayday',payday||'Not provided');
+    set('missionStrategy',scoutingStrategyLabel(state));
+    set('missionAllocated',money(totals.allocated));
+    set('missionRemaining',money(totals.remaining));
     set('handoffMissionId',missionId||'—');
     set('handoffPayday',payday||'—');
     set('handoffSafe',m?.financeSnapshot?.safeSurplus!=null?money(m.financeSnapshot.safeSurplus):'—');
