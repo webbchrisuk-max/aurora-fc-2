@@ -250,7 +250,7 @@ function accountsForTicker(m,ticker){
 }
 
 function renderValueXI(m){
-  const pitch=$('squadPitch'),bench=$('benchList');
+  const pitch=$('squad4Field'),bench=$('squad4BenchList');
   if(!pitch||!bench)return;
 
   // Use Squad's own grouped ticker metrics: one company = one player.
@@ -273,13 +273,13 @@ function renderValueXI(m){
   set('squad4BenchMeta',`${subs.length} PLAYER${subs.length===1?'':'S'}`);
 
   // Remove only dynamically rendered player nodes; keep permanent pitch markings.
-  pitch.querySelectorAll('.pitch-player').forEach(x=>x.remove());
+  pitch.querySelectorAll('.squad4-xi-player').forEach(x=>x.remove());
 
   starters.forEach((x,i)=>{
     const [slot,left,top]=squad4Formation[i]||['SUB',50,50];
     const node=document.createElement('div');
     const pl=num(x.value)-num(x.book);
-    node.className='pitch-player';
+    node.className='squad4-xi-player';
     node.dataset.squadTicker=x.ticker;
     node.style.left=`${left}%`;
     node.style.top=`${top}%`;
@@ -374,8 +374,11 @@ function bind(){
 
     const tab=e.target.closest('.squad-tabs [data-tab="pitchPanel"]');
     if(tab){
-      // squad.js renders the hidden tab at boot; repaint once it is actually visible.
+      // Paint after the tab is visible and again after legacy squad.js has completed
+      // its compatibility render into the hidden legacy targets.
       requestAnimationFrame(()=>requestAnimationFrame(()=>render()));
+      setTimeout(render,80);
+      setTimeout(render,220);
     }
   });
 

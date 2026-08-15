@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#04101d">
 <title>Aurora City FC — Squad Command</title>
-<meta name="aurora-squad-ui" content="SQUAD_UI_V1_1_VALUE_XI_REFINEMENT">
+<meta name="aurora-squad-ui" content="SQUAD_UI_V1_1_1_VALUE_XI_ISOLATION">
 <link rel="stylesheet" href="aurora.css?v=squad-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="squad-ui.css?v=310-value-xi-refinement">
+<link rel="stylesheet" href="squad-ui.css?v=311-value-xi-isolation">
 </head>
 <body class="aurora-entered squad-command-page">
 <div class="aurora-game-shell is-active" id="gameShell">
@@ -196,15 +196,21 @@
   <div><small>Formation</small><strong>4-3-3</strong><span>ranked by market value</span></div>
 </div>
 
-<div class="pitch squad4-pitch" id="squadPitch">
-  <div class="centre-circle"></div>
+<div class="squad4-field" id="squad4Field">
+  <div class="squad4-field-outline"></div>
+  <div class="squad4-halfway"></div>
+  <div class="squad4-centre-circle"></div>
   <span class="squad4-centre-spot"></span>
   <span class="squad4-box top"></span>
   <span class="squad4-box bottom"></span>
   <span class="squad4-goal top"></span>
   <span class="squad4-goal bottom"></span>
-  <span class="pitch-note">Click any player to open its canonical First Team record. The formation is a holdings view, not a Scouting recommendation.</span>
+  <span class="squad4-field-note">Click any player to open its canonical First Team record. The formation is a holdings view, not a Scouting recommendation.</span>
 </div>
+
+<!-- Legacy squad.js compatibility target. Hidden so the business engine can keep
+     rendering without owning or erasing the visible Value XI presentation. -->
+<div id="squadPitch" hidden aria-hidden="true"></div>
 </article>
 
 <article class="squad-panel bench-panel squad4-bench-panel">
@@ -216,7 +222,9 @@
   </div>
   <span class="squad-panel-note" id="squad4BenchMeta">0 PLAYERS</span>
 </div>
-<div id="benchList" class="history-list squad4-bench-list"></div>
+<div id="squad4BenchList" class="history-list squad4-bench-list"></div>
+<!-- Legacy squad.js compatibility target. -->
+<div id="benchList" hidden aria-hidden="true"></div>
 </article></section></section>
 
 <section id="healthPanel" class="tab-panel">
@@ -310,6 +318,6 @@
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="squad.js?v=012"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="squad-ui.js?v=310-value-xi-refinement"></script>
+<script src="squad-ui.js?v=311-value-xi-isolation"></script>
 </body>
 </html>

@@ -953,3 +953,139 @@
 @media(max-width:500px){
   .squad4-xi-summary{grid-template-columns:1fr}
 }
+
+
+/* =========================================================
+   SQUAD UI v1.1.1 — VALUE XI ISOLATION HOTFIX
+   Visible field no longer uses legacy #squadPitch/.pitch-player.
+   ========================================================= */
+
+.squad4-field{
+  position:relative;
+  min-height:640px;
+  margin-top:12px;
+  overflow:hidden;
+  border:1px solid rgba(66,232,193,.26);
+  border-radius:20px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.024) 0 8.333%,
+      rgba(255,255,255,.006) 8.333% 16.666%
+    ),
+    linear-gradient(180deg,#0c3f2f,#092f27 52%,#07241f);
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,.20),
+    0 15px 34px rgba(0,0,0,.17);
+}
+.squad4-field-outline{
+  position:absolute;
+  z-index:1;
+  inset:6%;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:3px;
+  pointer-events:none;
+}
+.squad4-halfway{
+  position:absolute;
+  z-index:1;
+  left:6%;
+  right:6%;
+  top:50%;
+  height:1px;
+  background:rgba(255,255,255,.20);
+  pointer-events:none;
+}
+.squad4-centre-circle{
+  position:absolute;
+  z-index:1;
+  left:50%;
+  top:50%;
+  width:118px;
+  height:118px;
+  border:1px solid rgba(255,255,255,.21);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.squad4-field .squad4-box,
+.squad4-field .squad4-goal,
+.squad4-field .squad4-centre-spot{
+  pointer-events:none;
+}
+.squad4-field-note{
+  position:absolute;
+  z-index:7;
+  left:16px;
+  right:16px;
+  bottom:13px;
+  color:rgba(230,247,242,.58);
+  font-size:8px;
+  line-height:1.45;
+}
+
+/* New tiles have a unique class so squad.js cannot delete them. */
+.squad4-xi-player{
+  position:absolute;
+  z-index:6;
+  width:148px;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  cursor:pointer;
+  filter:drop-shadow(0 10px 13px rgba(0,0,0,.25));
+}
+.squad4-xi-player>b{
+  min-width:96px;
+  min-height:49px;
+  display:inline-grid;
+  place-items:center;
+  padding:7px 11px 6px;
+  border:1px solid rgba(88,244,255,.32);
+  border-radius:13px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(88,244,255,.14),transparent 52%),
+    rgba(2,17,20,.96);
+  color:#e9ffff;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+.squad4-xi-player>b i{
+  display:block;
+  margin-bottom:2px;
+  color:#72aa9f;
+  font-size:6px;
+  font-style:normal;
+  font-weight:1000;
+  letter-spacing:.11em;
+}
+.squad4-xi-player>b strong{
+  display:block;
+  font-size:12px;
+}
+.squad4-xi-player>span{
+  display:inline-block;
+  margin-top:4px;
+  padding:4px 6px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:7px;
+  background:rgba(2,10,13,.82);
+  color:#acd4ca;
+  font-size:7px;
+  white-space:nowrap;
+}
+.squad4-xi-player:hover>b{
+  border-color:rgba(88,244,255,.55);
+  transform:translateY(-1px);
+}
+
+/* Hidden compatibility targets should never affect layout. */
+#squadPitch[hidden],
+#benchList[hidden]{
+  display:none!important;
+}
+
+@media(max-width:700px){
+  .squad4-field{min-height:720px}
+  .squad4-xi-player{width:132px}
+}
