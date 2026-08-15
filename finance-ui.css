@@ -1174,6 +1174,40 @@
   justify-content:center;
   gap:6px;
 }
+.fv2-bill-actions .btn.danger,
+.bill-actions .btn.danger{
+  border-color:#ef4444;
+  background:#dc2626;
+  color:#fff;
+  box-shadow:0 5px 16px rgba(220,38,38,.22);
+}
+.fv2-bill-actions .btn.danger:hover,
+.bill-actions .btn.danger:hover{
+  border-color:#f87171;
+  background:#ef4444;
+}
+
+/* One complete view of every movement currently planned for the next payday. */
+.finance-payday-moves{margin:0 0 14px}
+.finance-payday-moves-list{display:grid;gap:7px;margin-top:13px}
+.finance-payday-move{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 11px;
+  border:1px solid rgba(125,211,252,.09);
+  border-radius:10px;
+  background:rgba(2,8,18,.34);
+}
+.finance-payday-move>i{color:#5d7689;font-size:8px;font-style:normal;font-weight:1000}
+.finance-payday-move div{min-width:0}
+.finance-payday-move small,.finance-payday-move span{display:block;color:#6d8277;font-size:6px}
+.finance-payday-move small{font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
+.finance-payday-move strong{display:block;margin:3px 0;color:#dce9f2;font-size:9px}
+.finance-payday-move>b{color:#f7fbff;font-size:12px}
+.finance-payday-moves-total{display:flex;justify-content:space-between;align-items:center;margin-top:9px;padding:12px;border-top:1px solid rgba(89,255,154,.14);color:#81958a;font-size:8px;font-weight:900;text-transform:uppercase}
+.finance-payday-moves-total strong{color:#79f2ac;font-size:18px}
 .fv2-actual{
   display:grid;
   gap:4px;

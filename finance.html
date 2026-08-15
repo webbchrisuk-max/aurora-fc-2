@@ -8,7 +8,7 @@
 <meta name="aurora-finance-ui" content="FINANCE_UI_V1_5_STATUS_PROGRESS_CLEANUP">
 <link rel="stylesheet" href="aurora.css?v=finance-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="finance-ui.css?v=315-status-progress">
+<link rel="stylesheet" href="finance-ui.css?v=317-payday-moves">
 </head>
 
 <body class="aurora-entered finance-command-page">
@@ -285,6 +285,15 @@
 
       <section id="potsPanel" class="tab-panel">
 
+        <section class="finance-panel finance-payday-moves" aria-labelledby="financePaydayMovesTitle">
+          <div class="finance-panel-head">
+            <div><span class="finance-panel-kicker">Next Pay Cycle</span><h3 id="financePaydayMovesTitle">All Next Payday Moves</h3></div>
+            <span class="finance-panel-note" id="financePaydayMovesDate">Set a payday date</span>
+          </div>
+          <div id="financePaydayMovesList" class="finance-payday-moves-list"></div>
+          <div class="finance-payday-moves-total"><span>Total planned movement</span><strong id="financePaydayMovesTotal">£0.00</strong></div>
+        </section>
+
         <section class="finance-scoreboard four">
           <article class="finance-score green"><small>Pot Cash</small><strong id="potBalanceTotal">£0.00</strong><span>Available across active pots</span></article>
           <article class="finance-score cyan"><small>Pot Targets</small><strong id="potTargetTotal">£0.00</strong><span>Combined active targets</span></article>
@@ -489,8 +498,8 @@
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="finance-funding.js?v=140"></script>
 <script src="finance-house.js?v=042"></script>
-<script src="finance.js?v=130"></script>
+<script src="finance.js?v=131-bill-delete"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="finance-ui.js?v=315-status-progress"></script>
+<script src="finance-ui.js?v=317-payday-moves"></script>
 </body>
 </html>

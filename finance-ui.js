@@ -1194,6 +1194,7 @@ function renderBills(s,plan,runway){
                   `:''}
                   <button class="btn secondary" data-bill-edit="${esc(b.id)}">Edit</button>
                   <button class="btn secondary" data-bill-archive="${esc(b.id)}">${b.archived?'Restore':'Archive'}</button>
+                  <button class="btn danger" data-bill-delete="${esc(b.id)}">Delete</button>
                 </div>
               </article>
             `;
@@ -1222,6 +1223,39 @@ function renderPotCommand(s,pv){
   const block=!hp&&activeBills(s).some(b=>isHoldingPotName(b.fundingSource));
   const gap=goal.reduce((sum,p)=>sum+potGap(p),0);
   setBadge('fv2PotHealthBadge',block?'HOLDING POT MISSING':gap<=.005?'ALL FUNDED':`${needing.length} FUNDING NEXT`,block?'block':gap<=.005?'good':'warn');
+}
+
+function renderPaydayMoves(s,plan,pv){
+  const host=document.getElementById('financePaydayMovesList');
+  if(!host)return;
+  const auto=pv?.c?.auto||{};
+  const moves=[];
+
+  arr(auto.billOccurrences).forEach(b=>moves.push({
+    kind:'Bill',
+    name:b.billName||b.name||'Bill payment',
+    note:b.fundingSource||'Current Account',
+    amount:Math.max(0,num(b.amount))
+  }));
+  if(pv.holdingContribution>.005)moves.push({
+    kind:'Holding Pot',
+    name:'Holding Pot transfer',
+    note:`${money(auto.annualHoldingContribution)} regular${num(auto.holdingTopUp)>.005?` + ${money(auto.holdingTopUp)} safety top-up`:''}`,
+    amount:pv.holdingContribution
+  });
+  arr(pv.rows).forEach(p=>moves.push({kind:'Goal Pot',name:p.name,note:p.reason||'Scheduled pot funding',amount:Math.max(0,num(p.amount))}));
+  if(num(plan.otherPlanned)>.005)moves.push({kind:'Other',name:'Other planned spending',note:'Manual payday-plan commitment',amount:Math.max(0,num(plan.otherPlanned))});
+  if(num(plan.releaseAmount)>.005)moves.push({kind:'Release',name:'Investment mission release',note:'Planned safe-surplus release',amount:Math.max(0,num(plan.releaseAmount))});
+
+  setText('financePaydayMovesDate',plan.paydayDate?`Payday ${humanDate(plan.paydayDate)}`:'Set a payday date');
+  setText('financePaydayMovesTotal',money(moves.reduce((sum,m)=>sum+m.amount,0)));
+  host.innerHTML=moves.length?moves.map((m,index)=>`
+    <div class="finance-payday-move">
+      <i>${String(index+1).padStart(2,'0')}</i>
+      <div><small>${esc(m.kind)}</small><strong>${esc(m.name)}</strong><span>${esc(m.note)}</span></div>
+      <b>${money(m.amount)}</b>
+    </div>
+  `).join(''):'<div class="fv2-empty">No moves are scheduled yet. Save the payday plan to build this list.</div>';
 }
 
 function houseMetrics(s){
@@ -1539,6 +1573,7 @@ function renderAll(){
   renderOverview(s,plan,pv,runway);
   renderPaydaySummary(s,plan,pv,runway);
   renderPotCommand(s,pv);
+  renderPaydayMoves(s,plan,pv);
   financeUiPotProgress(s,pv);
   financeUiAutomaticCommitments(s,pv);
   financeUiBills(s,runway);

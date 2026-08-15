@@ -1316,6 +1316,7 @@
             ${canComplete?`<div class="mini-actual"><label>Actual</label><input id="${esc(actualId)}" type="number" min="0" step="0.01" value="${Number(b.amount||0).toFixed(2)}"></div><button class="btn primary" data-bill-complete="${esc(b.id)}">Complete</button>`:''}
             <button class="btn secondary" data-bill-edit="${esc(b.id)}">Edit</button>
             <button class="btn secondary" data-bill-archive="${esc(b.id)}">${b.archived?'Restore':'Archive'}</button>
+            <button class="btn danger" data-bill-delete="${esc(b.id)}">Delete</button>
           </div>
         </article>`;
       }).join('');
@@ -1355,6 +1356,23 @@
   function toggleBillArchive(id){
     A().core.update(s=>({...s,finance:{...s.finance,bills:(s.finance.bills||[]).map(b=>b.id===id?{...b,archived:!b.archived,updatedAt:isoNow()}:b)}}));
     renderAll();
+  }
+
+  function deleteBill(id){
+    const current=A().core.read();
+    const bill=(current.finance?.bills||[]).find(b=>b.id===id);
+    if(!bill)return;
+    if(!confirm(`Permanently delete "${bill.name}"? Existing payment history will be kept.`))return;
+    A().core.update(s=>({
+      ...s,
+      finance:{
+        ...s.finance,
+        bills:(s.finance?.bills||[]).filter(b=>b.id!==id)
+      }
+    }));
+    if(value('billId')===id)resetBillEditor();
+    renderAll();
+    showToast('Bill deleted.');
   }
 
   function completeBill(id){
@@ -1651,6 +1669,7 @@
       const potArchive=e.target.closest('[data-pot-archive]'); if(potArchive){togglePotArchive(potArchive.dataset.potArchive);return;}
       const billEdit=e.target.closest('[data-bill-edit]'); if(billEdit){editBill(billEdit.dataset.billEdit);return;}
       const billArchive=e.target.closest('[data-bill-archive]'); if(billArchive){toggleBillArchive(billArchive.dataset.billArchive);return;}
+      const billDelete=e.target.closest('[data-bill-delete]'); if(billDelete){deleteBill(billDelete.dataset.billDelete);return;}
       const billComplete=e.target.closest('[data-bill-complete]'); if(billComplete){completeBill(billComplete.dataset.billComplete);return;}
       const undo=e.target.closest('[data-payment-undo]'); if(undo){undoPayment(undo.dataset.paymentUndo);return;}
     });
