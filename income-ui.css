@@ -1278,3 +1278,508 @@
 .income13-ultimate-line>span{color:#7c7186;font-size:8px;text-align:right}
 @media(max-width:950px){.income13-goal-grid,.income13-long-milestones{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.income13-roadmap-head{display:grid}.income13-goal-grid,.income13-long-milestones{grid-template-columns:1fr}.income13-ultimate-line{display:grid}.income13-ultimate-line>span{text-align:left}}
+
+
+/* =========================================================
+   INCOME UI v1.1.4 — LOWER-HALF READABILITY PASS
+   Top hero / scoreboard / Promotion Race / Matchday untouched.
+   ========================================================= */
+
+/* ---- Dividend Command Room ---- */
+.income11-command-room{
+  padding:26px;
+  border-radius:26px;
+}
+.income11-command-head small{font-size:10px}
+.income11-command-head h3{
+  margin-top:6px;
+  font-size:30px;
+  line-height:1.05;
+}
+.income11-command-head p{
+  max-width:980px;
+  margin-top:9px;
+  font-size:12px;
+  line-height:1.6;
+}
+.income11-command-status{
+  min-height:36px;
+  padding:0 13px;
+  font-size:9px;
+}
+
+/* Main command KPIs */
+.income11-command-kpis{
+  gap:10px;
+  margin-top:19px;
+}
+.income11-command-kpis article{
+  min-height:126px;
+  padding:18px;
+  border-radius:15px;
+}
+.income11-command-kpis small{
+  font-size:9px;
+}
+.income11-command-kpis strong{
+  margin-top:10px;
+  font-size:30px;
+}
+.income11-command-kpis span{
+  margin-top:7px;
+  font-size:10px;
+  line-height:1.45;
+}
+
+/* Main boards */
+.income11-command-grid,
+.income11-command-grid.lower{
+  gap:14px;
+  margin-top:14px;
+}
+.income11-board{
+  padding:22px;
+  border-radius:20px;
+}
+.income11-board-head small{
+  font-size:10px;
+}
+.income11-board-head h4{
+  margin-top:5px;
+  font-size:23px;
+}
+.income11-board-head p{
+  max-width:820px;
+  margin-top:7px;
+  font-size:11px;
+  line-height:1.55;
+}
+.income11-board-head>span{
+  font-size:9px;
+}
+
+/* Reliability summary counters */
+.income11-reliability-counts{
+  gap:9px;
+  margin-top:16px;
+}
+.income11-reliability-counts>div{
+  min-height:90px;
+  padding:14px;
+  border-radius:12px;
+}
+.income11-reliability-counts small{
+  font-size:8px;
+}
+.income11-reliability-counts strong{
+  margin-top:8px;
+  font-size:24px;
+}
+
+/* Payment rows */
+.income11-reliability-list{
+  gap:9px;
+  margin-top:14px;
+}
+.income11-reliability-row{
+  min-height:82px;
+  padding:15px;
+  border-radius:12px;
+}
+.income11-reliability-row strong{
+  font-size:13px;
+}
+.income11-reliability-row span{
+  margin-top:6px;
+  font-size:10px;
+  line-height:1.5;
+}
+.income11-state{
+  min-height:31px;
+  padding:0 9px;
+  font-size:8px;
+}
+
+/* Concentration summary */
+.income11-concentration-summary{
+  gap:9px;
+  margin-top:16px;
+}
+.income11-concentration-summary>div{
+  min-height:105px;
+  padding:15px;
+  border-radius:12px;
+}
+.income11-concentration-summary small{
+  font-size:8px;
+}
+.income11-concentration-summary strong{
+  margin-top:8px;
+  font-size:18px;
+}
+.income11-concentration-summary span{
+  margin-top:6px;
+  font-size:10px;
+}
+
+/* Top players / broker / sector bars */
+.income11-split{
+  gap:11px;
+  margin-top:15px;
+}
+.income11-split>section{
+  padding:15px;
+  border-radius:12px;
+}
+.income11-split>section>small{
+  font-size:8px;
+}
+.income11-bar-list{
+  gap:11px;
+  margin-top:12px;
+}
+.income11-bar-row{
+  grid-template-columns:minmax(0,1fr) 58px;
+  gap:9px;
+}
+.income11-bar-copy strong{
+  font-size:10px;
+}
+.income11-bar-copy span{
+  margin-top:4px;
+  font-size:8px;
+}
+.income11-bar{
+  height:7px;
+  margin-top:7px;
+}
+.income11-bar-row>b{
+  font-size:9px;
+}
+
+/* Dividend cash cycle */
+.income11-cycle{
+  gap:8px;
+  margin-top:17px;
+}
+.income11-cycle>div{
+  min-height:155px;
+  padding:15px;
+  border-radius:13px;
+}
+.income11-cycle>div i{
+  width:32px;
+  height:32px;
+  font-size:9px;
+}
+.income11-cycle>div small{
+  margin-top:11px;
+  font-size:8px;
+}
+.income11-cycle>div strong{
+  margin-top:6px;
+  font-size:12px;
+}
+.income11-cycle>div span{
+  margin-top:6px;
+  font-size:9px;
+  line-height:1.5;
+}
+.income11-cycle>b{
+  font-size:17px;
+}
+#income11OpenTreasury{
+  margin-top:14px;
+  min-height:46px;
+  font-size:10px;
+}
+
+/* Forecast cards */
+.income11-forecast-kpis{
+  gap:9px;
+  margin-top:16px;
+}
+.income11-forecast-kpis>div{
+  min-height:112px;
+  padding:15px;
+  border-radius:12px;
+}
+.income11-forecast-kpis small{
+  font-size:8px;
+}
+.income11-forecast-kpis strong{
+  margin-top:8px;
+  font-size:21px;
+}
+.income11-forecast-kpis span{
+  margin-top:6px;
+  font-size:9px;
+  line-height:1.5;
+}
+.income11-target-line,
+.income13-ultimate-line{
+  min-height:74px;
+  margin-top:11px;
+  padding:14px 15px;
+  border-radius:12px;
+}
+.income11-target-line small,
+.income13-ultimate-line small{
+  font-size:8px;
+}
+.income11-target-line strong,
+.income13-ultimate-line strong{
+  margin-top:5px;
+  font-size:14px;
+}
+.income11-target-line>span,
+.income13-ultimate-line>span{
+  max-width:62%;
+  font-size:10px;
+  line-height:1.45;
+}
+
+/* Change feed */
+.income11-change-feed{
+  margin-top:14px;
+}
+.income11-change-list{
+  gap:9px;
+  margin-top:15px;
+}
+.income11-change-row{
+  min-height:84px;
+  padding:14px;
+  border-radius:12px;
+}
+.income11-change-row strong{
+  font-size:12px;
+}
+.income11-change-row span{
+  margin-top:5px;
+  font-size:9px;
+}
+.income11-change-delta{
+  font-size:13px;
+}
+.income11-change-delta small{
+  margin-top:4px;
+  font-size:8px;
+}
+.income11-empty{
+  padding:22px;
+  font-size:11px;
+}
+
+/* ---- All existing Income sections beneath Command Room ---- */
+/* These classes do not touch the top Promotion Race / Matchday block. */
+.income-panel{
+  padding:24px;
+  border-radius:22px;
+}
+.income-panel-kicker{
+  font-size:10px;
+}
+.income-panel-head h3{
+  margin-top:5px;
+  font-size:24px;
+}
+.income-panel-note{
+  font-size:10px;
+}
+.income-copy,
+.income3-head-copy{
+  font-size:11px;
+  line-height:1.6;
+}
+
+/* Account + growth cards */
+.account-grid,
+.growth-grid{
+  gap:10px;
+  margin-top:16px;
+}
+.account-card,
+.growth-stat{
+  min-height:108px;
+  padding:16px;
+  border-radius:13px;
+}
+.account-card small,
+.growth-stat small{
+  font-size:8px;
+}
+.account-card strong{
+  margin-top:7px;
+  font-size:26px;
+}
+.growth-stat strong{
+  margin-top:7px;
+  font-size:22px;
+}
+.account-card span,
+.growth-stat span{
+  margin-top:6px;
+  font-size:10px;
+  line-height:1.5;
+}
+
+/* Notices */
+.income-notice,
+.notice{
+  padding:13px 14px;
+  font-size:10px;
+  line-height:1.6;
+}
+
+/* Income leaders / dividend calendar / history rows */
+.player-list,
+.calendar-list,
+.history-list{
+  gap:10px;
+  margin-top:16px;
+}
+.player-row,
+.calendar-row,
+.history-row2{
+  min-height:82px;
+  padding:15px;
+  border-radius:14px;
+}
+.row-copy strong{
+  font-size:13px;
+}
+.row-copy span{
+  margin-top:5px;
+  font-size:10px;
+  line-height:1.5;
+}
+.row-side strong{
+  font-size:20px;
+}
+.row-side span{
+  margin-top:4px;
+  font-size:9px;
+}
+.status-pill{
+  min-height:29px;
+  align-items:center;
+  padding:0 9px;
+  font-size:8px;
+}
+
+/* 12-month runway */
+.month-grid{
+  gap:10px;
+  margin-top:16px;
+}
+.month-card{
+  min-height:112px;
+  padding:15px;
+  border-radius:13px;
+}
+.month-card small{
+  font-size:8px;
+}
+.month-card strong{
+  margin-top:7px;
+  font-size:18px;
+}
+.month-card span{
+  margin-top:5px;
+  font-size:9px;
+}
+.month-bar{
+  height:7px;
+  margin-top:9px;
+}
+
+/* Calendar editor / technical controls */
+.editor-grid{
+  gap:11px;
+  margin-top:16px;
+}
+.income-command-page .field{
+  gap:7px;
+}
+.income-command-page .field label{
+  font-size:9px;
+}
+.income-command-page .field small.help,
+.income-command-page .field small{
+  font-size:9px;
+  line-height:1.45;
+}
+.income-command-page input,
+.income-command-page select{
+  min-height:50px;
+  padding:10px 12px;
+  font-size:12px;
+}
+
+/* Engine and system health */
+.engine-badge{
+  min-height:30px;
+  padding:0 10px;
+  font-size:8px;
+}
+.engine-grid{
+  gap:10px;
+  margin-top:16px;
+}
+.engine-stat{
+  min-height:100px;
+  padding:15px;
+  border-radius:13px;
+}
+.engine-stat small,
+.health small{
+  font-size:8px;
+}
+.engine-stat strong,
+.health strong{
+  margin-top:7px;
+  font-size:20px;
+}
+.engine-stat span,
+.health span{
+  margin-top:5px;
+  font-size:9px;
+}
+.health{
+  min-height:94px;
+  padding:15px;
+}
+
+/* Buttons throughout lower page */
+.income-panel .income-btn,
+.income11-command-room .income-btn{
+  min-height:46px;
+  padding:0 15px;
+  font-size:10px;
+}
+
+/* iPad-friendly: keep density sensible without shrinking typography */
+@media(max-width:1180px){
+  .income11-command-kpis{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .income11-reliability-counts{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .income11-split{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:760px){
+  .income11-command-room{padding:18px}
+  .income11-command-kpis,
+  .income11-reliability-counts{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .income11-command-head h3{font-size:25px}
+  .income11-target-line>span,
+  .income13-ultimate-line>span{
+    max-width:none;
+  }
+}
