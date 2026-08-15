@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0714">
 <title>Aurora City FC — Income Command</title>
-<meta name="aurora-income-ui" content="INCOME_UI_V1_1_2_PROMOTION_ENGINE_HOTFIX">
+<meta name="aurora-income-ui" content="INCOME_UI_V1_1_3_DUAL_INCOME_GOALS">
 <link rel="stylesheet" href="aurora.css?v=income-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="income-ui.css?v=310-dividend-command-room">
+<link rel="stylesheet" href="income-ui.css?v=313-dual-income-goals">
 </head>
 
 <body class="aurora-entered income-command-page">
@@ -111,8 +111,53 @@
       <div data-target="350"><small>DIVISION 1</small><strong>£350/m</strong><span>Foundation income</span></div>
       <div data-target="425"><small>DIVISION 2</small><strong>£425/m</strong><span>Income strength</span></div>
       <div data-target="500"><small>DIVISION 3</small><strong>£500/m</strong><span>Promotion push</span></div>
-      <div data-target="625"><small>PREMIER TARGET</small><strong>£625/m</strong><span>March 2028 target</span></div>
+      <div data-target="625"><small>PREMIER TARGET</small><strong>£625/m</strong><span>1 Mar 2028 target</span></div>
     </div>
+
+    <section class="income13-career-roadmap" id="incomeLongTermGoal">
+      <div class="income13-roadmap-head">
+        <div>
+          <small>LONG-TERM DIVIDEND GOAL</small>
+          <h4>Road to £2,000 per month</h4>
+          <p>£625/month is the first promotion target. The long-term objective is £24,000 a year in forward dividends.</p>
+        </div>
+        <span id="income13GoalStatus">CAREER TARGET</span>
+      </div>
+
+      <div class="income13-goal-grid">
+        <div>
+          <small>Current Monthly</small>
+          <strong id="income13Current">£0.00</strong>
+          <span id="income13CurrentMeta">0.0% of £2,000</span>
+        </div>
+        <div>
+          <small>Gap to £2,000</small>
+          <strong id="income13Gap">£2,000.00</strong>
+          <span>per month remaining</span>
+        </div>
+        <div>
+          <small>Annual Goal</small>
+          <strong>£24,000</strong>
+          <span>forward dividend income</span>
+        </div>
+        <div class="forecast">
+          <small>Likely £2,000 Date</small>
+          <strong id="income13LikelyDate">Building</strong>
+          <span id="income13LikelyMeta">Needs enough real Income history</span>
+        </div>
+      </div>
+
+      <div class="income13-long-track"><i id="income13LongBar"></i></div>
+
+      <div class="income13-long-milestones">
+        <div data-long-target="625"><small>FIRST TARGET</small><strong>£625/m</strong><span>Promotion target</span></div>
+        <div data-long-target="1000"><small>LEVEL 2</small><strong>£1,000/m</strong><span>£12,000/year</span></div>
+        <div data-long-target="1500"><small>LEVEL 3</small><strong>£1,500/m</strong><span>£18,000/year</span></div>
+        <div data-long-target="2000"><small>ULTIMATE GOAL</small><strong>£2,000/m</strong><span>£24,000/year</span></div>
+      </div>
+
+      <p class="income13-estimate-note" id="income13EstimateNote">Aurora will estimate the £2,000 date from observed Income growth once the history is strong enough. It is a projection, not a guarantee.</p>
+    </section>
   </article>
 
   <article class="income3-match-card">
@@ -269,9 +314,9 @@
     <article class="income11-board income11-forecast">
       <div class="income11-board-head">
         <div>
-          <small>PROMOTION FORECAST</small>
-          <h4>Road to £625</h4>
-          <p>Current income is canonical. Transfer uplift stays a separate scenario. Pace forecasting only appears when Income has enough real history.</p>
+          <small>INCOME GOAL FORECAST</small>
+          <h4>£625 Promotion + £2,000 Long-Term Goal</h4>
+          <p>Current income is canonical. Transfer uplift stays separate. Aurora projects both targets only from observed Income history.</p>
         </div>
         <span id="income11ForecastBadge">£625 / MONTH</span>
       </div>
@@ -284,8 +329,13 @@
       </div>
 
       <div class="income11-target-line">
-        <div><small>TARGET DATE</small><strong>1 Mar 2028</strong></div>
+        <div><small>£625 TARGET DATE</small><strong>1 Mar 2028</strong></div>
         <span id="income11TargetVerdict">Building enough history to judge pace.</span>
+      </div>
+
+      <div class="income13-ultimate-line">
+        <div><small>£2,000 MONTHLY GOAL</small><strong id="income13ForecastDate2">Building</strong></div>
+        <span id="income13ForecastVerdict2">Aurora needs enough observed Income growth to estimate the long-term date.</span>
       </div>
     </article>
   </div>
@@ -554,6 +604,6 @@
 <script src="income.js?v=030"></script>
 <script src="income-dividend-cash.js?v=100"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="income-ui.js?v=312-promotion-engine-hotfix"></script>
+<script src="income-ui.js?v=313-dual-income-goals"></script>
 </body>
 </html>

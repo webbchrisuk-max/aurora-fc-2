@@ -138,6 +138,30 @@ function renderPromotion(){
   const calendar=Array.isArray(state?.income?.calendar)?state.income.calendar:[];
   const activeCalendar=calendar.filter(e=>!['CANCELLED','ARCHIVED'].includes(String(e?.status||'').toUpperCase()));
   set('income3Coverage',String(activeCalendar.length));
+
+  const longTarget=2000;
+  const longProgress=Math.max(0,Math.min(100,monthly/longTarget*100));
+  const longGap=Math.max(0,longTarget-monthly);
+  set('income13Current',money(monthly));
+  set('income13CurrentMeta',`${longProgress.toFixed(1)}% of £2,000`);
+  set('income13Gap',longGap>0?money(longGap):'TARGET REACHED');
+
+  const longBar=$('income13LongBar');
+  if(longBar)longBar.style.width=`${longProgress}%`;
+
+  const longStatus=$('income13GoalStatus');
+  if(longStatus){
+    longStatus.classList.toggle('hit',monthly>=longTarget);
+    longStatus.textContent=monthly>=longTarget?'£2,000 GOAL REACHED':'CAREER TARGET';
+  }
+
+  let longMarked=false;
+  document.querySelectorAll('#incomeLongTermGoal [data-long-target]').forEach(card=>{
+    const t=num(card.dataset.longTarget);
+    card.classList.remove('hit','current');
+    if(monthly>=t)card.classList.add('hit');
+    else if(!longMarked){card.classList.add('current');longMarked=true}
+  });
 }
 
 function reorderBrokerCashJump(){
@@ -421,13 +445,21 @@ function paceFromHistory(s){
 function addMonths(date,months){
   return new Date(date.getTime()+months*30.4375*86400000);
 }
+function forecastTarget(current,target,pace,maxMonths=240){
+  const gap=Math.max(0,target-current);
+  if(current>=target)return {status:'reached',months:0,date:new Date()};
+  if(!pace?.usable)return {status:'building'};
+  const months=gap/pace.paceMonthly;
+  if(!Number.isFinite(months)||months<0||months>maxMonths)return {status:'beyond',months};
+  return {status:'forecast',months,date:addMonths(new Date(),months)};
+}
 function renderForecast(s,m){
   const current=num(m?.monthly);
   const routeAnnual=num($('routeUplift')?.textContent);
   const routeMonthly=routeAnnual/12;
   const afterRoute=current+routeMonthly;
-  const target=625;
-  const gap=Math.max(0,target-current);
+  const target625=625;
+  const target2000=2000;
 
   set('income11ForecastCurrent',`${money(current)}/m`);
   set('income11ForecastRoute',`${money(afterRoute)}/m`);
@@ -436,12 +468,41 @@ function renderForecast(s,m){
     :'No active Transfer-route uplift');
 
   const pace=paceFromHistory(s);
-  if(current>=target){
+  const longForecast=forecastTarget(current,target2000,pace,240);
+
+  if(longForecast.status==='reached'){
+    set('income13LikelyDate','GOAL REACHED');
+    set('income13LikelyMeta','Canonical monthly income is already at or above £2,000.');
+    set('income13ForecastDate2','GOAL REACHED');
+    set('income13ForecastVerdict2','£2,000/month has already been achieved.');
+  }else if(longForecast.status==='forecast'){
+    const dateText=longForecast.date.toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+    set('income13LikelyDate',dateText);
+    set('income13LikelyMeta',`about ${longForecast.months.toFixed(1)} months at the current observed Income pace`);
+    set('income13ForecastDate2',dateText);
+    set('income13ForecastVerdict2',`Observed Income growth points to roughly ${dateText} if the same pace is sustained.`);
+    set('income13EstimateNote',`Estimate uses ${pace.days.toFixed(0)} days of observed Income history. It is a projection, not a guarantee.`);
+  }else if(longForecast.status==='beyond'){
+    set('income13LikelyDate','Beyond 20 years');
+    set('income13LikelyMeta','Current observed pace is too slow for a useful long-term date.');
+    set('income13ForecastDate2','Beyond range');
+    set('income13ForecastVerdict2','Observed Income pace would need to improve to reach £2,000/month within 20 years.');
+  }else{
+    const historyText=pace
+      ?`${Math.max(0,pace.days).toFixed(0)} days observed • need 14+ days and positive growth`
+      :'Income history needs at least two snapshots';
+    set('income13LikelyDate','Building');
+    set('income13LikelyMeta',historyText);
+    set('income13ForecastDate2','Building');
+    set('income13ForecastVerdict2','Aurora needs enough observed positive Income growth to estimate the £2,000/month date.');
+  }
+
+  if(current>=target625){
     set('income11ForecastPace','TARGET REACHED');
     set('income11ForecastPaceMeta','Canonical monthly income is already at or above £625.');
     set('income11ForecastDate','PROMOTED');
-    set('income11ForecastDateMeta','No forecast required');
-    set('income11TargetVerdict','£625/month has already been reached.');
+    set('income11ForecastDateMeta','First target achieved');
+    set('income11TargetVerdict','£625/month has already been reached. The roadmap now continues toward £2,000/month.');
     return;
   }
 
@@ -452,15 +513,15 @@ function renderForecast(s,m){
       :'Income history needs at least two snapshots');
     set('income11ForecastDate','—');
     set('income11ForecastDateMeta','Historical pace only appears when evidence is sufficient');
-    const routeGap=Math.max(0,target-afterRoute);
+    const routeGap=Math.max(0,target625-afterRoute);
     set('income11TargetVerdict',routeAnnual>0
-      ?`After the current Transfer scenario, ${money(routeGap)}/month would still remain.`
+      ?`After the current Transfer scenario, ${money(routeGap)}/month would still remain to £625.`
       :'Building enough Income history to judge the 1 Mar 2028 pace.');
     return;
   }
 
-  const monthsToTarget=gap/pace.paceMonthly;
-  if(!Number.isFinite(monthsToTarget)||monthsToTarget<0||monthsToTarget>120){
+  const firstForecast=forecastTarget(current,target625,pace,120);
+  if(firstForecast.status!=='forecast'){
     set('income11ForecastPace',`${money(pace.paceMonthly)}/m`);
     set('income11ForecastPaceMeta',`${pace.days.toFixed(0)} days of observed Income history`);
     set('income11ForecastDate','Beyond range');
@@ -469,13 +530,12 @@ function renderForecast(s,m){
     return;
   }
 
-  const arrival=addMonths(new Date(),monthsToTarget);
   const targetDate=new Date('2028-03-01T12:00:00');
   set('income11ForecastPace',`${money(pace.paceMonthly)}/m`);
   set('income11ForecastPaceMeta',`monthly-income gain per month, observed across ${pace.days.toFixed(0)} days`);
-  set('income11ForecastDate',arrival.toLocaleDateString('en-GB',{month:'short',year:'numeric'}));
-  set('income11ForecastDateMeta',`about ${monthsToTarget.toFixed(1)} months at the same observed pace`);
-  set('income11TargetVerdict',arrival<=targetDate
+  set('income11ForecastDate',firstForecast.date.toLocaleDateString('en-GB',{month:'short',year:'numeric'}));
+  set('income11ForecastDateMeta',`about ${firstForecast.months.toFixed(1)} months at the same observed pace`);
+  set('income11TargetVerdict',firstForecast.date<=targetDate
     ?'Observed Income pace is currently ahead of the 1 Mar 2028 target date.'
     :'Observed Income pace currently lands after 1 Mar 2028.');
 }
