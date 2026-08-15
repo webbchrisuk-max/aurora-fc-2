@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070b12">
-<title>Aurora City FC — Scouting Centre</title>
+<title>Aurora City FC — Scouting Command</title>
+<meta name="aurora-scouting-ui" content="SCOUTING_UI_V1_RECRUITMENT_COMMAND">
 <link rel="stylesheet" href="aurora.css?v=scouting-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="scouting-command.css?v=scouting-command-100">
+<link rel="stylesheet" href="scouting-ui.css?v=300-recruitment-command">
 </head>
 
 <body class="aurora-entered scouting-command-page">
@@ -47,9 +48,9 @@
             <span class="scouting-version-pill">AUTO BENCH v0.3.1</span>
           </div>
 
-          <span class="scouting-eyebrow">Aurora City FC • Director of Football</span>
+          <span class="scouting-eyebrow">Aurora City FC • Director of Football • Recruitment Command</span>
           <h2>Scouting<br><span>Centre</span></h2>
-          <p>Monitor the global market, score only the evidence Aurora actually holds, promote the strongest qualified candidates and hand one approved shortlist to Transfer.</p>
+          <p>Scan the Global Network, promote evidence-backed candidates into Active Scouting, approve the strongest shortlist and hand one controlled recruitment board to Transfer.</p>
 
           <div class="scouting-hero-actions">
             <button class="scouting-btn primary" id="runScouting">Run Scouting</button>
@@ -79,18 +80,61 @@
         <article class="scouting-score purple"><small>Top Maximum</small><strong id="kTopMaximum">—</strong><span id="kTopMaximumMeta">—</span></article>
       </section>
 
+      <section class="scouting3-command" id="scoutingCommandFlow">
+        <div class="scouting3-command-head">
+          <div>
+            <small>RECRUITMENT COMMAND</small>
+            <h3>Scouting Pipeline</h3>
+            <p id="scouting3Priority">Aurora is checking the recruitment network, candidate evidence and Transfer-ready shortlist.</p>
+          </div>
+          <span id="scouting3Status" class="scouting3-status">CHECKING</span>
+        </div>
+
+        <div class="scouting3-flow-grid">
+          <article class="scouting3-flow-card" id="scouting3Network">
+            <i>01</i>
+            <div><small>GLOBAL NETWORK</small><strong>Monitor Market</strong><span id="scouting3NetworkMeta">Network scanning remains broad and read-only.</span></div>
+            <b>LIVE</b>
+          </article>
+          <article class="scouting3-flow-card" id="scouting3Active">
+            <i>02</i>
+            <div><small>ACTIVE SCOUTING</small><strong>Evaluate Evidence</strong><span id="scouting3ActiveMeta">Checking stored candidates…</span></div>
+            <b>CHECKING</b>
+          </article>
+          <article class="scouting3-flow-card" id="scouting3Shortlist">
+            <i>03</i>
+            <div><small>SHORTLIST</small><strong>Approve Targets</strong><span id="scouting3ShortlistMeta">Waiting for ranked candidates.</span></div>
+            <b>WAITING</b>
+          </article>
+          <article class="scouting3-flow-card" id="scouting3Transfer">
+            <i>04</i>
+            <div><small>TRANSFER</small><strong>Recruitment Handoff</strong><span id="scouting3TransferMeta">Transfer waits for an approved shortlist.</span></div>
+            <b>WAITING</b>
+          </article>
+        </div>
+
+        <div class="scouting3-next-action">
+          <div>
+            <small>NEXT ACTION</small>
+            <strong id="scouting3NextAction">Checking Scouting Centre…</strong>
+            <span id="scouting3NextMeta">The next recruitment step will appear here.</span>
+          </div>
+          <button type="button" id="scouting3NextButton" class="scouting-btn primary">Open Next Step</button>
+        </div>
+      </section>
+
       <nav class="scouting-jumpbar" aria-label="Scouting sections">
-        <button type="button" data-scout-jump="scoutingLensSection">Strategy Lens</button>
+        <button type="button" data-scout-jump="scoutingLensSection">Recruitment Lens</button>
         <button type="button" data-scout-jump="globalNetworkSection">Global Network</button>
-        <button type="button" data-scout-jump="shortlistSection">Active Shortlist</button>
-        <button type="button" data-scout-jump="candidateLab">Candidate Lab</button>
-        <button type="button" data-scout-jump="decisionHistorySection">Decision History</button>
+        <button type="button" data-scout-jump="shortlistSection">Ranked Shortlist</button>
+        <button type="button" data-scout-jump="candidateLab">Evidence Room</button>
+        <button type="button" data-scout-jump="decisionHistorySection">Approval History</button>
       </nav>
 
       <section class="scouting-command-grid two" id="scoutingLensSection">
         <article class="scouting-panel lens-panel">
           <div class="scouting-panel-head">
-            <div><span class="scouting-panel-kicker">Recruitment Strategy</span><h3>Scouting Lens</h3></div>
+            <div><span class="scouting-panel-kicker">Recruitment Strategy</span><h3>Approved Scouting Lens</h3><p class="scouting3-head-copy">The lens changes ranking emphasis; the same eligibility gates always remain in force.</p></div>
             <span class="scouting-panel-note">Display & ranking</span>
           </div>
 
@@ -112,7 +156,7 @@
 
         <article class="scouting-panel gates-panel">
           <div class="scouting-panel-head">
-            <div><span class="scouting-panel-kicker">Pre-Transfer Control</span><h3>Eligibility Gates</h3></div>
+            <div><span class="scouting-panel-kicker">Pre-Transfer Control</span><h3>Recruitment Gates</h3><p class="scouting3-head-copy">These hard checks decide whether a candidate can reach Transfer at all.</p></div>
             <span class="scouting-panel-note">Before ranking</span>
           </div>
 
@@ -129,7 +173,7 @@
 
       <section class="scouting-panel weights-panel">
         <div class="scouting-panel-head">
-          <div><span class="scouting-panel-kicker">Explainable Scoring</span><h3 id="weightsTitle">Sustainable Income Weights</h3></div>
+          <div><span class="scouting-panel-kicker">Explainable Scoring</span><h3 id="weightsTitle">Sustainable Income Weights</h3><p class="scouting3-head-copy">Every ranking point comes from stored evidence and the current approved lens.</p></div>
           <span class="scouting-panel-note">Every point has an owner</span>
         </div>
         <div class="weights" id="weights"></div>
@@ -141,20 +185,30 @@
         <div class="scouting-panel-head">
           <div>
             <span class="scouting-panel-kicker">Active Scouting</span>
-            <h3>Ranked Shortlist</h3>
+            <h3>Transfer-Ready Ranked Shortlist</h3>
             <p class="scouting-copy" id="shortlistMeta">Run Scouting to evaluate stored candidates.</p>
           </div>
           <span id="scoutingStatus" class="scouting-status-chip">SCOUTING REVIEW</span>
         </div>
 
         <div id="editorGuard" class="scouting-notice good">Scouting can be edited. Approving the shortlist hands the current logic result to Transfer.</div>
+
+        <div class="scouting3-approval-banner">
+          <div>
+            <small>DIRECTOR OF FOOTBALL DECISION</small>
+            <strong>Approve Shortlist</strong>
+            <span>Only the ranked Active Scouting result becomes Transfer authority. The wider Global Network never enters Transfer automatically.</span>
+          </div>
+          <i>SCOUTING → TRANSFER</i>
+        </div>
+
         <div class="target-list" id="targetList"></div>
       </section>
 
       <section class="scouting-command-grid two" id="candidateLab">
         <article class="scouting-panel editor-panel">
           <div class="scouting-panel-head">
-            <div><span class="scouting-panel-kicker">Evidence Room</span><h3>Candidate Editor</h3></div>
+            <div><span class="scouting-panel-kicker">Evidence Room</span><h3>Candidate Evidence Editor</h3><p class="scouting3-head-copy">Promote or maintain candidates here only when Aurora has real evidence to score.</p></div>
             <span class="scouting-panel-note" id="editorMode">NEW CANDIDATE</span>
           </div>
 
@@ -191,7 +245,7 @@
 
         <article class="scouting-panel health-panel">
           <div class="scouting-panel-head">
-            <div><span class="scouting-panel-kicker">Evidence Guardian</span><h3>Data Health</h3></div>
+            <div><span class="scouting-panel-kicker">Evidence Guardian</span><h3>Recruitment Data Health</h3><p class="scouting3-head-copy">Confidence, broker checks and legacy evidence stay visible instead of being silently guessed.</p></div>
             <span class="scouting-panel-note">Scouting evidence</span>
           </div>
 
@@ -213,7 +267,7 @@
 
       <section class="scouting-panel history-panel" id="decisionHistorySection">
         <div class="scouting-panel-head">
-          <div><span class="scouting-panel-kicker">Recruitment Decisions</span><h3>Decision History</h3></div>
+          <div><span class="scouting-panel-kicker">Recruitment Decisions</span><h3>Shortlist Approval History</h3></div>
           <span class="scouting-panel-note">Last 20 approvals</span>
         </div>
         <div class="history-list" id="historyList"></div>
@@ -259,6 +313,6 @@
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="scouting.js?v=031"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="scouting-command-ui.js?v=100"></script>
+<script src="scouting-ui.js?v=300-recruitment-command"></script>
 </body>
 </html>
