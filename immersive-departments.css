@@ -1,0 +1,47 @@
+/* Department atmosphere layer — each workspace should feel like a physical room. */
+:root{--room-accent:88,244,255;--room-accent-2:89,255,154;--room-word:"AURORA";--room-mark:"◆"}
+body{position:relative;isolation:isolate;min-height:100vh;background-color:#020611!important}
+body:before{content:"";position:fixed;z-index:-2;inset:0;pointer-events:none;background:radial-gradient(circle at 82% 9%,rgba(var(--room-accent),.15),transparent 26%),radial-gradient(circle at 12% 55%,rgba(var(--room-accent-2),.08),transparent 30%),linear-gradient(115deg,rgba(1,5,12,.72),rgba(2,7,15,.94));}
+body:after{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;opacity:.28;background-image:linear-gradient(rgba(var(--room-accent),.055) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--room-accent),.04) 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(to bottom,#000,transparent 78%)}
+.shell-stage{position:relative;isolation:isolate}
+.shell-stage:before{content:var(--room-mark);position:fixed;z-index:-1;right:4vw;top:15vh;color:rgba(var(--room-accent),.045);font-size:min(39vw,560px);font-weight:1000;line-height:1;filter:drop-shadow(0 0 45px rgba(var(--room-accent),.13));pointer-events:none}
+.shell-stage:after{content:var(--room-word);position:fixed;z-index:-1;right:2vw;bottom:-.05em;color:rgba(var(--room-accent),.035);font-size:clamp(70px,14vw,220px);font-weight:1000;letter-spacing:-.08em;pointer-events:none}
+
+/* Transfer: illuminated deadline desk, routing lanes and signed deal sheets. */
+.transfer-command-page{--room-accent:255,95,119;--room-accent-2:245,200,91;--room-word:"DEADLINE";--room-mark:"⇄"}
+.transfer-command-page:after{background-image:repeating-linear-gradient(120deg,rgba(255,95,119,.055) 0 2px,transparent 2px 70px),linear-gradient(90deg,transparent 49.8%,rgba(245,200,91,.06) 50%,transparent 50.2%);background-size:auto}
+
+/* Scouting: global radar room and target reticles. */
+.scouting-command-page{--room-accent:88,244,255;--room-accent-2:255,202,92;--room-word:"GLOBAL NETWORK";--room-mark:"◎"}
+.scouting-command-page:after{background-image:repeating-radial-gradient(circle at 82% 28%,transparent 0 68px,rgba(88,244,255,.07) 69px 70px),linear-gradient(90deg,rgba(88,244,255,.035) 1px,transparent 1px);background-size:auto,70px 70px}
+
+/* Squad: floodlit tactical pitch. */
+.squad-command-page{--room-accent:78,164,255;--room-accent-2:66,232,193;--room-word:"FIRST TEAM";--room-mark:"11"}
+.squad-command-page:after{background-image:linear-gradient(90deg,transparent 49.8%,rgba(66,232,193,.09) 50%,transparent 50.2%),repeating-linear-gradient(90deg,rgba(78,164,255,.035) 0 9%,transparent 9% 18%);background-size:100% 100%}
+
+/* Registration: contract desk, ruled forms and approval stamp. */
+.registration-command-page{--room-accent:34,211,238;--room-accent-2:52,211,153;--room-word:"SIGNED & FILED";--room-mark:"✓"}
+.registration-command-page:after{background-image:repeating-linear-gradient(0deg,transparent 0 38px,rgba(34,211,238,.055) 39px 40px),linear-gradient(90deg,transparent 13%,rgba(52,211,153,.07) 13.1%,transparent 13.2%);background-size:auto}
+
+/* Finance: secure treasury with ledger graph. */
+.finance-command-page{--room-accent:89,255,154;--room-accent-2:255,209,94;--room-word:"TREASURY";--room-mark:"£"}
+.finance-command-page:after{background-image:linear-gradient(135deg,transparent 46%,rgba(89,255,154,.065) 46.3% 46.8%,transparent 47%),linear-gradient(rgba(255,209,94,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,209,94,.03) 1px,transparent 1px);background-size:100% 100%,56px 56px,56px 56px}
+
+/* Income: dividend vault with rising coin rings. */
+.income-command-page{--room-accent:185,133,255;--room-accent-2:246,196,83;--room-word:"DIVIDENDS";--room-mark:"◉"}
+.income-command-page:after{background-image:repeating-radial-gradient(ellipse at 82% 75%,transparent 0 40px,rgba(246,196,83,.055) 41px 43px),linear-gradient(115deg,transparent 55%,rgba(185,133,255,.035) 55.2%,transparent 55.4%);background-size:auto}
+
+/* Chairman: warm, private boardroom with architectural panelling. */
+.chairman-command-page{--room-accent:243,201,105;--room-accent-2:106,168,255;--room-word:"BOARDROOM";--room-mark:"A"}
+.chairman-command-page:after{background-image:linear-gradient(90deg,rgba(243,201,105,.045) 1px,transparent 1px),linear-gradient(0deg,rgba(243,201,105,.025) 1px,transparent 1px);background-size:180px 100%,100% 180px}
+
+/* Health: diagnostic grid and system pulse. */
+.health-page{--room-accent:103,232,249;--room-accent-2:52,211,153;--room-word:"SYSTEMS ONLINE";--room-mark:"⌁"}
+.health-page:after{background-image:linear-gradient(90deg,rgba(103,232,249,.05) 1px,transparent 1px),linear-gradient(rgba(103,232,249,.05) 1px,transparent 1px),radial-gradient(circle at 70% 30%,rgba(52,211,153,.12) 0 2px,transparent 3px);background-size:34px 34px,34px 34px,90px 90px}
+
+/* Give every existing hero the depth and sheen of a distinct command card. */
+:is(.transfer-command-hero,.scouting-command-hero,.squad-command-hero,.registration-command-hero,.finance-command-hero,.income-command-hero,.chairman-command-hero,.health-hero){backdrop-filter:blur(18px) saturate(125%);box-shadow:0 32px 90px rgba(0,0,0,.46),0 0 55px rgba(var(--room-accent),.08),inset 0 1px 0 rgba(255,255,255,.06)!important}
+:is(.transfer-command-hero,.scouting-command-hero,.squad-command-hero,.registration-command-hero,.finance-command-hero,.income-command-hero,.chairman-command-hero,.health-hero)>*{position:relative;z-index:1}
+
+@media(max-width:700px){.shell-stage:before{top:22vh;right:-10vw;font-size:70vw}.shell-stage:after{font-size:21vw;right:4vw}body:after{opacity:.2}}
+@media(prefers-reduced-motion:reduce){:is(.transfer-command-hero,.scouting-command-hero,.squad-command-hero,.registration-command-hero,.finance-command-hero,.income-command-hero,.chairman-command-hero,.health-hero){backdrop-filter:none}}
