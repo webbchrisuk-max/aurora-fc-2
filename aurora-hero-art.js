@@ -26,3 +26,18 @@
     hero.style.setProperty('--aurora-hero-mobile-position',config.mobile);
   });
 })();
+
+/* Keep floating hero facts in step with their existing authoritative UI values. */
+(function(){
+  'use strict';
+  function syncHeroFacts(){
+    document.querySelectorAll('[data-mirror]').forEach(function(target){
+      const source=document.getElementById(target.dataset.mirror);
+      if(source&&source!==target&&target.textContent!==source.textContent)target.textContent=source.textContent;
+    });
+  }
+  syncHeroFacts();
+  const observer=new MutationObserver(syncHeroFacts);
+  observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true});
+  window.addEventListener('aurora:statechange',syncHeroFacts);
+})();
