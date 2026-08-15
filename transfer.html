@@ -43,6 +43,11 @@
     <main class="shell-page transfer-shell-page">
 
       <section class="transfer-command-hero">
+        <div class="transfer-market-ticker" aria-label="Relevant market and transfer updates">
+          <span class="ticker-label">AURORA MARKET WIRE</span>
+          <div class="ticker-viewport"><div class="ticker-track" id="transferTicker">Waiting for current recommendation data…</div></div>
+          <span class="ticker-freshness" id="tickerFreshness">CHECKING</span>
+        </div>
         <div class="transfer-command-copy">
           <div class="transfer-status-line">
             <span class="transfer-live-pill">● TRANSFER DESK LIVE</span>
@@ -52,6 +57,12 @@
           <span class="transfer-eyebrow">Aurora City FC • Deadline Day • Deployment Command</span>
           <h2>Transfer<br><span>Centre</span></h2>
           <p>Finance sets the ceiling. Scouting supplies the approved targets. Transfer turns both into one executable broker route, locks the deal sheet and hands it to Registration.</p>
+
+          <div class="transfer-hero-impact">
+            <strong id="heroIncomeUplift">+£0.00 / year</strong>
+            <span id="heroIncomeJourney">Income impact available after route build</span>
+            <small id="heroRouteSummary">0 buys • 0 brokers • £0.00 unallocated</small>
+          </div>
 
           <div class="transfer-hero-actions">
             <button class="transfer-btn primary" id="openAllocation">Build / Review Route</button>
@@ -69,6 +80,31 @@
           <strong id="missionStatus">NO ACTIVE MISSION</strong>
           <p id="missionMeta">Release an investment mission from Finance first.</p>
           <div class="mission-command-lock" id="missionLock">Budget is locked to Finance.</div>
+        </article>
+      </section>
+
+      <section class="transfer-impact-dashboard" id="allocationReview">
+        <article class="transfer-panel impact-panel">
+          <div class="transfer-panel-head"><div><span class="transfer-panel-kicker">POST-TRANSFER IMPACT</span><h3>What this recommendation does to income</h3></div><span class="route-status-chip" id="impactMissionState">PROPOSED</span></div>
+          <div class="impact-kpis" id="impactKpis"></div>
+        </article>
+        <article class="transfer-panel mission-progress-panel">
+          <div class="transfer-panel-head"><div><span class="transfer-panel-kicker">INCOME MISSION</span><h3>Target Progress</h3></div></div>
+          <div id="incomeMissionProgress"></div>
+        </article>
+        <article class="transfer-panel allocation-instructions-panel">
+          <div class="transfer-panel-head"><div><span class="transfer-panel-kicker">BUY INSTRUCTIONS</span><h3>Exact Allocation & Intelligence</h3><p class="transfer3-head-copy">Prices and share estimates use Aurora's latest available evidence. Registration remains the execution authority.</p></div></div>
+          <div class="allocation-table-wrap"><table class="allocation-table"><thead><tr><th>Holding / rationale</th><th>Broker</th><th>Allocation</th><th>Est. price</th><th>Shares</th><th>Annual income</th><th>Yield</th><th>Exposure / dividend timing</th></tr></thead><tbody id="allocationInstructions"></tbody></table></div>
+          <div class="allocation-totals" id="allocationTotals"></div>
+        </article>
+        <article class="transfer-panel comparison-panel">
+          <div class="transfer-panel-head"><div><span class="transfer-panel-kicker">BEFORE → AFTER</span><h3>Portfolio Preview</h3></div></div>
+          <div class="comparison-grid" id="portfolioComparison"></div>
+        </article>
+        <article class="transfer-panel execution-panel">
+          <div class="transfer-panel-head"><div><span class="transfer-panel-kicker">EXECUTION CHECKLIST</span><h3>Registration-aware Completion</h3><p class="transfer3-head-copy">Checks record desk progress only; they never alter canonical holdings.</p></div></div>
+          <div id="executionChecklist"></div>
+          <div class="transfer-notice" id="executionRecord"></div>
         </article>
       </section>
 
