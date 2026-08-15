@@ -1846,8 +1846,8 @@
 .hq42-daily-actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
 .hq42-form-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
 .hq42-form-board{min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(2,8,18,.34)}
-.hq42-form-board.best{border-color:rgba(89,255,154,.15);background:radial-gradient(circle at 5% 0%,rgba(89,255,154,.075),transparent 34%),rgba(2,8,18,.38)}
-.hq42-form-board.worst{border-color:rgba(255,111,142,.16);background:radial-gradient(circle at 95% 0%,rgba(255,111,142,.075),transparent 34%),rgba(2,8,18,.38)}
+.hq42-form-board.best{border-color:rgba(89,255,154,.18);background:radial-gradient(circle at 5% 0%,rgba(89,255,154,.10),transparent 42%),linear-gradient(145deg,rgba(6,78,59,.13),rgba(2,8,18,.38))}
+.hq42-form-board.worst{border-color:rgba(255,111,142,.19);background:radial-gradient(circle at 95% 0%,rgba(255,111,142,.10),transparent 42%),linear-gradient(215deg,rgba(136,19,55,.13),rgba(2,8,18,.38))}
 .hq42-form-head{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:77px;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.055)}
 .hq42-form-head small{display:block;color:#718697;font-size:9px;font-weight:1000;letter-spacing:.10em}
 .hq42-form-head h4{margin:5px 0 0;color:#eef6fb;font-size:21px;letter-spacing:-.025em}
