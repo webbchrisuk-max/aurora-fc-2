@@ -1194,6 +1194,7 @@ function renderBills(s,plan,runway){
                   `:''}
                   <button class="btn secondary" data-bill-edit="${esc(b.id)}">Edit</button>
                   <button class="btn secondary" data-bill-archive="${esc(b.id)}">${b.archived?'Restore':'Archive'}</button>
+                  <button class="btn danger" data-bill-delete="${esc(b.id)}">Delete</button>
                 </div>
               </article>
             `;
