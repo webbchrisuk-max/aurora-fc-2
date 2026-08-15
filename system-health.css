@@ -238,6 +238,7 @@ body.health-page{background:#020812;color:#e9f4fb}.health-shell-page{width:min(1
   border-radius:11px;
   background:rgba(136,19,55,.08);
 }
+.cloud-conflict[hidden]{display:none!important}
 .cloud-conflict strong{color:#fecdd3}
 .cloud-conflict-actions{
   display:flex;
