@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070b12">
 <title>Aurora City FC — Scouting Command</title>
-<meta name="aurora-scouting-ui" content="SCOUTING_UI_V1_RECRUITMENT_COMMAND">
+<meta name="aurora-scouting-ui" content="SCOUTING_UI_V1_1_RECRUITMENT_WAR_ROOM">
 <link rel="stylesheet" href="aurora.css?v=scouting-base">
 <link rel="stylesheet" href="aurora-shell.css?v=legacy-shell-211">
-<link rel="stylesheet" href="scouting-ui.css?v=300-recruitment-command">
+<link rel="stylesheet" href="scouting-ui.css?v=310-recruitment-war-room">
 </head>
 
 <body class="aurora-entered scouting-command-page">
@@ -123,7 +123,82 @@
         </div>
       </section>
 
+      <section class="scouting11-war-room" id="scoutingWarRoom">
+        <div class="scouting11-war-head">
+          <div>
+            <small>DIRECTOR OF FOOTBALL</small>
+            <h3>Recruitment War Room</h3>
+            <p>The strongest Active Scouting candidates, recruitment risks and head-to-head evidence — all using Scouting's existing assessed scores.</p>
+          </div>
+          <div class="scouting11-war-actions">
+            <span id="scouting11WarStatus" class="scouting11-war-status">CHECKING</span>
+            <button type="button" id="scouting11OpenShortlist" class="scouting-btn primary">Open Final Shortlist</button>
+          </div>
+        </div>
+
+        <div class="scouting11-war-kpis">
+          <article class="lens-kpi"><small>Active Lens</small><strong id="scouting11Lens">—</strong><span>Scouting-owned ranking</span></article>
+          <article class="ready-kpi"><small>Transfer Ready</small><strong id="scouting11Ready">0</strong><span>Pass + controlled caution</span></article>
+          <article class="leader-kpi"><small>Recruitment Leader</small><strong id="scouting11Leader">—</strong><span id="scouting11LeaderMeta">Waiting for Scouting</span></article>
+          <article class="risk-kpi"><small>Biggest Concern</small><strong id="scouting11Concern">—</strong><span id="scouting11ConcernMeta">No active concern</span></article>
+        </div>
+
+        <div class="scouting11-war-grid">
+          <article class="scouting11-board scouting11-prospect-board">
+            <div class="scouting11-subhead">
+              <div>
+                <small>RECRUITMENT BOARD</small>
+                <h4>Top Prospects</h4>
+                <p>Best current candidates under the selected Scouting lens.</p>
+              </div>
+              <span id="scouting11ProspectCount">0 prospects</span>
+            </div>
+            <div id="scouting11TopProspects" class="scouting11-prospect-grid"></div>
+          </article>
+
+          <article class="scouting11-board scouting11-alert-board">
+            <div class="scouting11-subhead">
+              <div>
+                <small>SCOUT REPORT</small>
+                <h4>Recruitment Alerts</h4>
+                <p>Existing Scouting statuses and evidence warnings surfaced as manager actions.</p>
+              </div>
+              <span id="scouting11AlertCount">0 alerts</span>
+            </div>
+            <div id="scouting11Alerts" class="scouting11-alert-list"></div>
+          </article>
+        </div>
+
+        <article class="scouting11-compare-board">
+          <div class="scouting11-subhead">
+            <div>
+              <small>HEAD-TO-HEAD</small>
+              <h4>Candidate Comparison</h4>
+              <p>Compare two assessed candidates without changing Scouting's scores or eligibility decisions.</p>
+            </div>
+            <span class="scouting11-compare-chip">SCOUTING EVIDENCE</span>
+          </div>
+
+          <div class="scouting11-compare-controls">
+            <label>
+              <span>Candidate A</span>
+              <select id="scouting11CompareA"></select>
+            </label>
+            <div class="scouting11-versus">VS</div>
+            <label>
+              <span>Candidate B</span>
+              <select id="scouting11CompareB"></select>
+            </label>
+          </div>
+
+          <div id="scouting11CompareResult" class="scouting11-compare-result">
+            <div class="scouting11-empty">Run Scouting to populate the comparison board.</div>
+          </div>
+        </article>
+      </section>
+
       <nav class="scouting-jumpbar" aria-label="Scouting sections">
+        <button type="button" data-scout-jump="scoutingWarRoom">War Room</button>
         <button type="button" data-scout-jump="scoutingLensSection">Recruitment Lens</button>
         <button type="button" data-scout-jump="globalNetworkSection">Global Network</button>
         <button type="button" data-scout-jump="shortlistSection">Ranked Shortlist</button>
@@ -205,7 +280,16 @@
         <div class="target-list" id="targetList"></div>
       </section>
 
-      <section class="scouting-command-grid two" id="candidateLab">
+      <section class="scouting11-evidence-control" id="scouting11EvidenceControl">
+        <div>
+          <small>DETAILED RECRUITMENT TOOLS</small>
+          <strong>Evidence Room</strong>
+          <span>Candidate editing, data health and Aurora 1 migration stay available without dominating the main Scouting desk.</span>
+        </div>
+        <button type="button" id="scouting11EvidenceToggle" class="scouting-btn secondary" aria-expanded="false">Open Evidence Room</button>
+      </section>
+
+      <section class="scouting-command-grid two scouting11-evidence-collapsed" id="candidateLab">
         <article class="scouting-panel editor-panel">
           <div class="scouting-panel-head">
             <div><span class="scouting-panel-kicker">Evidence Room</span><h3>Candidate Evidence Editor</h3><p class="scouting3-head-copy">Promote or maintain candidates here only when Aurora has real evidence to score.</p></div>
@@ -313,6 +397,6 @@
 <script src="aurora-core.js?v=10-stable-core"></script>
 <script src="scouting.js?v=031"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
-<script src="scouting-ui.js?v=300-recruitment-command"></script>
+<script src="scouting-ui.js?v=310-recruitment-war-room"></script>
 </body>
 </html>
