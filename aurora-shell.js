@@ -233,7 +233,7 @@
   auroraLoadShared('aurora-platform.js?v=100-stable-core','platform');
   auroraLoadShared('aurora-sync-manager.js?v=100-stable-core','sync-manager');
   auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
-  auroraLoadShared('aurora-notifications.js?v=100-rich-centre','notifications');
+  auroraLoadShared('aurora-notifications.js?v=110-premium-centre','notifications');
 
   function ensureSystemHealthNavigation(){
     const scroll=document.querySelector('.aurora-shell-nav-scroll');
