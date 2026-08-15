@@ -1031,3 +1031,298 @@
   .scouting11-compare-cell{grid-template-columns:1fr}
   .scouting11-compare-cell b{text-align:left}
 }
+
+
+/* =========================================================
+   SCOUTING UI v1.2 — NOTABLE INVESTOR WATCHLIST
+   A scouting signal layer only. Does not alter scouting.js.
+   ========================================================= */
+
+.scouting12-watch{
+  position:relative;
+  overflow:hidden;
+  margin-top:13px;
+  padding:22px;
+  border:1px solid rgba(185,133,255,.14);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(185,133,255,.075),transparent 32%),
+    radial-gradient(circle at 0% 100%,rgba(255,202,92,.04),transparent 32%),
+    linear-gradient(145deg,rgba(15,10,26,.95),rgba(4,9,16,.995));
+  box-shadow:0 18px 46px rgba(0,0,0,.23);
+}
+.scouting12-watch-head{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+}
+.scouting12-watch-head small,.scouting12-source-card small{
+  display:block;
+  color:#bba1dc;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+.scouting12-watch-head h3{
+  margin:5px 0 0;
+  color:#f3eef8;
+  font-size:24px;
+  letter-spacing:-.03em;
+}
+.scouting12-watch-head p{
+  max-width:840px;
+  margin:7px 0 0;
+  color:#8f829d;
+  font-size:10px;
+  line-height:1.55;
+}
+.scouting12-signal-chip{
+  min-height:31px;
+  display:inline-flex;
+  align-items:center;
+  padding:0 10px;
+  border:1px solid rgba(255,202,92,.17);
+  border-radius:999px;
+  background:rgba(120,53,15,.08);
+  color:#ffe19b;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.08em;
+  white-space:nowrap;
+}
+
+.scouting12-source-card{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(520px,.8fr);
+  gap:14px;
+  align-items:center;
+  margin-top:15px;
+  padding:15px;
+  border:1px solid rgba(185,133,255,.09);
+  border-radius:14px;
+  background:rgba(185,133,255,.02);
+}
+.scouting12-source-card>div:first-child>strong{
+  display:block;
+  margin-top:5px;
+  color:#e9ddf6;
+  font-size:15px;
+}
+.scouting12-source-card>div:first-child>span{
+  display:block;
+  margin-top:4px;
+  color:#83778f;
+  font-size:9px;
+}
+.scouting12-source-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+.scouting12-source-kpis>div{
+  min-height:70px;
+  padding:11px;
+  border:1px solid rgba(255,255,255,.045);
+  border-radius:10px;
+  background:rgba(255,255,255,.01);
+}
+.scouting12-source-kpis small{
+  color:#7e718d;
+  font-size:7px;
+}
+.scouting12-source-kpis strong{
+  display:block;
+  margin-top:6px;
+  color:#eee7f5;
+  font-size:20px;
+}
+
+.scouting12-watch-tools{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:12px;
+  align-items:end;
+  margin-top:11px;
+}
+.scouting12-add-form{
+  display:grid;
+  grid-template-columns:1.2fr .55fr 1.5fr auto;
+  gap:8px;
+  align-items:end;
+}
+.scouting12-add-form label{
+  display:grid;
+  gap:5px;
+}
+.scouting12-add-form label>span{
+  color:#8e809d;
+  font-size:8px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.scouting12-add-form input{
+  min-height:45px;
+  border:1px solid rgba(185,133,255,.10);
+  border-radius:10px;
+  background:rgba(4,7,14,.86);
+  color:#f3eff7;
+  padding:8px 10px;
+  font:inherit;
+}
+.scouting12-watch-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.scouting12-filter-strip{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.scouting12-filter{
+  min-height:34px;
+  padding:0 10px;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:999px;
+  background:rgba(255,255,255,.012);
+  color:#82778e;
+  font-size:8px;
+  font-weight:950;
+  cursor:pointer;
+}
+.scouting12-filter.active{
+  border-color:rgba(185,133,255,.18);
+  background:rgba(185,133,255,.06);
+  color:#e2cff7;
+}
+
+.scouting12-watch-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:11px;
+}
+.scouting12-watch-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:11px;
+  align-items:center;
+  min-height:88px;
+  padding:13px;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:12px;
+  background:rgba(255,255,255,.011);
+}
+.scouting12-watch-row.active{
+  border-color:rgba(89,255,154,.12);
+  background:rgba(89,255,154,.018);
+}
+.scouting12-watch-row.network{
+  border-color:rgba(88,244,255,.11);
+  background:rgba(88,244,255,.016);
+}
+.scouting12-watch-row.missing{
+  border-color:rgba(255,202,92,.10);
+  background:rgba(255,202,92,.014);
+}
+.scouting12-watch-copy strong{
+  display:block;
+  color:#eeeaf2;
+  font-size:12px;
+}
+.scouting12-watch-copy strong b{
+  color:#ceb3ec;
+}
+.scouting12-watch-copy span{
+  display:block;
+  margin-top:4px;
+  color:#7e7685;
+  font-size:9px;
+  line-height:1.45;
+}
+.scouting12-watch-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:7px;
+}
+.scouting12-watch-tag{
+  display:inline-flex;
+  min-height:23px;
+  align-items:center;
+  padding:0 7px;
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:999px;
+  color:#a29aa9;
+  background:rgba(255,255,255,.013);
+  font-size:7px;
+  font-weight:900;
+}
+.scouting12-watch-tag.active{color:#baffd0;border-color:rgba(89,255,154,.15);background:rgba(89,255,154,.03)}
+.scouting12-watch-tag.network{color:#bffbff;border-color:rgba(88,244,255,.14);background:rgba(88,244,255,.03)}
+.scouting12-watch-tag.missing{color:#ffe19b;border-color:rgba(255,202,92,.14);background:rgba(255,202,92,.03)}
+.scouting12-watch-side{
+  display:grid;
+  gap:5px;
+  justify-items:end;
+}
+.scouting12-watch-side button{
+  min-height:31px;
+  padding:0 9px;
+  border:1px solid rgba(185,133,255,.10);
+  border-radius:8px;
+  background:rgba(185,133,255,.025);
+  color:#d5c3e9;
+  font-size:7px;
+  font-weight:950;
+  cursor:pointer;
+}
+.scouting12-watch-side .remove{
+  border-color:rgba(255,111,136,.09);
+  color:#c5939c;
+  background:rgba(255,111,136,.015);
+}
+
+.scouting12-boundary{
+  display:flex;
+  gap:7px;
+  align-items:center;
+  margin-top:11px;
+  padding:11px 12px;
+  border:1px solid rgba(89,255,154,.08);
+  border-radius:10px;
+  background:rgba(6,78,59,.025);
+  color:#809487;
+  font-size:9px;
+}
+.scouting12-boundary b{color:#a7c7b1}
+
+.scouting12-highlight{
+  animation:scouting12Pulse 1.4s ease 2;
+  outline:2px solid rgba(255,202,92,.65)!important;
+  outline-offset:3px;
+}
+@keyframes scouting12Pulse{
+  0%,100%{box-shadow:0 0 0 rgba(255,202,92,0)}
+  50%{box-shadow:0 0 28px rgba(255,202,92,.22)}
+}
+
+@media(max-width:1180px){
+  .scouting12-source-card{grid-template-columns:1fr}
+  .scouting12-watch-tools{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .scouting12-add-form{grid-template-columns:1fr 1fr}
+  .scouting12-add-form .wide{grid-column:1/-1}
+  .scouting12-watch-list{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .scouting12-watch-head{display:grid}
+  .scouting12-source-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scouting12-add-form{grid-template-columns:1fr}
+  .scouting12-add-form .wide{grid-column:auto}
+}

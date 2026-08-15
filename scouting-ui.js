@@ -542,3 +542,248 @@ function bind(){
 }
 document.addEventListener('DOMContentLoaded',bind);
 })();
+
+
+/* =========================================================
+   SCOUTING UI v1.2 — NOTABLE INVESTOR WATCHLIST
+   Watch layer only. No candidate is promoted automatically.
+   ========================================================= */
+(function(){
+'use strict';
+
+const KEY='aurora2:scouting:notable-investor-watch:v1';
+const $=id=>document.getElementById(id);
+const A=()=>window.Aurora2;
+const SEED=[{"ticker":"AAPL","name":"Apple"},{"ticker":"AXP","name":"American Express"},{"ticker":"KO","name":"Coca-Cola"},{"ticker":"BAC","name":"Bank of America"},{"ticker":"CVX","name":"Chevron"},{"ticker":"OXY","name":"Occidental"},{"ticker":"GOOGL","name":"Alphabet A"},{"ticker":"CB","name":"Chubb"},{"ticker":"ALLY","name":"Ally Financial Inc"},{"ticker":"GOOG","name":"Alphabet C"},{"ticker":"LLYVK","name":"Liberty Live C"},{"ticker":"LEN","name":"Lennar"},{"ticker":"NUE","name":"Nucor"},{"ticker":"LLYVA","name":"Liberty Live A"},{"ticker":"LPX","name":"Louisiana-Pacific"},{"ticker":"STZ","name":"Constellation Brands A"},{"ticker":"NVR","name":"NVR"},{"ticker":"M","name":"Macy's Inc"},{"ticker":"MCO","name":"Moody's"},{"ticker":"KHC","name":"Kraft Heinz"},{"ticker":"DVA","name":"DaVita"},{"ticker":"KR","name":"Kroger"},{"ticker":"SIRI","name":"Sirius XM"},{"ticker":"DAL","name":"Delta Air Lines"},{"ticker":"VRSN","name":"VeriSign"},{"ticker":"COF","name":"Capital One Financial"},{"ticker":"NYT","name":"New York Times"}].map((x,i)=>({
+  ...x,
+  id:`buffett-20260814-${i+1}`,
+  source:'Warren Buffett / Berkshire',
+  sourceDate:'2026-08-14',
+  note:'Visible in user-supplied Buffett list screenshots'
+}));
+
+let filter='all';
+
+function esc(v){
+  return String(v??'')
+    .replaceAll('&','&amp;').replaceAll('<','&lt;')
+    .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
+}
+function norm(v){
+  return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+}
+function nameNorm(v){
+  return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+}
+function load(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(Array.isArray(raw))return raw;
+  }catch(_){
+  }
+  save(SEED);
+  return SEED.slice();
+}
+function save(rows){
+  localStorage.setItem(KEY,JSON.stringify(rows));
+}
+function state(){
+  try{return A()?.core?.read?.()||{}}catch(_){return {}}
+}
+function universe(s){return Array.isArray(s?.scouting?.universe)?s.scouting.universe:[]}
+function targets(s){return Array.isArray(s?.scouting?.targets)?s.scouting.targets:[]}
+
+function tickerOf(row){
+  return norm(row?.ticker||row?.symbol||row?.marketSymbol||row?.code||'');
+}
+function companyOf(row){
+  return nameNorm(row?.name||row?.company||row?.companyName||row?.security||'');
+}
+function matchRow(item,rows){
+  const t=norm(item.ticker);
+  const n=nameNorm(item.name);
+  return rows.find(r=>{
+    const rt=tickerOf(r);
+    const rn=companyOf(r);
+    if(t&&rt&&(
+      rt===t || rt.endsWith(t) || t.endsWith(rt) ||
+      rt.replace(/^NASDAQ|NYSE|LON/,'')===t
+    ))return true;
+    if(n&&rn&&(rn===n||rn.includes(n)||n.includes(rn)))return true;
+    return false;
+  })||null;
+}
+function classify(item,s){
+  const active=matchRow(item,targets(s));
+  if(active)return {status:'active',match:active};
+  const network=matchRow(item,universe(s));
+  if(network)return {status:'network',match:network};
+  return {status:'missing',match:null};
+}
+function label(status){
+  return status==='active'?'ACTIVE SCOUTING':status==='network'?'GLOBAL NETWORK':'NEEDS MATCH';
+}
+
+function render(){
+  const rows=load();
+  const s=state();
+  const evaluated=rows.map(item=>({item,...classify(item,s)}));
+  const visible=evaluated.filter(x=>filter==='all'||x.status===filter);
+
+  if($('scouting12WatchCount'))$('scouting12WatchCount').textContent=rows.length;
+  if($('scouting12NetworkCount'))$('scouting12NetworkCount').textContent=evaluated.filter(x=>x.status==='network').length;
+  if($('scouting12ActiveCount'))$('scouting12ActiveCount').textContent=evaluated.filter(x=>x.status==='active').length;
+  if($('scouting12MissingCount'))$('scouting12MissingCount').textContent=evaluated.filter(x=>x.status==='missing').length;
+
+  const host=$('scouting12WatchList');
+  if(!host)return;
+  if(!visible.length){
+    host.innerHTML='<div class="scouting11-empty">No watchlist entries match this filter.</div>';
+    return;
+  }
+
+  host.innerHTML=visible.map(x=>{
+    const m=x.match||{};
+    const detail=x.status==='active'
+      ? `${m.recommendation||m.status||'Active'} • ${Number(m.yieldPct||0).toFixed(2)}% yield • Scouting score already available`
+      : x.status==='network'
+        ? 'Found in the Global Network. Open the network row to review evidence before promotion.'
+        : 'No current Global Network / Active Scouting match. Keep on watch or update the source ticker/name.';
+    const action=x.status==='active'?'Open Active Scouting':x.status==='network'?'Find in Global Network':'Keep on Watch';
+    return `<article class="scouting12-watch-row ${x.status}">
+      <div class="scouting12-watch-copy">
+        <strong><b>${esc(x.item.ticker||'—')}</b> — ${esc(x.item.name||'Unnamed company')}</strong>
+        <span>${esc(detail)}</span>
+        <div class="scouting12-watch-tags">
+          <span class="scouting12-watch-tag ${x.status}">${label(x.status)}</span>
+          <span class="scouting12-watch-tag">${esc(x.item.source||'Notable investor')}</span>
+          ${x.item.sourceDate?`<span class="scouting12-watch-tag">${esc(x.item.sourceDate)}</span>`:''}
+        </div>
+      </div>
+      <div class="scouting12-watch-side">
+        <button type="button" data-watch-open="${esc(x.item.id)}">${action}</button>
+        <button type="button" class="remove" data-watch-remove="${esc(x.item.id)}">Remove</button>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function flashMatch(containerSelector,item){
+  const root=document.querySelector(containerSelector);
+  if(!root)return false;
+  const needles=[norm(item.ticker),nameNorm(item.name)].filter(Boolean);
+  const nodes=[...root.querySelectorAll('tr,article,.target-card,.network-row,.network-card')];
+  const match=nodes.find(el=>{
+    const text=(el.textContent||'').toLowerCase();
+    return needles.some(n=>text.includes(String(n).toLowerCase()));
+  });
+  if(!match)return false;
+  match.classList.add('scouting12-highlight');
+  match.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>match.classList.remove('scouting12-highlight'),3200);
+  return true;
+}
+function openItem(id){
+  const item=load().find(x=>String(x.id)===String(id));
+  if(!item)return;
+  const s=state();
+  const c=classify(item,s);
+
+  if(c.status==='active'){
+    document.getElementById('shortlistSection')?.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>flashMatch('#shortlistSection',item),500);
+    return;
+  }
+  if(c.status==='network'){
+    document.getElementById('globalNetworkSection')?.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>flashMatch('#globalNetworkSection',item),650);
+    return;
+  }
+
+  const host=$('scouting12WatchList');
+  const row=host?.querySelector(`[data-watch-open="${CSS.escape(String(id))}"]`)?.closest('.scouting12-watch-row');
+  if(row){
+    row.classList.add('scouting12-highlight');
+    setTimeout(()=>row.classList.remove('scouting12-highlight'),2200);
+  }
+}
+
+function add(){
+  const source=String($('scouting12SourceInput')?.value||'Notable investor').trim();
+  const ticker=String($('scouting12TickerInput')?.value||'').trim().toUpperCase();
+  const name=String($('scouting12NameInput')?.value||'').trim();
+  if(!ticker&&!name)return;
+
+  const rows=load();
+  const key=norm(ticker)||nameNorm(name);
+  if(rows.some(x=>(norm(x.ticker)||nameNorm(x.name))===key)){
+    return;
+  }
+  rows.unshift({
+    id:`watch-${Date.now()}`,
+    source,
+    sourceDate:new Date().toISOString().slice(0,10),
+    ticker,
+    name,
+    note:'Manually added notable-investor scouting signal'
+  });
+  save(rows);
+  if($('scouting12TickerInput'))$('scouting12TickerInput').value='';
+  if($('scouting12NameInput'))$('scouting12NameInput').value='';
+  render();
+}
+
+function remove(id){
+  save(load().filter(x=>String(x.id)!==String(id)));
+  render();
+}
+function restore(){
+  save(SEED);
+  filter='all';
+  document.querySelectorAll('.scouting12-filter').forEach(b=>b.classList.toggle('active',b.dataset.watchFilter==='all'));
+  render();
+}
+function clear(){
+  save([]);
+  render();
+}
+
+function bind(){
+  $('scouting12Add')?.addEventListener('click',add);
+  $('scouting12TickerInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')add()});
+  $('scouting12NameInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')add()});
+  $('scouting12RestoreSeed')?.addEventListener('click',restore);
+  $('scouting12Clear')?.addEventListener('click',clear);
+
+  document.addEventListener('click',event=>{
+    const f=event.target.closest('[data-watch-filter]');
+    if(f){
+      filter=f.dataset.watchFilter||'all';
+      document.querySelectorAll('.scouting12-filter').forEach(b=>b.classList.toggle('active',b===f));
+      render();
+      return;
+    }
+    const open=event.target.closest('[data-watch-open]');
+    if(open){openItem(open.dataset.watchOpen);return}
+    const rem=event.target.closest('[data-watch-remove]');
+    if(rem){remove(rem.dataset.watchRemove);return}
+  });
+
+  const watchIds=['targetList','networkTotal','globalNetworkSection','kCandidates','scoutingStatus'];
+  const observer=new MutationObserver(()=>render());
+  watchIds.forEach(id=>{
+    const el=$(id);
+    if(el)observer.observe(el,{childList:true,subtree:true,attributes:true});
+  });
+
+  window.addEventListener('storage',e=>{
+    if(e.key===KEY||e.key?.includes('aurora2'))setTimeout(render,70);
+  });
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(render,80)});
+
+  render();
+  setTimeout(render,700);
+  setTimeout(render,1800);
+}
+document.addEventListener('DOMContentLoaded',bind);
+})();
