@@ -975,6 +975,7 @@
     return {
       id:`AUTO-${n.id}`,
       securityId:n.securityId,
+      exchange:n.exchange,
       ticker:activeTicker(n.marketSymbol),
       name:n.name,
       preferredAccount:'CHECK',
@@ -1235,6 +1236,7 @@
     return {
       id:`ACTIVE-${n.id}`,
       securityId:n.securityId,
+      exchange:n.exchange,
       ticker:activeTicker(n.marketSymbol),
       name:n.name,
       preferredAccount:'CHECK',

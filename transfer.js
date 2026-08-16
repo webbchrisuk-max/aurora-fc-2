@@ -573,7 +573,11 @@
       if(approve)approve.disabled=true;
       if(unlock)unlock.hidden=true;
       const guard=$('routeGuard');
-      if(guard){guard.className='notice';guard.textContent='Waiting for a Finance mission and a Scouting-approved shortlist.'}
+      if(guard){
+        guard.className='notice';
+        guard.textContent=w.Aurora2?.transferEngine?.routeGuardMessage?.(state)||
+          'Waiting for a Finance mission and a Scouting-approved shortlist.';
+      }
       return;
     }
 
