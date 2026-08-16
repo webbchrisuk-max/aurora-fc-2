@@ -1,6 +1,8 @@
 (function(w){
   'use strict';
 
+  const BUILD='2026.08.16-chairman-live-state-1';
+
   const arr=v=>Array.isArray(v)?v:[];
   const num=v=>{const n=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0};
   const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,num(v)));
@@ -285,6 +287,45 @@
     };
   }
 
+  function chairmanLiveDiagnostic(state,target,opts={}){
+    const candidate=resolveExecutableCandidate(target,{state,purpose:'CHAIRMAN_LIVE_DIAGNOSTIC',nowMs:opts.nowMs});
+    const targetIdentity=identity(target);
+    const universe=arr(state?.scouting?.universe);
+    const universeMatches=universe.filter(row=>sameSecurity(target,row,state));
+    const rows=evidenceRows(state,target);
+    const activeMatch=arr(state?.scouting?.targets).find(row=>sameSecurity(target,row,state))||null;
+    const rawBroker=row=>({
+      brokerEligibility:row?.brokerEligibility??null,
+      IG:row?.IG??row?.ig??row?.igIsaSupported??row?.igISASupported??row?.supportsIgIsa??null,
+      T212:row?.T212??row?.t212??row?.trading212IsaSupported??row?.trading212ISASupported??row?.supportsTrading212Isa??null,
+      preferredAccount:row?.preferredAccount??null
+    });
+    return {
+      engineBuild:BUILD,
+      canonicalKey:securityId(target),securityId:target?.securityId||null,
+      ticker:targetIdentity.ticker,exchange:targetIdentity.exchange,
+      activeScoutingTarget:activeMatch,
+      scoutingUniverseMatch:universeMatches[0]||null,
+      universeMatchKey:universeMatches[0]?securityId(universeMatches[0]):null,
+      universeMatchCount:universeMatches.length,
+      preferredAccount:target?.preferredAccount??null,
+      brokerEligibility:target?.brokerEligibility??null,
+      IG:rawBroker(target).IG,T212:rawBroker(target).T212,
+      price:target?.livePriceGbp??target?.priceGbp??target?.livePrice??target?.price??null,
+      currency:target?.currency??null,
+      dividendYield:target?.yieldPct??target?.dividendYieldPct??target?.dividendYield??null,
+      evidenceRowsMatchCount:rows.length,
+      evidenceRows:rows.map(({source,row})=>({source,canonicalKey:securityId(row),rawBroker:rawBroker(row),
+        price:row?.livePriceGbp??row?.priceGbp??row?.livePrice??row?.price??row?.legacyPriceGbp??null,
+        income:row?.yieldPct??row?.dividendYieldPct??row?.dividendYield??row?.annualYieldPct??row?.legacyYieldPct??null})),
+      resolvedBroker:{value:candidate.resolvedBroker,source:candidate.brokerRoute.source},
+      resolvedPrice:{value:candidate.livePriceGbp,source:candidate.priceEvidence.source,freshness:candidate.priceEvidence.freshness},
+      resolvedIncome:{value:candidate.yieldPct,source:candidate.incomeEvidence.source},
+      blockingReasons:candidate.blockingReasons,
+      executable:candidate.simulationEligible
+    };
+  }
+
   function chairmanStrategyTrace(state,opts={}){
     const strategy=opts.strategy==='maximum'?'maximum':'sustainable';
     const route=simulate(state,{...opts,strategy,allowActiveScouting:opts.allowActiveScouting!==false});
@@ -294,6 +335,22 @@
     return {strategy,candidateCount:candidates.length,rankedCount:ranked.length,executableCount:executable.length,
       routeInputCount:executable.length,routeOutputCount:route.allocations.length,allocationProduced:route.allocations.length>0,
       reason:route.reason||null,route,traces:candidates.map(t=>chairmanTrace(state,t,opts))};
+  }
+
+  function chairmanStrategyFunnel(state,opts={}){
+    const strategy=opts.strategy==='maximum'?'maximum':'sustainable';
+    const approved=arr(state?.scouting?.targets).filter(t=>t?.approvedForTransfer===true);
+    const ranked=approved.filter(t=>String(t?.status||'').toLowerCase()!=='block')
+      .sort((a,b)=>targetScore(b,strategy)-targetScore(a,strategy));
+    const resolved=ranked.map(target=>({target,candidate:resolveExecutableCandidate(target,{state,purpose:'CHAIRMAN_LIVE_FUNNEL',nowMs:opts.nowMs})}));
+    const universeMatched=resolved.filter(x=>arr(state?.scouting?.universe).some(row=>sameSecurity(x.target,row,state)));
+    const brokerResolved=resolved.filter(x=>x.candidate.brokerRoute.supported);
+    const priceResolved=resolved.filter(x=>x.candidate.priceEvidence.supported);
+    const executable=resolved.filter(x=>x.candidate.simulationEligible);
+    const route=simulate(state,{...opts,strategy,allowActiveScouting:true});
+    return {approvedCandidates:approved.length,ranked:ranked.length,universeMatched:universeMatched.length,
+      brokerResolved:brokerResolved.length,priceResolved:priceResolved.length,executable:executable.length,
+      allocations:route.allocations.length,allocationTickers:route.allocations.map(a=>a.ticker),reason:route.reason||null};
   }
 
   function targetScore(t,strategy){
@@ -743,6 +800,9 @@
     executableDiagnostics,
     chairmanTrace,
     chairmanStrategyTrace,
+    chairmanLiveDiagnostic,
+    chairmanStrategyFunnel,
+    BUILD,
     resolveMarketPrice
   };
 })(window);
