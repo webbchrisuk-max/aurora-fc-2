@@ -134,6 +134,29 @@ test('Chairman custom baskets share Transfer broker evidence and keep executable
   assert.equal(simulation.allocated+simulation.remaining,1200);
 });
 
+test('shared broker routing prefers IG, falls back to T212, and preserves valid assignments',()=>{
+  const engine=loadEngine();
+  const candidate=(ticker,brokerEligibility)=>({securityId:`LSE:${ticker}`,exchange:'LSE',ticker,brokerEligibility});
+  const both=candidate('BOTH',{IG:true,T212:true});
+  const t212Only=candidate('T212ONLY',{IG:false,T212:true});
+  const igOnly=candidate('IGONLY',{IG:true,T212:false});
+  const unsupported=candidate('NOPE',{IG:false,T212:false});
+  const state={scouting:{targets:[both,t212Only,igOnly,unsupported]},transfer:{brokerPreferences:{}},squad:{holdings:[]}};
+
+  assert.equal(engine.resolveBrokerRoute(state,both).account,'IG');
+  assert.equal(engine.brokerRouteLabel(engine.resolveBrokerRoute(state,both)),'IG ISA → T212 fallback');
+  assert.equal(engine.resolveBrokerRoute(state,t212Only).account,'T212');
+  assert.equal(engine.resolveBrokerRoute(state,igOnly).account,'IG');
+  assert.equal(engine.resolveBrokerRoute(state,unsupported).account,'CHECK');
+  assert.equal(engine.brokerRouteLabel(engine.resolveBrokerRoute(state,unsupported)),'Broker unresolved');
+
+  state.transfer.brokerPreferences['LSE:BOTH']={account:'Trading 212 ISA'};
+  assert.equal(engine.resolveBrokerRoute(state,both).account,'T212');
+  state.transfer.brokerPreferences={};
+  state.squad.holdings=[{securityId:'LSE:BOTH',exchange:'LSE',ticker:'BOTH',account:'Trading 212 ISA',status:'ACTIVE'}];
+  assert.equal(engine.resolveBrokerRoute(state,both).account,'T212');
+});
+
 test('Chairman automatic lenses and five-selection basket share partial executable pool',()=>{
   const engine=loadEngine();
   const candidate=(securityId,ticker,brokerEligibility,sustainableScore,maximumScore,yieldPct=6)=>({
