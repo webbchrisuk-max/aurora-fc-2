@@ -153,7 +153,7 @@
       .map(([broker])=>accountCode(broker)).filter(a=>a!=='CHECK');
     return [];
   }
-  /** Shared Transfer broker resolver. Chairman calls this through simulate too. */
+  /** Canonical broker resolver used by Scouting, Transfer and Chairman. */
   function resolveBrokerRoute(state,target){
     const rows=evidenceRows(state,target).map(x=>x.row);
     const evidence=[target,...rows];
@@ -176,12 +176,15 @@
       .flatMap(row=>eligibilityAccounts(row?.accounts||row?.eligibleAccounts||row?.brokerEligibility));
     const routeAccounts=arr(state?.transfer?.route?.allocations).concat(arr(state?.transfer?.routeEvidence))
       .filter(row=>sameSecurity(target,row,state)).map(row=>identity(row).account).filter(a=>a!=='CHECK');
+    const holdingAccounts=arr(state?.squad?.holdings)
+      .filter(row=>sameSecurity(target,row,state)&&!['SOLD','ARCHIVED'].includes(String(row?.status||'').toUpperCase()))
+      .map(row=>identity(row).account).filter(a=>a!=='CHECK');
     const remembered=brokerPreference(state,target);
     const preferred=accountCode(target?.preferredAccount);
     const tiers=[
       {source:'EXPLICIT_SECURITY_ELIGIBILITY',accounts:explicit},
       {source:'TRANSFER_BROKER_CONFIGURATION',accounts:transferConfig},
-      {source:'REMEMBERED_PREFERRED_BROKER',accounts:[remembered,preferred].filter(a=>a!=='CHECK')},
+      {source:'CANONICAL_BROKER_ASSIGNMENT',accounts:[remembered,preferred].filter(a=>a!=='CHECK')},
       {source:'CANONICAL_MARKET_SUPPORT',accounts:exchangeAccounts},
       {source:'EXISTING_ROUTE_EVIDENCE',accounts:routeAccounts}
     ];
@@ -189,12 +192,23 @@
     // use the first legitimate evidence tier that can name an account.
     const chosen=tiers.find(t=>t.accounts.length)||null;
     const eligible=chosen?[...new Set(chosen.accounts)]:[];
-    const account=remembered!=='CHECK'&&eligible.includes(remembered)?remembered
-      :preferred!=='CHECK'&&eligible.includes(preferred)?preferred
-        :eligible[0]||'CHECK';
+    // Assignments are preferences, never eligibility evidence. Preserve a
+    // canonical assignment first, then a valid owned account; otherwise use
+    // Aurora's deterministic IG-first route (with verified T212 fallback).
+    const canonicalAssignments=[remembered,...routeAccounts,preferred];
+    const preserved=canonicalAssignments.find(code=>eligible.includes(code));
+    const owned=holdingAccounts.find(code=>eligible.includes(code));
+    const account=preserved||owned||(eligible.includes('IG')?'IG':eligible.includes('T212')?'T212':'CHECK');
     const blockedByExplicit=eligibilityDeclared&&!explicit.length;
     return {account:blockedByExplicit?'CHECK':account,eligible:blockedByExplicit?[]:eligible,remembered,preferred,
-      supported:!blockedByExplicit&&account!=='CHECK',source:blockedByExplicit?'EXPLICIT_SECURITY_INELIGIBILITY':chosen?.source||null};
+      supported:!blockedByExplicit&&account!=='CHECK',source:blockedByExplicit?'EXPLICIT_SECURITY_INELIGIBILITY':chosen?.source||null,
+      routingReason:preserved?'CANONICAL_ASSIGNMENT':owned?'EXISTING_HOLDING':account==='IG'?'IG_PREFERRED':account==='T212'?'T212_FALLBACK':'UNRESOLVED'};
+  }
+  function brokerRouteLabel(state,target){
+    const route=resolveBrokerRoute(state,target);
+    if(!route.supported)return 'Broker unresolved';
+    if(route.account==='IG'&&route.eligible.includes('T212')&&route.routingReason==='IG_PREFERRED')return 'IG ISA → T212 fallback';
+    return route.account==='IG'?'IG ISA':'Trading 212 ISA';
   }
   function effectiveBroker(state,target){
     return resolveBrokerRoute(state,target).account;
@@ -819,6 +833,7 @@
     effectiveMinimum,
     brokerPreference,
     resolveBrokerRoute,
+    brokerRouteLabel,
     effectiveBroker,
     ticker,
     accountCode,

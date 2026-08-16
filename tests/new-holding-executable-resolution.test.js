@@ -73,6 +73,18 @@ test('new-security broker eligibility is independent of holding records',()=>{
   assert.equal(e.resolveBrokerRoute(state,fresh).account,'T212');
 });
 
+test('shared broker routing prefers IG, falls back to T212, and blocks only unverified support',()=>{
+  const e=engine();
+  const target=(ticker,brokerEligibility)=>({securityId:`LSE:${ticker}`,exchange:'LSE',ticker,preferredAccount:'CHECK',brokerEligibility});
+  const state={scouting:{targets:[]},transfer:{},squad:{holdings:[]}};
+  const both=target('BOTH',{T212:true,IG:true});
+  assert.equal(e.resolveBrokerRoute(state,both).account,'IG');
+  assert.equal(e.brokerRouteLabel(state,both),'IG ISA → T212 fallback');
+  assert.equal(e.resolveBrokerRoute(state,target('T212',{IG:false,T212:true})).account,'T212');
+  assert.equal(e.resolveBrokerRoute(state,target('IG',{IG:true,T212:false})).account,'IG');
+  assert.equal(e.resolveBrokerRoute(state,target('NONE',{IG:false,T212:false})).supported,false);
+});
+
 test('new-security price lookup is independent of holding records',()=>{
   const e=engine(),{state,fresh}=fixture();
   assert.equal(e.resolveMarketPrice(state,fresh).priceGbp,20);

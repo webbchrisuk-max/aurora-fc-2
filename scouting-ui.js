@@ -309,7 +309,7 @@ function renderProspects(s,eligible){
       <div class="scouting11-prospect-meta">
         <span class="scouting11-tag ${tone(t.status)}">${esc(t.recommendation||t.status||'REVIEW')}</span>
         <span class="scouting11-tag">${num(t.yieldPct).toFixed(2)}% yield</span>
-        <span class="scouting11-tag">${esc(accountLabel(t.preferredAccount))}</span>
+        <span class="scouting11-tag">${esc(w.Aurora2?.transferEngine?.brokerRouteLabel?.(s,t)||accountLabel(t.preferredAccount))}</span>
         ${t.sector?`<span class="scouting11-tag">${esc(t.sector)}</span>`:''}
       </div>
       <div class="scouting11-mini-ratings">
