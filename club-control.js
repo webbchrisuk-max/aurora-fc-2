@@ -12,7 +12,25 @@
   let lens='sustainable';
   let saleFraction=1;
   let customIds=new Set();
-  let customInitialized=false;
+  let basketHydrated=false;
+
+  function canonicalBasket(state=A().core.read()){
+    return arr(state.scouting?.replacementBasket).map(item=>String(item?.securityId||item||'')).filter(Boolean);
+  }
+  function syncBasket(state=A().core.read()){
+    customIds=new Set(canonicalBasket(state));
+  }
+  function persistBasket(ids){
+    const wanted=new Set(arr(ids).map(String).filter(Boolean));
+    A().core.update(state=>{
+      const targets=arr(state.scouting?.targets);
+      const replacementBasket=[...wanted].map(securityId=>{
+        const target=targets.find(candidate=>candidateId(candidate)===securityId);
+        return {securityId,exchange:String(target?.exchange||'').toUpperCase(),ticker:ticker(target?.ticker)};
+      });
+      return {...state,scouting:{...state.scouting,replacementBasket,updatedAt:new Date().toISOString()}};
+    });
+  }
 
   function set(id,v){const el=$(id);if(el)el.textContent=v}
   function toast(msg){
@@ -346,10 +364,6 @@
       host.innerHTML='<div class="empty-state compact"><strong>No eligible Active Scouts</strong><p>Promote candidates in Scouting first.</p></div>';
       return;
     }
-    if(!customInitialized){
-      candidates.filter(c=>num(c.yieldPct)>0).slice(0,3).forEach(c=>customIds.add(candidateId(c)));
-      customInitialized=true;
-    }
     host.innerHTML=candidates.slice(0,16).map(c=>{
       const id=candidateId(c);
       const available=num(c.yieldPct)>0;
@@ -374,7 +388,7 @@
     const host=$('basketList');if(!host)return;
     const rows=arr(data.sim.allocations);
     const selected=lens==='custom'
-      ?A().transferEngine.resolveReplacementBasket(A().core.read(),[...customIds])
+      ?A().transferEngine.resolveReplacementBasket(A().core.read(),canonicalBasket())
       :[];
     const incomplete=selected.filter(x=>!x.available);
     set('basketMeta',rows.length
@@ -393,7 +407,7 @@
       <div class="basket-num"><b>${Math.round(num(r.scoutingScore))}/100</b><small>Scouting score</small></div>
       <div class="basket-num"><b>${num(r.concentrationFactor).toFixed(2)}×</b><small>route fit</small></div>
     </div>`).concat(incomplete.map(r=>`<div class="basket-row" data-incomplete="true">
-      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>UNAVAILABLE • Missing supported yield/dividend income evidence</span></div>
+      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>SIMULATION DATA INCOMPLETE • ${{SECURITY_NOT_FOUND:'Canonical security is not present in Active Scouting',MISSING_PRICE_EVIDENCE:'Missing supported live-price evidence',MISSING_BROKER_ROUTE:'Missing executable broker route',MISSING_INCOME_EVIDENCE:'Missing supported yield/dividend income evidence'}[r.incompleteReason]||'Required simulation evidence is unavailable'}</span></div>
       <div class="basket-num"><b>—</b><small>income unavailable</small></div>
     </div>`)).join('');
   }
@@ -482,6 +496,11 @@
 
   function render(){
     const state=A().core.read();
+    syncBasket(state);
+    if(!basketHydrated){
+      if(customIds.size)lens='custom';
+      basketHydrated=true;
+    }
     renderKpis(state);
     renderSelect(state);
     renderMarket(state);
@@ -499,8 +518,6 @@
   function wire(){
     $('holdingSelect')?.addEventListener('change',e=>{
       selectedKey=e.target.value;
-      customIds.clear();
-      customInitialized=false;
       render();
     });
     $('refreshCase')?.addEventListener('click',()=>{
@@ -513,15 +530,12 @@
     }));
     document.querySelectorAll('[data-lens]').forEach(b=>b.addEventListener('click',()=>{
       lens=b.dataset.lens;
-      if(lens!=='custom'){customIds.clear();customInitialized=false}
       render();
     }));
     document.addEventListener('click',e=>{
       const review=e.target.closest('[data-review]');
       if(review){
         selectedKey=review.dataset.review;
-        customIds.clear();
-        customInitialized=false;
         render();
         $('rotationCase')?.scrollIntoView({behavior:'smooth',block:'start'});
       }
@@ -531,8 +545,7 @@
       if(!box)return;
       const id=box.dataset.custom;
       if(box.checked)customIds.add(id);else customIds.delete(id);
-      customInitialized=true;
-      render();
+      persistBasket([...customIds]);
     });
   }
 

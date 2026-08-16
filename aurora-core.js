@@ -69,6 +69,7 @@
       status:'SCOUTING_REVIEW',
       strategy:'sustainable',
       targets:[],
+      replacementBasket:[],
       decisionHistory:[],
       importedFromLegacy:false,
       source:'AURORA2_SCOUTING',
@@ -271,6 +272,26 @@
       createdAt:r.createdAt||now(),
       updatedAt:r.updatedAt||now()
     };
+  }
+  function normalizeReplacementBasket(rows,targets=[]){
+    const targetRows=Array.isArray(targets)?targets:[];
+    const seen=new Set();
+    return (Array.isArray(rows)?rows:[]).map(item=>{
+      const raw=typeof item==='string'?{securityId:item}:object(item);
+      const explicit=String(raw.securityId||raw.networkSecurityId||'').trim();
+      const exchange=String(raw.exchange||raw.market||'').trim().toUpperCase();
+      const ticker=String(raw.ticker||raw.symbol||'').replace(/\..*$/,'').trim().toUpperCase();
+      const matched=targetRows.find(target=>
+        (explicit&&String(target.securityId||'')===explicit)||
+        (!explicit&&exchange&&ticker&&String(target.exchange||'')===exchange&&String(target.ticker||'')===ticker)
+      );
+      const securityId=explicit||String(matched?.securityId||'')||(exchange&&ticker?`${exchange}:${ticker}`:'');
+      return {
+        securityId,
+        exchange:String(matched?.exchange||exchange||'').toUpperCase(),
+        ticker:String(matched?.ticker||ticker||'').toUpperCase()
+      };
+    }).filter(identity=>identity.securityId&&!seen.has(identity.securityId)&&seen.add(identity.securityId));
   }
   function normalizeTransferAllocation(a){
     const r=object(a);
@@ -501,6 +522,10 @@
         version:1,
         strategy:['sustainable','maximum'].includes(r.scouting?.strategy)?r.scouting.strategy:'sustainable',
         targets:Array.isArray(r.scouting?.targets)?r.scouting.targets.map(normalizeScoutingTarget):[],
+        replacementBasket:normalizeReplacementBasket(
+          r.scouting?.replacementBasket,
+          Array.isArray(r.scouting?.targets)?r.scouting.targets.map(normalizeScoutingTarget):[]
+        ),
         decisionHistory:Array.isArray(r.scouting?.decisionHistory)?r.scouting.decisionHistory:[]
       },
       transfer:{

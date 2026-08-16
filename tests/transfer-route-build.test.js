@@ -97,7 +97,7 @@ test('Chairman canonical replacement basket drives income and removes deselected
   const candidate=(securityId,exchange,ticker,yieldPct)=>({
     id:`ACTIVE-${securityId}`,securityId,exchange,ticker,name:ticker,
     preferredAccount:'IG ISA',status:'pass',yieldPct,sustainableScore:90,
-    transferPermitted:true
+    transferPermitted:true,livePriceGbp:50
   });
   const state={scouting:{targets:[
     candidate('TSX:BCE','TSX','BCE',6.5),
@@ -126,7 +126,7 @@ test('Chairman canonical replacement basket drives income and removes deselected
 
 test('canonical replacement basket deduplicates IDs and returns to an empty state',()=>{
   const engine=loadEngine();
-  const state={scouting:{targets:[{securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS',yieldPct:4,preferredAccount:'IG ISA'}]}};
+  const state={scouting:{targets:[{securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS',yieldPct:4,livePriceGbp:50,preferredAccount:'IG ISA'}]}};
   assert.deepEqual(Array.from(engine.resolveReplacementBasket(state,[])),[]);
   const basket=engine.resolveReplacementBasket(state,['NYSE:UPS','NYSE:UPS']);
   assert.equal(basket.length,1);
@@ -145,4 +145,32 @@ test('selected security without income evidence is explicit and is not simulated
   const simulation=engine.simulate(state,{budget:1000,targetIds:['NYSE:MISSING'],allowActiveScouting:true});
   assert.deepEqual(Array.from(simulation.allocations),[]);
   assert.equal(simulation.reason,'NO_ELIGIBLE_TARGETS');
+});
+
+test('£2,757.10 Chairman rotation uses three canonical replacements and preserves broker remainder',()=>{
+  const engine=loadEngine();
+  const state={scouting:{replacementBasket:[
+    {securityId:'TSX:BCE',exchange:'TSX',ticker:'BCE'},
+    {securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI'},
+    {securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS'}
+  ],targets:[
+    {securityId:'TSX:BCE',exchange:'TSX',ticker:'BCE',name:'BCE',preferredAccount:'IG ISA',status:'pass',yieldPct:6.5,livePriceGbp:28,sustainableScore:92},
+    {securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI',name:'VICI',preferredAccount:'IG ISA',status:'pass',yieldPct:5.5,livePriceGbp:24,sustainableScore:90},
+    {securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS',name:'UPS',preferredAccount:'IG ISA',status:'pass',yieldPct:4.5,livePriceGbp:72,sustainableScore:88}
+  ]},transfer:{settings:{minAllocation:250,increment:25}},squad:{holdings:[]}};
+  const selected=state.scouting.replacementBasket.map(x=>x.securityId);
+  const simulation=engine.simulate(state,{budget:2757.10,targetIds:selected,allowActiveScouting:true,maxTargets:3,idFactory:p=>p});
+  assert.deepEqual(new Set(simulation.allocations.map(x=>x.securityId)),new Set(selected));
+  assert.ok(simulation.income>0);
+  assert.equal(simulation.allocated+simulation.remaining,2757.10);
+  assert.equal(Number((simulation.income-245.49).toFixed(6)),Number((simulation.allocations.reduce((sum,x)=>sum+x.expectedAnnualIncome,0)-245.49).toFixed(6)));
+});
+
+test('intentionally empty canonical Chairman basket retains the zero-income state',()=>{
+  const engine=loadEngine();
+  const state={scouting:{replacementBasket:[],targets:[{securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS',preferredAccount:'IG ISA',yieldPct:4}]},transfer:{settings:{}},squad:{holdings:[]}};
+  const simulation=engine.simulate(state,{budget:2757.10,targetIds:[],allowActiveScouting:true});
+  assert.deepEqual(Array.from(simulation.allocations),[]);
+  assert.equal(simulation.income,0);
+  assert.equal(simulation.remaining,2757.10);
 });
