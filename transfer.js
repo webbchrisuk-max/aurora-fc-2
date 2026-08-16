@@ -108,11 +108,15 @@
     };
   }
   function routeEvidence(state,a){
-    const target=arr(state.scouting?.targets).find(t=>String(t.id)===String(a.targetId)||ticker(t.ticker)===ticker(a.ticker))||{};
+    const targets=arr(state.scouting?.targets);
+    const target=targets.find(t=>String(t.securityId||'')&&String(t.securityId)===String(a.securityId||''))||
+      targets.find(t=>String(t.id)===String(a.targetId))||
+      targets.find(t=>ticker(t.ticker)===ticker(a.ticker)&&String(t.exchange||'').toUpperCase()===String(a.exchange||'').toUpperCase())||{};
     const holdings=activeHoldings(state).filter(h=>ticker(h.ticker)===ticker(a.ticker));
     const quoteHolding=holdings.find(h=>num(h.livePriceGbp)>0)||{};
-    const price=num(target.livePriceGbp)||num(quoteHolding.livePriceGbp);
-    const updatedAt=target.quoteUpdatedAt||target.sourceUpdatedAt||target.updatedAt||quoteHolding.sourceUpdatedAt||quoteHolding.updatedAt||state.squad?.updatedAt||null;
+    const priceEvidence=A().transferEngine?.resolveMarketPrice?.(state,target)||{};
+    const price=num(priceEvidence.priceGbp);
+    const updatedAt=priceEvidence.timestamp||null;
     const moveRaw=target.dayChangePct??target.changePct??quoteHolding.dayChangePct;
     const move=Number(moveRaw);
     const calendar=arr(state.income?.calendar).filter(e=>ticker(e.ticker)===ticker(a.ticker)&&!['CANCELLED','ARCHIVED','PAID'].includes(String(e.status||'').toUpperCase())).sort((x,y)=>String(x.payDate||'9999').localeCompare(String(y.payDate||'9999')))[0];

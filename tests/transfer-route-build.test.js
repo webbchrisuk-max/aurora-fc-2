@@ -133,6 +133,38 @@ test('canonical replacement basket deduplicates IDs and returns to an empty stat
   assert.equal(basket[0].securityId,'NYSE:UPS');
 });
 
+test('Chairman uses shared canonical market evidence and labels stale or missing quotes',()=>{
+  const engine=loadEngine();
+  const target=(securityId,exchange,ticker)=>({
+    securityId,exchange,ticker,name:ticker,yieldPct:6,preferredAccount:'IG ISA',
+    status:'pass',transferPermitted:true,sustainableScore:90
+  });
+  const state={scouting:{targets:[
+    target('LSE:UKW','LSE','UKW'),target('NASDAQ:ARCC','NASDAQ','ARCC'),target('LSE:FSFL','LSE','FSFL')
+  ]},marketData:{quotes:[
+    {securityId:'LON:UKW',ticker:'UKW.L',price:145,priceUnit:'PENCE',currency:'GBP',quoteUpdatedAt:'2026-08-16T10:00:00Z'},
+    {securityId:'NASDAQ:ARCC',ticker:'ARCC',price:20,currency:'USD',fxRateToGbp:.75,account:'IG ISA',quoteUpdatedAt:'2026-08-16T09:00:00Z'},
+    {securityId:'LSE:FSFL',ticker:'FSFL',livePriceGbp:.88,quoteUpdatedAt:'2026-08-12T09:00:00Z'}
+  ]},transfer:{settings:{}},squad:{holdings:[]}};
+
+  const ukw=engine.resolveMarketPrice(state,state.scouting.targets[0],{nowMs:Date.parse('2026-08-16T12:00:00Z')});
+  assert.equal(ukw.priceGbp,1.45);
+  assert.equal(ukw.timestamp,'2026-08-16T10:00:00Z');
+  assert.equal(ukw.status,'CURRENT');
+  const stale=engine.resolveMarketPrice(state,state.scouting.targets[2],{nowMs:Date.parse('2026-08-16T12:00:00Z')});
+  assert.equal(stale.status,'STALE');
+  assert.equal(stale.label,'STALE PRICE — REVIEW BEFORE EXECUTION');
+  const missing=engine.resolveMarketPrice({scouting:{targets:[target('NYSE:NONE','NYSE','NONE')]}},target('NYSE:NONE','NYSE','NONE'));
+  assert.equal(missing.label,'NO SUPPORTED PRICE DATA');
+
+  const selected=['LSE:UKW','NASDAQ:ARCC','LSE:FSFL'];
+  assert.ok(engine.resolveReplacementBasket(state,selected).every(row=>row.available));
+  const simulation=engine.simulate(state,{budget:3000,targetIds:selected,allowActiveScouting:true,minAllocation:250,increment:25,maxTargets:3,idFactory:p=>p});
+  assert.deepEqual(new Set(simulation.allocations.map(row=>row.securityId)),new Set(selected));
+  assert.ok(simulation.income>0);
+  assert.ok(simulation.allocations.find(row=>row.securityId==='LSE:FSFL').priceEvidence.stale);
+});
+
 test('selected security without income evidence is explicit and is not simulated as zero income',()=>{
   const engine=loadEngine();
   const state={scouting:{targets:[{
