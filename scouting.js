@@ -829,11 +829,13 @@
   function parseMembershipHtml(html,source){
     const doc=new DOMParser().parseFromString(String(html||''),'text/html'),rows=[];
     doc.querySelectorAll('table.wikitable').forEach(table=>{
-      const headers=[...table.querySelectorAll('tr:first-child th')].map(x=>norm(x.textContent));
-      const tickerIndex=headers.findIndex(x=>/^(ticker|symbol|epic|ticker symbol)$/.test(x));
-      const companyIndex=headers.findIndex(x=>/^(company|constituent|security|company name)$/.test(x));
+      const allRows=[...table.querySelectorAll('tr')];
+      const headerRow=allRows.find(tr=>tr.querySelectorAll('th').length>=2);
+      const headers=[...(headerRow?.querySelectorAll('th')||[])].map(x=>norm(x.textContent));
+      const tickerIndex=headers.findIndex(x=>/^(ticker|symbol|epic|ticker symbol|stock symbol|code)$/.test(x));
+      const companyIndex=headers.findIndex(x=>/^(company|constituent|security|company name|name)$/.test(x));
       if(tickerIndex<0||companyIndex<0)return;
-      [...table.querySelectorAll('tr')].slice(1).forEach(tr=>{
+      allRows.slice(allRows.indexOf(headerRow)+1).forEach(tr=>{
         const cells=[...tr.querySelectorAll('th,td')];
         const ticker=cleanMarketSymbol(cells[tickerIndex]?.textContent).replace(/\[[^\]]*\]/g,'');
         const name=String(cells[companyIndex]?.textContent||'').replace(/\[[^\]]*\]/g,'').trim();
@@ -850,7 +852,11 @@
   async function fetchMembershipUniverse(){
     const api=A().scoutingUniverse;
     if(!api)return {rows:[],errors:['Universe module unavailable']};
-    const settled=await Promise.allSettled(api.MEMBERSHIP_SOURCES.map(async source=>{
+    const configured=arr(A().core.read()?.scouting?.universeConfig?.membershipSourceIds);
+    const sources=configured.length
+      ?api.MEMBERSHIP_SOURCES.filter(source=>configured.includes(source.id))
+      :api.MEMBERSHIP_SOURCES;
+    const settled=await Promise.allSettled(sources.map(async source=>{
       const res=await fetch(membershipApiUrl(source),{cache:'no-store'});
       if(!res.ok)throw new Error(`${source.label}: HTTP ${res.status}`);
       const body=await res.json();
@@ -968,6 +974,7 @@
 
     return {
       id:`AUTO-${n.id}`,
+      securityId:n.securityId,
       ticker:activeTicker(n.marketSymbol),
       name:n.name,
       preferredAccount:'CHECK',
@@ -1227,6 +1234,7 @@
 
     return {
       id:`ACTIVE-${n.id}`,
+      securityId:n.securityId,
       ticker:activeTicker(n.marketSymbol),
       name:n.name,
       preferredAccount:'CHECK',
@@ -1742,8 +1750,10 @@
     const uk=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='UK').length;
     const us=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='US').length;
     const targets=arr(state.scouting?.targets),passed=targets.filter(x=>x.status!=='block').length;
-    const approved=targets.filter(x=>x.approvedForTransfer).length;
-    const approvalCandidates=targets.filter(x=>x.status!=='block'&&!x.approvedForTransfer).length;
+    const approved=(A().scoutingUniverse?.approvedCandidates(targets)||
+      targets.filter(x=>x.approvedForTransfer)).length;
+    const approvalCandidates=(A().scoutingUniverse?.approvalCandidates(targets)||
+      targets.filter(x=>x.status!=='block'&&!x.approvedForTransfer)).length;
     const eligible=universe.filter(x=>autoPromotionProfile(x).eligible).length;
     const coverage=A().scoutingUniverse?.coverage(universe)||{};
     const missing=universe.filter(x=>x.dataStatus==='MISSING').length;
@@ -1754,7 +1764,8 @@
     set('coveragePipeline',`${universe.length} universe · ${eligible} eligible · ${passed} passed · `+
       `${targets.length} deep-scouted · ${approvalCandidates} approval candidates · ${approved} approved`);
     set('universeBreakdown',`FTSE 100 ${coverage.ftse100||0} • FTSE 250 ${coverage.ftse250||0} • `+
-      `additional UK income ${coverage.ukIncome||0} • US ${coverage.US||0} • other markets ${coverage.WORLD||0} • `+
+      `additional UK income ${coverage.ukIncome||0} • US ${coverage.US||0} • Europe ${coverage.EUROPE||0} • `+
+      `Canada ${coverage.CANADA||0} • Australia ${coverage.AUSTRALIA||0} • other supported markets ${coverage.OTHER||0} • `+
       `${missing} awaiting market data • ${ruleExcluded} excluded by investment rules. Missing-data securities remain in Universe Coverage.`);
   }
 
