@@ -85,8 +85,27 @@
     return canonical>0?canonical:activeHoldings(state).reduce((s,h)=>s+(num(h.annualIncomeGbp)||(num(h.shares)*num(h.annualDpsGbp))),0);
   }
   function missionIncomeBaseline(state,r=state.transfer?.route){
+    const canonical=incomeBaseline(state);
+    if(canonical>0)return canonical;
     const frozen=Number(r?.baselineAnnualIncome);
-    return Number.isFinite(frozen)&&frozen>=0?frozen:incomeBaseline(state);
+    return Number.isFinite(frozen)&&frozen>=0?frozen:canonical;
+  }
+  function portfolioPreview(state,r=state.transfer?.route){
+    const allocations=arr(r?.allocations).filter(a=>num(a.amount)>0);
+    const totals=r?routeSummary(r):{allocated:0,income:0,remaining:routeBudget(state)};
+    const currentAnnualIncome=missionIncomeBaseline(state,r);
+    const projectedAnnualIncome=currentAnnualIncome+totals.income;
+    const holdings=activeHoldings(state);
+    const frozenHoldings=arr(r?.baselineHoldings);
+    const previewHoldings=frozenHoldings.length?frozenHoldings:holdings;
+    const currentPortfolioValue=previewHoldings.reduce((sum,h)=>sum+holdingValue(h),0);
+    const projectedPortfolioValue=currentPortfolioValue+totals.allocated;
+    return {
+      allocations,totals,previewHoldings,currentAnnualIncome,projectedAnnualIncome,
+      currentPortfolioValue,projectedPortfolioValue,
+      currentIncomeYield:currentPortfolioValue?currentAnnualIncome/currentPortfolioValue*100:0,
+      projectedIncomeYield:projectedPortfolioValue?projectedAnnualIncome/projectedPortfolioValue*100:0
+    };
   }
   function routeEvidence(state,a){
     const target=arr(state.scouting?.targets).find(t=>String(t.id)===String(a.targetId)||ticker(t.ticker)===ticker(a.ticker))||{};
@@ -133,11 +152,10 @@
     fresh.classList.toggle('stale',stale);
   }
   function renderImpact(state){
-    const r=state.transfer?.route, allocations=arr(r?.allocations).filter(a=>num(a.amount)>0), totals=r?routeSummary(r):{allocated:0,income:0,remaining:routeBudget(state)}, current=missionIncomeBaseline(state,r), post=current+totals.income;
-    const holdings=activeHoldings(state);
-    const frozenHoldings=arr(r?.baselineHoldings);
-    const previewHoldings=frozenHoldings.length?frozenHoldings:holdings;
-    const value=previewHoldings.reduce((s,h)=>s+holdingValue(h),0), accounts=code=>previewHoldings.filter(h=>accountCode(h.account)===code).reduce((s,h)=>s+holdingValue(h),0);
+    const r=state.transfer?.route;
+    const preview=portfolioPreview(state,r);
+    const {allocations,totals,previewHoldings,currentAnnualIncome:current,projectedAnnualIncome:post,currentPortfolioValue:value}=preview;
+    const accounts=code=>previewHoldings.filter(h=>accountCode(h.account)===code).reduce((s,h)=>s+holdingValue(h),0);
     const confirmed=allocations.map(a=>confirmedFor(state,r,a)).filter(Boolean), complete=allocations.length>0&&confirmed.length===allocations.length;
     set('impactMissionState',complete?'TRANSFER COMPLETE':'PROPOSED'); set('heroIncomeUplift',`+${money(totals.income)} / year`); set('heroIncomeJourney',`${money(current)} → ${money(post)}`);
     const brokers=new Set(allocations.map(a=>accountCode(a.account)).filter(x=>x!=='CHECK')); set('heroRouteSummary',`${allocations.length} buys • ${brokers.size} brokers • ${money(totals.remaining)} unallocated`);
@@ -145,7 +163,7 @@
     if($('impactKpis'))$('impactKpis').innerHTML=[['Current annual income',money(current)],['Estimated additional income',`+${money(totals.income)} / year`],['New annual income',money(post)],['Monthly equivalent',`${money(current/12)} → ${money(post/12)}`],['Transfer income yield',`${yieldPct.toFixed(2)}%`],['Income per £1,000',`${money(efficiency)} / year`]].map(x=>`<div><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('');
     const monthlyTarget=num(state.income?.settings?.monthlyTarget), annualTarget=monthlyTarget*12;
     if($('incomeMissionProgress'))$('incomeMissionProgress').innerHTML=annualTarget>0?`<strong>${money(post)} of ${money(annualTarget)} annual target</strong><div class="mission-progress"><i style="width:${Math.min(100,post/annualTarget*100)}%"></i></div><span>${money(current)} current • +${money(totals.income)} transfer • ${money(Math.max(0,annualTarget-post))} remaining</span>`:'<div class="empty-state compact"><strong>No income target configured</strong><p>Set a monthly target in Income Centre; Transfer will not invent a milestone.</p></div>';
-    if($('portfolioComparison'))$('portfolioComparison').innerHTML=[['Annual income',current,post],['Monthly income',current/12,post/12],['Portfolio value',value,value+totals.allocated],['Positions',previewHoldings.length,new Set(previewHoldings.map(h=>`${accountCode(h.account)}|${ticker(h.ticker)}`).concat(allocations.map(a=>`${accountCode(a.account)}|${ticker(a.ticker)}`))).size],['Portfolio income yield',value?current/value*100:0,(value+totals.allocated)?post/(value+totals.allocated)*100:0],['IG ISA value',accounts('IG'),accounts('IG')+allocations.filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0)],['Trading 212 ISA value',accounts('T212'),accounts('T212')+allocations.filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0)]].map((x,i)=>`<div><small>${x[0]}</small><span class="before-value">${i===3?x[1]:i===4?num(x[1]).toFixed(2)+'%':money(x[1])}</span><b>→</b><strong>${i===3?x[2]:i===4?num(x[2]).toFixed(2)+'%':money(x[2])}</strong></div>`).join('');
+    if($('portfolioComparison'))$('portfolioComparison').innerHTML=[['Annual income',current,post],['Monthly income',current/12,post/12],['Portfolio value',value,preview.projectedPortfolioValue],['Positions',previewHoldings.length,new Set(previewHoldings.map(h=>`${accountCode(h.account)}|${ticker(h.ticker)}`).concat(allocations.map(a=>`${accountCode(a.account)}|${ticker(a.ticker)}`))).size],['Portfolio income yield',preview.currentIncomeYield,preview.projectedIncomeYield],['IG ISA value',accounts('IG'),accounts('IG')+allocations.filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0)],['Trading 212 ISA value',accounts('T212'),accounts('T212')+allocations.filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0)]].map((x,i)=>`<div><small>${x[0]}</small><span class="before-value">${i===3?x[1]:i===4?num(x[1]).toFixed(2)+'%':money(x[1])}</span><b>→</b><strong>${i===3?x[2]:i===4?num(x[2]).toFixed(2)+'%':money(x[2])}</strong></div>`).join('');
     if($('previewCashStrip'))$('previewCashStrip').innerHTML=`<div><small>Transfer cash</small><strong>${money(routeBudget(state))}</strong></div><div><small>Allocated</small><strong>${money(totals.allocated)}</strong></div><div class="${totals.remaining>.005?'warning':''}"><small>Remaining cash</small><strong>${money(totals.remaining)}</strong></div>`;
     renderInstructions(state,allocations,totals,current,post,confirmed,complete);
   }
@@ -711,6 +729,7 @@
     targetScore,
     chairmanHoldingMetrics,
     chairmanMateriality,
-    scoutingStrategy
+    scoutingStrategy,
+    portfolioPreview
   };
 })(window);
