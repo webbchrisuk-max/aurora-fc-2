@@ -513,6 +513,38 @@
         :`${lens==='maximum'?'Maximum Income':'Sustainable'} mode uses Transfer's shared route engine with the selected holding reduced before concentration is tested.`
     );
     set('lastUpdated',new Date(state.updatedAt).toLocaleString('en-GB'));
+    renderLiveDiagnostics(state);
+  }
+
+  function diagnosticEnabled(){
+    return new URLSearchParams(location.search).get('chairmanDiagnostics')==='1';
+  }
+  function diagnosticTarget(state,wanted){
+    const all=arr(state.scouting?.targets);
+    return all.find(row=>ticker(row.ticker)===wanted)||null;
+  }
+  function renderLiveDiagnostics(state){
+    const host=$('chairmanLiveDiagnostics');
+    if(!host||!diagnosticEnabled())return;
+    host.hidden=false;
+    const engine=A().transferEngine;
+    set('transferEngineBuild',`TRANSFER ENGINE: ${engine?.BUILD||'NOT LOADED'}`);
+    const failing=['BCE','VICI','UPS','BT','WTB'].map(t=>diagnosticTarget(state,t)).find(Boolean);
+    const selected=[diagnosticTarget(state,'GCP'),failing].filter(Boolean);
+    const missing=[];
+    if(!selected.some(t=>ticker(t.ticker)==='GCP'))missing.push('GCP is not present in state.scouting.targets.');
+    if(!failing)missing.push('None of BCE, VICI, UPS, BT or WTB is present in state.scouting.targets.');
+    const strategies=['sustainable','maximum'].map(strategy=>({strategy,
+      values:engine?.chairmanStrategyFunnel?.(state,{strategy,budget:1000})||null}));
+    const strategyHost=$('chairmanDiagnosticStrategies');
+    if(strategyHost)strategyHost.innerHTML=`<h4>Automatic strategy funnels (live state)</h4><pre>${esc(JSON.stringify(strategies,null,2))}</pre>`;
+    const securityHost=$('chairmanDiagnosticSecurities');
+    const diagnostics=selected.map(target=>engine?.chairmanLiveDiagnostic?.(state,target)||{ticker:ticker(target.ticker),error:'DIAGNOSTIC_API_MISSING'});
+    if(securityHost)securityHost.innerHTML=`${missing.map(message=>`<p class="chairman-notice">${esc(message)}</p>`).join('')}
+      <h4>Selected securities and exact matching evidence</h4><pre>${esc(JSON.stringify(diagnostics,null,2))}</pre>`;
+    // Preserve the exact objects for remote Web Inspector without substituting a fixture.
+    console.info('[Chairman live diagnostic] strategies',strategies);
+    diagnostics.forEach(row=>console.info(`[Chairman live diagnostic] ${row.ticker}`,row));
   }
 
   function wire(){

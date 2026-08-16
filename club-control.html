@@ -246,6 +246,16 @@
   </div>
 </section>
 
+<section class="chairman-panel" id="chairmanLiveDiagnostics" hidden>
+  <div class="chairman-panel-head">
+    <div><span class="chairman-panel-kicker">Development diagnostic</span><h3>Live persisted Chairman state</h3>
+      <p class="chairman-copy">Reads the same Aurora state and Transfer engine as this running page. Add <code>?chairmanDiagnostics=1</code> to show this panel.</p></div>
+    <span class="chairman-panel-note" id="transferEngineBuild">TRANSFER ENGINE: NOT LOADED</span>
+  </div>
+  <div id="chairmanDiagnosticStrategies"></div>
+  <div id="chairmanDiagnosticSecurities"></div>
+</section>
+
 <p class="chairman-last-update">Aurora FC 2.0 • Chairman compares • Transfer simulates • Scouting recommends • <span id="lastUpdated">—</span></p>
 </main>
 </div>
@@ -279,8 +289,8 @@
 <div id="toast" class="chairman-toast"></div>
 
 <script src="aurora-core.js?v=10-stable-core"></script><script src="aurora-transfer-mission.js?v=200-workflow"></script>
-<script src="transfer-engine.js?v=021"></script>
-<script src="club-control.js?v=021"></script>
+<script src="transfer-engine.js?v=20260816-chairman-live-state-1"></script>
+<script src="club-control.js?v=20260816-chairman-live-state-1"></script>
 <script src="aurora-hero-art.js?v=20260815-1"></script>
 <script src="aurora-page-shell.js?v=200-stable-core"></script>
 <script src="club-control-command-ui.js?v=100"></script>

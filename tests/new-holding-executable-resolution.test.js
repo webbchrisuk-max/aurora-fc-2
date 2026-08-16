@@ -129,6 +129,28 @@ test('never-owned canonical universe evidence reaches both Chairman strategies a
   }
 });
 
+test('live diagnostic exposes raw universe evidence, provenance and strategy funnels',()=>{
+  const e=engine(),{state,bce}=chairmanControlFixture();
+  const diagnostic=e.chairmanLiveDiagnostic(state,bce,{nowMs:Date.parse('2026-08-16T12:00:00Z')});
+  assert.equal(diagnostic.engineBuild,e.BUILD);
+  assert.equal(diagnostic.canonicalKey,'TSX:BCE');
+  assert.equal(diagnostic.universeMatchCount,1);
+  assert.equal(diagnostic.scoutingUniverseMatch.brokerEligibility.T212,true);
+  assert.deepEqual(Array.from(diagnostic.evidenceRows,row=>row.source),['SCOUTING_TARGET','SCOUTING_UNIVERSE']);
+  assert.deepEqual(JSON.parse(JSON.stringify(diagnostic.resolvedBroker)),{value:'T212',source:'EXPLICIT_SECURITY_ELIGIBILITY'});
+  assert.equal(diagnostic.resolvedPrice.source,'SCOUTING_UNIVERSE');
+  assert.equal(diagnostic.resolvedIncome.value,7.2);
+  assert.equal(diagnostic.executable,true);
+
+  for(const strategy of ['sustainable','maximum']){
+    const funnel=e.chairmanStrategyFunnel(state,{budget:1000,strategy,maxTargets:2,nowMs:Date.parse('2026-08-16T12:00:00Z')});
+    assert.deepEqual(JSON.parse(JSON.stringify(funnel)),{
+      approvedCandidates:2,ranked:2,universeMatched:1,brokerResolved:2,priceResolved:2,executable:2,
+      allocations:2,allocationTickers:['BCE','GCP'],reason:null
+    });
+  }
+});
+
 test('a specifically blocked candidate does not kill an executable new security',()=>{
   const e=engine(),{state}=chairmanControlFixture();
   state.scouting.targets.push({securityId:'NYSE:BLOCKED',exchange:'NYSE',ticker:'BLOCKED',status:'pass',yieldPct:5,livePriceGbp:10,brokerEligibility:{IG:false,T212:false}});
