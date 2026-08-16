@@ -29,7 +29,7 @@
   function allocations(state=currentState()){return arr(route(state)?.allocations).filter(a=>num(a.amount)>0)}
   function routeReady(state=currentState()){
     const r=route(state),m=mission(state);
-    return !!(r?.locked&&m&&r.missionId===m.id&&['TRANSFER_READY','REGISTERED'].includes(String(r.status||'')));
+    return !!(r?.locked&&m&&r.missionId===m.id&&['LOCKED','PARTIALLY_REGISTERED','COMPLETE'].includes(String(m.status||'')));
   }
   function currentAllocation(state=currentState()){
     const id=$('regAllocation')?.value;
@@ -320,7 +320,7 @@
     return {
       ...existing,
       id:existing.id||$('draftId')?.value||uid('REGDRAFT'),
-      routeId:r?.id||'',missionId:m?.id||'',allocationId:c.a?.id||'',
+      routeId:r?.id||'',missionId:m?.id||'',allocationId:c.a?.id||'',legId:c.a?.legId||c.a?.id||'',
       transactionId:existing.transactionId||$('transactionId')?.value||uid('TX'),
       clientRequestId:existing.clientRequestId||$('clientRequestId')?.value||uid('REQ'),
       tradeDate:$('regDate')?.value||'',account:accountCode(c.a?.account),ticker:c.a?.ticker||'',name:c.a?.name||c.a?.ticker||'',
@@ -363,6 +363,9 @@
     saveConnection();
     const c=calcExecution();if(!c.ready)return;
     let draft=saveDraft();if(!draft||draft.status==='CONFIRMED')return;
+    const canonicalCheck=window.AuroraTransferMission.validateRegistration(currentState(),{missionId:draft.missionId,legId:draft.legId,
+      ticker:draft.ticker,account:draft.account,shares:draft.shares,price:draft.priceInput});
+    if(!canonicalCheck.ok){toast(canonicalCheck.errors.join(' '));return}
     $('registerPurchase').disabled=true;set('executionState','WRITING');
     A().core.update(s=>({...s,transfer:{...s.transfer,registrationDrafts:arr(s.transfer.registrationDrafts).map(d=>d.id===draft.id?{...d,status:'SENDING',error:'',updatedAt:now()}:d)}}));
     try{
@@ -372,7 +375,7 @@
           transactionId:draft.transactionId,clientRequestId:draft.clientRequestId,tradeDate:draft.tradeDate,
           account:draft.account,ticker:draft.ticker,name:draft.name,side:'BUY',shares:draft.shares,priceInput:draft.priceInput,
           priceUnit:(draft.currency==='GBP'&&draft.priceUnit==='PENCE'?'PENCE':'GBP'),currency:draft.currency,fxRateToGbp:draft.fxRateToGbp,feesNative:draft.feesNative,
-          totalCostGbp:draft.totalCostGbp,missionId:draft.missionId,routeId:draft.routeId,allocationId:draft.allocationId,
+          totalCostGbp:draft.totalCostGbp,missionId:draft.missionId,routeId:draft.routeId,allocationId:draft.allocationId,legId:draft.legId,
           strategy:r?.strategy||'',recommendation:target?.recommendation||'',confidence:num(target?.confidence),
           expectedAnnualIncomeGbp:draft.expectedAnnualIncomeGbp
         },
@@ -397,7 +400,7 @@
       const receipt={
         id:result.receiptId||result.backendReceiptId||uid('RECEIPT'),
         backendReceiptId:result.receiptId||result.backendReceiptId||'',
-        transactionId:draft.transactionId,routeId:draft.routeId,missionId:draft.missionId,allocationId:draft.allocationId,
+        transactionId:draft.transactionId,routeId:draft.routeId,missionId:draft.missionId,allocationId:draft.allocationId,legId:draft.legId,
         account:draft.account,ticker:draft.ticker,totalCostGbp:num(result.transaction.totalCostGbp||draft.totalCostGbp),
         confirmedAt:result.confirmedAt||now(),duplicate:!!result.duplicate,source:'AURORADATA2'
       };
@@ -424,7 +427,9 @@
         const nextAllocations=arr(s.transfer?.route?.allocations).map(a=>a.id===draft.allocationId?{...a,status:'REGISTERED'}:a);
         const allRegistered=nextAllocations.filter(a=>num(a.amount)>0).every(a=>a.status==='REGISTERED');
         const nextRoute=s.transfer?.route?{...s.transfer.route,allocations:nextAllocations,status:allRegistered?'REGISTERED':s.transfer.route.status,locked:true,updatedAt:receipt.confirmedAt}:s.transfer?.route;
-        const nextMission=s.mission&&allRegistered?{...s.mission,status:'REGISTERED',updatedAt:receipt.confirmedAt}:s.mission;
+        const reconciled=window.AuroraTransferMission.reconcile(s.mission,nextRoute,nextDrafts,receipt.confirmedAt);
+        const nextMission=reconciled.mission;
+        Object.assign(nextRoute,reconciled.route);
         const relatedDrafts=nextDrafts.filter(d=>d.routeId===nextRoute?.id&&d.status==='CONFIRMED');
         const completedMission=allRegistered&&nextRoute&&nextMission?{
           missionId:nextMission.id,routeId:nextRoute.id,paydayDate:nextMission.paydayDate||'',strategy:nextRoute.strategy||'',

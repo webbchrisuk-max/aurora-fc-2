@@ -405,7 +405,7 @@
     if(fundingPlan&&Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0))>.011)warnings.push(`Pot funding view is out of sync by ${money(Math.abs((Number(fundingPlan.allocated)||0)-(Number(c.auto.potsDue)||0)))}`);
     const stale=active.filter(b=>{const d=parseLocalDate(b.due);return d&&String(b.frequency||'one-off')==='one-off'&&d.getTime()<Date.now()-86400000});
     if(stale.length)warnings.push(`${stale.length} overdue one-off bill${stale.length===1?'':'s'} still active`);
-    const missionGate=!missionIsInFlight(state.mission)||state.mission?.status==='FINANCE_APPROVED';
+    const missionGate=!missionIsInFlight(state.mission)||state.mission?.status==='DRAFT';
     return {critical,warnings,billStatus:critical.some(x=>/bill needs a due date|funding source/.test(x))?'ACTION':'READY',holdingStatus:holdingFunded.length?(c.auto.holdingPot?'READY':'MISSING'):'NOT NEEDED',goalStatus:`${money(c.auto.potsDue)} SCHEDULED`,missionStatus:missionGate?'OPEN':'LOCKED'};
   }
 
@@ -515,7 +515,7 @@
   }
 
   function terminalMission(m){
-    return !m || ['REGISTERED','COMPLETED','CANCELLED'].includes(String(m.status||''));
+    return !m || ['COMPLETE','COMPLETED','CANCELLED'].includes(String(m.status||''));
   }
   function missionIsInFlight(m){
     return !!(m&&m.status&&!terminalMission(m));
@@ -1023,7 +1023,7 @@
       msg.textContent=`Blocked: Finance has ${audit.critical.length} unresolved planning gap${audit.critical.length===1?'':'s'}. Fix the Payday Readiness items before releasing money to Transfer.`;
       btn.disabled=true; return;
     }
-    if(missionIsInFlight(m)&&m.status!=='FINANCE_APPROVED'){
+    if(missionIsInFlight(m)&&m.status!=='DRAFT'){
       msg.className='notice';
       msg.textContent=`Current mission ${money(m.approvedBudget||0)} is ${m.status}. This screen is calculating the next payday forecast; release is locked until that mission is completed/registered or cancelled.`;
       btn.disabled=true; return;
@@ -1052,20 +1052,13 @@
       alert('Finance cannot release a mission while payday-planning gaps remain. Fix the Payday Readiness items first.');
       return;
     }
-    if(missionIsInFlight(current.mission)&&current.mission.status!=='FINANCE_APPROVED'){
+    if(missionIsInFlight(current.mission)&&current.mission.status!=='DRAFT'){
       alert('The current released mission is still in progress. Finance will keep calculating the next payday forecast, but a new mission cannot be released until the current mission is registered/completed or cancelled.');
       return;
     }
     const replacingTerminal=!!(current.mission&&terminalMission(current.mission));
-    const mission={
-      id:current.mission?.status==='FINANCE_APPROVED'?current.mission.id:A().core.uid('MISSION'),
-      approvedBudget:Number(amount.toFixed(2)),
-      status:'FINANCE_APPROVED',
-      paydayDate:plan.paydayDate||'',
-      createdAt:current.mission?.createdAt||isoNow(),
-      updatedAt:isoNow(),
-      source:'Finance',
-      financeSnapshot:{
+    const missionId=current.mission?.status==='DRAFT'?current.mission.id:A().core.uid('MISSION');
+    const financeSnapshot={
         totalCash:Number(c.totalCash.toFixed(2)),
         expectedWages:Number((c.plan.expectedWages||0).toFixed(2)),
         wagesReceived:Number((c.plan.wagesReceived||0).toFixed(2)),
@@ -1086,8 +1079,9 @@
         potsDue:Number(c.auto.potsDue.toFixed(2)),
         protectedCash:Number(plan.protectedCash.toFixed(2)),
         safeSurplus:Number(c.safeSurplus.toFixed(2))
-      }
-    };
+      };
+    const mission=window.AuroraTransferMission.create({id:missionId,paydayDate:plan.paydayDate||'',amount,
+      strategy:current.scouting?.strategy||'',createdAt:current.mission?.createdAt||isoNow(),financeSnapshot});
     A().core.update(s=>({
       ...s,
       finance:{
@@ -1113,7 +1107,7 @@
     const c=calc(s.finance?.plan||{},s);
     const currentBudget=m?.approvedBudget!=null?Number(m.approvedBudget):0;
     const nextSafe=Number(c.safeSurplus)||0;
-    ui.text('missionStatus',m?.status==='FINANCE_APPROVED'?'FINANCE APPROVED':m?.status||'NO ACTIVE MISSION');
+    ui.text('missionStatus',m?.status==='DRAFT'?'PAYDAY MONEY READY':m?.status||'NO ACTIVE MISSION');
     ui.text('missionAmount',m?.approvedBudget!=null?money(m.approvedBudget):'£0.00');
     ui.text('missionMeta',m?`${m.id}${m.paydayDate?' • released payday '+m.paydayDate:''}`:'No released mission is active.');
     ui.text('reconNextSafe',money(nextSafe));

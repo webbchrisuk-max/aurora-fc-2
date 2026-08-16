@@ -40,7 +40,7 @@ const upper=v=>String(v||'').trim().toUpperCase();
 function routeState(s){
   const route=s?.transfer?.route||null;
   const status=upper(route?.status);
-  const locked=!!route&&(route.locked===true||['LOCKED','REGISTERED','IN_PROGRESS','COMPLETE'].includes(status));
+  const locked=!!route&&(route.locked===true||['LOCKED','PARTIALLY_REGISTERED','COMPLETE'].includes(status));
   const allocations=arr(route?.allocations).filter(a=>num(a.amount)>0);
   const drafts=arr(s?.transfer?.registrationDrafts).filter(d=>!route?.id||d.routeId===route.id);
   const confirmed=drafts.filter(d=>upper(d.status)==='CONFIRMED');

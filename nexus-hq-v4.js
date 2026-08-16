@@ -79,7 +79,7 @@ async function loadDashboard(){
 }
 
 function stageLabel(v){
-  return ({FINANCE_APPROVED:'Finance',SCOUTING_READY:'Scouting',TRANSFER_READY:'Transfer',REGISTERED:'Registered'})[String(v||'')]||'No mission';
+  return ({DRAFT:'Finance',READY:'Transfer',LOCKED:'Registration',PARTIALLY_REGISTERED:'Registration',COMPLETE:'Income'})[String(v||'')]||'No mission';
 }
 function financeHoldingPot(s){
   return arr(s.finance?.pots).find(p=>!p.archived&&norm(p.name)==='holding pot')||null;
@@ -103,7 +103,7 @@ function attentionItems(s,metrics,nd){
   if(waiting.length){
     items.push({tone:'block',icon:'!',title:`${waiting.length} purchase${waiting.length===1?'':'s'} waiting at Registration`,note:'Broker reality still needs confirmation.',href:'registration.html',link:'Open Registration'});
   }
-  if(mission&&String(mission.status)==='TRANSFER_READY'){
+  if(mission&&String(mission.status)==='LOCKED'){
     items.push({tone:'warn',icon:'↗',title:'Transfer route is ready for execution',note:`${money(mission.approvedBudget)} is in the active mission.`,href:'transfer.html',link:'Open Transfer'});
   }
   if(connection!=='CONNECTED'){
@@ -752,7 +752,7 @@ function renderMission(s){
   set('hq3MissionIncome',`${money(routeIncome(r))}/yr`);
   const drafts=arr(s.transfer?.registrationDrafts),confirmed=drafts.filter(d=>String(d.status||'').toUpperCase()==='CONFIRMED').length;
   set('hq3MissionRegistration',`${confirmed}/${drafts.length||arr(r?.allocations).length||0}`);
-  const stages=['FINANCE_APPROVED','SCOUTING_READY','TRANSFER_READY','REGISTERED'],idx=stages.indexOf(String(m.status||''));
+  const stages=['DRAFT','READY','LOCKED','PARTIALLY_REGISTERED','COMPLETE'],idx=stages.indexOf(String(m.status||''));
   document.querySelectorAll('[data-hq3-stage]').forEach((el,i)=>{
     el.classList.toggle('complete',idx>i);el.classList.toggle('active',idx===i);
   });

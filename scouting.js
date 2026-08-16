@@ -121,7 +121,7 @@
 
   function scoutingLocked(state=A().core.read()){
     return !!state.transfer?.route?.locked ||
-      ['TRANSFER_READY','REGISTERED','COMPLETED'].includes(String(state.mission?.status||''));
+      ['LOCKED','PARTIALLY_REGISTERED','COMPLETE'].includes(String(state.mission?.status||''));
   }
 
   function incomeScoreFromYield(y){
@@ -318,8 +318,7 @@
       return {
         ...next,
         scouting:{...next.scouting,status:'SCOUTING_REVIEW',updatedAt:now()},
-        mission:m?.status==='SCOUTING_READY'
-          ?{...m,status:'FINANCE_APPROVED',updatedAt:now()}:m,
+        mission:m,
         transfer:{
           ...next.transfer,
           route:route?.locked?route:null,
@@ -373,9 +372,7 @@
         decisionHistory:[history,...arr(s.scouting?.decisionHistory)].slice(0,20),
         updatedAt:now()
       },
-      mission:s.mission?.status==='FINANCE_APPROVED'
-        ?{...s.mission,status:'SCOUTING_READY',updatedAt:now()}
-        :s.mission,
+      mission:s.mission,
       portfolio:{...s.portfolio,topAuroraPlayer:top.ticker},
       decision:{
         title:`Scouting recommends ${top.ticker}`,
