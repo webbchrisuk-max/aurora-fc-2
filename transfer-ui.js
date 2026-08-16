@@ -74,7 +74,9 @@ function installScoutingAuthorityBridge(){
       })
       .map(t=>({
         target:t,
-        id:String(t?.id||ticker(t?.ticker)),
+        // The engine's allow-list is keyed by canonical market identity, not
+        // by Scouting's presentation/database row id.
+        id:String(engine.securityId?.(t)||t?.securityId||t?.id||ticker(t?.ticker)),
         rank:activeRank(t,strategy),
         score:activeScore(t,strategy),
         ticker:ticker(t?.ticker)

@@ -373,6 +373,19 @@
     if(String(t.status||'').toLowerCase()==='block')return 0;
     return Math.max(0,base);
   }
+  function canonicalRank(t,strategy){
+    const value=num(strategy==='maximum'?t?.maximumRank:t?.rank);
+    return value>0?value:Number.MAX_SAFE_INTEGER;
+  }
+  function canonicalScore(t,strategy){
+    const value=num(strategy==='maximum'?t?.maximumScore:t?.sustainableScore);
+    return value>0?value:targetScore(t,strategy);
+  }
+  function canonicalPriority(a,b,strategy){
+    return canonicalRank(a,strategy)-canonicalRank(b,strategy)||
+      canonicalScore(b,strategy)-canonicalScore(a,strategy)||
+      securityId(a).localeCompare(securityId(b));
+  }
   function brokerEligible(t,scope,state){
     const broker=effectiveBroker(state,t);
     if(broker==='CHECK')return false;
@@ -573,8 +586,8 @@
       .filter(t=>brokerScope==='both'||t.brokerRoute.account===brokerScope)
       .filter(t=>!allowedIds||allowedIds.has(securityId(t)));
 
-    candidates=candidates.map(t=>{
-      const scoutScore=Math.max(1,targetScore(t,strategy));
+    candidates=candidates.sort((a,b)=>canonicalPriority(a,b,strategy)).map(t=>{
+      const scoutScore=Math.max(1,canonicalScore(t,strategy));
       const fitFactor=baseRows?concentrationFactor(baseRows,t,0):1;
       const incomeScore=Math.max(.0001,returnPriority(t,strategy));
       return {
@@ -585,12 +598,7 @@
         _fitFactor:fitFactor,
         _effectiveBroker:t.brokerRoute.account
       };
-    }).sort((a,b)=>
-      b._routeScore-a._routeScore||
-      b._incomeScore-a._incomeScore||
-      b._scoutScore-a._scoutScore||
-      num(a.rank)-num(b.rank)
-    );
+    });
 
     if(!(budget>0)||!candidates.length){
       const emptyMin=Math.max(inc,num(settings.minAllocation)||250);
@@ -699,6 +707,7 @@
       a.amount=Number(Math.max(0,a.amount).toFixed(2));
       a.expectedShares=Math.floor(a.amount/Math.max(0,num(a.priceEvidence?.priceGbp)))||0;
       a.expectedAnnualIncome=Number((a.amount*(a.yieldPct/100)).toFixed(6));
+      a.executionReason=a.amount>0?'ALLOCATED':'EXECUTABLE — £0';
     });
 
     const route={
@@ -717,6 +726,25 @@
     };
     Object.assign(route,routeSummary(route));
     route.evaluatedCandidates=evaluated;
+    const allocatedById=new Map(allocations.map(a=>[a.securityId,a]));
+    const approved=evaluated.filter(t=>settings.allowActiveScouting===true||(t.approvedForTransfer===true&&
+      String(t.approvalBatchId||'')===String(state?.scouting?.approvedBatchId||'')));
+    route.candidateDecisions=approved.sort((a,b)=>canonicalPriority(a,b,strategy)).map((candidate,index)=>{
+      const allocation=allocatedById.get(candidate.securityId);
+      let reason='EXECUTABLE — £0';
+      if(String(candidate.status||'').toLowerCase()==='block')reason='SKIPPED — BLOCK status';
+      else if(candidate.blockingReasons.includes('MISSING_BROKER_ROUTE'))reason='SKIPPED — broker unavailable';
+      else if(candidate.blockingReasons.includes('MISSING_PRICE_EVIDENCE'))reason='SKIPPED — missing price';
+      else if(candidate.blockingReasons.includes('MISSING_INCOME_EVIDENCE'))reason='SKIPPED — missing required income evidence';
+      else if(candidate.blockingReasons.length)reason=`SKIPPED — ${candidate.blockingReasons[0].toLowerCase().replaceAll('_',' ')}`;
+      else if(allocation?.amount>0)reason='ALLOCATED';
+      else if(!allocation&&remaining<Math.max(inc,min)-.005)reason='SKIPPED — budget exhausted';
+      else if(!allocation)reason='SKIPPED — allocation / concentration constraint';
+      return {leagueRank:canonicalRank(candidate,strategy)<Number.MAX_SAFE_INTEGER?canonicalRank(candidate,strategy):index+1,
+        strategyScore:canonicalScore(candidate,strategy),securityId:candidate.securityId,ticker:candidate.ticker,
+        executable:candidate.simulationEligible&&String(candidate.status||'').toLowerCase()!=='block',
+        allocation:allocation?.amount||0,reason};
+    });
     return route;
   }
 
@@ -814,6 +842,8 @@
     buildMissionPlan,
     routeSummary,
     targetScore,
+    canonicalRank,
+    canonicalScore,
     concentrationSnapshot,
     desiredTargetCount,
     effectiveMinimum,
