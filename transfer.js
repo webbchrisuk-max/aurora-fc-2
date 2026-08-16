@@ -279,18 +279,7 @@
   }
 
   function unlockRoute(){
-    const state=A().core.read(),r=state.transfer?.route;
-    if(!r?.locked)return;
-    if(arr(state.transfer?.registrationDrafts).some(d=>d.routeId===r.id&&d.status!=='DRAFT')){
-      toast('Registration work exists for this route. Remove it before unlocking.');
-      return;
-    }
-    A().core.update(s=>({
-      ...s,
-      transfer:{...s.transfer,route:{...s.transfer.route,status:'DRAFT',locked:false,updatedAt:now()},updatedAt:now()},
-      mission:{...s.mission,status:'READY',executionStatus:'READY',updatedAt:now()}
-    }));
-    toast('Route unlocked. Finance budget is still unchanged.');
+    rollbackMission();
   }
 
   function setSettings(){
@@ -476,6 +465,24 @@
     set('handoffSafe',m?.financeSnapshot?.safeSurplus!=null?money(m.financeSnapshot.safeSurplus):'—');
     set('handoffCommitments',m?.financeSnapshot?.commitments!=null?money(m.financeSnapshot.commitments):'—');
     set('handoffState',validMission(m)?'LOADED':'WAITING');
+    const control=$('missionRollback'),notice=$('missionRollbackNotice');
+    const rollback=w.AuroraTransferMission?.rollbackAction?.(state);
+    if(control){control.hidden=!rollback?.action;control.disabled=!rollback?.action;control.textContent=rollback?.action?rollback.label:'';control.dataset.action=rollback?.action||''}
+    if(notice){notice.hidden=!rollback?.disabled;notice.textContent=rollback?.disabled?rollback.label:''}
+  }
+
+  function rollbackMission(){
+    const state=A().core.read(),offer=w.AuroraTransferMission?.rollbackAction?.(state);
+    if(!offer?.action)return;
+    const partial=offer.action==='CANCEL_REMAINING_LEGS';
+    const prompt=partial
+      ?'Confirmed purchases will remain. Only unregistered legs will be cancelled.'
+      :`${offer.label} this mission?\n\nNo registered purchases will be changed.`;
+    if(!w.confirm(prompt))return;
+    try{
+      A().core.update(s=>w.AuroraTransferMission.rollback(s,offer.action,offer.label,now()));
+      toast(`${offer.label} completed. Mission history was retained.`);
+    }catch(error){toast(error?.message||'Mission rollback could not be completed.')}
   }
 
   function renderTargets(state){
@@ -597,7 +604,7 @@
     const valid=totals.allocated>0&&totals.allocated<=budget+.005&&unresolved<=.005&&
       r.missionId===state.mission?.id&&strategyMatches&&scoutingReady;
     if(approve)approve.disabled=!valid||r.locked;
-    if(unlock)unlock.hidden=!r.locked;
+    if(unlock)unlock.hidden=w.AuroraTransferMission?.rollbackAction?.(state)?.action!=='UNLOCK_ROUTE';
 
     const guard=$('routeGuard');
     if(guard){
@@ -687,6 +694,7 @@
     $('resetRoute')?.addEventListener('click',resetRoute);
     $('approveRoute')?.addEventListener('click',approveRoute);
     $('unlockRoute')?.addEventListener('click',unlockRoute);
+    $('missionRollback')?.addEventListener('click',rollbackMission);
     $('copyBrokerInstructions')?.addEventListener('click',copyInstructions);
     document.addEventListener('change',e=>{
       const check=e.target.closest('[data-execution-check]');

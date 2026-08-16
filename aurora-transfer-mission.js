@@ -77,5 +77,67 @@
     if(!m||!r)return {registered:0,total:0,actualInvested:0,remaining:num(m?.approvedBudget),status:m?.status||null};
     const x=reconcile(m,r,d,m.updatedAt);return {...x.mission.registrationStatus,actualInvested:x.mission.actualInvested,remaining:x.mission.amountRemaining,status:x.mission.status};
   }
-  return Object.freeze({STATUS,create,plan,lock,validateRegistration,reconcile,progress,stableLegId});
+
+  function registeredLegIds(state){
+    const m=state?.mission,r=state?.transfer?.route,ids=new Set();
+    arr(r?.allocations).filter(l=>l.status==='REGISTERED'||l.transactionId).forEach(l=>ids.add(String(l.legId||l.id)));
+    arr(state?.transfer?.registrationDrafts).filter(d=>d.status==='CONFIRMED'&&String(d.missionId)===String(m?.id)).forEach(d=>ids.add(String(d.legId||d.allocationId)));
+    arr(state?.registration?.receipts).filter(d=>String(d.missionId)===String(m?.id)).forEach(d=>ids.add(String(d.legId||d.allocationId)));
+    return ids;
+  }
+
+  function rollbackAction(state){
+    const status=String(state?.mission?.status||'');
+    if(status===STATUS.DRAFT)return {action:'RESET_MISSION',label:'Reset Mission'};
+    if(status===STATUS.READY)return {action:'RETURN_TO_DRAFT',label:'Return to Draft'};
+    if(status===STATUS.LOCKED)return registeredLegIds(state).size
+      ?{action:null,label:'Rollback unavailable — purchases recorded',disabled:true}
+      :{action:'UNLOCK_ROUTE',label:'Unlock Route'};
+    if(status===STATUS.PARTIAL)return {action:'CANCEL_REMAINING_LEGS',label:'Cancel / Rollback Remaining Legs'};
+    if(status===STATUS.COMPLETE)return {action:null,label:'MISSION COMPLETE — REAL TRANSACTIONS RECORDED',disabled:true};
+    if(status===STATUS.CANCELLED||status===STATUS.ERROR)return {action:'RESTORE_MISSION',label:'Restore Mission'};
+    return null;
+  }
+
+  function rollback(state,action,reason='',stamp=new Date().toISOString()){
+    const m=state?.mission,r=state?.transfer?.route;
+    if(!m)throw new Error('Mission does not exist.');
+    const offered=rollbackAction(state);
+    if(!offered?.action||offered.action!==action)throw new Error(offered?.label||'Rollback is not allowed for this mission.');
+    const previousStatus=m.status,registered=registeredLegIds(state);
+    const allLegIds=arr(r?.allocations).map(l=>String(l.legId||l.id));
+    let mission={...m},route=r?{...r,allocations:arr(r.allocations).map(l=>({...l}))}:null;
+    let affected=[];
+    if(action==='RESET_MISSION'||action==='RETURN_TO_DRAFT'){
+      affected=allLegIds;
+      mission={...mission,status:STATUS.DRAFT,executionStatus:STATUS.DRAFT,allocationPlan:null,brokerRoutes:[],legIds:[],amountAllocated:0,
+        amountRemaining:round(mission.approvedBudget),actualInvested:0,registrationStatus:{registered:0,total:0},completionTimestamp:null};
+      route=null;
+    }else if(action==='UNLOCK_ROUTE'){
+      if(registered.size)throw new Error('Registered purchases prevent this route from being unlocked.');
+      affected=allLegIds;
+      mission={...mission,status:STATUS.READY,executionStatus:STATUS.READY,lockedAt:null};
+      route={...route,status:STATUS.READY,locked:false,lockedAt:null};
+    }else if(action==='CANCEL_REMAINING_LEGS'){
+      affected=allLegIds.filter(id=>!registered.has(id));
+      route={...route,allocations:route.allocations.map(l=>registered.has(String(l.legId||l.id))?l:{...l,status:'CANCELLED'}),status:STATUS.CANCELLED,locked:true};
+      mission={...mission,status:STATUS.CANCELLED,executionStatus:STATUS.CANCELLED,amountAllocated:round(mission.actualInvested),
+        amountRemaining:round(num(mission.approvedBudget)-num(mission.actualInvested)),completionTimestamp:null,
+        restorePoint:{status:STATUS.PARTIAL,executionStatus:STATUS.PARTIAL,affectedLegIds:affected}};
+    }else if(action==='RESTORE_MISSION'){
+      const target=m.restorePoint?.status||m.lastValidStatus||(registered.size?STATUS.PARTIAL:(r?.locked?STATUS.LOCKED:r?STATUS.READY:STATUS.DRAFT));
+      affected=arr(m.restorePoint?.affectedLegIds);
+      mission={...mission,status:target,executionStatus:target};
+      delete mission.restorePoint;
+      if(route){
+        const restoredLegs=route.allocations.map(l=>affected.includes(String(l.legId||l.id))&&l.status==='CANCELLED'?{...l,status:'PLANNED'}:l);
+        route={...route,allocations:restoredLegs,status:target,locked:[STATUS.LOCKED,STATUS.PARTIAL].includes(target)};
+      }
+    }
+    const entry={timestamp:stamp,previousStatus,newStatus:mission.status,affectedLegIds:affected,action,reason:reason||offered.label};
+    mission={...mission,updatedAt:stamp,history:[...arr(m.history),entry]};
+    if(route)route={...route,updatedAt:stamp};
+    return {...state,mission,transfer:{...(state.transfer||{}),route,updatedAt:stamp},updatedAt:stamp};
+  }
+  return Object.freeze({STATUS,create,plan,lock,validateRegistration,reconcile,progress,stableLegId,registeredLegIds,rollbackAction,rollback});
 });

@@ -66,6 +66,11 @@
 .mission-command-budget{margin-top:11px;color:#baffd0;font-size:clamp(45px,5vw,76px);font-weight:1000;letter-spacing:-.06em}
 .mission-command-card>strong{color:#baffd0;font-size:11px}
 .mission-command-card p{color:#799083;font-size:9px;line-height:1.5}
+.mission-actions{display:grid;gap:7px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.mission-actions small{color:#c79b65;font-size:7px;font-weight:900;letter-spacing:.12em}
+.mission-actions .mission-rollback{border-color:rgba(240,168,72,.55);background:rgba(137,72,15,.2);color:#ffd39a;text-align:center}
+.mission-actions .mission-rollback:hover{background:rgba(175,84,18,.34)}
+.mission-actions span{color:#f0bf78;font-size:8px;font-weight:800;line-height:1.4}
 .mission-command-lock{padding:10px;border:1px solid rgba(89,255,154,.09);border-radius:10px;background:rgba(89,255,154,.02);color:#728979;font-size:8px}
 
 .transfer-scoreboard{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
