@@ -56,6 +56,10 @@
   function evidenceRows(state,target){
     const sources=[
       ['SCOUTING_TARGET',arr(state?.scouting?.targets)],
+      // Global Scouting is the canonical security/evidence registry.  A newly
+      // promoted security has no holding or historic route yet, so excluding
+      // this source made its explicit broker evidence invisible to Chairman.
+      ['SCOUTING_UNIVERSE',arr(state?.scouting?.universe)],
       ['CURRENT_MARKET_EVIDENCE',arr(state?.market?.evidence).concat(arr(state?.marketEvidence),arr(state?.marketData?.evidence),arr(state?.marketData?.quotes),arr(state?.marketData?.prices))],
       ['TRANSFER_MARKET_EVIDENCE',arr(state?.transfer?.marketEvidence).concat(arr(state?.transfer?.quotes))],
       ['LEGACY_MIGRATED_PRICE',arr(state?.scouting?.legacyPriceRecords).concat(arr(state?.migration?.priceRecords),arr(state?.legacy?.prices))]
@@ -99,8 +103,8 @@
     const rows=[target,...evidenceRows(state,target).map(x=>x.row),
       ...arr(state?.market?.dividends).filter(row=>sameSecurity(target,row,state)),
       ...arr(state?.marketData?.dividends).filter(row=>sameSecurity(target,row,state))];
-    const row=rows.find(item=>num(item?.yieldPct||item?.dividendYieldPct||item?.annualYieldPct)>0);
-    const yieldPct=Math.max(0,num(row?.yieldPct||row?.dividendYieldPct||row?.annualYieldPct));
+    const row=rows.find(item=>num(item?.yieldPct||item?.dividendYieldPct||item?.dividendYield||item?.annualYieldPct||item?.legacyYieldPct)>0);
+    const yieldPct=Math.max(0,num(row?.yieldPct||row?.dividendYieldPct||row?.dividendYield||row?.annualYieldPct||row?.legacyYieldPct));
     return {supported:yieldPct>0,yieldPct,source:row===target?'SCOUTING_TARGET':row?'MARKET_DIVIDEND_EVIDENCE':null};
   }
 
@@ -250,6 +254,46 @@
         blockingReasons:candidate.blockingReasons
       };
     });
+  }
+
+  /** Development/QA trace of the exact evidence gates used by Chairman. */
+  function chairmanTrace(state,target,opts={}){
+    const candidate=resolveExecutableCandidate(target,{state,purpose:'CHAIRMAN_TRACE',nowMs:opts.nowMs});
+    const matched=evidenceRows(state,target).map(({source,row})=>({source,row}));
+    const holding=candidate.existingExposure;
+    return {
+      scouting:{securityId:candidate.securityId,ticker:candidate.ticker,exchange:candidate.exchange,
+        country:target?.country||null,currency:target?.currency||null,assetType:target?.assetType||null,
+        sustainableScore:num(target?.sustainableScore),maximumScore:num(target?.maximumScore),
+        approvalState:{status:target?.status||null,approvedForTransfer:target?.approvedForTransfer===true,
+          approvalBatchId:target?.approvalBatchId||null},transferPermitted:target?.transferPermitted!==false},
+      market:{lookupKey:candidate.securityId,matchedRecords:matched.map(x=>({source:x.source,securityId:securityId(x.row),
+          price:x.row?.livePriceGbp??x.row?.priceGbp??x.row?.livePrice??x.row?.price??x.row?.legacyPriceGbp??null,
+          priceUnit:x.row?.priceUnit||x.row?.unit||null,currency:x.row?.currency||x.row?.quoteCurrency||null,
+          timestamp:evidenceTimestamp(x.row),dividendYield:x.row?.yieldPct??x.row?.dividendYieldPct??x.row?.dividendYield??x.row?.legacyYieldPct??null,
+          annualDividend:x.row?.annualDividend??x.row?.annualDividendPerShare??x.row?.legacyAnnualDps??null})),
+        currentPriceGbp:candidate.priceEvidence.priceGbp,freshness:candidate.priceEvidence.freshness,
+        timestamp:candidate.priceEvidence.timestamp,dividendYield:candidate.yieldPct,incomeSource:candidate.incomeEvidence.source},
+      broker:{igEligible:candidate.brokerRoute.eligible.includes('IG'),t212Eligible:candidate.brokerRoute.eligible.includes('T212'),
+        remembered:candidate.brokerRoute.remembered,preferred:candidate.brokerRoute.preferred,
+        existingHoldingBrokers:holding.accounts,final:candidate.brokerRoute.account,source:candidate.brokerRoute.source,
+        blockingReason:candidate.brokerRoute.supported?null:'No eligible IG or T212 account exists in matched canonical security evidence.'},
+      portfolio:{existingHolding:holding.holdingCount>0,sharesOwned:holding.currentShares,currentExposureGbp:holding.currentValueGbp},
+      executable:{securityResolved:candidate.diagnostics.security,marketEvidenceResolved:candidate.diagnostics.price,
+        brokerResolved:candidate.diagnostics.broker,incomeEvidenceResolved:candidate.diagnostics.dividend,
+        executable:candidate.simulationEligible,blockingReasons:candidate.blockingReasons}
+    };
+  }
+
+  function chairmanStrategyTrace(state,opts={}){
+    const strategy=opts.strategy==='maximum'?'maximum':'sustainable';
+    const route=simulate(state,{...opts,strategy,allowActiveScouting:opts.allowActiveScouting!==false});
+    const candidates=arr(state?.scouting?.targets);
+    const ranked=candidates.filter(t=>String(t.status||'').toLowerCase()!=='block');
+    const executable=route.evaluatedCandidates.filter(t=>t.simulationEligible&&String(t.status||'').toLowerCase()!=='block');
+    return {strategy,candidateCount:candidates.length,rankedCount:ranked.length,executableCount:executable.length,
+      routeInputCount:executable.length,routeOutputCount:route.allocations.length,allocationProduced:route.allocations.length>0,
+      reason:route.reason||null,route,traces:candidates.map(t=>chairmanTrace(state,t,opts))};
   }
 
   function targetScore(t,strategy){
@@ -697,6 +741,8 @@
     resolveExistingExposure,
     resolveIncomeEvidence,
     executableDiagnostics,
+    chairmanTrace,
+    chairmanStrategyTrace,
     resolveMarketPrice
   };
 })(window);

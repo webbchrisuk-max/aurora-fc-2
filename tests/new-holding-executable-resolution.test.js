@@ -32,6 +32,24 @@ function fixture(){
   }};
 }
 
+function chairmanControlFixture(){
+  const gcp={securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',name:'GCP Infrastructure',country:'UK',currency:'GBP',assetType:'INVESTMENT_TRUST',
+    preferredAccount:'IG ISA',status:'pass',transferPermitted:true,approvedForTransfer:true,approvalBatchId:'TRACE-1',
+    sustainableScore:92,maximumScore:81,yieldPct:6.1,livePriceGbp:1.05};
+  const bce={securityId:'TSX:BCE',exchange:'TSX',ticker:'BCE',name:'BCE Inc.',country:'Canada',currency:'CAD',assetType:'EQUITY',
+    preferredAccount:'CHECK',status:'pass',transferPermitted:true,approvedForTransfer:true,approvalBatchId:'TRACE-1',
+    sustainableScore:95,maximumScore:99};
+  return {gcp,bce,state:{
+    scouting:{approvedBatchId:'TRACE-1',targets:[gcp,bce],universe:[
+      {securityId:'TSX:BCE',exchange:'TSX',ticker:'BCE',country:'Canada',currency:'CAD',assetType:'EQUITY',
+        legacyPriceGbp:28,priceUnit:'CAD',legacyYieldPct:7.2,legacyAnnualDps:3.99,
+        quoteUpdatedAt:'2026-08-16T10:00:00Z',brokerEligibility:{IG:false,T212:true}}
+    ]},
+    transfer:{settings:{minAllocation:250,increment:25}},
+    squad:{holdings:[{securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',account:'IG ISA',status:'ACTIVE',shares:100,livePriceGbp:1.05}]}
+  }};
+}
+
 test('an existing holding can be simulated from registry evidence',()=>{
   const e=engine(),{state,existing}=fixture();
   const candidate=e.resolveExecutableCandidate(existing,{state});
@@ -85,4 +103,36 @@ test('a missing holding resolves to zero exposure, not missing security evidence
   const candidate=e.resolveExecutableCandidate(fresh,{state});
   assert.deepEqual(JSON.parse(JSON.stringify(candidate.existingExposure)),{currentShares:0,currentValueGbp:0,accounts:[],holdingCount:0});
   assert.deepEqual(JSON.parse(JSON.stringify(candidate.diagnostics)),{security:true,broker:true,price:true,dividend:true,simulation:true});
+});
+
+test('GCP and never-owned BCE pass the same Chairman executable path in one trace run',()=>{
+  const e=engine(),{state,gcp,bce}=chairmanControlFixture();
+  const traces=[e.chairmanTrace(state,gcp,{nowMs:Date.parse('2026-08-16T12:00:00Z')}),e.chairmanTrace(state,bce,{nowMs:Date.parse('2026-08-16T12:00:00Z')})];
+  assert.deepEqual(Array.from(traces,t=>t.scouting.securityId),['LSE:GCP','TSX:BCE']);
+  assert.equal(traces[0].portfolio.existingHolding,true);
+  assert.equal(traces[1].portfolio.existingHolding,false);
+  assert.equal(traces[1].portfolio.sharesOwned,0);
+  assert.equal(traces[1].market.currentPriceGbp,28);
+  assert.equal(traces[1].market.dividendYield,7.2);
+  assert.equal(traces[1].broker.final,'T212');
+  assert.ok(traces.every(t=>t.executable.executable));
+});
+
+test('never-owned canonical universe evidence reaches both Chairman strategies and sizing',()=>{
+  const e=engine(),{state}=chairmanControlFixture();
+  for(const strategy of ['sustainable','maximum']){
+    const trace=e.chairmanStrategyTrace(state,{budget:1000,strategy,maxTargets:2,idFactory:x=>x,nowMs:Date.parse('2026-08-16T12:00:00Z')});
+    assert.deepEqual({candidates:trace.candidateCount,ranked:trace.rankedCount,executable:trace.executableCount,routeInput:trace.routeInputCount},
+      {candidates:2,ranked:2,executable:2,routeInput:2});
+    assert.equal(trace.routeOutputCount,2);
+    assert.ok(trace.route.allocations.some(row=>row.securityId==='TSX:BCE'&&row.currentShares===0&&row.expectedShares>0));
+  }
+});
+
+test('a specifically blocked candidate does not kill an executable new security',()=>{
+  const e=engine(),{state}=chairmanControlFixture();
+  state.scouting.targets.push({securityId:'NYSE:BLOCKED',exchange:'NYSE',ticker:'BLOCKED',status:'pass',yieldPct:5,livePriceGbp:10,brokerEligibility:{IG:false,T212:false}});
+  const route=e.simulate(state,{budget:1000,allowActiveScouting:true,maxTargets:3,idFactory:x=>x});
+  assert.ok(route.allocations.some(row=>row.securityId==='TSX:BCE'));
+  assert.deepEqual(Array.from(route.evaluatedCandidates.find(row=>row.securityId==='NYSE:BLOCKED').blockingReasons),['MISSING_BROKER_ROUTE']);
 });
