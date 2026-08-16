@@ -8,6 +8,28 @@
   function ticker(v){
     return String(v||'').replace(/^LON:/i,'').replace(/\.L$/i,'').replace(/\..*$/,'').toUpperCase().trim();
   }
+  function securityId(target){
+    const explicit=String(target?.securityId||'').trim();
+    if(explicit)return explicit;
+    const exchange=String(target?.exchange||'UNKNOWN').trim().toUpperCase()||'UNKNOWN';
+    return `${exchange}:${ticker(target?.ticker)}`;
+  }
+
+  function resolveReplacementBasket(state,selectedIds=[]){
+    const wanted=[...new Set(arr(selectedIds).map(String).filter(Boolean))];
+    const targets=arr(state?.scouting?.targets);
+    return wanted.map(id=>{
+      const target=targets.find(t=>securityId(t)===id);
+      if(!target)return {securityId:id,available:false,incompleteReason:'SECURITY_NOT_FOUND'};
+      const yieldPct=Math.max(0,num(target.yieldPct));
+      return {
+        ...target,
+        securityId:securityId(target),
+        available:yieldPct>0,
+        incompleteReason:yieldPct>0?'':'MISSING_INCOME_EVIDENCE'
+      };
+    });
+  }
   function accountCode(v){
     const s=String(v||'').toLowerCase();
     if(s.includes('212'))return 'T212';
@@ -232,12 +254,12 @@
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
       .filter(t=>t.transferPermitted!==false)
       .filter(t=>!['INELIGIBLE','BLOCKED','NOT_ELIGIBLE'].includes(String(t.eligibilityStatus||'').toUpperCase()))
-      .filter(t=>t.approvedForTransfer===true&&
-        String(t.approvalBatchId||'')===String(state?.scouting?.approvedBatchId||''))
+      .filter(t=>settings.allowActiveScouting===true||(t.approvedForTransfer===true&&
+        String(t.approvalBatchId||'')===String(state?.scouting?.approvedBatchId||'')))
       .filter(t=>num(t.yieldPct)>0)
       .filter(t=>!exclude||ticker(t.ticker)!==exclude)
       .filter(t=>brokerEligible(t,brokerScope,state))
-      .filter(t=>!allowedIds||allowedIds.has(String(t.securityId||t.id||ticker(t.ticker))));
+      .filter(t=>!allowedIds||allowedIds.has(securityId(t)));
 
     candidates=candidates.map(t=>{
       const scoutScore=Math.max(1,targetScore(t,strategy));
@@ -474,6 +496,8 @@
     effectiveBroker,
     ticker,
     accountCode,
-    routeGuardMessage
+    routeGuardMessage,
+    securityId,
+    resolveReplacementBasket
   };
 })(window);
