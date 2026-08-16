@@ -214,12 +214,15 @@ test('ticker-only legacy evidence migrates only for an unambiguous canonical mar
   assert.equal(engine.resolveBrokerRoute(collision,ukw).supported,false);
 });
 
-test('Chairman broker resolver uses canonical holding evidence and zero routes remain safe REVIEW input',()=>{
+test('Chairman broker resolver never treats a holding account as broker eligibility',()=>{
   const engine=loadEngine();
   const target={securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',preferredAccount:'CHECK',status:'pass',yieldPct:6,livePriceGbp:10,transferPermitted:true};
   const state={scouting:{targets:[target]},transfer:{settings:{}},squad:{holdings:[
     {securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',account:'IG ISA',status:'ACTIVE',shares:1,livePriceGbp:10}
   ]}};
+  assert.equal(engine.resolveBrokerRoute(state,target).account,'CHECK');
+  assert.equal(engine.resolveExistingExposure(state,target).currentShares,1);
+  state.transfer.brokerEligibility=[{securityId:'LSE:GCP',brokerEligibility:{IG:true}}];
   assert.equal(engine.resolveBrokerRoute(state,target).account,'IG');
   assert.equal(engine.simulate(state,{budget:500,targetIds:['LSE:GCP'],allowActiveScouting:true}).allocations[0].account,'IG');
 
