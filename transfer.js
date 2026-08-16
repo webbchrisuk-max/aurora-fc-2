@@ -164,53 +164,32 @@
   }
 
   function autoRoute(){
-    const state=A().core.read(),m=mission(state),sc=scouting(state);
-    const settings={brokerScope:'both',minAllocation:250,increment:25,...(state.transfer?.settings||{})};
-    const inheritedStrategy=scoutingStrategy(state);
-    if(!validMission(m)){toast('Release a Finance mission first.');return}
-    if(sc.status!=='SCOUTING_READY'){toast('Transfer needs a current Scouting-approved shortlist first.');return}
+    const state=A().core.read();
     const engine=A().transferEngine;
-    if(!engine?.simulate){toast('Transfer simulation engine is unavailable. Reload the page.');return}
-
-    const sim=engine.simulate(state,{
-      budget:routeBudget(state),
-      strategy:inheritedStrategy,
-      brokerScope:settings.brokerScope,
-      minAllocation:settings.minAllocation,
-      increment:settings.increment,
-      maxTargets:8,
-      idFactory:p=>A().core.uid(p)
+    if(!engine?.buildMissionPlan){toast('Transfer recommendation engine is unavailable. Reload the page.');return false}
+    const planned=engine.buildMissionPlan(state,{
+      missionContract:w.AuroraTransferMission,
+      now:now(),
+      idFactory:p=>A().core.uid(p),
+      decorateAllocation:a=>{
+        const evidence=routeEvidence(state,a);
+        const estimatedPrice=evidence.price>0?evidence.price:0;
+        return {
+          ...a,
+          estimatedPriceGbp:estimatedPrice,
+          estimatedShares:estimatedPrice>0?Math.floor(num(a.amount)/estimatedPrice):null,
+          quoteUpdatedAt:evidence.updatedAt||null
+        };
+      }
     });
-    if(!sim.allocations.length){toast('No permitted targets match this broker route.');return}
-
-    const previous=state.transfer?.route;
-    const allocations=arr(sim.allocations).map(a=>{
-      const evidence=routeEvidence(state,a);
-      const estimatedPrice=evidence.price>0?evidence.price:0;
-      return {
-        ...a,
-        estimatedPriceGbp:estimatedPrice,
-        estimatedShares:estimatedPrice>0?Math.floor(num(a.amount)/estimatedPrice):null,
-        quoteUpdatedAt:evidence.updatedAt||null
-      };
-    });
-    const route={
-      ...sim,
-      allocations,
-      id:previous?.missionId===m.id?previous.id:A().core.uid('ROUTE'),
-      missionId:m.id,
-      scoutingStrategy:inheritedStrategy,
-      scoutingStatusAtBuild:sc.status,
-      status:'DRAFT',
-      locked:false,
-      createdAt:previous?.missionId===m.id?previous.createdAt:now(),
-      updatedAt:now()
-    };
-    A().core.update(s=>{
-      const planned=window.AuroraTransferMission.plan(s.mission,route,now());
-      return {...s,mission:planned.mission,transfer:{...s.transfer,route:planned.route,updatedAt:now()}};
-    });
+    if(!planned.ok){
+      const messages={NO_FINANCE_MISSION:'Release a Finance mission first.',MISSION_NOT_PLANNABLE:'The current Finance mission cannot be replanned.',SCOUTING_NOT_READY:'Transfer needs a current Scouting-approved shortlist first.',MISSION_CONTRACT_UNAVAILABLE:'The canonical Transfer mission contract is unavailable. Reload the page.',NO_ELIGIBLE_TARGETS:'No permitted targets match this broker route.'};
+      toast(messages[planned.reason]||'No eligible recommendation route could be built.');
+      return false;
+    }
+    A().core.update(s=>({...s,mission:planned.mission,transfer:{...s.transfer,route:planned.route,updatedAt:now()}}));
     toast('Draft transfer route built.');
+    return true;
   }
 
   function updateRouteAmount(id,value){
@@ -693,7 +672,11 @@
       document.querySelectorAll('.tab[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));
       document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===btn.dataset.tab));
     }));
-    $('openAllocation')?.addEventListener('click',()=>{$('allocationReview')?.scrollIntoView({behavior:'smooth',block:'start'})});
+    $('openAllocation')?.addEventListener('click',()=>{
+      setSettings();
+      autoRoute();
+      $('allocationReview')?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
   }
 
   function wire(){
