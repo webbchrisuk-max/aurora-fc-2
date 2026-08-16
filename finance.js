@@ -41,6 +41,22 @@
     else return date;
     return dateISO(d);
   }
+  function monthKey(d=new Date()){
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  function nextMonthKey(key){
+    const match=/^(\d{4})-(\d{2})$/.exec(String(key||''));
+    const d=match?new Date(Number(match[1]),Number(match[2])-1,1):new Date();
+    d.setMonth(d.getMonth()+1);
+    return monthKey(d);
+  }
+  function commitmentType(b){
+    if(['fixed_monthly','rolling_monthly','recurring_yearly','one_off'].includes(b?.commitmentType))return b.commitmentType;
+    if(b?.frequency==='yearly')return 'recurring_yearly';
+    if(b?.frequency==='monthly')return b.due?'fixed_monthly':'rolling_monthly';
+    return 'one_off';
+  }
+  function typeLabel(type){return ({fixed_monthly:'Fixed monthly',rolling_monthly:'Rolling monthly',recurring_yearly:'Recurring yearly',one_off:'One-off'})[type]||'One-off'}
   function daysFromToday(date){
     const d=parseLocalDate(date), t=new Date(); t.setHours(12,0,0,0);
     if(!d)return null;
@@ -1256,6 +1272,10 @@
     if(b.archived)return {label:'Archived',tone:'muted'};
     if(b.paid)return {label:'Paid',tone:'good'};
     if(!b.included)return {label:'Excluded',tone:'muted'};
+    if(commitmentType(b)==='rolling_monthly'){
+      const occurrence=b.occurrenceMonth||monthKey();
+      return occurrence>monthKey()?{label:'Next month',tone:'cyan'}:{label:'Due this month',tone:'gold'};
+    }
     const days=daysFromToday(b.due);
     if(days===null)return {label:'No date',tone:'muted'};
     if(days<0)return {label:'Overdue',tone:'red'};
@@ -1318,13 +1338,14 @@
 
   function resetBillEditor(){
     setValue('billId',''); setValue('billName',''); setValue('billAmount',''); setValue('billDue','');
-    setValue('billFrequency','one-off'); setValue('billFundingSource','Current Account'); setValue('billCategory','Other');
+    setValue('billCommitmentType','fixed_monthly'); setValue('billFrequency','monthly'); setValue('billFundingSource','Current Account'); setValue('billCategory','Other');
     $('billIncluded').checked=true; A().ui.text('billEditorTitle','Add Bill');
+    updateBillDateRequirement();
   }
   function editBill(id){
     const b=(A().core.read().finance?.bills||[]).find(x=>x.id===id); if(!b)return;
     setValue('billId',b.id); setValue('billName',b.name); setValue('billAmount',b.amount); setValue('billDue',b.due);
-    setValue('billFrequency',b.frequency); renderBills(); setValue('billFundingSource',b.fundingSource);
+    setValue('billCommitmentType',commitmentType(b)); setValue('billFrequency',b.frequency); updateBillDateRequirement(); renderBills(); setValue('billFundingSource',b.fundingSource);
     setValue('billCategory',b.category); $('billIncluded').checked=b.included!==false;
     A().ui.text('billEditorTitle','Edit Bill');
     $('billEditor')?.scrollIntoView({behavior:'smooth',block:'center'});
@@ -1332,11 +1353,17 @@
   function saveBill(){
     const id=value('billId')||A().core.uid('BILL'), name=value('billName').trim();
     if(!name){alert('Enter a bill name.');return;}
+    const type=value('billCommitmentType')||'one_off';
+    const due=type==='rolling_monthly'?'':value('billDue');
+    if((type==='fixed_monthly'||type==='recurring_yearly')&&!due){alert('Choose a genuine due date for this commitment type.');return;}
+    const frequency=type==='recurring_yearly'?'yearly':type==='one_off'?'one-off':'monthly';
     A().core.update(s=>{
       const existing=(s.finance.bills||[]).find(b=>b.id===id);
       const bill={
-        ...(existing||{}),id,name,amount:numValue('billAmount'),due:value('billDue'),
-        frequency:value('billFrequency')||'one-off',fundingSource:value('billFundingSource')||'Current Account',
+        ...(existing||{}),id,name,amount:numValue('billAmount'),due,frequency,
+        commitmentType:type,recurrence:type==='one_off'?'none':type==='recurring_yearly'?'yearly':'monthly',
+        occurrenceMonth:type==='rolling_monthly'?(commitmentType(existing)==='rolling_monthly'&&existing?.occurrenceMonth?existing.occurrenceMonth:monthKey()):'',
+        fundingSource:value('billFundingSource')||'Current Account',
         category:value('billCategory').trim()||'Other',included:$('billIncluded').checked,
         paid:Boolean(existing?.paid),actualPaid:Number(existing?.actualPaid)||0,
         archived:Boolean(existing?.archived),createdAt:existing?.createdAt||isoNow(),updatedAt:isoNow()
@@ -1346,6 +1373,14 @@
       return {...s,finance:{...s.finance,bills}};
     });
     resetBillEditor(); renderAll(); showToast('Bill saved.');
+  }
+  function updateBillDateRequirement(){
+    const type=value('billCommitmentType')||'one_off', field=$('billDueField'), input=$('billDue');
+    const rolling=type==='rolling_monthly', required=type==='fixed_monthly'||type==='recurring_yearly';
+    if(field)field.classList.toggle('is-disabled',rolling);
+    if(input){input.disabled=rolling;input.required=required;if(rolling)input.value='';}
+    A().ui.text('billDueRequired',rolling?'(not used)':required?'(required)':'(optional)');
+    A().ui.text('billDueHelp',rolling?'Displayed as “Due this month”; no date is stored.':'Use the real calendar date for this commitment.');
   }
   function toggleBillArchive(id){
     A().core.update(s=>({...s,finance:{...s.finance,bills:(s.finance.bills||[]).map(b=>b.id===id?{...b,archived:!b.archived,updatedAt:isoNow()}:b)}}));
@@ -1372,7 +1407,7 @@
   function completeBill(id){
     const current=A().core.read(), bill=(current.finance?.bills||[]).find(b=>b.id===id);
     if(!bill||bill.archived||bill.paid||bill.included===false)return;
-    const input=$(`actual-${id}`), actual=Math.max(0,Number(input?.value)||0);
+    const input=$(`actual-${id}`), actual=Math.max(0,Number(input?.value??bill.amount)||0);
     if(actual<=0){alert('Enter the actual amount paid.');return;}
     const pot=(current.finance?.pots||[]).find(p=>!p.archived&&p.name===bill.fundingSource);
     if(pot&&actual>Number(pot.balance||0)+0.005){
@@ -1395,12 +1430,16 @@
       const payment={
         id:A().core.uid('PAYMENT'),billId:id,billName:beforeBill.name,amount:actual,
         fundingSource:beforeBill.fundingSource,paidAt:isoNow(),dueAtPayment:beforeBill.due,
+        commitmentType:commitmentType(beforeBill),
+        occurrenceKey:commitmentType(beforeBill)==='rolling_monthly'?(beforeBill.occurrenceMonth||monthKey()):beforeBill.due,
         reversed:false,reversedAt:null,beforeBill,beforePot
       };
       payments.unshift(payment);
 
-      if(beforeBill.frequency==='one-off'){
+      if(commitmentType(beforeBill)==='one_off'){
         bills[bi]={...beforeBill,paid:true,actualPaid:actual,updatedAt:isoNow()};
+      }else if(commitmentType(beforeBill)==='rolling_monthly'){
+        bills[bi]={...beforeBill,due:'',occurrenceMonth:nextMonthKey(beforeBill.occurrenceMonth||monthKey()),paid:false,actualPaid:0,updatedAt:isoNow()};
       }else{
         bills[bi]={...beforeBill,due:nextDue(beforeBill.due,beforeBill.frequency),paid:false,actualPaid:0,updatedAt:isoNow()};
       }
@@ -1657,6 +1696,7 @@
 
     $('saveBill')?.addEventListener('click',saveBill);
     $('cancelBill')?.addEventListener('click',resetBillEditor);
+    $('billCommitmentType')?.addEventListener('change',updateBillDateRequirement);
 
     document.addEventListener('click',e=>{
       const potEdit=e.target.closest('[data-pot-edit]'); if(potEdit){editPot(potEdit.dataset.potEdit);return;}
@@ -1694,5 +1734,11 @@
     completePaydayFunding,
     undoLastPaydayFunding,
     completionFor:(state=A().core.read(),paydayDate=state.finance?.plan?.paydayDate)=>paydayCompletionFor(state,paydayDate)
+  };
+  w.Aurora2.financeCommitmentControl={
+    completeBill,
+    billStatus,
+    nextDue,
+    commitmentType
   };
 })(window);
