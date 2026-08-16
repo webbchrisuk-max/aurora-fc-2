@@ -84,6 +84,10 @@
     const canonical=num(state.portfolio?.annualIncome);
     return canonical>0?canonical:activeHoldings(state).reduce((s,h)=>s+(num(h.annualIncomeGbp)||(num(h.shares)*num(h.annualDpsGbp))),0);
   }
+  function missionIncomeBaseline(state,r=state.transfer?.route){
+    const frozen=Number(r?.baselineAnnualIncome);
+    return Number.isFinite(frozen)&&frozen>=0?frozen:incomeBaseline(state);
+  }
   function routeEvidence(state,a){
     const target=arr(state.scouting?.targets).find(t=>String(t.id)===String(a.targetId)||ticker(t.ticker)===ticker(a.ticker))||{};
     const holdings=activeHoldings(state).filter(h=>ticker(h.ticker)===ticker(a.ticker));
@@ -101,7 +105,7 @@
     if(!host)return;
     const allocations=arr(r?.allocations).filter(a=>num(a.amount)>0);
     const totals=r?routeSummary(r):{allocated:0,income:0,remaining:routeBudget(state)};
-    const current=incomeBaseline(state),post=current+totals.income,budget=routeBudget(state);
+    const current=missionIncomeBaseline(state,r),post=current+totals.income,budget=routeBudget(state);
     const relevant=allocations.length?allocations:arr(state.scouting?.targets).slice(0,6);
     const items=[];
     if(budget>0){
@@ -129,8 +133,11 @@
     fresh.classList.toggle('stale',stale);
   }
   function renderImpact(state){
-    const r=state.transfer?.route, allocations=arr(r?.allocations).filter(a=>num(a.amount)>0), totals=r?routeSummary(r):{allocated:0,income:0,remaining:routeBudget(state)}, current=incomeBaseline(state), post=current+totals.income;
-    const holdings=activeHoldings(state), value=holdings.reduce((s,h)=>s+holdingValue(h),0), accounts=code=>holdings.filter(h=>accountCode(h.account)===code).reduce((s,h)=>s+holdingValue(h),0);
+    const r=state.transfer?.route, allocations=arr(r?.allocations).filter(a=>num(a.amount)>0), totals=r?routeSummary(r):{allocated:0,income:0,remaining:routeBudget(state)}, current=missionIncomeBaseline(state,r), post=current+totals.income;
+    const holdings=activeHoldings(state);
+    const frozenHoldings=arr(r?.baselineHoldings);
+    const previewHoldings=frozenHoldings.length?frozenHoldings:holdings;
+    const value=previewHoldings.reduce((s,h)=>s+holdingValue(h),0), accounts=code=>previewHoldings.filter(h=>accountCode(h.account)===code).reduce((s,h)=>s+holdingValue(h),0);
     const confirmed=allocations.map(a=>confirmedFor(state,r,a)).filter(Boolean), complete=allocations.length>0&&confirmed.length===allocations.length;
     set('impactMissionState',complete?'TRANSFER COMPLETE':'PROPOSED'); set('heroIncomeUplift',`+${money(totals.income)} / year`); set('heroIncomeJourney',`${money(current)} → ${money(post)}`);
     const brokers=new Set(allocations.map(a=>accountCode(a.account)).filter(x=>x!=='CHECK')); set('heroRouteSummary',`${allocations.length} buys • ${brokers.size} brokers • ${money(totals.remaining)} unallocated`);
@@ -138,7 +145,7 @@
     if($('impactKpis'))$('impactKpis').innerHTML=[['Current annual income',money(current)],['Estimated additional income',`+${money(totals.income)} / year`],['New annual income',money(post)],['Monthly equivalent',`${money(current/12)} → ${money(post/12)}`],['Transfer income yield',`${yieldPct.toFixed(2)}%`],['Income per £1,000',`${money(efficiency)} / year`]].map(x=>`<div><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('');
     const monthlyTarget=num(state.income?.settings?.monthlyTarget), annualTarget=monthlyTarget*12;
     if($('incomeMissionProgress'))$('incomeMissionProgress').innerHTML=annualTarget>0?`<strong>${money(post)} of ${money(annualTarget)} annual target</strong><div class="mission-progress"><i style="width:${Math.min(100,post/annualTarget*100)}%"></i></div><span>${money(current)} current • +${money(totals.income)} transfer • ${money(Math.max(0,annualTarget-post))} remaining</span>`:'<div class="empty-state compact"><strong>No income target configured</strong><p>Set a monthly target in Income Centre; Transfer will not invent a milestone.</p></div>';
-    if($('portfolioComparison'))$('portfolioComparison').innerHTML=[['Annual income',current,post],['Monthly income',current/12,post/12],['Portfolio value',value,value+totals.allocated],['Positions',holdings.length,new Set(holdings.map(h=>`${accountCode(h.account)}|${ticker(h.ticker)}`).concat(allocations.map(a=>`${accountCode(a.account)}|${ticker(a.ticker)}`))).size],['Portfolio income yield',value?current/value*100:0,(value+totals.allocated)?post/(value+totals.allocated)*100:0],['IG ISA value',accounts('IG'),accounts('IG')+allocations.filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0)],['Trading 212 ISA value',accounts('T212'),accounts('T212')+allocations.filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0)]].map((x,i)=>`<div><small>${x[0]}</small><span class="before-value">${i===3?x[1]:i===4?num(x[1]).toFixed(2)+'%':money(x[1])}</span><b>→</b><strong>${i===3?x[2]:i===4?num(x[2]).toFixed(2)+'%':money(x[2])}</strong></div>`).join('');
+    if($('portfolioComparison'))$('portfolioComparison').innerHTML=[['Annual income',current,post],['Monthly income',current/12,post/12],['Portfolio value',value,value+totals.allocated],['Positions',previewHoldings.length,new Set(previewHoldings.map(h=>`${accountCode(h.account)}|${ticker(h.ticker)}`).concat(allocations.map(a=>`${accountCode(a.account)}|${ticker(a.ticker)}`))).size],['Portfolio income yield',value?current/value*100:0,(value+totals.allocated)?post/(value+totals.allocated)*100:0],['IG ISA value',accounts('IG'),accounts('IG')+allocations.filter(a=>accountCode(a.account)==='IG').reduce((s,a)=>s+num(a.amount),0)],['Trading 212 ISA value',accounts('T212'),accounts('T212')+allocations.filter(a=>accountCode(a.account)==='T212').reduce((s,a)=>s+num(a.amount),0)]].map((x,i)=>`<div><small>${x[0]}</small><span class="before-value">${i===3?x[1]:i===4?num(x[1]).toFixed(2)+'%':money(x[1])}</span><b>→</b><strong>${i===3?x[2]:i===4?num(x[2]).toFixed(2)+'%':money(x[2])}</strong></div>`).join('');
     if($('previewCashStrip'))$('previewCashStrip').innerHTML=`<div><small>Transfer cash</small><strong>${money(routeBudget(state))}</strong></div><div><small>Allocated</small><strong>${money(totals.allocated)}</strong></div><div class="${totals.remaining>.005?'warning':''}"><small>Remaining cash</small><strong>${money(totals.remaining)}</strong></div>`;
     renderInstructions(state,allocations,totals,current,post,confirmed,complete);
   }
@@ -151,9 +158,9 @@
     if($('brokerRouteSummary'))$('brokerRouteSummary').innerHTML=brokerRows.length?`${brokerRows.map(x=>`<div><small>${esc(x.label)}</small><strong>${money(x.amount)}</strong></div>`).join('')}<div class="route-total"><small>Total routed</small><strong>${money(totals.allocated)}</strong></div>`:'<div class="empty-state compact">Build a route to see broker destinations.</div>';
     if($('incomeContribution'))$('incomeContribution').innerHTML=ranked.length?ranked.map((a,i)=>`<div><b>${i+1}</b><span>${esc(ticker(a.ticker))}</span><strong>+${money(a.expectedAnnualIncome)}<small>/year</small></strong></div>`).join(''):'<div class="empty-state compact">No proposed income contributions yet.</div>';
     const checks=state.transfer?.executionChecks||{}; if($('executionChecklist'))$('executionChecklist').innerHTML=allocations.length?allocations.map(a=>{const d=confirmedFor(state,state.transfer?.route,a),checked=!!d||!!checks[a.id];return `<label class="execution-check ${d?'registered':checked?'desk-complete':''}"><input type="checkbox" data-execution-check="${esc(a.id)}" ${checked?'checked':''} ${d?'disabled':''}><span>${d?'✓':'○'} ${esc(ticker(a.ticker))} • ${esc(accountLabel(a.account))} • ${money(a.amount)}</span><b>${d?'REGISTERED':checked?'DESK CHECKED — REGISTRATION PENDING':'PENDING'}</b></label>`}).join(''):'<div class="empty-state compact">No planned purchases.</div>';
-    const actual=confirmed.reduce((s,d)=>s+num(d.totalCostGbp),0), actualIncome=confirmed.reduce((s,d)=>s+num(d.expectedAnnualIncomeGbp),0);
+    const actual=confirmed.reduce((s,d)=>s+num(d.totalCostGbp),0);
     const fills=confirmed.map(d=>`${ticker(d.ticker)} ${num(d.shares).toLocaleString('en-GB')} @ ${d.priceUnit==='PENCE'?num(d.priceInput).toFixed(2)+'p':money(num(d.priceInput))}`).join(' • ');
-    if($('executionRecord'))$('executionRecord').innerHTML=complete?`<b>Transfer complete.</b> Planned ${money(totals.allocated)} • actually invested ${money(actual)} • ${confirmed.reduce((s,d)=>s+num(d.shares),0).toLocaleString('en-GB')} shares • estimated income before execution ${money(current)} • registered annual income ${money(current+actualIncome)} • leftover ${money(Math.max(0,num(state.mission?.approvedBudget)-actual))}.<br>${esc(fills)}`:`<b>${confirmed.length} of ${allocations.length} registered.</b> Remaining transfer cash by confirmed executions: ${money(Math.max(0,num(state.mission?.approvedBudget)-actual))}. Manual checks do not complete the mission.${fills?`<br>${esc(fills)}`:''}`;
+    if($('executionRecord'))$('executionRecord').innerHTML=complete?`<b>Transfer complete.</b> Planned ${money(totals.allocated)} • actually invested ${money(actual)} • ${confirmed.reduce((s,d)=>s+num(d.shares),0).toLocaleString('en-GB')} shares • original estimated uplift ${money(totals.income)} • current canonical annual income ${money(incomeBaseline(state))} • leftover ${money(Math.max(0,num(state.mission?.approvedBudget)-actual))}.<br>${esc(fills)}`:`<b>${confirmed.length} of ${allocations.length} registered.</b> Remaining transfer cash by confirmed executions: ${money(Math.max(0,num(state.mission?.approvedBudget)-actual))}. Manual checks do not complete the mission.${fills?`<br>${esc(fills)}`:''}`;
   }
 
   function autoRoute(){
@@ -177,8 +184,19 @@
     if(!sim.allocations.length){toast('No permitted targets match this broker route.');return}
 
     const previous=state.transfer?.route;
+    const allocations=arr(sim.allocations).map(a=>{
+      const evidence=routeEvidence(state,a);
+      const estimatedPrice=evidence.price>0?evidence.price:0;
+      return {
+        ...a,
+        estimatedPriceGbp:estimatedPrice,
+        estimatedShares:estimatedPrice>0?Math.floor(num(a.amount)/estimatedPrice):null,
+        quoteUpdatedAt:evidence.updatedAt||null
+      };
+    });
     const route={
       ...sim,
+      allocations,
       id:previous?.missionId===m.id?previous.id:A().core.uid('ROUTE'),
       missionId:m.id,
       scoutingStrategy:inheritedStrategy,
@@ -198,7 +216,8 @@
       const r=s.transfer?.route;
       if(!r||r.locked)return s;
       const allocations=arr(r.allocations).map(a=>a.id===id?{
-        ...a,amount,expectedAnnualIncome:amount*(num(a.yieldPct)/100)
+        ...a,amount,expectedAnnualIncome:amount*(num(a.yieldPct)/100),
+        estimatedShares:num(a.estimatedPriceGbp)>0?Math.floor(amount/num(a.estimatedPriceGbp)):null
       }:a);
       const next={...r,allocations,updatedAt:now()};
       Object.assign(next,routeSummary(next));
@@ -248,7 +267,13 @@
       return;
     }
 
-    const approved={...r,...totals,status:'TRANSFER_READY',locked:true,updatedAt:now()};
+    const approved={
+      ...r,...totals,
+      baselineAnnualIncome:missionIncomeBaseline(state,r),
+      baselinePortfolioValue:activeHoldings(state).reduce((sum,h)=>sum+holdingValue(h),0),
+      baselineHoldings:activeHoldings(state).map(h=>({ticker:ticker(h.ticker),account:accountCode(h.account),shares:num(h.shares),livePriceGbp:num(h.livePriceGbp),marketValueGbp:holdingValue(h)})),
+      status:'TRANSFER_READY',locked:true,updatedAt:now()
+    };
     A().core.update(s=>({
       ...s,
       transfer:{...s.transfer,route:approved,updatedAt:now()},

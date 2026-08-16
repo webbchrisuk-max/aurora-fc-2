@@ -207,7 +207,8 @@
     select.innerHTML=rows.length?rows.map(a=>{
       const d=draftForAllocation(state,a.id);
       const status=d?.status==='CONFIRMED'?' ✓ CONFIRMED':d?' • '+d.status:'';
-      return `<option value="${esc(a.id)}">${esc(a.ticker)} • ${accountLabel(a.account)} • ${money(a.amount)}${esc(status)}</option>`;
+      const estimate=num(a.estimatedShares)>0?` • plan ~${num(a.estimatedShares).toLocaleString('en-GB')} shares`:'';
+      return `<option value="${esc(a.id)}">${esc(a.ticker)} • ${accountLabel(a.account)} • ${money(a.amount)}${esc(estimate)}${esc(status)}</option>`;
     }).join(''):'<option value="">No locked route purchases</option>';
     if(rows.some(a=>a.id===current))select.value=current;
   }
@@ -245,6 +246,11 @@
       setValue('regFx',defaultCurrency==='GBP'?'1':'');
       setValue('regFees','0');
       if(!$('regDate')?.value){const d=new Date();setValue('regDate',`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)}
+    }
+    const note=$('precheckNote');
+    if(note&&!existing&&num(a.estimatedShares)>0){
+      note.className='notice';
+      note.textContent=`Transfer plan: ${money(a.amount)} via ${accountLabel(a.account)} • approximately ${num(a.estimatedShares).toLocaleString('en-GB')} shares at ${money(a.estimatedPriceGbp)}. Enter the actual broker execution below.`;
     }
     syncPriceUnitToCurrency();
     setExecutionLocked(existing?.status==='CONFIRMED');
@@ -419,10 +425,22 @@
         const allRegistered=nextAllocations.filter(a=>num(a.amount)>0).every(a=>a.status==='REGISTERED');
         const nextRoute=s.transfer?.route?{...s.transfer.route,allocations:nextAllocations,status:allRegistered?'REGISTERED':s.transfer.route.status,locked:true,updatedAt:receipt.confirmedAt}:s.transfer?.route;
         const nextMission=s.mission&&allRegistered?{...s.mission,status:'REGISTERED',updatedAt:receipt.confirmedAt}:s.mission;
+        const relatedDrafts=nextDrafts.filter(d=>d.routeId===nextRoute?.id&&d.status==='CONFIRMED');
+        const completedMission=allRegistered&&nextRoute&&nextMission?{
+          missionId:nextMission.id,routeId:nextRoute.id,paydayDate:nextMission.paydayDate||'',strategy:nextRoute.strategy||'',
+          plannedTransferAmount:num(nextMission.approvedBudget),plannedAllocated:num(nextRoute.allocated),
+          actualAmountInvested:relatedDrafts.reduce((sum,d)=>sum+num(d.totalCostGbp),0),
+          amountRemaining:Math.max(0,num(nextMission.approvedBudget)-relatedDrafts.reduce((sum,d)=>sum+num(d.totalCostGbp),0)),
+          estimatedIncomeUplift:num(nextRoute.income),baselineAnnualIncome:num(nextRoute.baselineAnnualIncome),
+          currentAnnualIncomeAfter:nextHoldings.reduce((sum,h)=>sum+(num(h.annualIncomeGbp)||(num(h.shares)*num(h.annualDpsGbp))),0),
+          completedAt:receipt.confirmedAt,purchases:relatedDrafts.map(d=>({transactionId:d.transactionId,allocationId:d.allocationId,ticker:d.ticker,account:d.account,shares:num(d.shares),priceInput:num(d.priceInput),priceUnit:d.priceUnit,totalCostGbp:num(d.totalCostGbp)}))
+        }:null;
         return {
           ...s,
           connection:{...s.connection,mode:'AuroraData2',status:'CONNECTED',spreadsheetId:D().spreadsheetId},
-          transfer:{...s.transfer,route:nextRoute,registrationDrafts:nextDrafts,updatedAt:receipt.confirmedAt},
+          transfer:{...s.transfer,route:nextRoute,registrationDrafts:nextDrafts,
+            completedMissions:completedMission?[completedMission,...arr(s.transfer?.completedMissions).filter(x=>x.routeId!==completedMission.routeId)].slice(0,24):arr(s.transfer?.completedMissions),
+            updatedAt:receipt.confirmedAt},
           squad:{...s.squad,holdings:nextHoldings,source:'AURORADATA2',updatedAt:receipt.confirmedAt},
           registration:{...s.registration,backend:{...s.registration.backend,status:'CONNECTED',lastHealthAt:receipt.confirmedAt,lastError:null},
             receipts:[receipt,...arr(s.registration?.receipts).filter(x=>x.transactionId!==receipt.transactionId)].slice(0,100),updatedAt:receipt.confirmedAt},

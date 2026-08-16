@@ -84,6 +84,7 @@
       },
       route:null,
       registrationDrafts:[],
+      completedMissions:[],
       offers:[],
       migration:null,
       updatedAt:null
@@ -271,6 +272,9 @@
       amount:Math.max(0,Number(r.amount)||0),
       yieldPct:Math.max(0,Number(r.yieldPct)||0),
       expectedAnnualIncome:Math.max(0,Number(r.expectedAnnualIncome)||0),
+      estimatedPriceGbp:Math.max(0,Number(r.estimatedPriceGbp)||0),
+      estimatedShares:r.estimatedShares==null?null:Math.max(0,Math.floor(Number(r.estimatedShares)||0)),
+      quoteUpdatedAt:r.quoteUpdatedAt||null,
       score:Math.max(0,Number(r.score)||0),
       reason:String(r.reason||''),
       status:String(r.status||'PLANNED')
@@ -291,6 +295,13 @@
       allocated:Math.max(0,Number(r.allocated)||0),
       remaining:Math.max(0,Number(r.remaining)||0),
       expectedAnnualIncome:Math.max(0,Number(r.expectedAnnualIncome)||0),
+      income:Math.max(0,Number(r.income??r.expectedAnnualIncome)||0),
+      baselineAnnualIncome:Math.max(0,Number(r.baselineAnnualIncome)||0),
+      baselinePortfolioValue:Math.max(0,Number(r.baselinePortfolioValue)||0),
+      baselineHoldings:Array.isArray(r.baselineHoldings)?r.baselineHoldings.map(h=>({
+        ticker:String(h?.ticker||'').toUpperCase(),account:String(h?.account||''),shares:Math.max(0,Number(h?.shares)||0),
+        livePriceGbp:Math.max(0,Number(h?.livePriceGbp)||0),marketValueGbp:Math.max(0,Number(h?.marketValueGbp)||0)
+      })):[],
       status:String(r.status||'DRAFT'),
       locked:Boolean(r.locked),
       createdAt:r.createdAt||now(),
@@ -486,6 +497,7 @@
         },
         route:normalizeTransferRoute(r.transfer?.route),
         registrationDrafts:Array.isArray(r.transfer?.registrationDrafts)?r.transfer.registrationDrafts.map(normalizeRegistrationDraft):[],
+        completedMissions:Array.isArray(r.transfer?.completedMissions)?r.transfer.completedMissions:[],
         offers:Array.isArray(r.transfer?.offers)?r.transfer.offers:[]
       },
       registration:{
