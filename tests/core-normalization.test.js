@@ -47,3 +47,19 @@ test('reload normalization preserves Global Scout identity and Transfer approval
   assert.equal(target.eligibilityStatus,'ELIGIBLE');
   assert.deepEqual(JSON.parse(JSON.stringify(target.brokerEligibility)),{IG:true,T212:false});
 });
+
+test('reload normalization preserves and deduplicates the canonical Chairman replacement basket',()=>{
+  const state=loadCore({scouting:{targets:[
+    {securityId:'TSX:BCE',exchange:'TSX',ticker:'BCE'},
+    {securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI'},
+    {securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS'}
+  ],replacementBasket:['TSX:BCE',{securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI'},'NYSE:UPS','TSX:BCE']}}).read();
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(state.scouting.replacementBasket)),
+    [
+      {securityId:'TSX:BCE',exchange:'TSX',ticker:'BCE'},
+      {securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI'},
+      {securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS'}
+    ]
+  );
+});

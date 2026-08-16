@@ -22,11 +22,18 @@
       const target=targets.find(t=>securityId(t)===id);
       if(!target)return {securityId:id,available:false,incompleteReason:'SECURITY_NOT_FOUND'};
       const yieldPct=Math.max(0,num(target.yieldPct));
+      const livePriceGbp=Math.max(0,num(target.livePriceGbp||target.livePrice||target.price));
+      const broker=effectiveBroker(state,target);
+      const incompleteReason=!(yieldPct>0)
+        ?'MISSING_INCOME_EVIDENCE'
+        :!(livePriceGbp>0)
+          ?'MISSING_PRICE_EVIDENCE'
+          :broker==='CHECK'?'MISSING_BROKER_ROUTE':'';
       return {
         ...target,
         securityId:securityId(target),
-        available:yieldPct>0,
-        incompleteReason:yieldPct>0?'':'MISSING_INCOME_EVIDENCE'
+        available:!incompleteReason,
+        incompleteReason
       };
     });
   }
@@ -257,6 +264,7 @@
       .filter(t=>settings.allowActiveScouting===true||(t.approvedForTransfer===true&&
         String(t.approvalBatchId||'')===String(state?.scouting?.approvedBatchId||'')))
       .filter(t=>num(t.yieldPct)>0)
+      .filter(t=>!allowedIds||num(t.livePriceGbp||t.livePrice||t.price)>0)
       .filter(t=>!exclude||ticker(t.ticker)!==exclude)
       .filter(t=>brokerEligible(t,brokerScope,state))
       .filter(t=>!allowedIds||allowedIds.has(securityId(t)));
