@@ -1,7 +1,7 @@
 (function(w){
   'use strict';
 
-  const BUILD='2026.08.16-chairman-live-state-1';
+  const BUILD='2026.08.16-chairman-live-state-2';
 
   const arr=v=>Array.isArray(v)?v:[];
   const num=v=>{const n=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0};
@@ -19,17 +19,18 @@
       const parts=explicit.split(':');
       const market=String(parts.shift()||'').toUpperCase();
       const symbol=String(parts.join(':')||target?.ticker||'').replace(/\.L$/i,'').toUpperCase().trim();
-      return `${market==='LON'||market==='XLON'?'LSE':market}:${symbol}`;
+      return `${exchange(market)}:${symbol}`;
     }
     if(explicit)return explicit;
-    const exchange=String(target?.exchange||'UNKNOWN').trim().toUpperCase()||'UNKNOWN';
-    return `${exchange}:${identityTicker(target?.ticker)}`;
+    const market=exchange(target?.exchange||'UNKNOWN')||'UNKNOWN';
+    return `${market}:${identityTicker(target?.ticker)}`;
   }
 
   const PRICE_STALE_MS=36*60*60*1000;
   function exchange(v){
     const value=String(v||'').trim().toUpperCase();
-    return value==='LON'||value==='XLON'?'LSE':value;
+    const aliases={LON:'LSE',XLON:'LSE',LONDON:'LSE',XNAS:'NASDAQ',NAS:'NASDAQ',XNYS:'NYSE',TOR:'TSX',XTSE:'TSX'};
+    return aliases[value]||value;
   }
   function identity(record){
     const explicit=String(record?.securityId||record?.security_id||'').trim();
@@ -51,7 +52,11 @@
     if(!a.exchange&&!b.exchange)return true;
     // Legacy Aurora records were keyed only by ticker. Migrate that evidence only
     // when the canonical Scout universe proves the ticker has one market identity.
-    const canonical=arr(state?.scouting?.targets).map(identity)
+    const canonical=arr(state?.scouting?.targets).concat(
+      arr(state?.scouting?.universe),arr(state?.squad?.holdings),
+      arr(state?.market?.evidence),arr(state?.marketEvidence),
+      arr(state?.transfer?.marketEvidence),arr(state?.transfer?.brokerEligibility)
+    ).map(identity)
       .filter(x=>x.ticker===a.ticker&&x.exchange);
     return new Set(canonical.map(x=>`${x.exchange}:${x.ticker}`)).size===1;
   }
@@ -62,9 +67,10 @@
       // promoted security has no holding or historic route yet, so excluding
       // this source made its explicit broker evidence invisible to Chairman.
       ['SCOUTING_UNIVERSE',arr(state?.scouting?.universe)],
+      ['SQUAD_HOLDING',arr(state?.squad?.holdings)],
       ['CURRENT_MARKET_EVIDENCE',arr(state?.market?.evidence).concat(arr(state?.marketEvidence),arr(state?.marketData?.evidence),arr(state?.marketData?.quotes),arr(state?.marketData?.prices))],
       ['TRANSFER_MARKET_EVIDENCE',arr(state?.transfer?.marketEvidence).concat(arr(state?.transfer?.quotes))],
-      ['LEGACY_MIGRATED_PRICE',arr(state?.scouting?.legacyPriceRecords).concat(arr(state?.migration?.priceRecords),arr(state?.legacy?.prices))]
+      ['LEGACY_MIGRATED_PRICE',arr(state?.scouting?.legacyPriceRecords).concat(arr(state?.migration?.priceRecords),arr(state?.migration?.marketEvidence),arr(state?.legacy?.prices),arr(state?.migratedMarketEvidence))]
     ];
     return sources.flatMap(([source,rows])=>rows.filter(row=>sameSecurity(target,row,state)).map(row=>({source,row})));
   }
@@ -152,10 +158,13 @@
     const rows=evidenceRows(state,target).map(x=>x.row);
     const evidence=[target,...rows];
     const eligibilityDeclared=evidence.some(row=>row?.brokerEligibility!=null||
+      row?.IG!=null||row?.ig!=null||row?.T212!=null||row?.t212!=null||
       row?.igIsaSupported!=null||row?.igISASupported!=null||row?.supportsIgIsa!=null||
       row?.trading212IsaSupported!=null||row?.trading212ISASupported!=null||row?.supportsTrading212Isa!=null);
     const explicit=evidence.flatMap(row=>{
       const accounts=eligibilityAccounts(row?.brokerEligibility);
+      if(row?.IG===true||row?.ig===true)accounts.push('IG');
+      if(row?.T212===true||row?.t212===true)accounts.push('T212');
       if(row?.igIsaSupported===true||row?.igISASupported===true||row?.supportsIgIsa===true)accounts.push('IG');
       if(row?.trading212IsaSupported===true||row?.trading212ISASupported===true||row?.supportsTrading212Isa===true)accounts.push('T212');
       return accounts;
@@ -518,6 +527,21 @@
     return Math.max(inc,roundDown(budget*pct,inc));
   }
 
+  // The opportunity-weighted route cap is not a portfolio risk limit.  During
+  // a Chairman rotation, also cap each resulting holding against the complete
+  // post-sale portfolio. This deliberately permits holdback when the executable
+  // universe is too small to deploy the released cash without concentration.
+  function portfolioPositionCap(baseRows,candidate,budget,maxPositionPct,inc){
+    if(!baseRows)return Infinity;
+    const pct=clamp(maxPositionPct||20,1,100)/100;
+    const baseTotal=baseRows.reduce((sum,row)=>sum+num(row.value),0);
+    const existing=baseRows.filter(row=>row.ticker===ticker(candidate.ticker)).reduce((sum,row)=>sum+num(row.value),0);
+    // Solve (existing + allocation) / (base + allocation) <= pct. Using the
+    // candidate's own allocation in the denominator keeps the rule valid even
+    // when every other pound is legitimately held back.
+    return Math.max(0,roundDown(((baseTotal*pct)-existing)/(1-pct),inc));
+  }
+
   function simulate(state,opts={}){
     const settings={
       strategy:'sustainable',
@@ -617,8 +641,12 @@
 
     let remaining=budget;
 
-    allocations.forEach(a=>{
-      const seed=Math.min(min,remaining);
+    allocations.forEach((a,i)=>{
+      const cap=Math.min(
+        positionCap(budget,count,strategy,a.scoutingStatus,inc),
+        portfolioPositionCap(baseRows,candidates[i],budget,settings.maxPositionPct,inc)
+      );
+      const seed=Math.min(min,remaining,cap);
       a.amount=seed;
       remaining-=seed;
     });
@@ -627,7 +655,11 @@
     while(remaining>=inc-.001&&guard<10000){
       guard++;
       const ranked=allocations.map((a,i)=>{
-        const cap=positionCap(budget,count,strategy,a.scoutingStatus,inc);
+        const candidate=candidates[i];
+        const cap=Math.min(
+          positionCap(budget,count,strategy,a.scoutingStatus,inc),
+          portfolioPositionCap(baseRows,candidate,budget,settings.maxPositionPct,inc)
+        );
         if(a.amount+inc>cap+.001)return {i,priority:-Infinity,cap};
 
         let concentration=1;
@@ -653,7 +685,7 @@
       const ranked=allocations.map((a,i)=>({
         i,
         score:scores[i],
-        cap:positionCap(budget,count,strategy,a.scoutingStatus,inc)
+        cap:Math.min(positionCap(budget,count,strategy,a.scoutingStatus,inc),portfolioPositionCap(baseRows,candidates[i],budget,settings.maxPositionPct,inc))
       })).filter(x=>allocations[x.i].amount+remaining<=x.cap+.005)
         .sort((a,b)=>b.score-a.score);
 

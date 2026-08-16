@@ -131,11 +131,17 @@ function installScoutingAuthorityBridge(){
     }
 
     const ranked=rankedEligible(state,opts,strategy);
+    // Resolve evidence before choosing the sizing pool. A blocked high-ranked
+    // representation must never prevent a lower-ranked executable security
+    // from reaching Transfer, and both automatic lenses inspect the full pool.
+    const executableRanked=ranked.filter(x=>
+      engine.resolveExecutableCandidate?.(x.target,{state,purpose:'CHAIRMAN_AUTHORITY_POOL',nowMs:opts?.nowMs})?.simulationEligible
+    );
     const budget=Math.max(0,num(opts?.budget));
-    if(!(budget>0)||!ranked.length){
+    if(!(budget>0)||!executableRanked.length){
       return decorate(
         baseSimulate(state,opts),
-        ranked,
+        executableRanked,
         state,
         strategy,
         authorityStatus(state)
@@ -161,16 +167,16 @@ function installScoutingAuthorityBridge(){
      * Yield/concentration are not allowed to choose a lower-ranked company
      * before the authorised recruitment pool is established.
      */
-    const countInput=ranked.map(x=>({
+    const countInput=executableRanked.map(x=>({
       ...x.target,
       _routeScore:Math.max(.0001,x.score)
     }));
     const desired=typeof engine.desiredTargetCount==='function'
       ?engine.desiredTargetCount(budget,countInput,maxTargets,requestedMin,inc)
-      :Math.min(maxTargets,ranked.length);
+      :Math.min(maxTargets,executableRanked.length);
 
-    const count=Math.max(1,Math.min(ranked.length,maxTargets,desired||1));
-    const authorityRows=ranked.slice(0,count);
+    const count=Math.max(1,Math.min(executableRanked.length,maxTargets,desired||1));
+    const authorityRows=executableRanked.slice(0,count);
     const targetIds=authorityRows.map(x=>x.id);
 
     /*
