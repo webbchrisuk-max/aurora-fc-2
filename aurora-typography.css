@@ -1,0 +1,112 @@
+/*
+ * Aurora 2.0 universal readable typography
+ *
+ * This file is deliberately loaded after department styles. Departments retain
+ * their colour, spacing and heading treatments while all operational copy uses
+ * one accessible scale. Compact data is allowed to scroll, never to shrink.
+ */
+:root {
+  --aurora-text-xs: 15px;
+  --aurora-text-sm: 16px;
+  --aurora-text-md: 18px;
+  --aurora-text-lg: 20px;
+  --aurora-text-xl: 24px;
+  --aurora-text-2xl: 30px;
+  --aurora-readable-line-height: 1.45;
+  --aurora-touch-target: 44px;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-size: var(--aurora-text-md) !important;
+  line-height: var(--aurora-readable-line-height);
+}
+
+/* Normal information and card copy. max() preserves intentionally larger type. */
+body :where(p, li, dt, dd, label, output) {
+  font-size: max(var(--aurora-text-sm), 1em) !important;
+  line-height: var(--aurora-readable-line-height);
+}
+
+body :where(strong, b) {
+  font-size: max(17px, 1em) !important;
+  line-height: 1.35;
+}
+
+body :where(small, figcaption, caption, [class*="subtext"], [class*="subtitle"],
+  [class*="meta"], [class*="note"], [class*="copy"] > span) {
+  font-size: var(--aurora-text-sm) !important;
+  line-height: var(--aurora-readable-line-height);
+}
+
+body :where([class*="card"], [class*="panel"], [class*="row"], [class*="item"]) {
+  line-height: var(--aurora-readable-line-height);
+}
+
+/* Controls are readable and comfortably tappable on iPad and touch devices. */
+body :where(button, input, select, textarea, [role="button"], [role="tab"], .tab) {
+  min-height: var(--aurora-touch-target);
+  font-size: max(17px, 1em) !important;
+  line-height: 1.35;
+}
+
+body :where(.badge, [class*="badge"], [class*="pill"], [class*="status"],
+  [class*="kicker"], [class*="eyebrow"], [class*="label"], [class*="tag"]) {
+  font-size: var(--aurora-text-xs) !important;
+  line-height: 1.35;
+}
+
+/* Universal data-table contract: readable values, relaxed rows, safe scrolling. */
+body :where([class*="table-wrap"], [class*="table-scroll"], .preview-wrap) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+body table {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: collapse;
+  font-size: 17px !important;
+  line-height: var(--aurora-readable-line-height);
+}
+
+body table :where(th, td) {
+  min-height: var(--aurora-touch-target);
+  padding: 11px 12px !important;
+  font-size: 17px !important;
+  line-height: var(--aurora-readable-line-height) !important;
+  vertical-align: middle;
+}
+
+body table th {
+  font-size: var(--aurora-text-sm) !important;
+  white-space: nowrap;
+}
+
+body table :where(small, [class*="meta"], [class*="company"], [class*="secondary"]) {
+  font-size: var(--aurora-text-xs) !important;
+  line-height: 1.4 !important;
+}
+
+/* The core decision tables need enough canvas for every critical value. */
+body :where(.football-table, .network-table, .allocation-table, .market-table,
+  .preview-table, .transfer-deal-table) {
+  min-width: 1080px;
+}
+
+@media (max-width: 700px) {
+  body {
+    /* Mobile keeps the same readable baseline; layouts, not type, become compact. */
+    font-size: var(--aurora-text-md) !important;
+  }
+
+  body table :where(th, td) {
+    padding: 10px !important;
+  }
+}
