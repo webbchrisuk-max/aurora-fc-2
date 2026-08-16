@@ -400,14 +400,14 @@
       return;
     }
     host.innerHTML=rows.map(r=>`<div class="basket-row">
-      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${esc(accountLabel(r.account))} • ${esc(String(r.scoutingStatus||'caution').toUpperCase())}${r.sector?' • '+esc(r.sector):''}</span></div>
+      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${esc(accountLabel(r.account))} • ${esc(String(r.scoutingStatus||'caution').toUpperCase())}${r.sector?' • '+esc(r.sector):''}${r.priceEvidence?.stale?' • STALE PRICE — REVIEW BEFORE EXECUTION':''}</span></div>
       <div class="basket-num"><b>${money(r.amount)}</b><small>allocation</small></div>
       <div class="basket-num"><b>${num(r.yieldPct).toFixed(2)}%</b><small>yield</small></div>
       <div class="basket-num"><b>${money(r.expectedAnnualIncome)}</b><small>income / yr</small></div>
       <div class="basket-num"><b>${Math.round(num(r.scoutingScore))}/100</b><small>Scouting score</small></div>
       <div class="basket-num"><b>${num(r.concentrationFactor).toFixed(2)}×</b><small>route fit</small></div>
     </div>`).concat(incomplete.map(r=>`<div class="basket-row" data-incomplete="true">
-      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>SIMULATION DATA INCOMPLETE • ${{SECURITY_NOT_FOUND:'Canonical security is not present in Active Scouting',MISSING_PRICE_EVIDENCE:'Missing supported live-price evidence',MISSING_BROKER_ROUTE:'Missing executable broker route',MISSING_INCOME_EVIDENCE:'Missing supported yield/dividend income evidence'}[r.incompleteReason]||'Required simulation evidence is unavailable'}</span></div>
+      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>SIMULATION DATA INCOMPLETE • ${{SECURITY_NOT_FOUND:'Canonical security is not present in Active Scouting',MISSING_PRICE_EVIDENCE:'NO SUPPORTED PRICE DATA',MISSING_BROKER_ROUTE:'Missing executable broker route',MISSING_INCOME_EVIDENCE:'Missing supported yield/dividend income evidence'}[r.incompleteReason]||'Required simulation evidence is unavailable'}</span></div>
       <div class="basket-num"><b>—</b><small>income unavailable</small></div>
     </div>`)).join('');
   }

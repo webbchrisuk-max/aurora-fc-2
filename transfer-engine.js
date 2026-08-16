@@ -15,6 +15,73 @@
     return `${exchange}:${ticker(target?.ticker)}`;
   }
 
+  const PRICE_STALE_MS=36*60*60*1000;
+  function exchange(v){
+    const value=String(v||'').trim().toUpperCase();
+    return value==='LON'||value==='XLON'?'LSE':value;
+  }
+  function identity(record){
+    const explicit=String(record?.securityId||record?.security_id||'').trim();
+    const parts=explicit.includes(':')?explicit.split(':'):[];
+    return {
+      securityId:explicit,
+      exchange:exchange(record?.exchange||record?.exchangeCode||parts[0]),
+      ticker:ticker(record?.ticker||record?.symbol||parts.slice(1).join(':')),
+      account:accountCode(record?.account||record?.broker||record?.preferredAccount)
+    };
+  }
+  function sameSecurity(candidate,record){
+    const a=identity(candidate),b=identity(record);
+    if(a.securityId&&b.securityId){
+      return a.ticker===b.ticker&&a.exchange===b.exchange;
+    }
+    if(!a.ticker||a.ticker!==b.ticker)return false;
+    // Ticker-only matching is safe only where neither side supplies an exchange.
+    return a.exchange&&b.exchange?a.exchange===b.exchange:!a.exchange&&!b.exchange;
+  }
+  function evidenceRows(state,target){
+    const sources=[
+      ['SCOUTING_TARGET',arr(state?.scouting?.targets)],
+      ['CURRENT_MARKET_EVIDENCE',arr(state?.market?.evidence).concat(arr(state?.marketEvidence),arr(state?.marketData?.evidence),arr(state?.marketData?.quotes),arr(state?.marketData?.prices))],
+      ['TRANSFER_MARKET_EVIDENCE',arr(state?.transfer?.marketEvidence).concat(arr(state?.transfer?.quotes))],
+      ['LEGACY_MIGRATED_PRICE',arr(state?.scouting?.legacyPriceRecords).concat(arr(state?.migration?.priceRecords),arr(state?.legacy?.prices))],
+      ['SQUAD_HOLDING',arr(state?.squad?.holdings)]
+    ];
+    return sources.flatMap(([source,rows])=>rows.filter(row=>sameSecurity(target,row)).map(row=>({source,row})));
+  }
+  function normalizePrice(row){
+    const gbp=num(row?.livePriceGbp||row?.priceGbp||row?.live_price_gbp||row?.price_gbp||row?.legacyPriceGbp);
+    if(gbp>0)return gbp;
+    const raw=num(row?.livePrice||row?.price||row?.currentPrice||row?.live_price);
+    if(!(raw>0))return 0;
+    const currency=String(row?.currency||row?.quoteCurrency||'GBP').toUpperCase();
+    const unit=String(row?.priceUnit||row?.unit||'').toUpperCase();
+    const major=currency==='GBP'&&['PENCE','GBX'].includes(unit)?raw/100:raw;
+    if(currency==='GBP'||currency==='GBX')return currency==='GBX'&&unit!=='GBP'?raw/100:major;
+    const fx=num(row?.fxRateToGbp||row?.fxToGbp);
+    return fx>0?major*fx:0;
+  }
+  function evidenceTimestamp(row){
+    return row?.quoteUpdatedAt||row?.priceUpdatedAt||row?.asOf||row?.timestamp||row?.sourceUpdatedAt||row?.updatedAt||null;
+  }
+  /** Canonical quote resolution shared by Transfer, Scouting consumers and Chairman simulations. */
+  function resolveMarketPrice(state,target,opts={}){
+    const nowMs=Number.isFinite(Number(opts.nowMs))?Number(opts.nowMs):Date.now();
+    const ranked=evidenceRows(state,target).map(({source,row})=>{
+      const priceGbp=normalizePrice(row),timestamp=evidenceTimestamp(row);
+      const stampMs=timestamp?Date.parse(timestamp):NaN;
+      const stale=Number.isFinite(stampMs)&&nowMs-stampMs>PRICE_STALE_MS;
+      const account=identity(row).account;
+      const wantedAccount=identity(target).account;
+      const accountMatch=wantedAccount==='CHECK'||account==='CHECK'||account===wantedAccount;
+      const sourceRank=source==='CURRENT_MARKET_EVIDENCE'?5:source==='TRANSFER_MARKET_EVIDENCE'?4:source==='SCOUTING_TARGET'?3:source==='SQUAD_HOLDING'?2:1;
+      return {priceGbp,timestamp,stale,source,account,accountMatch,row,score:(priceGbp>0?100:0)+(stale?0:20)+sourceRank+(accountMatch?2:0)+(Number.isFinite(stampMs)?stampMs/1e15:0)};
+    }).filter(x=>x.priceGbp>0).sort((a,b)=>b.score-a.score);
+    const best=ranked[0];
+    if(!best)return {supported:false,status:'MISSING',label:'NO SUPPORTED PRICE DATA',priceGbp:0,timestamp:null,stale:false,source:null};
+    return {supported:true,status:best.stale?'STALE':'CURRENT',label:best.stale?'STALE PRICE — REVIEW BEFORE EXECUTION':'SUPPORTED PRICE',priceGbp:best.priceGbp,timestamp:best.timestamp||null,stale:best.stale,source:best.source,account:best.account};
+  }
+
   function resolveReplacementBasket(state,selectedIds=[]){
     const wanted=[...new Set(arr(selectedIds).map(String).filter(Boolean))];
     const targets=arr(state?.scouting?.targets);
@@ -22,7 +89,8 @@
       const target=targets.find(t=>securityId(t)===id);
       if(!target)return {securityId:id,available:false,incompleteReason:'SECURITY_NOT_FOUND'};
       const yieldPct=Math.max(0,num(target.yieldPct));
-      const livePriceGbp=Math.max(0,num(target.livePriceGbp||target.livePrice||target.price));
+      const priceEvidence=resolveMarketPrice(state,target);
+      const livePriceGbp=priceEvidence.priceGbp;
       const broker=effectiveBroker(state,target);
       const incompleteReason=!(yieldPct>0)
         ?'MISSING_INCOME_EVIDENCE'
@@ -32,6 +100,8 @@
       return {
         ...target,
         securityId:securityId(target),
+        livePriceGbp,
+        priceEvidence,
         available:!incompleteReason,
         incompleteReason
       };
@@ -258,6 +328,7 @@
     const baseRows=rotation?postSaleBase(state,rotation):null;
 
     let candidates=arr(state?.scouting?.targets)
+      .map(t=>{const priceEvidence=resolveMarketPrice(state,t);return {...t,livePriceGbp:priceEvidence.priceGbp,priceEvidence};})
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
       .filter(t=>t.transferPermitted!==false)
       .filter(t=>!['INELIGIBLE','BLOCKED','NOT_ELIGIBLE'].includes(String(t.eligibilityStatus||'').toUpperCase()))
@@ -329,7 +400,8 @@
       concentrationFactor:t._fitFactor,
       reason:t.reason||'Scouting-approved target',
       scoutingStatus:String(t.status||'caution').toLowerCase(),
-      status:'SIMULATED'
+      status:'SIMULATED',
+      priceEvidence:t.priceEvidence
     }));
 
     let remaining=budget;
@@ -506,6 +578,7 @@
     accountCode,
     routeGuardMessage,
     securityId,
-    resolveReplacementBasket
+    resolveReplacementBasket,
+    resolveMarketPrice
   };
 })(window);
