@@ -8,7 +8,9 @@
   --motion-accent:var(--room-accent,34,211,238);
 }
 
-/* One entrance per document load. No scroll observer is used. */
+/* One entrance per document load. No scroll observer is used.
+   Structural page children fade without a transform so motion never creates a
+   containing block or changes WebKit's width calculation for dashboard grids. */
 .aurora-motion-ready .shell-page> :not(.aurora-hero-art){animation:aurora-panel-in var(--motion-panel) var(--motion-ease) both;animation-delay:90ms}
 .aurora-motion-ready .shell-page> :not(.aurora-hero-art):nth-child(3){animation-delay:135ms}
 .aurora-motion-ready .shell-page> :not(.aurora-hero-art):nth-child(4){animation-delay:180ms}
@@ -59,8 +61,8 @@ button:disabled,[aria-disabled="true"]{opacity:.48;transform:none!important;curs
 /* Notification centre uses its existing open/close transform; new unread cards settle once. */
 .an-card.aurora-row-enter{animation-name:aurora-notification-in}
 
-@keyframes aurora-panel-in{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
-@keyframes aurora-hero-in{from{opacity:0;transform:translate3d(0,8px,0)}to{opacity:1;transform:none}}
+@keyframes aurora-panel-in{from{opacity:0}to{opacity:1}}
+@keyframes aurora-hero-in{from{opacity:0}to{opacity:1}}
 @keyframes aurora-copy-in{from{opacity:0;transform:translate3d(0,9px,0)}to{opacity:1;transform:none}}
 @keyframes aurora-accent-in{from{opacity:0;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
 @keyframes aurora-hero-breathe{to{transform:translate3d(-.25%,0,0) scale(1.025)}}
