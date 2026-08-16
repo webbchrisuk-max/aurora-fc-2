@@ -92,6 +92,54 @@ test('a genuine zero-executable approved shortlist fails safely',()=>{
   assert.deepEqual(Array.from(result.simulation.allocations),[]);
 });
 
+test('Chairman custom baskets share Transfer broker evidence and keep executable mixed routes',()=>{
+  const engine=loadEngine();
+  const candidate=(securityId,exchange,ticker,brokerEligibility,extra={})=>({
+    securityId,exchange,ticker,name:ticker,brokerEligibility,preferredAccount:'CHECK',
+    status:'pass',yieldPct:6,livePriceGbp:10,sustainableScore:90,transferPermitted:true,...extra
+  });
+  const state={scouting:{targets:[
+    candidate('LSE:GCP','LSE','GCP',{IG:true,T212:false}),
+    candidate('LSE:BATS','LSE','BATS',{IG:false,T212:true}),
+    candidate('LSE:BT.A','LSE','BT.A',{IG:true,T212:true}),
+    candidate('LSE:NOPE','LSE','NOPE',{IG:false,T212:false})
+  ]},transfer:{
+    settings:{minAllocation:100,increment:25},
+    brokerPreferences:{'LSE:BT.A':{account:'Trading 212 ISA'}}
+  },squad:{holdings:[]}};
+  const selected=state.scouting.targets.map(x=>x.securityId);
+
+  assert.equal(engine.resolveBrokerRoute(state,state.scouting.targets[0]).account,'IG');
+  assert.equal(engine.resolveBrokerRoute(state,state.scouting.targets[1]).account,'T212');
+  assert.equal(engine.resolveBrokerRoute(state,state.scouting.targets[2]).account,'T212');
+  const basket=engine.resolveReplacementBasket(state,selected);
+  assert.equal(basket.find(x=>x.securityId==='LSE:NOPE').incompleteReason,'MISSING_BROKER_ROUTE');
+
+  const simulation=engine.simulate(state,{
+    budget:1200,targetIds:selected,allowActiveScouting:true,minAllocation:100,increment:25,maxTargets:4
+  });
+  assert.deepEqual(new Set(simulation.allocations.map(x=>x.securityId)),new Set(['LSE:GCP','LSE:BATS','LSE:BT.A']));
+  assert.deepEqual(new Set(simulation.allocations.map(x=>x.account)),new Set(['IG','T212']));
+  assert.ok(simulation.remaining>=0);
+  assert.equal(simulation.allocated+simulation.remaining,1200);
+});
+
+test('Chairman broker resolver uses canonical holding evidence and zero routes remain safe REVIEW input',()=>{
+  const engine=loadEngine();
+  const target={securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',preferredAccount:'CHECK',status:'pass',yieldPct:6,livePriceGbp:10,transferPermitted:true};
+  const state={scouting:{targets:[target]},transfer:{settings:{}},squad:{holdings:[
+    {securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',account:'IG ISA',status:'ACTIVE',shares:1,livePriceGbp:10}
+  ]}};
+  assert.equal(engine.resolveBrokerRoute(state,target).account,'IG');
+  assert.equal(engine.simulate(state,{budget:500,targetIds:['LSE:GCP'],allowActiveScouting:true}).allocations[0].account,'IG');
+
+  const unsupported={...state,scouting:{targets:[{...target,securityId:'LSE:NOPE',ticker:'NOPE',brokerEligibility:{IG:false,T212:false}}]},squad:{holdings:[]}};
+  const safe=engine.simulate(unsupported,{budget:500,targetIds:['LSE:NOPE'],allowActiveScouting:true});
+  assert.deepEqual(Array.from(safe.allocations),[]);
+  assert.equal(safe.reason,'NO_ELIGIBLE_TARGETS');
+  assert.equal(safe.remaining,500);
+});
+
 test('Chairman canonical replacement basket drives income and removes deselected securities',()=>{
   const engine=loadEngine();
   const candidate=(securityId,exchange,ticker,yieldPct)=>({
