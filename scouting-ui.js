@@ -59,7 +59,15 @@ function isShortlistApproved(){
 function renderCommand(){
   const candidates=Math.round(num($('kCandidates')?.textContent));
   const pass=Math.round(num($('kPass')?.textContent));
-  const caution=Math.round(num($('kCaution')?.textContent));
+  let approvalCount=Math.round(num($('kCaution')?.textContent));
+  let approvedCount=0;
+  try{
+    const rows=window.Aurora2?.core?.read?.()?.scouting?.targets||[];
+    approvalCount=(window.Aurora2?.scoutingUniverse?.approvalCandidates(rows)||
+      rows.filter(x=>x.status!=='block'&&!x.approvedForTransfer)).length;
+    approvedCount=(window.Aurora2?.scoutingUniverse?.approvedCandidates(rows)||
+      rows.filter(x=>x.approvedForTransfer)).length;
+  }catch(_){ /* The DOM mirror remains the startup fallback. */ }
   const blocked=Math.round(num($('kBlock')?.textContent));
   const approved=isShortlistApproved();
 
@@ -68,7 +76,7 @@ function renderCommand(){
 
   if(candidates>0){
     setFlow('scouting3Active','good','READY','scouting3ActiveMeta',
-      `${candidates} in the scouting universe • ${pass} deep-scouted • ${caution} Transfer-permitted • ${blocked} need review.`);
+      `${candidates} in the scouting universe • ${pass} deep-scouted • ${approvalCount} Transfer-permitted • ${blocked} need review.`);
   }else{
     setFlow('scouting3Active','active','EMPTY','scouting3ActiveMeta',
       'No stored Active Scouting candidates are ready for ranking.');
@@ -76,12 +84,12 @@ function renderCommand(){
 
   if(approved){
     setFlow('scouting3Shortlist','good','APPROVED','scouting3ShortlistMeta',
-      `${pass+caution} eligible target${pass+caution===1?'':'s'} handed to Transfer under the approved lens.`);
+      `${approvedCount} eligible target${approvedCount===1?'':'s'} handed to Transfer under the approved lens.`);
     setFlow('scouting3Transfer','good','READY','scouting3TransferMeta',
       'Transfer can now build its route from this approved Scouting authority.');
-  }else if(pass+caution>0){
+  }else if(approvalCount>0){
     setFlow('scouting3Shortlist','active','REVIEW','scouting3ShortlistMeta',
-      `${pass+caution} eligible target${pass+caution===1?'':'s'} waiting for Director of Football approval.`);
+      `${approvalCount} eligible target${approvalCount===1?'':'s'} waiting for Director of Football approval.`);
     setFlow('scouting3Transfer','','WAITING','scouting3TransferMeta',
       'Transfer waits until the current shortlist is approved.');
   }else{
@@ -105,14 +113,14 @@ function renderCommand(){
     if(next)next.textContent='Review the Global Scouting Network';
     if(meta)meta.textContent='Promote evidence-backed prospects into Active Scouting before ranking.';
     if(btn){btn.textContent='Open Global Network';btn.dataset.action='network'}
-  }else if(pass+caution===0){
+  }else if(approvalCount===0){
     if(status)status.textContent='EVIDENCE REVIEW';
     if(priority)priority.textContent='Candidates exist, but none currently pass the eligibility gates.';
     if(next)next.textContent='Review candidate evidence and blocked reasons';
     if(meta)meta.textContent='Use the shortlist and Evidence Room to resolve missing or weak evidence.';
     if(btn){btn.textContent='Open Evidence Room';btn.dataset.action='evidence'}
   }else if(!approved){
-    if(status){status.textContent=`${pass+caution} APPROVAL CANDIDATES • 0 APPROVED`;status.classList.add('good')}
+    if(status){status.textContent=`${approvalCount} APPROVAL CANDIDATES • 0 APPROVED`;status.classList.add('good')}
     if(priority)priority.textContent='Ranked approval candidates are waiting for a Director of Football decision.';
     if(next)next.textContent='Review and approve the current shortlist';
     if(meta)meta.textContent='Approval freezes the current Scouting result as Transfer authority.';

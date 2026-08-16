@@ -10,7 +10,11 @@
   const MEMBERSHIP_SOURCES=Object.freeze([
     {id:'FTSE_100',label:'FTSE 100',page:'FTSE_100_Index',region:'UK',exchange:'LSE',currency:'GBP'},
     {id:'FTSE_250',label:'FTSE 250',page:'FTSE_250_Index',region:'UK',exchange:'LSE',currency:'GBP'},
-    {id:'SP_500',label:'S&P 500',page:'List_of_S%26P_500_companies',region:'US',exchange:'US',currency:'USD'}
+    {id:'SP_500',label:'S&P 500',page:'List_of_S%26P_500_companies',region:'US',exchange:'US',currency:'USD'},
+    {id:'STOXX_600',label:'STOXX Europe 600',page:'STOXX_Europe_600',region:'EUROPE',exchange:'STOXX',currency:'EUR'},
+    {id:'TSX_COMPOSITE',label:'S&P/TSX Composite',page:'S%26P/TSX_Composite_Index',region:'CANADA',exchange:'TSX',currency:'CAD'},
+    {id:'ASX_200',label:'S&P/ASX 200',page:'S%26P/ASX_200',region:'AUSTRALIA',exchange:'ASX',currency:'AUD'},
+    {id:'NIKKEI_225',label:'Nikkei 225',page:'Nikkei_225',region:'OTHER',exchange:'TSE',currency:'JPY'}
   ]);
   const clean=v=>String(v||'').trim().toUpperCase().replace(/\s+/g,'');
   function canonicalTicker(ticker,exchange){
@@ -44,12 +48,42 @@
   }
   function coverage(rows=[]){
     const has=(r,m)=>(r.memberships||[]).includes(m);
-    const uk=rows.filter(r=>r.region==='UK'),us=rows.filter(r=>r.region==='US');
-    return {total:rows.length,UK:uk.length,US:us.length,WORLD:rows.length-uk.length-us.length,
+    const inRegion=region=>rows.filter(r=>clean(r.region||r.country)===region);
+    const uk=inRegion('UK'),us=inRegion('US'),europe=inRegion('EUROPE'),canada=inRegion('CANADA'),
+      australia=inRegion('AUSTRALIA'),classified=new Set([...uk,...us,...europe,...canada,...australia]);
+    return {total:rows.length,UK:uk.length,US:us.length,EUROPE:europe.length,CANADA:canada.length,
+      AUSTRALIA:australia.length,OTHER:rows.filter(r=>!classified.has(r)).length,
+      WORLD:rows.length-uk.length-us.length,
       ftse100:rows.filter(r=>has(r,'FTSE 100')).length,
       ftse250:rows.filter(r=>has(r,'FTSE 250')).length,
       ukIncome:uk.filter(r=>!has(r,'FTSE 100')&&!has(r,'FTSE 250')).length,
       missingData:rows.filter(r=>r.dataStatus==='MISSING').length};
   }
-  return {MEMBERSHIP_SOURCES,canonicalTicker,securityId,normalize,merge,coverage};
+  function candidateSecurityId(candidate={}){
+    if(candidate.securityId)return String(candidate.securityId);
+    if(candidate.networkSecurityId)return String(candidate.networkSecurityId);
+    if(candidate.exchange&&(candidate.ticker||candidate.marketSymbol))
+      return securityId(candidate.exchange,candidate.ticker||candidate.marketSymbol);
+    return candidate.id?`CANDIDATE:${candidate.id}`:null;
+  }
+  function approvalCandidates(rows=[]){
+    const seen=new Set();
+    return rows.filter(row=>{
+      if(row.status==='block'||row.approvedForTransfer)return false;
+      const id=candidateSecurityId(row);
+      if(!id||seen.has(id))return false;
+      seen.add(id);return true;
+    });
+  }
+  function approvedCandidates(rows=[]){
+    const seen=new Set();
+    return rows.filter(row=>{
+      if(!row.approvedForTransfer)return false;
+      const id=candidateSecurityId(row);
+      if(!id||seen.has(id))return false;
+      seen.add(id);return true;
+    });
+  }
+  return {MEMBERSHIP_SOURCES,canonicalTicker,securityId,normalize,merge,coverage,
+    candidateSecurityId,approvalCandidates,approvedCandidates};
 });
