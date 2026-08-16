@@ -478,39 +478,22 @@
   }
 
   function renderTargets(state){
-    const sc=scouting(state),targets=arr(sc.targets),host=$('targetList');
-    set('kTargets',targets.length);
-    set('targetBoardCount',`${Math.min(targets.length,12)} / 12`);
-    set('targetBoardStrategy',scoutingStrategy(state)==='maximum'?'Maximum Income':'Sustainable');
+    const sc=scouting(state),host=$('targetList');
+    const strategy=scoutingStrategy(state);
+    const rows=w.AuroraScoutingLeagues?.table(arr(sc.targets),strategy)||[];
+    const targets=rows.map(row=>row.target);
+    const allocations=arr(state.transfer?.route?.allocations);
+    set('kTargets',targets.length);set('targetBoardCount',`${Math.min(targets.length,12)} / 12`);
+    set('targetBoardStrategy',strategy==='maximum'?'Maximum Income':'Sustainable');
     const brokers=[...new Set(targets.map(t=>accountLabel(t.preferredAccount)).filter(x=>x!=='Broker to assign'))];
     set('targetBoardCoverage',brokers.length?brokers.join(' + '):'Needs assignment');
-    set('scoutingState',sc.status||'NOT BUILT');
-    set('targetSource',sc.source||'Awaiting Scouting 2.0');
+    set('scoutingState',sc.status||'NOT BUILT');set('targetSource',sc.source||'Awaiting Scouting 2.0');
     if(!host)return;
-    if(!targets.length){
-      host.innerHTML='<div class="empty-state compact"><strong>No approved targets yet</strong><p>Open Scouting, run the logic and approve a shortlist.</p></div>';
-      return;
-    }
-    host.innerHTML=targets.slice(0,12).map((t,i)=>{
-      const code=ticker(t.ticker),rank=t.rank||i+1;
-      const status=String(t.status||'caution').toLowerCase();
-      const reason=arr(t.eligibilityReasons)[0]||t.reason||'Approved Scouting target';
-      return `<article class="target-row">
-        <header class="target-card-head">
-          <div class="target-identity"><span class="target-crest">${esc(code.slice(0,3))}</span><div><small>DEAL TARGET ${String(rank).padStart(2,'0')}</small><strong>${esc(code)}</strong><span>${esc(t.name||code)}</span></div></div>
-          <span class="status-pill ${esc(status)}">${esc(t.recommendation||t.status||'WATCH')}</span>
-        </header>
-        <div class="target-position"><span>${esc(t.sector||'Income specialist')}</span><b>${accountLabel(t.preferredAccount)}</b></div>
-        <div class="target-metrics">
-          <div><small>DIVIDEND YIELD</small><strong>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</strong></div>
-          <div><small>SAFETY</small><strong>${Math.round(num(t.dividendSafety))||'—'}</strong></div>
-          <div><small>CONFIDENCE</small><strong>${Math.round(num(t.confidence))||'—'}<em>/100</em></strong></div>
-        </div>
-        <div class="target-scoreline"><span>Sustainable <b>${Math.round(num(t.sustainableScore))}</b></span><i style="--score:${Math.max(0,Math.min(100,num(t.sustainableScore)))}%"></i><span>Maximum <b>${Math.round(num(t.maximumScore))}</b></span></div>
-        <p class="target-scout-note">${esc(reason)}</p>
-        <footer><span><i></i> SCOUTING APPROVED</span><b>RANK #${rank}</b></footer>
-      </article>
-    `}).join('');
+    if(!targets.length){host.innerHTML='<div class="empty-state compact"><strong>No approved targets yet</strong><p>Open Scouting, run the logic and approve a shortlist.</p></div>';return}
+    const findAllocation=t=>allocations.find(a=>String(a.targetId||'')===String(t.id||'')||ticker(a.ticker)===ticker(t.ticker));
+    const broker=t=>{try{return String(A().transferEngine?.effectiveBroker?.(state,t)||accountCode(t.preferredAccount)).toUpperCase()}catch(_){return accountCode(t.preferredAccount)}};
+    const statusFor=(t,a,b)=>{if(String(t.status).toLowerCase()==='block')return 'BLOCKED';if(num(a?.amount)>0)return 'ALLOCATED';if(state.transfer?.route&&(!a||num(a.amount)<=0))return 'NOT ALLOCATED';if(String(t.status).toLowerCase()==='caution'||b==='CHECK')return 'CAUTION';return 'READY'};
+    host.innerHTML=`<div class="football-table-scroll"><table class="football-table transfer-deal-table"><thead><tr><th>#</th><th>Target</th><th>League</th><th>Yield</th><th>Safety</th><th>Confidence</th><th>Income / £1,000</th><th>Broker</th><th>Executable</th><th>Planned Allocation</th><th>Expected Income</th><th>Status</th></tr></thead><tbody>${rows.map((row,i)=>{const t=row.target,a=findAllocation(t),b=broker(t),status=statusFor(t,a,b),executable=String(t.status).toLowerCase()!=='block'&&b!=='CHECK',annual=w.AuroraScoutingLeagues.incomePerThousand(t),id=`deal-${esc(t.id||i)}`,reasons=arr(t.eligibilityReasons);return `<tr class="football-data-row" data-expand-deal="${id}" tabindex="0"><td><b>#${row.rank<Number.MAX_SAFE_INTEGER?row.rank:i+1}</b></td><td><strong>${esc(ticker(t.ticker))}</strong><small>${esc(t.name||t.ticker)}</small></td><td>${row.league?`<span class="league-badge league-badge--${row.league.id}">${row.league.name}</span>`:'—'}</td><td>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</td><td>${Math.round(num(t.dividendSafety))}</td><td>${Math.round(num(t.confidence))}</td><td><b>${money(annual)}/yr</b><small>${money(annual/12)}/mo</small></td><td>${esc(accountLabel(b))}</td><td><span class="deal-executable ${executable?'yes':'no'}">${executable?'YES':'NO'}</span></td><td>${num(a?.amount)>0?money(a.amount):'—'}</td><td>${num(a?.expectedAnnualIncome)>0?money(a.expectedAnnualIncome)+'/yr':'—'}</td><td><span class="deal-state deal-state--${status.toLowerCase().replaceAll(' ','-')}">${status}</span></td></tr><tr class="football-detail-row" id="${id}" hidden><td colspan="12"><div class="transfer-row-detail-grid"><div><small>Exchange / country</small><strong>${esc(t.exchange||'—')} • ${esc(t.country||'—')}</strong></div><div><small>Sector</small><strong>${esc(t.sector||'—')}</strong></div><div><small>Supported price</small><strong>${num(t.livePriceGbp)>0?money(t.livePriceGbp):'—'}</strong></div><div><small>Evidence freshness</small><strong>${t.requiresRefresh?'Refresh required':esc(t.evidenceAsOf||t.updatedAt||'Stored evidence')}</strong></div><div><small>Dividend evidence</small><strong>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'% supported forward yield':'No supported yield'}</strong></div><div><small>Broker eligibility</small><strong>${esc(accountLabel(b))}</strong></div><div class="wide"><small>Canonical Scouting scores</small><strong>Sustainable ${Math.round(num(t.sustainableScore))} • Maximum ${Math.round(num(t.maximumScore))} • active ${Math.round(row.score)}</strong></div><div class="wide"><small>Blocking / caution reasons</small><strong>${esc(reasons.join(' • ')||t.reason||'No caution or blocking reason recorded.')}</strong></div></div></td></tr>`}).join('')}</tbody></table></div>`;
   }
 
   function renderSettings(state){
@@ -691,6 +674,12 @@
 
   function wire(){
     tabs();
+    document.addEventListener('click',e=>{
+      const row=e.target.closest('[data-expand-deal]');
+      if(!row)return;
+      const detail=document.getElementById(row.dataset.expandDeal);
+      if(detail){detail.hidden=!detail.hidden;row.setAttribute('aria-expanded',String(!detail.hidden))}
+    });
     ['brokerScope','minAllocation','allocationIncrement'].forEach(id=>$(id)?.addEventListener('change',()=>{setSettings();render()}));
     $('autoBuildRoute')?.addEventListener('click',()=>{setSettings();autoRoute()});
     $('resetRoute')?.addEventListener('click',resetRoute);

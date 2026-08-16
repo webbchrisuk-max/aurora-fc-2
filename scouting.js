@@ -1586,12 +1586,9 @@
   function renderTargets(state){
     const strategy=state.scouting?.strategy||'sustainable';
     const scoreKey=strategy==='maximum'?'maximumScore':'sustainableScore';
-    const rankKey=strategy==='maximum'?'maximumRank':'rank';
-    const targets=[...arr(state.scouting?.targets)].sort((a,b)=>{
-      if(a.status==='block'&&b.status!=='block')return 1;
-      if(b.status==='block'&&a.status!=='block')return -1;
-      return num(a[rankKey])-num(b[rankKey])||num(b[scoreKey])-num(a[scoreKey]);
-    });
+    const leagueAuthority=w.AuroraScoutingLeagues;
+    const rows=leagueAuthority?.table(arr(state.scouting?.targets),strategy)||[];
+    const targets=rows.map(row=>row.target);
     const host=$('targetList');
 
     const universe=arr(state.scouting?.universe);
@@ -1603,60 +1600,35 @@
     setScoutKpi('kCaution','Transfer Permitted',permitted,'Current active shortlist');
     setScoutKpi('kBlock','Needs Review',needsReview,'Blocked / caution / evidence refresh');
 
-    const topS=[...targets].filter(t=>t.status!=='block')
-      .sort((a,b)=>b.sustainableScore-a.sustainableScore)[0];
-    const topM=[...targets].filter(t=>t.status!=='block')
-      .sort((a,b)=>b.maximumScore-a.maximumScore)[0];
-
+    const topS=[...targets].filter(t=>t.status!=='block').sort((a,b)=>b.sustainableScore-a.sustainableScore)[0];
+    const topM=[...targets].filter(t=>t.status!=='block').sort((a,b)=>b.maximumScore-a.maximumScore)[0];
     set('kTopSustainable',topS?.ticker||'—');
     set('kTopSustainableMeta',topS?`${topS.sustainableScore}/100 • ${topS.recommendation}`:'—');
     set('kTopMaximum',topM?.ticker||'—');
     set('kTopMaximumMeta',topM?`${topM.maximumScore}/100 • ${topM.recommendation}`:'—');
     set('scoutingStatus',state.scouting?.status||'SCOUTING REVIEW');
-    const universeCount=arr(state.scouting?.universe).length;
-    set('shortlistMeta',targets.length
-      ?`${targets.filter(t=>t.status!=='block').length} permitted • ${targets.length} active from `+
-        `${universeCount||targets.length} global candidate${(universeCount||targets.length)===1?'':'s'} • ranked by `+
-        `${strategy==='maximum'?'Maximum Income':'Sustainable Income'} logic.`
-      :'No Active Scouting candidates stored yet.'
-    );
-
+    const universeCount=universe.length;
+    set('shortlistMeta',targets.length?`${permitted} permitted • ${targets.length} active from ${universeCount||targets.length} global candidate${(universeCount||targets.length)===1?'':'s'} • ranked by ${strategy==='maximum'?'Maximum Income':'Sustainable Income'} logic.`:'No Active Scouting candidates stored yet.');
     if(!host)return;
-    if(!targets.length){
-      host.innerHTML='<div class="empty-state compact"><strong>No active candidates yet</strong><p>Promote a player from the Global Network or add a candidate below.</p></div>';
-      return;
-    }
+    if(!targets.length){host.innerHTML='<div class="empty-state compact"><strong>No active candidates yet</strong><p>Promote a player from the Global Network or add a candidate below.</p></div>';return}
 
     const meta=obj(state.scouting?.activeMeta);
-    host.innerHTML=targets.map((t,i)=>{
-      const m=meta[t.id]||{};
-      const market=m.marketSymbol?` • ${esc(m.marketSymbol)}${m.region?' • '+esc(m.region):''}`:'';
-      return `<article class="target-card ${i===0&&t.status!=='block'?'top':''}">
-        <div class="target-copy">
-          <strong>#${t[rankKey]||i+1} • ${esc(t.ticker)} — ${esc(t.name)} ${isAutoManagedTarget(t,state)?'<span class="auto-tag">AUTO</span>':''}</strong>
-          <span>${esc(t.reason||'Scouting evaluation')} • ${accountLabel(t.preferredAccount)}${t.sector?' • '+esc(t.sector):''}${market}</span>
-          <div class="score-strip">
-            <span class="score-chip">Yield ${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</span>
-            <span class="score-chip">Safety ${Math.round(num(t.dividendSafety))}</span>
-            <span class="score-chip">Income ${Math.round(num(t.incomeScore))}</span>
-            <span class="score-chip">Value ${Math.round(num(t.valuationScore))}</span>
-            <span class="score-chip">Fit ${Math.round(num(t.portfolioFit))}</span>
-            <span class="score-chip">Growth ${Math.round(num(t.dividendGrowth))}</span>
-            <span class="score-chip">Quality ${Math.round(num(t.businessQuality))}</span>
-            <span class="score-chip">Confidence ${Math.round(num(t.confidence))}</span>
-          </div>
-        </div>
-        <div class="target-side">
-          <span class="status-pill ${esc(t.status)}">${esc(t.recommendation||t.status)}</span>
-          <div class="target-score">${Math.round(num(t[scoreKey]))}</div>
-          <small>${strategy==='maximum'?'MAXIMUM':'SUSTAINABLE'} / 100</small>
-          <div class="action-row" style="justify-content:flex-end;margin-top:7px">
-            <button class="btn secondary" data-edit="${esc(t.id)}">${isAutoManagedTarget(t,state)?'Take Over':'Edit'}</button>
-            <button class="btn secondary" data-delete="${esc(t.id)}">Remove</button>
-          </div>
-        </div>
-      </article>`;
-    }).join('');
+    const money2=v=>money(Math.max(0,num(v)));
+    const evidence=t=>t.requiresRefresh?'REFRESH':num(t.confidence)>=75?'STRONG':num(t.confidence)>=50?'SUPPORTED':'LIMITED';
+    const detail=(t,row)=>{const m=meta[t.id]||{};const reasons=arr(t.eligibilityReasons);return `<div class="scouting-row-detail-grid">
+      <div><small>Exchange / country</small><strong>${esc(m.marketSymbol||t.exchange||'—')} • ${esc(m.region||t.country||'—')}</strong></div>
+      <div><small>Sector</small><strong>${esc(t.sector||'—')}</strong></div><div><small>Supported price</small><strong>${num(t.livePriceGbp)>0?money(t.livePriceGbp):'—'}</strong></div>
+      <div><small>Evidence freshness</small><strong>${t.requiresRefresh?'Refresh required':esc(t.evidenceAsOf||t.updatedAt||'Stored evidence')}</strong></div>
+      <div><small>Dividend evidence</small><strong>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'% supported forward yield':'No supported yield'}</strong></div>
+      <div><small>Broker eligibility</small><strong>${esc(accountLabel(t.preferredAccount))}</strong></div>
+      <div class="wide"><small>Scoring components</small><strong>Income ${Math.round(num(t.incomeScore))} • Value ${Math.round(num(t.valuationScore))} • Fit ${Math.round(num(t.portfolioFit))} • Growth ${Math.round(num(t.dividendGrowth))} • Quality ${Math.round(num(t.businessQuality))}</strong></div>
+      <div class="wide"><small>Decision reasons</small><strong>${esc(reasons.join(' • ')||t.reason||'No caution or blocking reason recorded.')}</strong></div>
+      <div class="wide scouting-row-actions"><button class="btn secondary" data-edit="${esc(t.id)}">${isAutoManagedTarget(t,state)?'Take Over':'Edit'}</button><button class="btn secondary" data-delete="${esc(t.id)}">Remove</button></div></div>`};
+    const columns='<colgroup><col><col><col><col><col><col><col><col><col><col><col></colgroup><thead><tr><th>Rank</th><th>Ticker</th><th>Company</th><th>League</th><th>Yield</th><th>Safety</th><th>Confidence</th><th>Strategy Score</th><th>Income / £1,000</th><th>Evidence</th><th>Status</th></tr></thead>';
+    const grouped=leagueAuthority.LEAGUES.map(league=>{const leagueRows=rows.filter(r=>r.league?.id===league.id);if(!leagueRows.length)return '';return `<section class="scouting-league scouting-league--${league.id}"><header><div><small>ACTIVE SCOUTING DIVISION</small><strong>${league.name}</strong></div><span>${leagueRows.length} eligible</span></header><div class="football-table-scroll"><table class="football-table">${columns}<tbody>${leagueRows.map(row=>{const t=row.target,id=`scout-${esc(t.id)}`;const annual=leagueAuthority.incomePerThousand(t);return `<tr class="football-data-row" data-expand-row="${id}" tabindex="0"><td><b>#${row.rank}</b></td><td><strong>${esc(t.ticker)}</strong></td><td>${esc(t.name||t.ticker)}</td><td><span class="league-badge league-badge--${row.league.id}">${row.league.name}</span></td><td>${num(t.yieldPct).toFixed(2)}%</td><td>${Math.round(num(t.dividendSafety))}</td><td>${Math.round(num(t.confidence))}</td><td><b>${Math.round(num(t[scoreKey]))}</b><small>${strategy==='maximum'?'Maximum':'Sustainable'}</small></td><td><b>${money2(annual)}/yr</b><small>${money2(annual/12)}/mo</small></td><td>${evidence(t)}</td><td><span class="status-pill ${esc(t.status)}">${esc(t.recommendation||t.status)}</span></td></tr><tr class="football-detail-row" id="${id}" hidden><td colspan="11">${detail(t,row)}</td></tr>`}).join('')}</tbody></table></div></section>`}).join('');
+    const blocked=rows.filter(r=>!r.league);
+    const picks=`<section class="approved-picks"><header><div><small>DIRECTOR OF FOOTBALL</small><strong>Approved Picks / 12</strong></div><span>${targets.filter(t=>t.approvedForTransfer).length} approved</span></header><div class="football-table-scroll"><table class="football-table approved-table"><thead><tr><th>#</th><th>Ticker</th><th>League</th><th>Yield</th><th>Safety</th><th>Confidence</th><th>Sustainable</th><th>Maximum</th><th>Broker status</th><th>Approval</th></tr></thead><tbody>${rows.map((row,i)=>{const t=row.target;return `<tr><td>${row.rank<Number.MAX_SAFE_INTEGER?row.rank:i+1}</td><td><strong>${esc(t.ticker)}</strong></td><td>${row.league?`<span class="league-badge league-badge--${row.league.id}">${row.league.name}</span>`:'—'}</td><td>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</td><td>${Math.round(num(t.dividendSafety))}</td><td>${Math.round(num(t.confidence))}</td><td>${Math.round(num(t.sustainableScore))}</td><td>${Math.round(num(t.maximumScore))}</td><td>${esc(accountLabel(t.preferredAccount))}</td><td><span class="status-pill ${t.approvedForTransfer?'pass':t.status==='block'?'block':'caution'}">${t.approvedForTransfer?'APPROVED':t.status==='block'?'BLOCKED':'AWAITING'}</span></td></tr>`}).join('')}</tbody></table></div></section>`;
+    host.innerHTML=grouped+(blocked.length?`<div class="scouting-ineligible-note"><strong>${blocked.length} blocked candidate${blocked.length===1?'':'s'} excluded from league placement.</strong> PASS / CAUTION / BLOCK rules remain unchanged; blocked evidence stays visible in Approved Picks.</div>`:'')+picks;
   }
 
   function renderHealth(state){
@@ -1782,6 +1754,12 @@
       .forEach(r=>r.addEventListener('change',()=>changeLens(r.value)));
 
     document.addEventListener('click',e=>{
+      const row=e.target.closest('[data-expand-row]');
+      if(row){
+        const detail=document.getElementById(row.dataset.expandRow);
+        if(detail){detail.hidden=!detail.hidden;row.setAttribute('aria-expanded',String(!detail.hidden))}
+        return;
+      }
       const edit=e.target.closest('[data-edit]');
       if(edit){editCandidate(edit.dataset.edit);return}
       const del=e.target.closest('[data-delete]');
