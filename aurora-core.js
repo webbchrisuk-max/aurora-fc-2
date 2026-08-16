@@ -152,12 +152,27 @@
   function normalizeBill(b){
     const r=object(b);
     const allowed=['one-off','weekly','4-weeks','5-weeks','monthly','yearly'];
+    const frequency=allowed.includes(r.frequency)?r.frequency:'one-off';
+    const allowedTypes=['fixed_monthly','rolling_monthly','recurring_yearly','one_off'];
+    const inferredType=frequency==='yearly'?'recurring_yearly'
+      :frequency==='monthly'?(r.due?'fixed_monthly':'rolling_monthly')
+      :'one_off';
+    const commitmentType=allowedTypes.includes(r.commitmentType)?r.commitmentType:inferredType;
+    const rollingMonth=/^\d{4}-\d{2}$/.test(String(r.occurrenceMonth||''))
+      ?String(r.occurrenceMonth)
+      :new Date().toISOString().slice(0,7);
     return {
       id:String(r.id||''),
       name:String(r.name||'Untitled bill'),
       amount:Math.max(0,Number(r.amount)||0),
-      due:String(r.due||''),
-      frequency:allowed.includes(r.frequency)?r.frequency:'one-off',
+      // Rolling commitments deliberately discard legacy placeholder dates.
+      due:commitmentType==='rolling_monthly'?'':String(r.due||''),
+      frequency:commitmentType==='rolling_monthly'||commitmentType==='fixed_monthly'?'monthly'
+        :commitmentType==='recurring_yearly'?'yearly'
+        :commitmentType==='one_off'?'one-off':frequency,
+      commitmentType,
+      recurrence:commitmentType==='one_off'?'none':commitmentType==='recurring_yearly'?'yearly':'monthly',
+      occurrenceMonth:commitmentType==='rolling_monthly'?rollingMonth:'',
       fundingSource:String(r.fundingSource||'Current Account'),
       category:String(r.category||'Other'),
       included:r.included!==false,
@@ -178,6 +193,8 @@
       fundingSource:String(r.fundingSource||'Current Account'),
       paidAt:r.paidAt||now(),
       dueAtPayment:String(r.dueAtPayment||''),
+      commitmentType:String(r.commitmentType||''),
+      occurrenceKey:String(r.occurrenceKey||''),
       reversed:Boolean(r.reversed),
       reversedAt:r.reversedAt||null,
       beforeBill:object(r.beforeBill),

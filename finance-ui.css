@@ -1102,6 +1102,15 @@
   display:grid;
   gap:8px;
 }
+
+.fv2-commitment-table{display:grid;gap:0;border:1px solid rgba(148,163,184,.18);border-radius:12px;overflow:hidden}
+.fv2-commitment-head,.fv2-commitment-row{display:grid;grid-template-columns:minmax(150px,1.35fr) .7fr 1fr 1fr .75fr minmax(220px,1.2fr);gap:12px;align-items:center;padding:10px 12px}
+.fv2-commitment-head{background:rgba(15,23,42,.72);color:#94a3b8;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.fv2-commitment-row{border-top:1px solid rgba(148,163,184,.14);background:rgba(15,23,42,.35)}
+.fv2-commitment-row>div:first-child{display:grid;gap:2px}.fv2-commitment-row small{display:block;color:#94a3b8;font-size:.72rem}
+.fv2-commitment-row .fv2-bill-actions{justify-content:flex-end}.field.is-disabled{opacity:.72}
+.finance-next-bill-paid{border:1px solid rgba(52,211,153,.5);background:rgba(16,185,129,.14);color:#a7f3d0;border-radius:8px;padding:7px 9px;font-weight:800;white-space:nowrap}
+@media(max-width:900px){.fv2-commitment-head{display:none}.fv2-commitment-row{grid-template-columns:1fr 1fr}.fv2-commitment-row .fv2-bill-actions{grid-column:1/-1;justify-content:flex-start}}
 .fv2-bill-card,
 .fv2-house-entry{
   display:grid;

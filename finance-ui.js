@@ -1137,8 +1137,13 @@ function billStatus(b,payday){
   if(b.archived)return {label:'ARCHIVED',tone:'muted'};
   if(b.paid)return {label:'PAID',tone:'good'};
   if(b.included===false)return {label:'EXCLUDED',tone:'muted'};
+  const type=b.commitmentType||(b.frequency==='yearly'?'recurring_yearly':b.frequency==='monthly'?(b.due?'fixed_monthly':'rolling_monthly'):'one_off');
+  if(type==='rolling_monthly'){
+    const current=today().toISOString().slice(0,7), occurrence=b.occurrenceMonth||current;
+    return occurrence>current?{label:'NEXT MONTH',tone:'info'}:{label:'DUE THIS MONTH',tone:'warn'};
+  }
   const d=parseDate(b.due),t=today();
-  if(!d)return {label:'DATE NEEDED',tone:'warn'};
+  if(!d)return {label:type==='one_off'?'NO DATE':'DATE NEEDED',tone:'muted'};
   if(d.getTime()<t.getTime())return {label:'OVERDUE',tone:'block'};
   if(payday&&d.getTime()<=payday.getTime())return {label:'BEFORE PAYDAY',tone:'warn'};
   const days=dayDiff(t,d);
@@ -1155,6 +1160,11 @@ function frequencyLabel(v){
     yearly:'Yearly'
   })[v]||String(v||'');
 }
+function commitmentType(b){
+  if(['fixed_monthly','rolling_monthly','recurring_yearly','one_off'].includes(b?.commitmentType))return b.commitmentType;
+  return b?.frequency==='yearly'?'recurring_yearly':b?.frequency==='monthly'?(b.due?'fixed_monthly':'rolling_monthly'):'one_off';
+}
+function commitmentTypeLabel(b){return ({fixed_monthly:'Fixed monthly',rolling_monthly:'Rolling monthly',recurring_yearly:'Recurring yearly',one_off:'One-off'})[commitmentType(b)]}
 function fundingBalance(s,source,plan){
   if(isCurrentAccount(source))return Math.max(0,num(plan.openingCash));
   const p=activePots(s).find(x=>norm(x.name)===norm(source));
@@ -1182,8 +1192,6 @@ function renderBills(s,plan,runway){
   }
 
   const active=rows.filter(b=>!b.archived);
-  const urgent=active.filter(b=>['block','warn'].includes(billStatus(b,payday).tone));
-  const later=active.filter(b=>!['block','warn'].includes(billStatus(b,payday).tone));
   const archived=rows.filter(b=>b.archived);
 
   function section(label,list){
@@ -1191,35 +1199,24 @@ function renderBills(s,plan,runway){
     return `
       <div class="fv2-list-section">
         <div class="fv2-list-section-head"><strong>${esc(label)}</strong><span>${list.length}</span></div>
-        <div class="fv2-bill-stack">
+        <div class="fv2-commitment-table" role="table">
+          <div class="fv2-commitment-head" role="row"><span>Bill</span><span>Amount</span><span>Type</span><span>Due / Status</span><span>Payment State</span><span>Actions</span></div>
           ${list.map(b=>{
             const st=billStatus(b,payday);
-            const bal=fundingBalance(s,b.fundingSource,plan);
             const amount=Math.max(0,num(b.amount));
-            const sourceCovered=bal==null?false:bal+0.005>=amount;
             const actualId=`actual-${b.id}`;
             const canComplete=!b.archived&&!b.paid&&b.included!==false;
             return `
-              <article class="fv2-bill-card ${b.archived?'is-archived':''}">
-                <div class="fv2-bill-main">
-                  <div class="fv2-bill-title">
-                    <div><small>${esc(b.category||'Other')} • ${esc(frequencyLabel(b.frequency))}</small><h4>${esc(b.name)}</h4></div>
-                    <span class="fv2-status ${st.tone}">${esc(st.label)}</span>
-                  </div>
-                  <div class="fv2-bill-money">
-                    <strong>${money(amount)}</strong>
-                    <span>${b.due?`Due ${esc(humanDate(b.due))}`:'Due date not set'}</span>
-                  </div>
-                  <div class="fv2-bill-source ${sourceCovered?'covered':'check'}">
-                    <div><small>Funding source</small><strong>${esc(b.fundingSource||'Current Account')}</strong></div>
-                    <div><small>Available now</small><strong>${bal==null?'POT MISSING':money(bal)}</strong></div>
-                    <span>${sourceCovered?'This individual bill is covered by the current source balance.':'Check funding source / balance.'}</span>
-                  </div>
-                </div>
+              <article class="fv2-commitment-row ${b.archived?'is-archived':''}" role="row">
+                <div><strong>${esc(b.name)}</strong><small>${esc(b.category||'Other')}</small></div>
+                <strong>${money(amount)}</strong>
+                <span>${esc(commitmentTypeLabel(b))}</span>
+                <div><span class="fv2-status ${st.tone}">${esc(st.label)}</span><small>${b.due?esc(humanDate(b.due)):commitmentType(b)==='rolling_monthly'?'No fixed date':'No date set'}</small></div>
+                <span>${b.paid?'Paid':'Unpaid'}</span>
                 <div class="fv2-bill-actions">
                   ${canComplete?`
                     <div class="fv2-actual"><label>Actual</label><input id="${esc(actualId)}" type="number" min="0" step="0.01" value="${amount.toFixed(2)}"></div>
-                    <button class="btn primary" data-bill-complete="${esc(b.id)}">Complete</button>
+                    <button class="btn primary" data-bill-complete="${esc(b.id)}">Mark as Paid</button>
                   `:''}
                   <button class="btn secondary" data-bill-edit="${esc(b.id)}">Edit</button>
                   <button class="btn secondary" data-bill-archive="${esc(b.id)}">${b.archived?'Restore':'Archive'}</button>
@@ -1233,7 +1230,11 @@ function renderBills(s,plan,runway){
     `;
   }
 
-  host.innerHTML=section('Needs attention / before payday',urgent)+section('Later commitments',later)+section('Archived',archived);
+  host.innerHTML=section('Monthly Bills',active.filter(b=>commitmentType(b)==='fixed_monthly'))
+    +section('Rolling Monthly',active.filter(b=>commitmentType(b)==='rolling_monthly'))
+    +section('Yearly Bills',active.filter(b=>commitmentType(b)==='recurring_yearly'))
+    +section('One-Off Bills',active.filter(b=>commitmentType(b)==='one_off'))
+    +section('Archived',archived);
 }
 
 function renderPotCommand(s,pv){
@@ -1276,8 +1277,9 @@ function financeUiNextBills(s){
     .filter(b=>!b.paid&&b.included!==false)
     .map(b=>({...b,__due:parseDate(b.due)}))
     .sort((a,b)=>{
-      const ad=a.__due?.getTime()??Infinity;
-      const bd=b.__due?.getTime()??Infinity;
+      const current=today().toISOString().slice(0,7);
+      const ad=a.__due?.getTime()??(commitmentType(a)==='rolling_monthly'&&(a.occurrenceMonth||current)<=current?today().getTime():Infinity);
+      const bd=b.__due?.getTime()??(commitmentType(b)==='rolling_monthly'&&(b.occurrenceMonth||current)<=current?today().getTime():Infinity);
       if(ad!==bd)return ad-bd;
       return String(a.name||'').localeCompare(String(b.name||''));
     });
@@ -1453,8 +1455,10 @@ function financeUiBills(s,runway){
       ${next.map((b,index)=>{
         const due=b.__due;
         const days=due?dayDiff(today(),due):null;
-        const dueLabel=!due?'Date needed':days<0?`Overdue ${Math.abs(days)}d`:days===0?'Due today':`Due in ${days}d`;
-        const tone=days!=null&&days<0?'overdue':days!=null&&days<=7?'soon':'';
+        const rolling=commitmentType(b)==='rolling_monthly';
+        const current=today().toISOString().slice(0,7);
+        const dueLabel=rolling?((b.occurrenceMonth||current)>current?'Next month':'Due this month'):!due?'No date':days<0?`Overdue ${Math.abs(days)}d`:days===0?'Due today':`Due in ${days}d`;
+        const tone=!rolling&&days!=null&&days<0?'overdue':days!=null&&days<=7?'soon':'';
         return `
           <div class="finance-next-bill ${tone}">
             <i>${String(index+1).padStart(2,'0')}</i>
@@ -1463,6 +1467,7 @@ function financeUiBills(s,runway){
               <span>${esc(dueLabel)}${due?` • ${esc(humanDate(due))}`:''} • ${esc(b.fundingSource||'Current Account')}</span>
             </div>
             <b>${money(b.amount)}</b>
+            <button data-bill-complete="${esc(b.id)}" class="finance-next-bill-paid">Mark as Paid</button>
             <button data-bill-edit="${esc(b.id)}" class="finance-next-bill-edit">Edit</button>
           </div>
         `;
