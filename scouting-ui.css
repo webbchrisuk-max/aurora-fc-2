@@ -81,6 +81,12 @@
 .scouting-jumpbar button:hover,.scouting-jumpbar button:focus-visible{border-color:rgba(255,202,92,.20);color:#ffe29b;outline:none}
 
 .scouting-command-grid{display:grid;gap:12px}.scouting-command-grid.two{grid-template-columns:1fr 1fr;align-items:start}
+.scouting-coverage{display:grid;grid-template-columns:1.25fr 1fr 1.75fr;gap:8px;margin:0 0 14px}
+.scouting-coverage>div{padding:12px 14px;border:1px solid rgba(88,244,255,.1);border-radius:12px;background:rgba(7,17,23,.72)}
+.scouting-coverage small{display:block;margin-bottom:5px;color:#6d858b;font-size:7px;font-weight:900;letter-spacing:.12em}
+.scouting-coverage strong{color:#d5f8fa;font-size:10px;line-height:1.45}
+@media(max-width:720px){.scouting-coverage{grid-template-columns:1fr}.scouting-coverage>div{padding:10px 12px}}
+
 .scouting-panel,#globalNetworkSection{
   position:relative;overflow:hidden;margin-top:12px;padding:18px;border:1px solid rgba(255,202,92,.09)!important;border-radius:20px!important;
   background:radial-gradient(circle at 100% 0,rgba(255,202,92,.04),transparent 35%),linear-gradient(145deg,rgba(17,15,12,.90),rgba(4,9,16,.98))!important;
