@@ -8,11 +8,20 @@
   function ticker(v){
     return String(v||'').replace(/^LON:/i,'').replace(/\.L$/i,'').replace(/\..*$/,'').toUpperCase().trim();
   }
+  function identityTicker(v){
+    return String(v||'').replace(/^LON:/i,'').replace(/\.L$/i,'').toUpperCase().trim();
+  }
   function securityId(target){
     const explicit=String(target?.securityId||'').trim();
+    if(explicit&&explicit.includes(':')){
+      const parts=explicit.split(':');
+      const market=String(parts.shift()||'').toUpperCase();
+      const symbol=String(parts.join(':')||target?.ticker||'').replace(/\.L$/i,'').toUpperCase().trim();
+      return `${market==='LON'||market==='XLON'?'LSE':market}:${symbol}`;
+    }
     if(explicit)return explicit;
     const exchange=String(target?.exchange||'UNKNOWN').trim().toUpperCase()||'UNKNOWN';
-    return `${exchange}:${ticker(target?.ticker)}`;
+    return `${exchange}:${identityTicker(target?.ticker)}`;
   }
 
   const PRICE_STALE_MS=36*60*60*1000;
@@ -26,18 +35,23 @@
     return {
       securityId:explicit,
       exchange:exchange(record?.exchange||record?.exchangeCode||parts[0]),
-      ticker:ticker(record?.ticker||record?.symbol||parts.slice(1).join(':')),
+      ticker:identityTicker(record?.ticker||record?.symbol||parts.slice(1).join(':')),
       account:accountCode(record?.account||record?.broker||record?.preferredAccount)
     };
   }
-  function sameSecurity(candidate,record){
+  function sameSecurity(candidate,record,state){
     const a=identity(candidate),b=identity(record);
     if(a.securityId&&b.securityId){
       return a.ticker===b.ticker&&a.exchange===b.exchange;
     }
     if(!a.ticker||a.ticker!==b.ticker)return false;
-    // Ticker-only matching is safe only where neither side supplies an exchange.
-    return a.exchange&&b.exchange?a.exchange===b.exchange:!a.exchange&&!b.exchange;
+    if(a.exchange&&b.exchange)return a.exchange===b.exchange;
+    if(!a.exchange&&!b.exchange)return true;
+    // Legacy Aurora records were keyed only by ticker. Migrate that evidence only
+    // when the canonical Scout universe proves the ticker has one market identity.
+    const canonical=arr(state?.scouting?.targets).map(identity)
+      .filter(x=>x.ticker===a.ticker&&x.exchange);
+    return new Set(canonical.map(x=>`${x.exchange}:${x.ticker}`)).size===1;
   }
   function evidenceRows(state,target){
     const sources=[
@@ -47,7 +61,7 @@
       ['LEGACY_MIGRATED_PRICE',arr(state?.scouting?.legacyPriceRecords).concat(arr(state?.migration?.priceRecords),arr(state?.legacy?.prices))],
       ['SQUAD_HOLDING',arr(state?.squad?.holdings)]
     ];
-    return sources.flatMap(([source,rows])=>rows.filter(row=>sameSecurity(target,row)).map(row=>({source,row})));
+    return sources.flatMap(([source,rows])=>rows.filter(row=>sameSecurity(target,row,state)).map(row=>({source,row})));
   }
   function normalizePrice(row){
     const gbp=num(row?.livePriceGbp||row?.priceGbp||row?.live_price_gbp||row?.price_gbp||row?.legacyPriceGbp);
@@ -78,8 +92,8 @@
       return {priceGbp,timestamp,stale,source,account,accountMatch,row,score:(priceGbp>0?100:0)+(stale?0:20)+sourceRank+(accountMatch?2:0)+(Number.isFinite(stampMs)?stampMs/1e15:0)};
     }).filter(x=>x.priceGbp>0).sort((a,b)=>b.score-a.score);
     const best=ranked[0];
-    if(!best)return {supported:false,status:'MISSING',label:'NO SUPPORTED PRICE DATA',priceGbp:0,timestamp:null,stale:false,source:null};
-    return {supported:true,status:best.stale?'STALE':'CURRENT',label:best.stale?'STALE PRICE — REVIEW BEFORE EXECUTION':'SUPPORTED PRICE',priceGbp:best.priceGbp,timestamp:best.timestamp||null,stale:best.stale,source:best.source,account:best.account};
+    if(!best)return {supported:false,status:'MISSING',freshness:'MISSING',label:'NO SUPPORTED PRICE DATA',priceGbp:0,timestamp:null,stale:false,source:null};
+    return {supported:true,status:best.stale?'STALE':'CURRENT',freshness:best.stale?'STALE_BUT_USABLE':'LIVE',label:best.stale?'STALE PRICE — REVIEW BEFORE EXECUTION':'SUPPORTED PRICE',priceGbp:best.priceGbp,timestamp:best.timestamp||null,stale:best.stale,source:best.source,account:best.account};
   }
 
   function resolveReplacementBasket(state,selectedIds=[]){
@@ -88,7 +102,7 @@
     return wanted.map(id=>{
       const target=targets.find(t=>securityId(t)===id);
       if(!target)return {securityId:id,available:false,incompleteReason:'SECURITY_NOT_FOUND'};
-      return resolveCandidateEvidence(state,target);
+      return resolveExecutableCandidate(target,{state,purpose:'CHAIRMAN_SIMULATION'});
     });
   }
   function accountCode(v){
@@ -100,9 +114,13 @@
   }
 
   function brokerPreference(state,target){
-    const tk=ticker(target?.ticker||target);
-    const securityId=String(target?.securityId||'');
-    const raw=(securityId&&state?.transfer?.brokerPreferences?.[securityId])??state?.transfer?.brokerPreferences?.[tk];
+    const tk=identity(target).ticker||identityTicker(target?.ticker||target);
+    const id=securityId(target);
+    const preferences=state?.transfer?.brokerPreferences||{};
+    const canonicalRaw=preferences[id];
+    const identities=arr(state?.scouting?.targets).map(identity).filter(x=>x.ticker===tk&&x.exchange);
+    const tickerUnambiguous=new Set(identities.map(x=>`${x.exchange}:${x.ticker}`)).size<=1;
+    const raw=canonicalRaw??(tickerUnambiguous?preferences[tk]:null);
     const value=raw&&typeof raw==='object'?raw.account:raw;
     const code=accountCode(value);
     return code==='IG'||code==='T212'?code:'CHECK';
@@ -128,47 +146,87 @@
       if(row?.trading212IsaSupported===true||row?.trading212ISASupported===true||row?.supportsTrading212Isa===true)accounts.push('T212');
       return accounts;
     });
+    const transferConfig=arr(state?.transfer?.brokerEligibility).concat(arr(state?.transfer?.brokerConfiguration),arr(state?.transfer?.eligibleSecurities))
+      .filter(row=>sameSecurity(target,row,state)).flatMap(row=>eligibilityAccounts(row?.brokerEligibility||row?.accounts||row?.eligibleAccounts));
     const holdingAccounts=arr(state?.squad?.holdings)
-      .filter(row=>sameSecurity(target,row))
+      .filter(row=>sameSecurity(target,row,state))
       .map(row=>identity(row).account).filter(a=>a!=='CHECK');
-    const eligible=[...new Set(explicit.concat(holdingAccounts))];
+    const exchangeAccounts=arr(state?.transfer?.marketSupport).concat(arr(state?.transfer?.exchangeSupport))
+      .filter(row=>exchange(row?.exchange||row?.market)===identity(target).exchange)
+      .flatMap(row=>eligibilityAccounts(row?.accounts||row?.eligibleAccounts||row?.brokerEligibility));
+    const routeAccounts=arr(state?.transfer?.route?.allocations).concat(arr(state?.transfer?.routeEvidence))
+      .filter(row=>sameSecurity(target,row,state)).map(row=>identity(row).account).filter(a=>a!=='CHECK');
     const remembered=brokerPreference(state,target);
     const preferred=accountCode(target?.preferredAccount);
-
-    // A remembered/preferred executable account is itself Transfer evidence
-    // when no broker support matrix has been supplied by Scouting.
-    if(!eligible.length&&!eligibilityDeclared){
-      if(remembered!=='CHECK')eligible.push(remembered);
-      if(preferred!=='CHECK'&&!eligible.includes(preferred))eligible.push(preferred);
-    }
+    const tiers=[
+      {source:'EXPLICIT_SECURITY_ELIGIBILITY',accounts:explicit},
+      {source:'TRANSFER_BROKER_CONFIGURATION',accounts:transferConfig},
+      {source:'REMEMBERED_PREFERRED_BROKER',accounts:[remembered,preferred].filter(a=>a!=='CHECK')},
+      {source:'CONFIRMED_HOLDING_ACCOUNT',accounts:holdingAccounts},
+      {source:'CANONICAL_MARKET_SUPPORT',accounts:exchangeAccounts},
+      {source:'EXISTING_ROUTE_EVIDENCE',accounts:routeAccounts}
+    ];
+    // An explicit negative eligibility declaration is authoritative; otherwise
+    // use the first legitimate evidence tier that can name an account.
+    const chosen=tiers.find(t=>t.accounts.length)||null;
+    const eligible=chosen?[...new Set(chosen.accounts)]:[];
     const account=remembered!=='CHECK'&&eligible.includes(remembered)?remembered
       :preferred!=='CHECK'&&eligible.includes(preferred)?preferred
-        :eligible.length===1?eligible[0]:'CHECK';
-    return {account,eligible,remembered,preferred,supported:account!=='CHECK'};
+        :eligible[0]||'CHECK';
+    const blockedByExplicit=eligibilityDeclared&&!explicit.length;
+    return {account:blockedByExplicit?'CHECK':account,eligible:blockedByExplicit?[]:eligible,remembered,preferred,
+      supported:!blockedByExplicit&&account!=='CHECK',source:blockedByExplicit?'EXPLICIT_SECURITY_INELIGIBILITY':chosen?.source||null};
   }
   function effectiveBroker(state,target){
     return resolveBrokerRoute(state,target).account;
   }
 
   /** One evidence gate for automatic strategies and explicitly selected baskets. */
-  function resolveCandidateEvidence(state,target){
+  function resolveExecutableCandidate(target,context={}){
+    const state=context.state||context;
     const yieldPct=Math.max(0,num(target?.yieldPct));
-    const priceEvidence=resolveMarketPrice(state,target);
+    const priceEvidence=resolveMarketPrice(state,target,context);
     const brokerRoute=resolveBrokerRoute(state,target);
-    const incompleteReason=!(yieldPct>0)
-      ?'MISSING_INCOME_EVIDENCE'
-      :!(priceEvidence.priceGbp>0)
-        ?'MISSING_PRICE_EVIDENCE'
-        :!brokerRoute.supported?'MISSING_BROKER_ROUTE':'';
+    const blockingReasons=[];
+    if(!(yieldPct>0))blockingReasons.push('MISSING_INCOME_EVIDENCE');
+    if(!(priceEvidence.priceGbp>0))blockingReasons.push('MISSING_PRICE_EVIDENCE');
+    if(!brokerRoute.supported)blockingReasons.push('MISSING_BROKER_ROUTE');
+    if(target?.transferPermitted===false)blockingReasons.push('TRANSFER_NOT_PERMITTED');
+    if(['INELIGIBLE','BLOCKED','NOT_ELIGIBLE'].includes(String(target?.eligibilityStatus||'').toUpperCase()))blockingReasons.push('SECURITY_INELIGIBLE');
+    const incompleteReason=blockingReasons[0]||'';
     return {
       ...target,
       securityId:securityId(target),
+      ticker:identity(target).ticker,exchange:identity(target).exchange,
+      name:target?.name||ticker(target?.ticker),currency:String(target?.currency||'').toUpperCase()||null,
       livePriceGbp:priceEvidence.priceGbp,
       priceEvidence,
       brokerRoute,
-      available:!incompleteReason,
-      incompleteReason
+      resolvedBroker:brokerRoute.account,brokerEligible:brokerRoute.supported,
+      supportedMarketPrice:priceEvidence.priceGbp,priceTimestamp:priceEvidence.timestamp,
+      priceFreshness:priceEvidence.freshness,
+      incomeEvidence:{supported:yieldPct>0,yieldPct},
+      transferEligible:target?.transferPermitted!==false,
+      simulationEligible:!blockingReasons.length,
+      available:!blockingReasons.length,incompleteReason,blockingReasons,
+      diagnostics:{security:true,broker:brokerRoute.supported,price:priceEvidence.supported,dividend:yieldPct>0,simulation:!blockingReasons.length}
     };
+  }
+  const resolveCandidateEvidence=(state,target)=>resolveExecutableCandidate(target,{state,purpose:'LEGACY_CALLER'});
+  function executableDiagnostics(state,targets=state?.scouting?.targets,context={}){
+    return arr(targets).map(target=>{
+      const candidate=resolveExecutableCandidate(target,{...context,state,purpose:'DEVELOPMENT_DIAGNOSTIC'});
+      return {
+        securityId:candidate.securityId,ticker:candidate.ticker,
+        securityResolved:candidate.diagnostics.security,
+        broker:candidate.brokerRoute.supported?candidate.brokerRoute.account:false,
+        brokerSource:candidate.brokerRoute.source,
+        price:candidate.priceEvidence.freshness,
+        dividend:candidate.incomeEvidence.supported,
+        simulation:candidate.simulationEligible,
+        blockingReasons:candidate.blockingReasons
+      };
+    });
   }
 
   function targetScore(t,strategy){
@@ -357,14 +415,12 @@
     const baseRows=rotation?postSaleBase(state,rotation):null;
 
     const evaluated=arr(state?.scouting?.targets)
-      .map(t=>resolveCandidateEvidence(state,t));
+      .map(t=>resolveExecutableCandidate(t,{state,purpose:opts.purpose||'TRANSFER_SIMULATION',nowMs:opts.nowMs}));
     let candidates=evaluated
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
-      .filter(t=>t.transferPermitted!==false)
-      .filter(t=>!['INELIGIBLE','BLOCKED','NOT_ELIGIBLE'].includes(String(t.eligibilityStatus||'').toUpperCase()))
       .filter(t=>settings.allowActiveScouting===true||(t.approvedForTransfer===true&&
         String(t.approvalBatchId||'')===String(state?.scouting?.approvedBatchId||'')))
-      .filter(t=>t.available)
+      .filter(t=>t.simulationEligible)
       .filter(t=>!exclude||ticker(t.ticker)!==exclude)
       .filter(t=>brokerScope==='both'||t.brokerRoute.account===brokerScope)
       .filter(t=>!allowedIds||allowedIds.has(securityId(t)));
@@ -396,7 +452,7 @@
         allocationMode:'DYNAMIC_OPPORTUNITY_WEIGHTED',
         targetCount:0,
         allocations:[],allocated:0,income:0,remaining:budget,status:'SIMULATION',
-        rotation:!!rotation,reason:budget>0?'NO_ELIGIBLE_TARGETS':'NO_BUDGET'
+        rotation:!!rotation,reason:budget>0?'NO_ELIGIBLE_TARGETS':'NO_BUDGET',evaluatedCandidates:evaluated
       };
     }
 
@@ -501,6 +557,7 @@
       rotation:!!rotation
     };
     Object.assign(route,routeSummary(route));
+    route.evaluatedCandidates=evaluated;
     return route;
   }
 
@@ -610,6 +667,8 @@
     securityId,
     resolveReplacementBasket,
     resolveCandidateEvidence,
+    resolveExecutableCandidate,
+    executableDiagnostics,
     resolveMarketPrice
   };
 })(window);

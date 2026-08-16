@@ -54,22 +54,6 @@
     return String(state.scouting?.status||'').toUpperCase()==='SCOUTING_READY';
   }
 
-  function targetScore(t,strategy){
-    let base;
-    if(strategy==='maximum'){
-      base=num(t.maximumScore)>0?num(t.maximumScore):Math.min(100,Math.max(0,num(t.yieldPct))*10);
-    }else{
-      base=num(t.sustainableScore)>0?num(t.sustainableScore):Math.max(1,num(t.confidence)||(100-Math.max(1,num(t.rank))*5));
-    }
-    if(String(t.status||'').toLowerCase()==='caution')base*=.82;
-    if(String(t.status||'').toLowerCase()==='block')return 0;
-    return base;
-  }
-  function brokerEligible(t,scope){
-    if(scope==='both')return true;
-    return accountCode(t.preferredAccount)===scope;
-  }
-  function roundDown(v,inc){return Math.floor((Math.max(0,v)+1e-9)/inc)*inc}
   function routeSummary(route){
     const allocations=arr(route?.allocations);
     const allocated=allocations.reduce((s,a)=>s+num(a.amount),0);
@@ -734,7 +718,6 @@
   w.Aurora2.transferEngine={
     ...(w.Aurora2.transferEngine||{}),
     routeSummary,
-    targetScore,
     chairmanHoldingMetrics,
     chairmanMateriality,
     scoutingStrategy,
