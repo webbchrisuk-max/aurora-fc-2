@@ -18,14 +18,29 @@
 
   function brokerPreference(state,target){
     const tk=ticker(target?.ticker||target);
-    const raw=state?.transfer?.brokerPreferences?.[tk];
+    const securityId=String(target?.securityId||'');
+    const raw=(securityId&&state?.transfer?.brokerPreferences?.[securityId])??state?.transfer?.brokerPreferences?.[tk];
     const value=raw&&typeof raw==='object'?raw.account:raw;
     const code=accountCode(value);
     return code==='IG'||code==='T212'?code:'CHECK';
   }
   function effectiveBroker(state,target){
     const remembered=brokerPreference(state,target);
-    return remembered!=='CHECK'?remembered:accountCode(target?.preferredAccount);
+    if(remembered!=='CHECK')return remembered;
+    const preferred=accountCode(target?.preferredAccount);
+    if(preferred!=='CHECK')return preferred;
+
+    // Global Scouting may provide broker eligibility without choosing a
+    // preferred broker. Resolve a single valid route; an ambiguous candidate
+    // remains unassigned and is excluded without poisoning the whole basket.
+    const eligibility=target?.brokerEligibility;
+    const values=Array.isArray(eligibility)
+      ?eligibility
+      :eligibility&&typeof eligibility==='object'
+        ?Object.entries(eligibility).filter(([,allowed])=>allowed===true).map(([broker])=>broker)
+        :typeof eligibility==='string'?eligibility.split(/[,|/]/):[];
+    const eligible=[...new Set(values.map(accountCode).filter(code=>code==='IG'||code==='T212'))];
+    return eligible.length===1?eligible[0]:'CHECK';
   }
 
   function targetScore(t,strategy){
@@ -40,8 +55,9 @@
     return Math.max(0,base);
   }
   function brokerEligible(t,scope,state){
-    if(scope==='both')return true;
-    return effectiveBroker(state,t)===scope;
+    const broker=effectiveBroker(state,t);
+    if(broker==='CHECK')return false;
+    return scope==='both'||broker===scope;
   }
   function roundDown(v,inc){
     return Math.floor((Math.max(0,v)+1e-9)/inc)*inc;
@@ -101,6 +117,18 @@
     const income=allocations.reduce((s,a)=>s+num(a.expectedAnnualIncome),0);
     const budget=Math.max(0,num(route?.financeBudget));
     return {allocated,income,remaining:Math.max(0,budget-allocated)};
+  }
+
+  function routeGuardMessage(state){
+    const mission=state?.mission;
+    const financeReady=!!mission&&num(mission.approvedBudget)>0&&
+      !['CANCELLED','COMPLETE','COMPLETED','ARCHIVED'].includes(String(mission.status||'').toUpperCase());
+    const scoutingReady=String(state?.scouting?.status||'').toUpperCase()==='SCOUTING_READY'&&
+      arr(state?.scouting?.targets).some(t=>t.approvedForTransfer===true);
+    if(financeReady&&scoutingReady)return 'Finance mission and Scouting-approved shortlist loaded. Build the route when ready.';
+    if(financeReady)return 'Waiting for a Scouting-approved shortlist.';
+    if(scoutingReady)return 'Waiting for a Finance mission.';
+    return 'Waiting for a Finance mission and a Scouting-approved shortlist.';
   }
 
   /*
@@ -202,12 +230,14 @@
 
     let candidates=arr(state?.scouting?.targets)
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
+      .filter(t=>t.transferPermitted!==false)
+      .filter(t=>!['INELIGIBLE','BLOCKED','NOT_ELIGIBLE'].includes(String(t.eligibilityStatus||'').toUpperCase()))
       .filter(t=>t.approvedForTransfer===true&&
         String(t.approvalBatchId||'')===String(state?.scouting?.approvedBatchId||''))
       .filter(t=>num(t.yieldPct)>0)
       .filter(t=>!exclude||ticker(t.ticker)!==exclude)
       .filter(t=>brokerEligible(t,brokerScope,state))
-      .filter(t=>!allowedIds||allowedIds.has(String(t.id||ticker(t.ticker))));
+      .filter(t=>!allowedIds||allowedIds.has(String(t.securityId||t.id||ticker(t.ticker))));
 
     candidates=candidates.map(t=>{
       const scoutScore=Math.max(1,targetScore(t,strategy));
@@ -255,6 +285,8 @@
     const allocations=candidates.map((t,i)=>({
       id:idFactory('ALLOC'),
       targetId:t.id,
+      securityId:t.securityId||'',
+      exchange:t.exchange||'',
       ticker:ticker(t.ticker),
       name:t.name||ticker(t.ticker),
       account:t._effectiveBroker,
@@ -441,6 +473,7 @@
     brokerPreference,
     effectiveBroker,
     ticker,
-    accountCode
+    accountCode,
+    routeGuardMessage
   };
 })(window);

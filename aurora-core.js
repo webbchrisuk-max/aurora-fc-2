@@ -228,6 +228,11 @@
     const account=String(r.preferredAccount||r.account||r.platform||r.broker||'CHECK');
     return {
       id:String(r.id||''),
+      // Global Scouting identities and approval evidence are part of the
+      // canonical Transfer handoff.  Do not reduce these to the legacy id or
+      // ticker: the same ticker can legitimately exist on two exchanges.
+      securityId:String(r.securityId||r.networkSecurityId||''),
+      exchange:String(r.exchange||r.market||'').toUpperCase(),
       ticker:String(r.ticker||r.symbol||'').replace(/\..*$/,'').toUpperCase(),
       name:String(r.name||r.company||r.companyName||r.ticker||'Target'),
       preferredAccount:account,
@@ -238,6 +243,12 @@
         : 'WATCH',
       reason:String(r.reason||r.note||''),
       eligibilityReasons:Array.isArray(r.eligibilityReasons)?r.eligibilityReasons.map(x=>String(x)):[],
+      eligibilityStatus:String(r.eligibilityStatus||r.transferEligibilityStatus||''),
+      brokerEligibility:r.brokerEligibility??null,
+      transferPermitted:r.transferPermitted!==false,
+      approvedForTransfer:r.approvedForTransfer===true,
+      approvalBatchId:r.approvalBatchId==null?null:String(r.approvalBatchId),
+      approvedAt:r.approvedAt||null,
       rank:Math.max(0,Number(r.rank)||0),
       maximumRank:Math.max(0,Number(r.maximumRank)||0),
       yieldPct:Math.max(0,Number(r.yieldPct)||0),
@@ -270,6 +281,8 @@
       leg_id:legId,
       transactionId:String(r.transactionId||''),
       targetId:String(r.targetId||''),
+      securityId:String(r.securityId||''),
+      exchange:String(r.exchange||'').toUpperCase(),
       ticker:String(r.ticker||'').toUpperCase(),
       name:String(r.name||r.ticker||'Target'),
       account:String(r.account||r.preferredAccount||'CHECK'),

@@ -30,3 +30,20 @@ test('reload normalization preserves canonical mission, leg, and transaction lin
   assert.equal(state.transfer.registrationDrafts[0].transactionId,'TX-1');
   assert.equal(state.registration.receipts[0].legId,'LEG-1');
 });
+
+test('reload normalization preserves Global Scout identity and Transfer approval evidence',()=>{
+  const state=loadCore({scouting:{status:'SCOUTING_READY',approvedBatchId:'GLOBAL-1',targets:[{
+    id:'ACTIVE-LSE:UKW',securityId:'LSE:UKW',exchange:'LSE',ticker:'UKW',
+    approvedForTransfer:true,approvalBatchId:'GLOBAL-1',approvedAt:'2026-08-16T10:00:00Z',
+    transferPermitted:true,eligibilityStatus:'ELIGIBLE',brokerEligibility:{IG:true,T212:false}
+  }]}}).read();
+  const target=state.scouting.targets[0];
+  assert.equal(target.securityId,'LSE:UKW');
+  assert.equal(target.exchange,'LSE');
+  assert.equal(target.ticker,'UKW');
+  assert.equal(target.approvedForTransfer,true);
+  assert.equal(target.approvalBatchId,'GLOBAL-1');
+  assert.equal(target.transferPermitted,true);
+  assert.equal(target.eligibilityStatus,'ELIGIBLE');
+  assert.deepEqual(JSON.parse(JSON.stringify(target.brokerEligibility)),{IG:true,T212:false});
+});
