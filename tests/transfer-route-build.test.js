@@ -306,6 +306,40 @@ test('Chairman uses shared canonical market evidence and labels stale or missing
   assert.ok(simulation.allocations.find(row=>row.securityId==='LSE:FSFL').priceEvidence.stale);
 });
 
+test('live aliases reconcile UKW price, BATS broker evidence, and never-owned BCE evidence',()=>{
+  const engine=loadEngine();
+  const target=(securityId,exchange,ticker)=>({securityId,exchange,ticker,status:'pass',yieldPct:6,transferPermitted:true});
+  const ukw=target('LSE:UKW','LSE','UKW');
+  const bats=target('LSE:BATS','LSE','BATS');
+  const bce=target('TSX:BCE','TSX','BCE');
+  const state={scouting:{targets:[ukw,bats,bce],universe:[
+    {securityId:'XLON:UKW',symbol:'UKW.L',price:146,priceUnit:'PENCE',currency:'GBP',brokerEligibility:{IG:true}},
+    {securityId:'LON:BATS',symbol:'BATS.L',livePriceGbp:28.4,T212:true},
+    {securityId:'XTSE:BCE',symbol:'BCE',livePriceGbp:27,brokerEligibility:{T212:true}}
+  ]},transfer:{settings:{}},squad:{holdings:[]}};
+
+  assert.equal(engine.resolveMarketPrice(state,ukw).priceGbp,1.46);
+  assert.equal(engine.resolveBrokerRoute(state,bats).account,'T212');
+  assert.equal(engine.resolveExecutableCandidate(bce,{state}).simulationEligible,true);
+  const basket=engine.resolveReplacementBasket(state,['LSE:UKW','LSE:BATS','TSX:BCE']);
+  assert.equal(basket.filter(row=>row.available).length,3);
+});
+
+test('Chairman rotation enforces portfolio position cap and keeps legitimate holdback',()=>{
+  const engine=loadEngine();
+  const gcp={securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',status:'pass',yieldPct:6.5,livePriceGbp:1,brokerEligibility:{IG:true},sustainableScore:95};
+  const state={scouting:{targets:[gcp]},transfer:{settings:{minAllocation:250,increment:25}},squad:{holdings:[
+    {id:'SALE',securityId:'LSE:OLD',exchange:'LSE',ticker:'OLD',account:'IG',status:'ACTIVE',shares:18258.58,livePriceGbp:1},
+    {securityId:'LSE:CORE',exchange:'LSE',ticker:'CORE',account:'IG',status:'ACTIVE',shares:41741.42,livePriceGbp:1}
+  ]}};
+  const route=engine.simulate(state,{budget:18258.58,allowActiveScouting:true,rotationContext:{holdingId:'SALE',ticker:'OLD',account:'IG',saleFraction:1},idFactory:p=>p});
+  const snapshot=engine.concentrationSnapshot(state,{holdingId:'SALE',ticker:'OLD',account:'IG',saleFraction:1},route.allocations);
+  assert.ok(route.remaining>0);
+  assert.ok(route.allocations[0].amount<=12000);
+  const gcpPct=route.allocations[0].amount/snapshot.after.total*100;
+  assert.ok(gcpPct<=20.01);
+});
+
 test('selected security without income evidence is explicit and is not simulated as zero income',()=>{
   const engine=loadEngine();
   const state={scouting:{targets:[{
