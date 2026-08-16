@@ -74,7 +74,7 @@ function installScoutingAuthorityBridge(){
       })
       .map(t=>({
         target:t,
-        id:String(t?.id||ticker(t?.ticker)),
+        id:String(t?.securityId||t?.id||ticker(t?.ticker)),
         rank:activeRank(t,strategy),
         score:activeScore(t,strategy),
         ticker:ticker(t?.ticker)

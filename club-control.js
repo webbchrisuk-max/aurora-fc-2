@@ -12,6 +12,7 @@
   let lens='sustainable';
   let saleFraction=1;
   let customIds=new Set();
+  let customInitialized=false;
 
   function set(id,v){const el=$(id);if(el)el.textContent=v}
   function toast(msg){
@@ -145,8 +146,11 @@
     return arr(state.scouting?.targets)
       .filter(t=>ticker(t.ticker)!==currentTicker)
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
-      .filter(t=>num(t.yieldPct)>0)
       .sort((a,b)=>num(b.sustainableScore)-num(a.sustainableScore)||num(b.yieldPct)-num(a.yieldPct));
+  }
+
+  function candidateId(c){
+    return A().transferEngine?.securityId?.(c)||String(c.securityId||c.id||ticker(c.ticker));
   }
 
   function transferSimulation(state,h,scenario){
@@ -171,6 +175,7 @@
       maxTargets:8,
       excludeTicker:ticker(h.ticker),
       targetIds,
+      allowActiveScouting:true,
       rotationContext:{
         holdingId:h.id||'',
         ticker:ticker(h.ticker),
@@ -341,13 +346,15 @@
       host.innerHTML='<div class="empty-state compact"><strong>No eligible Active Scouts</strong><p>Promote candidates in Scouting first.</p></div>';
       return;
     }
-    if(!customIds.size){
-      candidates.slice(0,3).forEach(c=>customIds.add(String(c.id||ticker(c.ticker))));
+    if(!customInitialized){
+      candidates.filter(c=>num(c.yieldPct)>0).slice(0,3).forEach(c=>customIds.add(candidateId(c)));
+      customInitialized=true;
     }
     host.innerHTML=candidates.slice(0,16).map(c=>{
-      const id=String(c.id||ticker(c.ticker));
+      const id=candidateId(c);
+      const available=num(c.yieldPct)>0;
       return `<label class="custom-choice"><input type="checkbox" data-custom="${esc(id)}" ${customIds.has(id)?'checked':''}>
-        <div><strong>${esc(ticker(c.ticker))} — ${esc(c.name||ticker(c.ticker))}</strong><span>${num(c.yieldPct).toFixed(2)}% yield • S ${Math.round(num(c.sustainableScore))} • M ${Math.round(num(c.maximumScore))} • ${esc(String(c.status||'caution').toUpperCase())}</span></div>
+        <div><strong>${esc(ticker(c.ticker))} — ${esc(c.name||ticker(c.ticker))}</strong><span>${available?`${num(c.yieldPct).toFixed(2)}% yield`:'Income evidence unavailable'} • S ${Math.round(num(c.sustainableScore))} • M ${Math.round(num(c.maximumScore))} • ${esc(String(c.status||'caution').toUpperCase())}</span></div>
       </label>`;
     }).join('');
   }
@@ -366,11 +373,15 @@
   function renderBasket(data){
     const host=$('basketList');if(!host)return;
     const rows=arr(data.sim.allocations);
+    const selected=lens==='custom'
+      ?A().transferEngine.resolveReplacementBasket(A().core.read(),[...customIds])
+      :[];
+    const incomplete=selected.filter(x=>!x.available);
     set('basketMeta',rows.length
       ?`${rows.length} Transfer-sized replacement${rows.length===1?'':'s'} • ${money(data.sim.allocated)} invested • ${money(data.sim.remaining)} holdback • scenario only`
-      :'Transfer could not build a replacement route from the current Active Scouting pool.'
+      :incomplete.length?'Selected replacements need income evidence before simulation.':'Transfer could not build a replacement route from the current Active Scouting pool.'
     );
-    if(!rows.length){
+    if(!rows.length&&!incomplete.length){
       host.innerHTML='<div class="empty-state compact"><strong>No Transfer simulation</strong><p>Promote/clear eligible candidates in Scouting, or select a different custom basket.</p></div>';
       return;
     }
@@ -381,7 +392,10 @@
       <div class="basket-num"><b>${money(r.expectedAnnualIncome)}</b><small>income / yr</small></div>
       <div class="basket-num"><b>${Math.round(num(r.scoutingScore))}/100</b><small>Scouting score</small></div>
       <div class="basket-num"><b>${num(r.concentrationFactor).toFixed(2)}×</b><small>route fit</small></div>
-    </div>`).join('');
+    </div>`).concat(incomplete.map(r=>`<div class="basket-row" data-incomplete="true">
+      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>UNAVAILABLE • Missing supported yield/dividend income evidence</span></div>
+      <div class="basket-num"><b>—</b><small>income unavailable</small></div>
+    </div>`)).join('');
   }
 
   function paintSigned(id,value){
@@ -486,6 +500,7 @@
     $('holdingSelect')?.addEventListener('change',e=>{
       selectedKey=e.target.value;
       customIds.clear();
+      customInitialized=false;
       render();
     });
     $('refreshCase')?.addEventListener('click',()=>{
@@ -498,7 +513,7 @@
     }));
     document.querySelectorAll('[data-lens]').forEach(b=>b.addEventListener('click',()=>{
       lens=b.dataset.lens;
-      if(lens!=='custom')customIds.clear();
+      if(lens!=='custom'){customIds.clear();customInitialized=false}
       render();
     }));
     document.addEventListener('click',e=>{
@@ -506,6 +521,7 @@
       if(review){
         selectedKey=review.dataset.review;
         customIds.clear();
+        customInitialized=false;
         render();
         $('rotationCase')?.scrollIntoView({behavior:'smooth',block:'start'});
       }
@@ -515,6 +531,7 @@
       if(!box)return;
       const id=box.dataset.custom;
       if(box.checked)customIds.add(id);else customIds.delete(id);
+      customInitialized=true;
       render();
     });
   }

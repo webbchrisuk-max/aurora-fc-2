@@ -91,3 +91,58 @@ test('a genuine zero-executable approved shortlist fails safely',()=>{
   assert.equal(result.reason,'NO_ELIGIBLE_TARGETS');
   assert.deepEqual(Array.from(result.simulation.allocations),[]);
 });
+
+test('Chairman canonical replacement basket drives income and removes deselected securities',()=>{
+  const engine=loadEngine();
+  const candidate=(securityId,exchange,ticker,yieldPct)=>({
+    id:`ACTIVE-${securityId}`,securityId,exchange,ticker,name:ticker,
+    preferredAccount:'IG ISA',status:'pass',yieldPct,sustainableScore:90,
+    transferPermitted:true
+  });
+  const state={scouting:{targets:[
+    candidate('TSX:BCE','TSX','BCE',6.5),
+    candidate('NYSE:VICI','NYSE','VICI',5.5),
+    candidate('NYSE:UPS','NYSE','UPS',4.5)
+  ]},transfer:{settings:{}},squad:{holdings:[]}};
+  const selected=['TSX:BCE','NYSE:VICI','NYSE:UPS'];
+
+  const basket=engine.resolveReplacementBasket(state,selected);
+  assert.deepEqual(Array.from(basket,x=>x.securityId),selected);
+  assert.ok(basket.every(x=>x.available));
+
+  const simulation=engine.simulate(state,{
+    budget:3000,targetIds:selected,allowActiveScouting:true,minAllocation:250,
+    increment:25,maxTargets:3,idFactory:p=>p
+  });
+  assert.deepEqual(new Set(simulation.allocations.map(x=>x.securityId)),new Set(selected));
+  assert.ok(simulation.income>0);
+  assert.equal(simulation.income,simulation.allocations.reduce((sum,x)=>sum+x.expectedAnnualIncome,0));
+  const surrenderedIncome=981.95;
+  assert.equal(simulation.income-surrenderedIncome,simulation.income-981.95);
+
+  const deselected=engine.resolveReplacementBasket(state,selected.filter(id=>id!=='NYSE:VICI'));
+  assert.deepEqual(Array.from(deselected,x=>x.securityId),['TSX:BCE','NYSE:UPS']);
+});
+
+test('canonical replacement basket deduplicates IDs and returns to an empty state',()=>{
+  const engine=loadEngine();
+  const state={scouting:{targets:[{securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS',yieldPct:4,preferredAccount:'IG ISA'}]}};
+  assert.deepEqual(Array.from(engine.resolveReplacementBasket(state,[])),[]);
+  const basket=engine.resolveReplacementBasket(state,['NYSE:UPS','NYSE:UPS']);
+  assert.equal(basket.length,1);
+  assert.equal(basket[0].securityId,'NYSE:UPS');
+});
+
+test('selected security without income evidence is explicit and is not simulated as zero income',()=>{
+  const engine=loadEngine();
+  const state={scouting:{targets:[{
+    id:'ACTIVE-NYSE:MISSING',securityId:'NYSE:MISSING',exchange:'NYSE',ticker:'MISSING',
+    preferredAccount:'IG ISA',status:'pass',sustainableScore:90
+  }]},transfer:{settings:{}},squad:{holdings:[]}};
+  const basket=engine.resolveReplacementBasket(state,['NYSE:MISSING']);
+  assert.equal(basket[0].available,false);
+  assert.equal(basket[0].incompleteReason,'MISSING_INCOME_EVIDENCE');
+  const simulation=engine.simulate(state,{budget:1000,targetIds:['NYSE:MISSING'],allowActiveScouting:true});
+  assert.deepEqual(Array.from(simulation.allocations),[]);
+  assert.equal(simulation.reason,'NO_ELIGIBLE_TARGETS');
+});
