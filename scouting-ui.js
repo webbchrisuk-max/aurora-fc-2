@@ -68,7 +68,7 @@ function renderCommand(){
 
   if(candidates>0){
     setFlow('scouting3Active','good','READY','scouting3ActiveMeta',
-      `${candidates} active candidate${candidates===1?'':'s'} • ${pass} pass • ${caution} caution • ${blocked} blocked.`);
+      `${candidates} in the scouting universe • ${pass} deep-scouted • ${caution} Transfer-permitted • ${blocked} need review.`);
   }else{
     setFlow('scouting3Active','active','EMPTY','scouting3ActiveMeta',
       'No stored Active Scouting candidates are ready for ranking.');
@@ -112,8 +112,8 @@ function renderCommand(){
     if(meta)meta.textContent='Use the shortlist and Evidence Room to resolve missing or weak evidence.';
     if(btn){btn.textContent='Open Evidence Room';btn.dataset.action='evidence'}
   }else if(!approved){
-    if(status){status.textContent='SHORTLIST READY';status.classList.add('good')}
-    if(priority)priority.textContent='The ranked shortlist has eligible targets and is waiting for approval.';
+    if(status){status.textContent=`${pass+caution} APPROVAL CANDIDATES • 0 APPROVED`;status.classList.add('good')}
+    if(priority)priority.textContent='Ranked approval candidates are waiting for a Director of Football decision.';
     if(next)next.textContent='Review and approve the current shortlist';
     if(meta)meta.textContent='Approval freezes the current Scouting result as Transfer authority.';
     if(btn){btn.textContent='Open Ranked Shortlist';btn.dataset.action='shortlist'}
