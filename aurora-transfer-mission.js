@@ -86,6 +86,32 @@
     return ids;
   }
 
+  /*
+   * Reset only the disposable Finance -> Transfer workspace.  Portfolio,
+   * Registration receipts and completed Transfer missions deliberately live
+   * outside this boundary and must never be removed by a mission reset.
+   */
+  function resetActiveTransferMission(state,stamp=new Date().toISOString()){
+    const currentId=String(state?.mission?.id||'');
+    const transfer=state?.transfer||{};
+    const registrationDrafts=arr(transfer.registrationDrafts).filter(d=>{
+      const belongsToCurrent=currentId&&String(d?.missionId||'')===currentId;
+      return !belongsToCurrent||String(d?.status||'').toUpperCase()==='CONFIRMED';
+    });
+    return {
+      ...state,
+      mission:null,
+      transfer:{
+        ...transfer,
+        route:null,
+        registrationDrafts,
+        executionChecks:{},
+        updatedAt:stamp
+      },
+      updatedAt:stamp
+    };
+  }
+
   function rollbackAction(state){
     const status=String(state?.mission?.status||'');
     if(status===STATUS.DRAFT)return {action:'RESET_MISSION',label:'Reset Mission'};
@@ -139,5 +165,5 @@
     if(route)route={...route,updatedAt:stamp};
     return {...state,mission,transfer:{...(state.transfer||{}),route,updatedAt:stamp},updatedAt:stamp};
   }
-  return Object.freeze({STATUS,create,plan,lock,validateRegistration,reconcile,progress,stableLegId,registeredLegIds,rollbackAction,rollback});
+  return Object.freeze({STATUS,create,plan,lock,validateRegistration,reconcile,progress,stableLegId,registeredLegIds,resetActiveTransferMission,rollbackAction,rollback});
 });
