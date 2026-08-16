@@ -263,8 +263,12 @@
   }
   function normalizeTransferAllocation(a){
     const r=object(a);
+    const legId=String(r.legId||r.leg_id||r.id||'');
     return {
-      id:String(r.id||''),
+      id:String(r.id||legId),
+      legId,
+      leg_id:legId,
+      transactionId:String(r.transactionId||''),
       targetId:String(r.targetId||''),
       ticker:String(r.ticker||'').toUpperCase(),
       name:String(r.name||r.ticker||'Target'),

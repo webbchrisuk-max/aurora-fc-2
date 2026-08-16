@@ -438,7 +438,7 @@
           amountRemaining:Math.max(0,num(nextMission.approvedBudget)-relatedDrafts.reduce((sum,d)=>sum+num(d.totalCostGbp),0)),
           estimatedIncomeUplift:num(nextRoute.income),baselineAnnualIncome:num(nextRoute.baselineAnnualIncome),
           currentAnnualIncomeAfter:nextHoldings.reduce((sum,h)=>sum+(num(h.annualIncomeGbp)||(num(h.shares)*num(h.annualDpsGbp))),0),
-          completedAt:receipt.confirmedAt,purchases:relatedDrafts.map(d=>({transactionId:d.transactionId,allocationId:d.allocationId,ticker:d.ticker,account:d.account,shares:num(d.shares),priceInput:num(d.priceInput),priceUnit:d.priceUnit,totalCostGbp:num(d.totalCostGbp)}))
+          completedAt:receipt.confirmedAt,purchases:relatedDrafts.map(d=>({transactionId:d.transactionId,allocationId:d.allocationId,legId:d.legId||d.allocationId,ticker:d.ticker,account:d.account,shares:num(d.shares),priceInput:num(d.priceInput),priceUnit:d.priceUnit,totalCostGbp:num(d.totalCostGbp)}))
         }:null;
         return {
           ...s,

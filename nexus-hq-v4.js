@@ -86,7 +86,7 @@ function financeHoldingPot(s){
 }
 function activeMission(s){
   const m=s.mission;
-  return m&&!['CANCELLED','COMPLETED','ARCHIVED'].includes(String(m.status||'').toUpperCase())&&num(m.approvedBudget)>0?m:null;
+  return m&&!['COMPLETE','CANCELLED','COMPLETED','ARCHIVED'].includes(String(m.status||'').toUpperCase())&&num(m.approvedBudget)>0?m:null;
 }
 function routeIncome(r){
   if(!r)return 0;

@@ -57,9 +57,14 @@
   }
 
   function reconcile(mission,route,drafts,stamp=new Date().toISOString()){
-    const legs=arr(route?.allocations).filter(l=>num(l.amount)>0),confirmed=arr(drafts).filter(d=>d.routeId===route?.id&&d.status==='CONFIRMED');
-    const txByLeg=new Map(confirmed.map(d=>[String(d.legId||d.allocationId),d]));
-    const nextLegs=legs.map(l=>txByLeg.has(String(l.id))?{...l,status:'REGISTERED',transactionId:txByLeg.get(String(l.id)).transactionId}:l);
+    const legs=arr(route?.allocations).filter(l=>num(l.amount)>0),legIds=new Set(legs.map(l=>String(l.legId||l.id)));
+    const confirmedByLeg=new Map();
+    arr(drafts).filter(d=>String(d.routeId)===String(route?.id)&&String(d.missionId)===String(mission?.id)&&d.status==='CONFIRMED').forEach(d=>{
+      const legId=String(d.legId||d.allocationId);
+      if(legIds.has(legId)&&!confirmedByLeg.has(legId))confirmedByLeg.set(legId,d);
+    });
+    const confirmed=[...confirmedByLeg.values()],txByLeg=confirmedByLeg;
+    const nextLegs=legs.map(l=>{const legId=String(l.legId||l.id),tx=txByLeg.get(legId);return tx?{...l,status:'REGISTERED',transactionId:tx.transactionId}:l});
     const registered=nextLegs.filter(l=>l.status==='REGISTERED').length,total=nextLegs.length;
     const actual=round(confirmed.reduce((s,d)=>s+num(d.totalCostGbp),0)),remaining=round(num(mission.approvedBudget)-actual);
     const status=total&&registered===total?STATUS.COMPLETE:registered?STATUS.PARTIAL:STATUS.LOCKED;
