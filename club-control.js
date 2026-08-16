@@ -565,6 +565,18 @@
       render();
     }));
     document.addEventListener('click',e=>{
+      const jump=e.target.closest('[data-chair-jump]');
+      if(jump){
+        e.preventDefault();
+        const target=$(jump.dataset.chairJump);
+        if(target){
+          const offset=(document.querySelector('.aurora-shell-header')?.offsetHeight||0)
+            +(document.querySelector('.chairman-jumpbar')?.offsetHeight||0)+18;
+          const top=target.getBoundingClientRect().top+w.scrollY-offset;
+          w.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+        }
+        return;
+      }
       const review=e.target.closest('[data-review]');
       if(review){
         selectedKey=review.dataset.review;
