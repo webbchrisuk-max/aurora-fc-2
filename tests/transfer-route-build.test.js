@@ -13,6 +13,16 @@ function loadEngine(){
   return window.Aurora2.transferEngine;
 }
 
+function loadTransferPageEngine(){
+  const document={addEventListener:()=>{},getElementById:()=>null};
+  const window={AuroraTransferMission:Mission,Aurora2:{},document};
+  window.window=window;
+  const context={window,document,Date,Math,Number,String,Array,Set,Map,setTimeout:()=>{}};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','transfer-engine.js'),'utf8'),context);
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','transfer-ui.js'),'utf8'),context);
+  return window.Aurora2.transferEngine;
+}
+
 test('Build / Review Route operation creates canonical legs for an eligible DRAFT mission',()=>{
   const engine=loadEngine();
   const mission=Mission.create({id:'PAYDAY-820',paydayDate:'2026-08-28',amount:820,strategy:'sustainable',createdAt:'2026-08-16T10:00:00Z'});
@@ -201,6 +211,48 @@ test('live Global Scout shortlist falls through blocked leaders for every Chairm
   const diagnostics=engine.executableDiagnostics(state);
   assert.equal(diagnostics.find(row=>row.securityId==='TSX:BCE').blockingReasons[0],'MISSING_BROKER_ROUTE');
   assert.equal(diagnostics.find(row=>row.securityId==='LSE:GCP').simulation,true);
+});
+
+test('Deal Sheet recruits executable candidates in canonical Scouting league order',()=>{
+  const engine=loadEngine();
+  const target=(rank,ticker,score)=>({securityId:`LSE:${ticker}`,exchange:'LSE',ticker,
+    status:'pass',rank,maximumRank:rank,sustainableScore:score,maximumScore:score,
+    yieldPct:5+rank,livePriceGbp:10,brokerEligibility:{IG:true},transferPermitted:true});
+  const state={scouting:{targets:[target(5,'LOW2',70),target(2,'TOP2',96),target(1,'TOP1',99),
+    target(4,'LOW1',80),target(3,'TOP3',94)]},transfer:{settings:{minAllocation:250,increment:25}},squad:{holdings:[]}};
+
+  for(const strategy of ['sustainable','maximum']){
+    const route=engine.simulate(state,{budget:1500,strategy,allowActiveScouting:true,maxTargets:5,idFactory:p=>p});
+    assert.deepEqual(Array.from(route.allocations.slice(0,3),row=>row.ticker),['TOP1','TOP2','TOP3']);
+    assert.ok(route.allocations.slice(0,3).every(row=>row.amount>0));
+    assert.deepEqual(Array.from(route.candidateDecisions.slice(0,3),row=>row.reason),['ALLOCATED','ALLOCATED','ALLOCATED']);
+  }
+});
+
+test('Transfer page bridge passes canonical security IDs rather than Scouting row IDs',()=>{
+  const engine=loadTransferPageEngine();
+  const targets=[1,2,3].map(rank=>({id:`DATABASE-ROW-${rank}`,securityId:`LSE:T${rank}`,exchange:'LSE',ticker:`T${rank}`,
+    status:'pass',rank,sustainableScore:100-rank,yieldPct:6,livePriceGbp:10,brokerEligibility:{IG:true}}));
+  const state={scouting:{targets},transfer:{settings:{minAllocation:100,increment:25}},squad:{holdings:[]}};
+  const route=engine.simulate(state,{budget:600,strategy:'sustainable',allowActiveScouting:true,idFactory:p=>p});
+  assert.deepEqual(Array.from(route.allocations,row=>row.securityId),['LSE:T1','LSE:T2','LSE:T3']);
+  assert.equal(route.allocationMode,'SCOUTING_AUTHORITY_THEN_TRANSFER_SIZING');
+});
+
+test('blocked league leader is explained and rank two becomes first allocation priority',()=>{
+  const engine=loadEngine();
+  const targets=[
+    {securityId:'LSE:ONE',exchange:'LSE',ticker:'ONE',status:'block',rank:1,sustainableScore:99,yieldPct:9,livePriceGbp:10,brokerEligibility:{IG:true}},
+    {securityId:'LSE:TWO',exchange:'LSE',ticker:'TWO',status:'pass',rank:2,sustainableScore:96,yieldPct:6,livePriceGbp:10,brokerEligibility:{IG:true}},
+    {securityId:'LSE:THREE',exchange:'LSE',ticker:'THREE',status:'pass',rank:3,sustainableScore:90,yieldPct:8,livePriceGbp:10,brokerEligibility:{IG:true}}
+  ];
+  const state={scouting:{targets},transfer:{settings:{minAllocation:250,increment:25}},squad:{holdings:[]}};
+  const route=engine.simulate(state,{budget:500,strategy:'sustainable',allowActiveScouting:true,idFactory:p=>p});
+  assert.equal(route.allocations[0].ticker,'TWO');
+  assert.equal(route.candidateDecisions[0].ticker,'ONE');
+  assert.equal(route.candidateDecisions[0].executable,false);
+  assert.equal(route.candidateDecisions[0].reason,'SKIPPED — BLOCK status');
+  assert.equal(route.candidateDecisions[1].reason,'ALLOCATED');
 });
 
 test('ticker-only legacy evidence migrates only for an unambiguous canonical market identity',()=>{
