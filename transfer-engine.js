@@ -58,8 +58,7 @@
       ['SCOUTING_TARGET',arr(state?.scouting?.targets)],
       ['CURRENT_MARKET_EVIDENCE',arr(state?.market?.evidence).concat(arr(state?.marketEvidence),arr(state?.marketData?.evidence),arr(state?.marketData?.quotes),arr(state?.marketData?.prices))],
       ['TRANSFER_MARKET_EVIDENCE',arr(state?.transfer?.marketEvidence).concat(arr(state?.transfer?.quotes))],
-      ['LEGACY_MIGRATED_PRICE',arr(state?.scouting?.legacyPriceRecords).concat(arr(state?.migration?.priceRecords),arr(state?.legacy?.prices))],
-      ['SQUAD_HOLDING',arr(state?.squad?.holdings)]
+      ['LEGACY_MIGRATED_PRICE',arr(state?.scouting?.legacyPriceRecords).concat(arr(state?.migration?.priceRecords),arr(state?.legacy?.prices))]
     ];
     return sources.flatMap(([source,rows])=>rows.filter(row=>sameSecurity(target,row,state)).map(row=>({source,row})));
   }
@@ -88,12 +87,21 @@
       const account=identity(row).account;
       const wantedAccount=identity(target).account;
       const accountMatch=wantedAccount==='CHECK'||account==='CHECK'||account===wantedAccount;
-      const sourceRank=source==='CURRENT_MARKET_EVIDENCE'?5:source==='TRANSFER_MARKET_EVIDENCE'?4:source==='SCOUTING_TARGET'?3:source==='SQUAD_HOLDING'?2:1;
+      const sourceRank=source==='CURRENT_MARKET_EVIDENCE'?5:source==='TRANSFER_MARKET_EVIDENCE'?4:source==='SCOUTING_TARGET'?3:1;
       return {priceGbp,timestamp,stale,source,account,accountMatch,row,score:(priceGbp>0?100:0)+(stale?0:20)+sourceRank+(accountMatch?2:0)+(Number.isFinite(stampMs)?stampMs/1e15:0)};
     }).filter(x=>x.priceGbp>0).sort((a,b)=>b.score-a.score);
     const best=ranked[0];
     if(!best)return {supported:false,status:'MISSING',freshness:'MISSING',label:'NO SUPPORTED PRICE DATA',priceGbp:0,timestamp:null,stale:false,source:null};
     return {supported:true,status:best.stale?'STALE':'CURRENT',freshness:best.stale?'STALE_BUT_USABLE':'LIVE',label:best.stale?'STALE PRICE — REVIEW BEFORE EXECUTION':'SUPPORTED PRICE',priceGbp:best.priceGbp,timestamp:best.timestamp||null,stale:best.stale,source:best.source,account:best.account};
+  }
+
+  function resolveIncomeEvidence(state,target){
+    const rows=[target,...evidenceRows(state,target).map(x=>x.row),
+      ...arr(state?.market?.dividends).filter(row=>sameSecurity(target,row,state)),
+      ...arr(state?.marketData?.dividends).filter(row=>sameSecurity(target,row,state))];
+    const row=rows.find(item=>num(item?.yieldPct||item?.dividendYieldPct||item?.annualYieldPct)>0);
+    const yieldPct=Math.max(0,num(row?.yieldPct||row?.dividendYieldPct||row?.annualYieldPct));
+    return {supported:yieldPct>0,yieldPct,source:row===target?'SCOUTING_TARGET':row?'MARKET_DIVIDEND_EVIDENCE':null};
   }
 
   function resolveReplacementBasket(state,selectedIds=[]){
@@ -148,9 +156,6 @@
     });
     const transferConfig=arr(state?.transfer?.brokerEligibility).concat(arr(state?.transfer?.brokerConfiguration),arr(state?.transfer?.eligibleSecurities))
       .filter(row=>sameSecurity(target,row,state)).flatMap(row=>eligibilityAccounts(row?.brokerEligibility||row?.accounts||row?.eligibleAccounts));
-    const holdingAccounts=arr(state?.squad?.holdings)
-      .filter(row=>sameSecurity(target,row,state))
-      .map(row=>identity(row).account).filter(a=>a!=='CHECK');
     const exchangeAccounts=arr(state?.transfer?.marketSupport).concat(arr(state?.transfer?.exchangeSupport))
       .filter(row=>exchange(row?.exchange||row?.market)===identity(target).exchange)
       .flatMap(row=>eligibilityAccounts(row?.accounts||row?.eligibleAccounts||row?.brokerEligibility));
@@ -162,7 +167,6 @@
       {source:'EXPLICIT_SECURITY_ELIGIBILITY',accounts:explicit},
       {source:'TRANSFER_BROKER_CONFIGURATION',accounts:transferConfig},
       {source:'REMEMBERED_PREFERRED_BROKER',accounts:[remembered,preferred].filter(a=>a!=='CHECK')},
-      {source:'CONFIRMED_HOLDING_ACCOUNT',accounts:holdingAccounts},
       {source:'CANONICAL_MARKET_SUPPORT',accounts:exchangeAccounts},
       {source:'EXISTING_ROUTE_EVIDENCE',accounts:routeAccounts}
     ];
@@ -181,12 +185,27 @@
     return resolveBrokerRoute(state,target).account;
   }
 
+  /** Holdings enrich exposure only; absence is the valid zero-owned position. */
+  function resolveExistingExposure(state,target){
+    const holdings=arr(state?.squad?.holdings).filter(row=>
+      sameSecurity(target,row,state)&&!['SOLD','ARCHIVED'].includes(String(row?.status||'').toUpperCase())
+    );
+    return {
+      currentShares:holdings.reduce((sum,row)=>sum+Math.max(0,num(row?.shares)),0),
+      currentValueGbp:holdings.reduce((sum,row)=>sum+holdingValue(row),0),
+      accounts:[...new Set(holdings.map(row=>identity(row).account).filter(a=>a!=='CHECK'))],
+      holdingCount:holdings.length
+    };
+  }
+
   /** One evidence gate for automatic strategies and explicitly selected baskets. */
   function resolveExecutableCandidate(target,context={}){
     const state=context.state||context;
-    const yieldPct=Math.max(0,num(target?.yieldPct));
+    const incomeEvidence=resolveIncomeEvidence(state,target);
+    const yieldPct=incomeEvidence.yieldPct;
     const priceEvidence=resolveMarketPrice(state,target,context);
     const brokerRoute=resolveBrokerRoute(state,target);
+    const existingExposure=resolveExistingExposure(state,target);
     const blockingReasons=[];
     if(!(yieldPct>0))blockingReasons.push('MISSING_INCOME_EVIDENCE');
     if(!(priceEvidence.priceGbp>0))blockingReasons.push('MISSING_PRICE_EVIDENCE');
@@ -205,7 +224,11 @@
       resolvedBroker:brokerRoute.account,brokerEligible:brokerRoute.supported,
       supportedMarketPrice:priceEvidence.priceGbp,priceTimestamp:priceEvidence.timestamp,
       priceFreshness:priceEvidence.freshness,
-      incomeEvidence:{supported:yieldPct>0,yieldPct},
+      yieldPct,
+      incomeEvidence,
+      existingExposure,
+      currentShares:existingExposure.currentShares,
+      currentValueGbp:existingExposure.currentValueGbp,
       transferEligible:target?.transferPermitted!==false,
       simulationEligible:!blockingReasons.length,
       available:!blockingReasons.length,incompleteReason,blockingReasons,
@@ -486,7 +509,9 @@
       reason:t.reason||'Scouting-approved target',
       scoutingStatus:String(t.status||'caution').toLowerCase(),
       status:'SIMULATED',
-      priceEvidence:t.priceEvidence
+      priceEvidence:t.priceEvidence,
+      currentShares:t.currentShares,
+      currentValueGbp:t.currentValueGbp
     }));
 
     let remaining=budget;
@@ -539,6 +564,7 @@
 
     allocations.forEach(a=>{
       a.amount=Number(Math.max(0,a.amount).toFixed(2));
+      a.expectedShares=Math.floor(a.amount/Math.max(0,num(a.priceEvidence?.priceGbp)))||0;
       a.expectedAnnualIncome=Number((a.amount*(a.yieldPct/100)).toFixed(6));
     });
 
@@ -668,6 +694,8 @@
     resolveReplacementBasket,
     resolveCandidateEvidence,
     resolveExecutableCandidate,
+    resolveExistingExposure,
+    resolveIncomeEvidence,
     executableDiagnostics,
     resolveMarketPrice
   };
