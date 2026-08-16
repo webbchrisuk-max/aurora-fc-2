@@ -123,23 +123,47 @@
     const code=accountCode(value);
     return code==='IG'||code==='T212'?code:'CHECK';
   }
-  function effectiveBroker(state,target){
+  function eligibilityAccounts(value){
+    if(Array.isArray(value))return value.map(accountCode).filter(a=>a!=='CHECK');
+    if(typeof value==='string')return value.split(/[,|/]/).map(accountCode).filter(a=>a!=='CHECK');
+    if(value&&typeof value==='object')return Object.entries(value)
+      .filter(([,allowed])=>allowed===true)
+      .map(([broker])=>accountCode(broker)).filter(a=>a!=='CHECK');
+    return [];
+  }
+  /** Shared Transfer broker resolver. Chairman calls this through simulate too. */
+  function resolveBrokerRoute(state,target){
+    const rows=evidenceRows(state,target).map(x=>x.row);
+    const evidence=[target,...rows];
+    const eligibilityDeclared=evidence.some(row=>row?.brokerEligibility!=null||
+      row?.igIsaSupported!=null||row?.igISASupported!=null||row?.supportsIgIsa!=null||
+      row?.trading212IsaSupported!=null||row?.trading212ISASupported!=null||row?.supportsTrading212Isa!=null);
+    const explicit=evidence.flatMap(row=>{
+      const accounts=eligibilityAccounts(row?.brokerEligibility);
+      if(row?.igIsaSupported===true||row?.igISASupported===true||row?.supportsIgIsa===true)accounts.push('IG');
+      if(row?.trading212IsaSupported===true||row?.trading212ISASupported===true||row?.supportsTrading212Isa===true)accounts.push('T212');
+      return accounts;
+    });
+    const holdingAccounts=arr(state?.squad?.holdings)
+      .filter(row=>sameSecurity(target,row))
+      .map(row=>identity(row).account).filter(a=>a!=='CHECK');
+    const eligible=[...new Set(explicit.concat(holdingAccounts))];
     const remembered=brokerPreference(state,target);
-    if(remembered!=='CHECK')return remembered;
     const preferred=accountCode(target?.preferredAccount);
-    if(preferred!=='CHECK')return preferred;
 
-    // Global Scouting may provide broker eligibility without choosing a
-    // preferred broker. Resolve a single valid route; an ambiguous candidate
-    // remains unassigned and is excluded without poisoning the whole basket.
-    const eligibility=target?.brokerEligibility;
-    const values=Array.isArray(eligibility)
-      ?eligibility
-      :eligibility&&typeof eligibility==='object'
-        ?Object.entries(eligibility).filter(([,allowed])=>allowed===true).map(([broker])=>broker)
-        :typeof eligibility==='string'?eligibility.split(/[,|/]/):[];
-    const eligible=[...new Set(values.map(accountCode).filter(code=>code==='IG'||code==='T212'))];
-    return eligible.length===1?eligible[0]:'CHECK';
+    // A remembered/preferred executable account is itself Transfer evidence
+    // when no broker support matrix has been supplied by Scouting.
+    if(!eligible.length&&!eligibilityDeclared){
+      if(remembered!=='CHECK')eligible.push(remembered);
+      if(preferred!=='CHECK'&&!eligible.includes(preferred))eligible.push(preferred);
+    }
+    const account=remembered!=='CHECK'&&eligible.includes(remembered)?remembered
+      :preferred!=='CHECK'&&eligible.includes(preferred)?preferred
+        :eligible.length===1?eligible[0]:'CHECK';
+    return {account,eligible,remembered,preferred,supported:account!=='CHECK'};
+  }
+  function effectiveBroker(state,target){
+    return resolveBrokerRoute(state,target).account;
   }
 
   function targetScore(t,strategy){
@@ -386,8 +410,8 @@
     const allocations=candidates.map((t,i)=>({
       id:idFactory('ALLOC'),
       targetId:t.id,
-      securityId:t.securityId||'',
-      exchange:t.exchange||'',
+      securityId:securityId(t),
+      exchange:identity(t).exchange,
       ticker:ticker(t.ticker),
       name:t.name||ticker(t.ticker),
       account:t._effectiveBroker,
@@ -573,6 +597,7 @@
     desiredTargetCount,
     effectiveMinimum,
     brokerPreference,
+    resolveBrokerRoute,
     effectiveBroker,
     ticker,
     accountCode,
