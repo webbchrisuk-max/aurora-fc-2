@@ -19,7 +19,7 @@ test('Build / Review Route operation creates canonical legs for an eligible DRAF
   const state={
     mission,
     scouting:{status:'SCOUTING_READY',strategy:'sustainable',approvedBatchId:'SHORTLIST-1',targets:[
-      {id:'TARGET-GCP',ticker:'GCP.L',name:'GCP Infrastructure',preferredAccount:'IG ISA',status:'approved',yieldPct:6.1,sustainableScore:92,approvedForTransfer:true,approvalBatchId:'SHORTLIST-1'}
+      {id:'TARGET-GCP',ticker:'GCP.L',name:'GCP Infrastructure',preferredAccount:'IG ISA',status:'approved',yieldPct:6.1,livePriceGbp:1,sustainableScore:92,approvedForTransfer:true,approvalBatchId:'SHORTLIST-1'}
     ]},
     transfer:{settings:{brokerScope:'both',minAllocation:250,increment:25}},
     squad:{holdings:[]}
@@ -41,9 +41,9 @@ test('Build / Review Route operation creates canonical legs for an eligible DRAF
 test('Transfer ignores candidates outside the current approved Scout batch',()=>{
   const engine=loadEngine();
   const state={scouting:{approvedBatchId:'CURRENT',targets:[
-    {ticker:'OLD',status:'pass',yieldPct:9,sustainableScore:99,approvedForTransfer:true,approvalBatchId:'OLD'},
-    {ticker:'WATCH',status:'pass',yieldPct:8,sustainableScore:98,approvedForTransfer:false},
-    {ticker:'OK',preferredAccount:'IG ISA',status:'pass',yieldPct:5,sustainableScore:80,approvedForTransfer:true,approvalBatchId:'CURRENT'}
+    {ticker:'OLD',status:'pass',yieldPct:9,livePriceGbp:1,sustainableScore:99,approvedForTransfer:true,approvalBatchId:'OLD'},
+    {ticker:'WATCH',status:'pass',yieldPct:8,livePriceGbp:1,sustainableScore:98,approvedForTransfer:false},
+    {ticker:'OK',preferredAccount:'IG ISA',status:'pass',yieldPct:5,livePriceGbp:1,sustainableScore:80,approvedForTransfer:true,approvalBatchId:'CURRENT'}
   ]},transfer:{settings:{}},squad:{holdings:[]}};
   const route=engine.simulate(state,{budget:500,idFactory:p=>p});
   assert.deepEqual(Array.from(route.allocations,x=>x.ticker),['OK']);
@@ -54,7 +54,7 @@ test('Global Scout mixed broker shortlist routes executable candidates without t
   const mission=Mission.create({id:'PAYDAY-820',paydayDate:'2026-08-28',amount:820,strategy:'maximum',createdAt:'2026-08-16T10:00:00Z'});
   const approved=(securityId,exchange,ticker,preferredAccount,extra={})=>({
     id:`ACTIVE-${securityId}`,securityId,exchange,ticker,name:ticker,preferredAccount,
-    status:'pass',yieldPct:6,maximumScore:90,approvedForTransfer:true,
+    status:'pass',yieldPct:6,livePriceGbp:1,maximumScore:90,approvedForTransfer:true,
     approvalBatchId:'GLOBAL-12',transferPermitted:true,eligibilityStatus:'ELIGIBLE',...extra
   });
   const state={mission,scouting:{status:'SCOUTING_READY',strategy:'maximum',approvedBatchId:'GLOBAL-12',targets:[
@@ -122,6 +122,50 @@ test('Chairman custom baskets share Transfer broker evidence and keep executable
   assert.deepEqual(new Set(simulation.allocations.map(x=>x.account)),new Set(['IG','T212']));
   assert.ok(simulation.remaining>=0);
   assert.equal(simulation.allocated+simulation.remaining,1200);
+});
+
+test('Chairman automatic lenses and five-selection basket share partial executable pool',()=>{
+  const engine=loadEngine();
+  const candidate=(securityId,ticker,brokerEligibility,sustainableScore,maximumScore,yieldPct=6)=>({
+    securityId,exchange:securityId.split(':')[0],ticker,name:ticker,brokerEligibility,
+    preferredAccount:'CHECK',status:'pass',yieldPct,livePriceGbp:10,
+    sustainableScore,maximumScore,transferPermitted:true,eligibilityStatus:'ELIGIBLE'
+  });
+  const state={scouting:{replacementBasket:[
+    {securityId:'TSX:BCE'},{securityId:'LSE:GCP'},{securityId:'LSE:UKW'},
+    {securityId:'LSE:BT'},{securityId:'LSE:FSFL'}
+  ],targets:[
+    candidate('TSX:BCE','BCE',{IG:false,T212:false},99,99,7),
+    candidate('LSE:GCP','GCP',{IG:true,T212:false},96,70,6.5),
+    candidate('LSE:UKW','UKW',{IG:true,T212:false},88,82,6),
+    candidate('LSE:BT','BT',{IG:false,T212:false},98,98,8),
+    candidate('LSE:FSFL','FSFL',{IG:false,T212:true},75,97,7)
+  ]},transfer:{settings:{minAllocation:250,increment:25}},squad:{holdings:[]}};
+  const selected=state.scouting.replacementBasket.map(row=>row.securityId);
+  const basket=engine.resolveReplacementBasket(state,selected);
+  assert.equal(basket.length,5);
+  assert.equal(basket.filter(row=>row.available).length,3);
+  assert.deepEqual(new Set(basket.filter(row=>!row.available).map(row=>row.incompleteReason)),new Set(['MISSING_BROKER_ROUTE']));
+
+  const custom=engine.simulate(state,{budget:18258.58,targetIds:selected,allowActiveScouting:true,maxTargets:8,idFactory:p=>p});
+  assert.deepEqual(new Set(custom.allocations.map(row=>row.securityId)),new Set(['LSE:GCP','LSE:UKW','LSE:FSFL']));
+  assert.equal(custom.allocated+custom.remaining,custom.financeBudget);
+
+  const sustainable=engine.simulate(state,{budget:18258.58,strategy:'sustainable',allowActiveScouting:true,maxTargets:8,idFactory:p=>p});
+  const maximum=engine.simulate(state,{budget:18258.58,strategy:'maximum',allowActiveScouting:true,maxTargets:8,idFactory:p=>p});
+  assert.ok(sustainable.allocations.length>0);
+  assert.ok(maximum.allocations.length>0);
+  assert.equal(sustainable.allocations[0].securityId,'LSE:GCP');
+  assert.equal(maximum.allocations[0].securityId,'LSE:FSFL');
+  assert.notDeepEqual(Array.from(sustainable.allocations,row=>row.securityId),Array.from(maximum.allocations,row=>row.securityId));
+  assert.equal(sustainable.allocated+sustainable.remaining,18258.58);
+  assert.equal(maximum.allocated+maximum.remaining,18258.58);
+
+  const zero={...state,scouting:{targets:state.scouting.targets.filter(row=>!row.brokerEligibility.IG&&!row.brokerEligibility.T212)}};
+  const review=engine.simulate(zero,{budget:18258.58,strategy:'sustainable',allowActiveScouting:true});
+  assert.equal(review.reason,'NO_ELIGIBLE_TARGETS');
+  assert.deepEqual(Array.from(review.allocations),[]);
+  assert.equal(review.remaining,18258.58);
 });
 
 test('Chairman broker resolver uses canonical holding evidence and zero routes remain safe REVIEW input',()=>{

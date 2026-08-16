@@ -391,8 +391,9 @@
       ?A().transferEngine.resolveReplacementBasket(A().core.read(),canonicalBasket())
       :[];
     const incomplete=selected.filter(x=>!x.available);
+    const included=selected.filter(x=>x.available);
     set('basketMeta',rows.length
-      ?`${rows.length} Transfer-sized replacement${rows.length===1?'':'s'} • ${money(data.sim.allocated)} invested • ${money(data.sim.remaining)} holdback • scenario only`
+      ?`${lens==='custom'?`${selected.length} SELECTED • ${included.length} EXECUTABLE • ${incomplete.length} BLOCKED • `:''}${rows.length} included in simulation • ${money(data.sim.allocated)} invested • ${money(data.sim.remaining)} holdback • scenario only`
       :incomplete.length?'Selected replacements need income evidence before simulation.':'Transfer could not build a replacement route from the current Active Scouting pool.'
     );
     if(!rows.length&&!incomplete.length){
@@ -400,14 +401,14 @@
       return;
     }
     host.innerHTML=rows.map(r=>`<div class="basket-row">
-      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${esc(accountLabel(r.account))} • ${esc(String(r.scoutingStatus||'caution').toUpperCase())}${r.sector?' • '+esc(r.sector):''}${r.priceEvidence?.stale?' • STALE PRICE — REVIEW BEFORE EXECUTION':''}</span></div>
+      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${lens==='custom'?'SELECTED • INCLUDED IN SIMULATION • ':''}${esc(accountLabel(r.account))} • ${esc(String(r.scoutingStatus||'caution').toUpperCase())}${r.sector?' • '+esc(r.sector):''}${r.priceEvidence?.stale?' • STALE PRICE — REVIEW BEFORE EXECUTION':''}</span></div>
       <div class="basket-num"><b>${money(r.amount)}</b><small>allocation</small></div>
       <div class="basket-num"><b>${num(r.yieldPct).toFixed(2)}%</b><small>yield</small></div>
       <div class="basket-num"><b>${money(r.expectedAnnualIncome)}</b><small>income / yr</small></div>
       <div class="basket-num"><b>${Math.round(num(r.scoutingScore))}/100</b><small>Scouting score</small></div>
       <div class="basket-num"><b>${num(r.concentrationFactor).toFixed(2)}×</b><small>route fit</small></div>
     </div>`).concat(incomplete.map(r=>`<div class="basket-row" data-incomplete="true">
-      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>SIMULATION DATA INCOMPLETE • ${{SECURITY_NOT_FOUND:'Canonical security is not present in Active Scouting',MISSING_PRICE_EVIDENCE:'NO SUPPORTED PRICE DATA',MISSING_BROKER_ROUTE:'Missing executable broker route',MISSING_INCOME_EVIDENCE:'Missing supported yield/dividend income evidence'}[r.incompleteReason]||'Required simulation evidence is unavailable'}</span></div>
+      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>SELECTED • NOT INCLUDED IN SIMULATION • SIMULATION DATA INCOMPLETE • ${{SECURITY_NOT_FOUND:'Canonical security is not present in Active Scouting',MISSING_PRICE_EVIDENCE:'NO SUPPORTED PRICE DATA',MISSING_BROKER_ROUTE:'Missing executable broker route',MISSING_INCOME_EVIDENCE:'Missing supported yield/dividend income evidence'}[r.incompleteReason]||'Required simulation evidence is unavailable'}</span></div>
       <div class="basket-num"><b>—</b><small>income unavailable</small></div>
     </div>`)).join('');
   }
@@ -459,7 +460,6 @@
     if(!first)return;
     renderCustomPool(state,first);
 
-    // Custom mode may seed its first three choices on this render.
     const data=caseData(state);
     if(!data)return;
     const {holding:h,metrics:m,scenario:s,exEvent}=data;
