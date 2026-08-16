@@ -202,6 +202,8 @@
 
     let candidates=arr(state?.scouting?.targets)
       .filter(t=>String(t.status||'').toLowerCase()!=='block')
+      .filter(t=>t.approvedForTransfer===true&&
+        String(t.approvalBatchId||'')===String(state?.scouting?.approvedBatchId||''))
       .filter(t=>num(t.yieldPct)>0)
       .filter(t=>!exclude||ticker(t.ticker)!==exclude)
       .filter(t=>brokerEligible(t,brokerScope,state))

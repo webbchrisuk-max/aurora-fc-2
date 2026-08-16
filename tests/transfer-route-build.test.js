@@ -18,8 +18,8 @@ test('Build / Review Route operation creates canonical legs for an eligible DRAF
   const mission=Mission.create({id:'PAYDAY-820',paydayDate:'2026-08-28',amount:820,strategy:'sustainable',createdAt:'2026-08-16T10:00:00Z'});
   const state={
     mission,
-    scouting:{status:'SCOUTING_READY',strategy:'sustainable',targets:[
-      {id:'TARGET-GCP',ticker:'GCP.L',name:'GCP Infrastructure',preferredAccount:'IG ISA',status:'approved',yieldPct:6.1,sustainableScore:92}
+    scouting:{status:'SCOUTING_READY',strategy:'sustainable',approvedBatchId:'SHORTLIST-1',targets:[
+      {id:'TARGET-GCP',ticker:'GCP.L',name:'GCP Infrastructure',preferredAccount:'IG ISA',status:'approved',yieldPct:6.1,sustainableScore:92,approvedForTransfer:true,approvalBatchId:'SHORTLIST-1'}
     ]},
     transfer:{settings:{brokerScope:'both',minAllocation:250,increment:25}},
     squad:{holdings:[]}
@@ -36,4 +36,15 @@ test('Build / Review Route operation creates canonical legs for an eligible DRAF
   assert.ok(result.mission.brokerRoutes.includes('IG'));
   assert.ok(result.mission.amountAllocated>0);
   assert.equal(result.mission.amountRemaining,820-result.mission.amountAllocated);
+});
+
+test('Transfer ignores candidates outside the current approved Scout batch',()=>{
+  const engine=loadEngine();
+  const state={scouting:{approvedBatchId:'CURRENT',targets:[
+    {ticker:'OLD',status:'pass',yieldPct:9,sustainableScore:99,approvedForTransfer:true,approvalBatchId:'OLD'},
+    {ticker:'WATCH',status:'pass',yieldPct:8,sustainableScore:98,approvedForTransfer:false},
+    {ticker:'OK',status:'pass',yieldPct:5,sustainableScore:80,approvedForTransfer:true,approvalBatchId:'CURRENT'}
+  ]},transfer:{settings:{}},squad:{holdings:[]}};
+  const route=engine.simulate(state,{budget:500,idFactory:p=>p});
+  assert.deepEqual(Array.from(route.allocations,x=>x.ticker),['OK']);
 });

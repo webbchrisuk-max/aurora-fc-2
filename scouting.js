@@ -317,7 +317,8 @@
       const route=next.transfer?.route;
       return {
         ...next,
-        scouting:{...next.scouting,status:'SCOUTING_REVIEW',updatedAt:now()},
+        scouting:{...next.scouting,status:'SCOUTING_REVIEW',approvedBatchId:null,
+          targets:arr(next.scouting?.targets).map(t=>({...t,approvedForTransfer:false,approvedAt:null,approvalBatchId:null})),updatedAt:now()},
         mission:m,
         transfer:{
           ...next.transfer,
@@ -353,6 +354,7 @@
       return;
     }
     const top=eligible[0];
+    const approvalBatchId=A().core.uid('SHORTLIST');
     const history={
       id:A().core.uid('SCOUT'),
       approvedAt:now(),
@@ -366,7 +368,10 @@
     A().core.update(s=>({
       ...s,
       scouting:{
-        ...s.scouting,status:'SCOUTING_READY',targets:ranked,
+        ...s.scouting,status:'SCOUTING_READY',approvedBatchId:approvalBatchId,
+        targets:ranked.map(t=>({...t,approvedForTransfer:t.status!=='block',
+          approvedAt:t.status!=='block'?history.approvedAt:null,
+          approvalBatchId:t.status!=='block'?approvalBatchId:null})),
         source:'AURORA2_SCOUTING',
         importedFromLegacy:s.scouting?.importedFromLegacy||false,
         decisionHistory:[history,...arr(s.scouting?.decisionHistory)].slice(0,20),
@@ -1662,6 +1667,7 @@
     updateVersionLabels();
     renderMission(state);renderWeights(strategy);renderTargets(state);
     renderNetwork(state);renderHealth(state);renderHistory(state);renderEditorGuard(state);
+    renderCoverage(state);
 
     $('lensSustainable')?.classList.toggle('active',strategy==='sustainable');
     $('lensMaximum')?.classList.toggle('active',strategy==='maximum');
@@ -1672,6 +1678,18 @@
       :'Sustainable Income balances six weighted factors with a confidence adjustment.'
     );
     set('lastUpdated',new Date(state.updatedAt).toLocaleString('en-GB'));
+  }
+
+  function renderCoverage(state){
+    const universe=arr(state.scouting?.universe);
+    const uk=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='UK').length;
+    const us=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='US').length;
+    const targets=arr(state.scouting?.targets),passed=targets.filter(x=>x.status!=='block').length;
+    set('coverageUK',uk);set('coverageUS',us);set('coverageGlobal',universe.length);
+    const scanned=state.scouting?.scanMeta?.lastFullScanAt||state.scouting?.networkMeta?.lastSyncAt;
+    set('coverageScan',scanned?new Date(scanned).toLocaleString('en-GB'):'Not yet scanned');
+    set('coveragePipeline',`${universe.length} scanned · ${passed} passed · ${targets.length} deep-scouted · `+
+      `${targets.filter(x=>x.approvedForTransfer).length} shortlisted`);
   }
 
   function wire(){
