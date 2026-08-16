@@ -86,7 +86,10 @@ function renderPromotion(){
   }
 
   const route=state?.transfer?.route||null;
-  const routeAnnual=route && !['REGISTERED','COMPLETE'].includes(String(route.status||'').toUpperCase())
+  const terminalTransferStates=['REGISTERED','COMPLETE','COMPLETED','ARCHIVED'];
+  const routeAnnual=route
+    && !terminalTransferStates.includes(String(route.status||'').toUpperCase())
+    && !terminalTransferStates.includes(String(state?.mission?.status||'').toUpperCase())
     ? num(route.expectedAnnualIncome)
     : 0;
   const projectedMonthly=monthly+(routeAnnual/12);
