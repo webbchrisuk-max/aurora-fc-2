@@ -53,8 +53,7 @@ function summary(state=A()?.core?.read?.()||{}){
   horizonEnd.setMonth(horizonEnd.getMonth()+12);
 
   // Income-owned published run-rate. Never recompute an alternative annual answer here.
-  const priorAnnual=num(state.income?.runwaySummary?.annualIncomeGbp);
-  const annualIncome=Math.max(0,num(state.portfolio?.annualIncome)||priorAnnual);
+  const annualIncome=Math.max(0,w.AuroraFinancialTruth.getCurrentAnnualIncome(state));
 
   const months=[];
   const first=new Date(now.getFullYear(),now.getMonth(),1,12,0,0,0);

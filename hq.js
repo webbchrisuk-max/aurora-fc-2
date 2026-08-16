@@ -3,8 +3,9 @@
   function render(){
     const A=w.Aurora2;if(!A?.core||!A?.ui)return;const s=A.core.read(),ui=A.ui;
     ui.text('teamValue',ui.money(s.portfolio?.teamValue));
-    ui.text('annualIncome',ui.money(s.portfolio?.annualIncome));
-    ui.text('monthlyIncome',s.portfolio?.monthlyIncome!=null?`${ui.money(s.portfolio.monthlyIncome)} / month`:'—');
+    const annual=w.AuroraFinancialTruth.getCurrentAnnualIncome(s);
+    ui.text('annualIncome',ui.money(annual));
+    ui.text('monthlyIncome',`${ui.money(annual/12)} / month`);
     ui.text('squadSize',Number.isFinite(Number(s.portfolio?.squadSize))?String(s.portfolio.squadSize):'—');
     ui.text('bestDividend',s.portfolio?.bestDividendPlayer?.ticker||'—');
     ui.text('bestDividendMeta',s.portfolio?.bestDividendPlayer?.annualIncome!=null?`${ui.money(s.portfolio.bestDividendPlayer.annualIncome)} / year`:'Awaiting Income Centre');

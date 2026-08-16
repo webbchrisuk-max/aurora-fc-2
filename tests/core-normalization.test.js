@@ -13,7 +13,7 @@ function loadCore(rawState){
   window.window=window;
   const context=vm.createContext({...window,window,globalThis:window,localStorage,document,console,Intl,Date,Math,JSON,setTimeout,clearTimeout});
   vm.runInContext(fs.readFileSync(path.join(__dirname,'..','aurora-core.js'),'utf8'),context);
-  return window.Aurora2.core;
+  return {core:window.Aurora2.core,financialTruth:window.AuroraFinancialTruth};
 }
 
 test('reload normalization preserves canonical mission, leg, and transaction linkage',()=>{
@@ -21,7 +21,7 @@ test('reload normalization preserves canonical mission, leg, and transaction lin
     route:{id:'ROUTE-1',missionId:'MISSION-1',allocations:[{id:'LEG-1',legId:'LEG-1',leg_id:'LEG-1',transactionId:'TX-1',ticker:'GCP',account:'IG',amount:100}]},
     registrationDrafts:[{id:'DRAFT-1',routeId:'ROUTE-1',missionId:'MISSION-1',allocationId:'LEG-1',legId:'LEG-1',transactionId:'TX-1',status:'CONFIRMED'}]
   },registration:{receipts:[{id:'RECEIPT-1',routeId:'ROUTE-1',missionId:'MISSION-1',allocationId:'LEG-1',legId:'LEG-1',transactionId:'TX-1'}]}};
-  const state=loadCore(raw).read();
+  const state=loadCore(raw).core.read();
   assert.equal(state.mission.id,'MISSION-1');
   assert.deepEqual(Array.from(state.mission.legIds),['LEG-1']);
   assert.equal(state.transfer.route.allocations[0].legId,'LEG-1');
@@ -36,7 +36,7 @@ test('reload normalization preserves Global Scout identity and Transfer approval
     id:'ACTIVE-LSE:UKW',securityId:'LSE:UKW',exchange:'LSE',ticker:'UKW',
     approvedForTransfer:true,approvalBatchId:'GLOBAL-1',approvedAt:'2026-08-16T10:00:00Z',
     transferPermitted:true,eligibilityStatus:'ELIGIBLE',brokerEligibility:{IG:true,T212:false}
-  }]}}).read();
+  }]}}).core.read();
   const target=state.scouting.targets[0];
   assert.equal(target.securityId,'LSE:UKW');
   assert.equal(target.exchange,'LSE');
@@ -53,7 +53,7 @@ test('reload normalization preserves and deduplicates the canonical Chairman rep
     {securityId:'TSX:BCE',exchange:'TSX',ticker:'BCE'},
     {securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI'},
     {securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS'}
-  ],replacementBasket:['TSX:BCE',{securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI'},'NYSE:UPS','TSX:BCE']}}).read();
+  ],replacementBasket:['TSX:BCE',{securityId:'NYSE:VICI',exchange:'NYSE',ticker:'VICI'},'NYSE:UPS','TSX:BCE']}}).core.read();
   assert.deepEqual(
     JSON.parse(JSON.stringify(state.scouting.replacementBasket)),
     [
@@ -62,4 +62,24 @@ test('reload normalization preserves and deduplicates the canonical Chairman rep
       {securityId:'NYSE:UPS',exchange:'NYSE',ticker:'UPS'}
     ]
   );
+});
+
+test('financial truth derives current income from active shares and DPS, not cached totals',()=>{
+  const {financialTruth}=loadCore({squad:{holdings:[
+    {ticker:'TRIG',account:'IG',status:'ACTIVE',shares:4244.47124543,annualDpsGbp:.0755,annualIncomeGbp:300},
+    {ticker:'FALLBACK',account:'T212',status:'LOCKED',shares:10,annualDpsGbp:0,annualIncomeGbp:12.34},
+    {ticker:'SOLD',account:'IG',status:'SOLD',shares:10,annualDpsGbp:5,annualIncomeGbp:50},
+    {ticker:'ZERO',account:'IG',status:'ACTIVE',shares:0,annualDpsGbp:5,annualIncomeGbp:50}
+  ]}});
+  const state=financialTruth.getCurrentAnnualIncome();
+  assert.equal(Number(state.toFixed(2)),332.8);
+});
+
+test('financial truth keeps route uplift projected and never changes current Holdings income',()=>{
+  const {financialTruth}=loadCore({squad:{holdings:[
+    {ticker:'BASE',account:'IG',status:'ACTIVE',shares:1000,annualDpsGbp:5.18485,annualIncomeGbp:5273.22}
+  ]},transfer:{completedStartingIncome:5273.22,completedActualIncome:5356.67}});
+  const route={baselineAnnualIncome:5273.22,allocations:[{expectedAnnualIncome:83.45}]};
+  assert.equal(financialTruth.getCurrentAnnualIncome(),5184.85);
+  assert.equal(financialTruth.getProjectedAnnualIncome(route),5268.3);
 });

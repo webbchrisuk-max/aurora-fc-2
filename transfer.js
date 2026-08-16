@@ -75,14 +75,10 @@
   function resolvedBrokerLabel(state,target){const route=A().transferEngine?.resolveBrokerRoute?.(state,target);return A().transferEngine?.brokerRouteLabel?.(route)||accountLabel(route?.account)}
   function holdingValue(h){return num(h.marketValueGbp)||(num(h.shares)*num(h.livePriceGbp))}
   function incomeBaseline(state){
-    const canonical=num(state.portfolio?.annualIncome);
-    return canonical>0?canonical:activeHoldings(state).reduce((s,h)=>s+(num(h.annualIncomeGbp)||(num(h.shares)*num(h.annualDpsGbp))),0);
+    return w.AuroraFinancialTruth.getCurrentAnnualIncome(state);
   }
   function missionIncomeBaseline(state,r=state.transfer?.route){
-    const canonical=incomeBaseline(state);
-    if(canonical>0)return canonical;
-    const frozen=Number(r?.baselineAnnualIncome);
-    return Number.isFinite(frozen)&&frozen>=0?frozen:canonical;
+    return incomeBaseline(state);
   }
   function portfolioPreview(state,r=state.transfer?.route){
     const allocations=arr(r?.allocations).filter(a=>num(a.amount)>0);
