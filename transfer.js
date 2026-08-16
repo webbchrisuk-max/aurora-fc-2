@@ -8,6 +8,15 @@
   const esc=v=>A().ui.escape(v);
   const money=v=>A().ui.money(Number(v)||0);
   const now=()=>new Date().toISOString();
+  const ACTIVE_MISSION_STORAGE_KEYS=Object.freeze([
+    'aurora_account_transfer_instruction_v1',
+    'aurora_wealth_investment_mission_v1',
+    'aurora_payday_route_snapshot_v2',
+    'aurora_payday_execution_state_v1',
+    'aurora_payday_execution_v1',
+    'aurora_payday_manual_cash_override_v1',
+    'aurora_manual_cash_override_v1'
+  ]);
 
   function set(id,v){const el=$(id);if(el)el.textContent=v}
   function setValue(id,v){const el=$(id);if(el)el.value=v??''}
@@ -451,7 +460,7 @@
     set('missionBudget',money(b));
     set('kFinanceBudget',money(b));
     set('handoffBudget',money(b));
-    set('missionStatus',complete?'TRANSFER COMPLETE':m?.status||'NO ACTIVE MISSION');
+    set('missionStatus',complete?'TRANSFER COMPLETE':m?.status||'WAITING FOR FINANCE MISSION');
     set('missionMeta',missionId
       ?`${missionId}${payday?' • payday '+payday:''}`
       :m?'Mission details are incomplete. Return to Finance to release a current mission.':'Release an investment mission from Finance first.');
@@ -471,6 +480,13 @@
     if(notice){notice.hidden=!rollback?.disabled;notice.textContent=rollback?.disabled?rollback.label:''}
   }
 
+  function resetActiveTransferMission(){
+    ACTIVE_MISSION_STORAGE_KEYS.forEach(key=>{
+      try{w.localStorage.removeItem(key)}catch(_){/* Storage may be unavailable in privacy mode. */}
+    });
+    A().core.update(s=>w.AuroraTransferMission.resetActiveTransferMission(s,now()));
+  }
+
   function rollbackMission(){
     const state=A().core.read(),offer=w.AuroraTransferMission?.rollbackAction?.(state);
     if(!offer?.action)return;
@@ -480,8 +496,13 @@
       :`${offer.label} this mission?\n\nNo registered purchases will be changed.`;
     if(!w.confirm(prompt))return;
     try{
-      A().core.update(s=>w.AuroraTransferMission.rollback(s,offer.action,offer.label,now()));
-      toast(`${offer.label} completed. Mission history was retained.`);
+      if(offer.action==='RESET_MISSION'){
+        resetActiveTransferMission();
+        toast('Mission workspace reset. Waiting for a new Finance mission.');
+      }else{
+        A().core.update(s=>w.AuroraTransferMission.rollback(s,offer.action,offer.label,now()));
+        toast(`${offer.label} completed. Mission history was retained.`);
+      }
     }catch(error){toast(error?.message||'Mission rollback could not be completed.')}
   }
 
