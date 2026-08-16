@@ -168,6 +168,52 @@ test('Chairman automatic lenses and five-selection basket share partial executab
   assert.equal(review.remaining,18258.58);
 });
 
+test('live Global Scout shortlist falls through blocked leaders for every Chairman lens',()=>{
+  const engine=loadEngine();
+  const executable=new Set(['LSE:GCP','LSE:UKW','LSE:FSFL']);
+  const identities=[
+    ['TSX:BCE','BCE'],['NYSE:VICI','VICI'],['NYSE:UPS','UPS'],['LSE:IMB','IMB'],
+    ['LSE:GCP','GCP'],['LSE:BATS','BATS'],['LSE:TRIG','TRIG'],['LSE:UKW','UKW'],
+    ['LSE:BT.A','BT.A'],['LSE:WTB','WTB'],['NASDAQ:ARCC','ARCC'],['LSE:FSFL','FSFL']
+  ];
+  const targets=identities.map(([securityId,ticker],index)=>({
+    securityId,exchange:securityId.split(':')[0],ticker,name:ticker,currency:securityId.startsWith('LSE:')?'GBP':'USD',
+    brokerEligibility:executable.has(securityId)?{IG:securityId!=='LSE:FSFL',T212:securityId==='LSE:FSFL'}:{IG:false,T212:false},
+    status:'pass',transferPermitted:true,eligibilityStatus:'ELIGIBLE',yieldPct:5+index/10,livePriceGbp:10,
+    sustainableScore:100-index,maximumScore:index<4?100-index:90-index
+  }));
+  const state={scouting:{targets},transfer:{settings:{minAllocation:250,increment:25}},squad:{holdings:[]}};
+  const selected=targets.slice(0,5).concat(targets.slice(-2)).map(row=>row.securityId);
+
+  for(const strategy of ['sustainable','maximum']){
+    const route=engine.simulate(state,{budget:3000,strategy,allowActiveScouting:true,maxTargets:8,idFactory:p=>p});
+    assert.ok(route.allocations.length>0,`${strategy} should fall through blocked leaders`);
+    assert.ok(route.allocations.every(row=>executable.has(row.securityId)));
+    assert.equal(route.allocated+route.remaining,3000);
+  }
+  const custom=engine.simulate(state,{budget:3000,targetIds:selected,allowActiveScouting:true,maxTargets:8,idFactory:p=>p});
+  assert.deepEqual(new Set(custom.allocations.map(row=>row.securityId)),new Set(['LSE:GCP','LSE:FSFL']));
+  assert.equal(custom.evaluatedCandidates.filter(row=>selected.includes(row.securityId)&&!row.simulationEligible).length,5);
+
+  const transferResolution=engine.resolveExecutableCandidate(targets[4],{state,purpose:'TRANSFER'});
+  const chairmanResolution=engine.resolveExecutableCandidate(targets[4],{state,purpose:'CHAIRMAN'});
+  assert.deepEqual(JSON.parse(JSON.stringify(transferResolution)),JSON.parse(JSON.stringify(chairmanResolution)));
+  const diagnostics=engine.executableDiagnostics(state);
+  assert.equal(diagnostics.find(row=>row.securityId==='TSX:BCE').blockingReasons[0],'MISSING_BROKER_ROUTE');
+  assert.equal(diagnostics.find(row=>row.securityId==='LSE:GCP').simulation,true);
+});
+
+test('ticker-only legacy evidence migrates only for an unambiguous canonical market identity',()=>{
+  const engine=loadEngine();
+  const ukw={securityId:'LSE:UKW',exchange:'LSE',ticker:'UKW',yieldPct:6,preferredAccount:'CHECK'};
+  const state={scouting:{targets:[ukw],legacyPriceRecords:[{ticker:'UKW',livePriceGbp:1.42}]},transfer:{brokerPreferences:{UKW:{account:'IG ISA'}}},squad:{holdings:[]}};
+  assert.equal(engine.resolveExecutableCandidate(ukw,{state}).simulationEligible,true);
+
+  const collision={...state,scouting:{...state.scouting,targets:[ukw,{securityId:'NYSE:UKW',exchange:'NYSE',ticker:'UKW',yieldPct:6}]}};
+  assert.equal(engine.resolveMarketPrice(collision,ukw).supported,false);
+  assert.equal(engine.resolveBrokerRoute(collision,ukw).supported,false);
+});
+
 test('Chairman broker resolver uses canonical holding evidence and zero routes remain safe REVIEW input',()=>{
   const engine=loadEngine();
   const target={securityId:'LSE:GCP',exchange:'LSE',ticker:'GCP',preferredAccount:'CHECK',status:'pass',yieldPct:6,livePriceGbp:10,transferPermitted:true};
