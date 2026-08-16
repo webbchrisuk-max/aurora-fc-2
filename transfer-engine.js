@@ -339,6 +339,53 @@
     return route;
   }
 
+  /*
+   * This is the single route-building operation used by the Transfer UI. It
+   * deliberately reads the budget from the canonical Finance mission rather
+   * than accepting a second, caller-owned transfer budget.
+   */
+  function buildMissionPlan(state,opts={}){
+    const mission=state?.mission;
+    const contract=opts.missionContract||w.AuroraTransferMission;
+    const approvedBudget=Math.max(0,num(mission?.approvedBudget));
+    if(!mission||!approvedBudget)return {ok:false,reason:'NO_FINANCE_MISSION'};
+    if(String(mission.status||'').toUpperCase()!=='DRAFT'&&String(mission.status||'').toUpperCase()!=='READY')return {ok:false,reason:'MISSION_NOT_PLANNABLE'};
+    if(String(state?.scouting?.status||'').toUpperCase()!=='SCOUTING_READY')return {ok:false,reason:'SCOUTING_NOT_READY'};
+    if(!contract?.plan)return {ok:false,reason:'MISSION_CONTRACT_UNAVAILABLE'};
+
+    const stamp=opts.now||new Date().toISOString();
+    const settings={brokerScope:'both',minAllocation:250,increment:25,...(state?.transfer?.settings||{})};
+    const strategy=String(state?.scouting?.strategy||'').toLowerCase()==='maximum'?'maximum':'sustainable';
+    const idFactory=typeof opts.idFactory==='function'?opts.idFactory:(p=>`${p}-${Math.random().toString(36).slice(2,9)}`);
+    const simulation=simulate(state,{
+      budget:approvedBudget,
+      strategy,
+      brokerScope:settings.brokerScope,
+      minAllocation:settings.minAllocation,
+      increment:settings.increment,
+      maxTargets:8,
+      idFactory
+    });
+    if(!simulation.allocations.length)return {ok:false,reason:simulation.reason||'NO_ELIGIBLE_TARGETS',simulation};
+
+    const previous=state?.transfer?.route;
+    const decorate=typeof opts.decorateAllocation==='function'?opts.decorateAllocation:a=>a;
+    const route={
+      ...simulation,
+      allocations:simulation.allocations.map(decorate),
+      id:previous?.missionId===mission.id?previous.id:idFactory('ROUTE'),
+      missionId:mission.id,
+      scoutingStrategy:strategy,
+      scoutingStatusAtBuild:state.scouting.status,
+      status:'DRAFT',
+      locked:false,
+      createdAt:previous?.missionId===mission.id?previous.createdAt:stamp,
+      updatedAt:stamp
+    };
+    const planned=contract.plan(mission,route,stamp);
+    return {ok:true,mission:planned.mission,route:planned.route};
+  }
+
   function concentrationSnapshot(state,rotation,allocations=[]){
     const beforeRows=activeHoldings(state).map(h=>({
       ticker:ticker(h.ticker),
@@ -383,6 +430,7 @@
   w.Aurora2.transferEngine={
     ...(w.Aurora2.transferEngine||{}),
     simulate,
+    buildMissionPlan,
     routeSummary,
     targetScore,
     concentrationSnapshot,
