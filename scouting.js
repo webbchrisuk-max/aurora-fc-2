@@ -28,6 +28,7 @@
     'https://raw.githubusercontent.com/webbchrisuk-max/aurora-city-fc/main/AuroraMaster.json'
   ];
   const NETWORK_SYNC_MS=6*60*60*1000;
+  // This limits DOM rows, never the stored/scanned universe.
   const NETWORK_RENDER_LIMIT=120;
   const AUTO_BENCH_TOTAL=12;
   const AUTO_BENCH_MIN_STRENGTH=60;
@@ -820,7 +821,58 @@
     );
   }
 
+  function membershipApiUrl(source){
+    return `https://en.wikipedia.org/w/api.php?action=parse&page=${source.page}`+
+      '&prop=text&formatversion=2&format=json&origin=*';
+  }
+
+  function parseMembershipHtml(html,source){
+    const doc=new DOMParser().parseFromString(String(html||''),'text/html'),rows=[];
+    doc.querySelectorAll('table.wikitable').forEach(table=>{
+      const headers=[...table.querySelectorAll('tr:first-child th')].map(x=>norm(x.textContent));
+      const tickerIndex=headers.findIndex(x=>/^(ticker|symbol|epic|ticker symbol)$/.test(x));
+      const companyIndex=headers.findIndex(x=>/^(company|constituent|security|company name)$/.test(x));
+      if(tickerIndex<0||companyIndex<0)return;
+      [...table.querySelectorAll('tr')].slice(1).forEach(tr=>{
+        const cells=[...tr.querySelectorAll('th,td')];
+        const ticker=cleanMarketSymbol(cells[tickerIndex]?.textContent).replace(/\[[^\]]*\]/g,'');
+        const name=String(cells[companyIndex]?.textContent||'').replace(/\[[^\]]*\]/g,'').trim();
+        if(!ticker||!name)return;
+        rows.push({ticker,marketSymbol:ticker,name,region:source.region,country:source.region,
+          exchange:source.exchange,currency:source.currency,memberships:[source.label],
+          source:'INDEX_MEMBERSHIP',sources:[`Wikipedia:${source.page}`],sourceStatus:'UNSCOUTED',
+          dataStatus:'MISSING',evidenceCount:0,updatedAt:now()});
+      });
+    });
+    return rows;
+  }
+
+  async function fetchMembershipUniverse(){
+    const api=A().scoutingUniverse;
+    if(!api)return {rows:[],errors:['Universe module unavailable']};
+    const settled=await Promise.allSettled(api.MEMBERSHIP_SOURCES.map(async source=>{
+      const res=await fetch(membershipApiUrl(source),{cache:'no-store'});
+      if(!res.ok)throw new Error(`${source.label}: HTTP ${res.status}`);
+      const body=await res.json();
+      const rows=parseMembershipHtml(body?.parse?.text,source);
+      if(!rows.length)throw new Error(`${source.label}: no constituent table found`);
+      return rows;
+    }));
+    return {rows:settled.flatMap(x=>x.status==='fulfilled'?x.value:[]),
+      errors:settled.filter(x=>x.status==='rejected').map(x=>String(x.reason?.message||x.reason))};
+  }
+
+  function mergeUniverse(membershipRows,legacyRows){
+    const api=A().scoutingUniverse;
+    if(!api)return legacyRows;
+    const legacy=legacyRows.map(r=>({...r,memberships:r.memberships||[],
+      dataStatus:r.evidenceCount>0?'AVAILABLE':'MISSING'}));
+    return api.merge([...membershipRows,...legacy]).sort((a,b)=>
+      b.memberships.length-a.memberships.length||num(b.legacyStrength)-num(a.legacyStrength)||a.ticker.localeCompare(b.ticker));
+  }
+
   function networkCounts(rows){
+    if(A().scoutingUniverse)return A().scoutingUniverse.coverage(rows);
     return {
       total:rows.length,
       UK:rows.filter(r=>r.region==='UK').length,
@@ -1114,8 +1166,12 @@
     const btn=$('syncGlobalNetwork');
     if(btn){btn.disabled=true;btn.textContent='Syncing…'}
     try{
-      const {data,url}=await fetchNetworkMaster();
-      const universe=collectNetworkRows(data);
+      const [legacyResult,membership]=await Promise.all([
+        fetchNetworkMaster().then(value=>({value})).catch(error=>({error})),fetchMembershipUniverse()
+      ]);
+      const data=legacyResult.value?.data||{};
+      const url=legacyResult.value?.url||'';
+      const universe=mergeUniverse(membership.rows,collectNetworkRows(data));
       if(!universe.length)throw new Error('No valid scouting rows found in Aurora 1 network.');
       const counts=networkCounts(universe);
       A().core.update(s=>({
@@ -1124,11 +1180,11 @@
           ...s.scouting,
           universe,
           networkMeta:{
-            status:'CONNECTED',
+            status:membership.errors.length||legacyResult.error?'PARTIAL':'CONNECTED',
             sourceUrl:url,
             sourceGeneratedAt:String(data?.meta?.generated_at||''),
             lastSyncAt:now(),
-            lastError:'',
+            lastError:[...membership.errors,legacyResult.error?.message].filter(Boolean).join(' • '),
             counts
           },
           updatedAt:now()
@@ -1301,6 +1357,7 @@
         <div class="network-kpi"><small>🇺🇸 US</small><strong id="networkUS">0</strong></div>
         <div class="network-kpi"><small>🌍 World</small><strong id="networkWorld">0</strong></div>
       </div>
+      <div id="universeBreakdown" class="notice">Loading index membership coverage…</div>
 
       <div class="network-pipeline">
         <div class="network-node"><strong>1 • Global Network</strong>UK + US + World candidates.</div>
@@ -1378,7 +1435,7 @@
 
     const badge=$('networkBadge');
     if(badge){
-      badge.textContent=meta.status==='ERROR'?'SOURCE ERROR':rows.length?'NETWORK LIVE':'CONNECTING';
+      badge.textContent=meta.status==='ERROR'?'SOURCE ERROR':meta.status==='PARTIAL'?'PARTIAL COVERAGE':rows.length?'NETWORK LIVE':'CONNECTING';
     }
 
     const sectorEl=$('networkSector');
@@ -1685,11 +1742,20 @@
     const uk=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='UK').length;
     const us=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='US').length;
     const targets=arr(state.scouting?.targets),passed=targets.filter(x=>x.status!=='block').length;
+    const approved=targets.filter(x=>x.approvedForTransfer).length;
+    const approvalCandidates=targets.filter(x=>x.status!=='block'&&!x.approvedForTransfer).length;
+    const eligible=universe.filter(x=>autoPromotionProfile(x).eligible).length;
+    const coverage=A().scoutingUniverse?.coverage(universe)||{};
+    const missing=universe.filter(x=>x.dataStatus==='MISSING').length;
+    const ruleExcluded=Math.max(0,universe.length-missing-eligible);
     set('coverageUK',uk);set('coverageUS',us);set('coverageGlobal',universe.length);
     const scanned=state.scouting?.scanMeta?.lastFullScanAt||state.scouting?.networkMeta?.lastSyncAt;
     set('coverageScan',scanned?new Date(scanned).toLocaleString('en-GB'):'Not yet scanned');
-    set('coveragePipeline',`${universe.length} scanned · ${passed} passed · ${targets.length} deep-scouted · `+
-      `${targets.filter(x=>x.approvedForTransfer).length} shortlisted`);
+    set('coveragePipeline',`${universe.length} universe · ${eligible} eligible · ${passed} passed · `+
+      `${targets.length} deep-scouted · ${approvalCandidates} approval candidates · ${approved} approved`);
+    set('universeBreakdown',`FTSE 100 ${coverage.ftse100||0} • FTSE 250 ${coverage.ftse250||0} • `+
+      `additional UK income ${coverage.ukIncome||0} • US ${coverage.US||0} • other markets ${coverage.WORLD||0} • `+
+      `${missing} awaiting market data • ${ruleExcluded} excluded by investment rules. Missing-data securities remain in Universe Coverage.`);
   }
 
   function wire(){
