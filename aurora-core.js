@@ -827,6 +827,44 @@
   function uid(prefix='A2'){
     return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
   }
+
+  // The live Holdings ledger is the only authority for current dividend income.
+  // Route, payday and simulator snapshots deliberately never participate here.
+  function financialNumber(value){
+    const parsed=Number(String(value??'').replace(/[^0-9.-]/g,''));
+    return Number.isFinite(parsed)?parsed:0;
+  }
+  function incomeExemptHolding(holding){
+    if(!holding)return false;
+    if(holding.incomeExempt===true||holding.dividendEligible===false)return true;
+    const ticker=String(holding.ticker||'').replace(/^LON:/i,'').replace(/\.L$/i,'').replace(/\..*$/,'').toUpperCase().trim();
+    const account=String(holding.account||'').toLowerCase();
+    const reason=String(`${holding.lockReason||''} ${holding.role||''} ${holding.source||''}`).toLowerCase();
+    return ticker==='TSCO'&&(!account.includes('212')&&!/\big\b/.test(account)||/saye|save as you earn|2029|legacy/.test(reason));
+  }
+  function isActiveIncomeHolding(holding){
+    return ['ACTIVE','LOCKED'].includes(String(holding?.status||'').toUpperCase())&&financialNumber(holding?.shares)>0;
+  }
+  function getHoldingAnnualIncome(holding){
+    if(!isActiveIncomeHolding(holding)||incomeExemptHolding(holding))return 0;
+    const shares=financialNumber(holding.shares);
+    const dps=financialNumber(holding.annualDpsGbp??holding.annual_dps);
+    // A stored total is legacy evidence only. When both operands exist, even a
+    // stale annualIncomeGbp/annual_dps_total can never beat shares × DPS.
+    if(shares>0&&dps>0)return shares*dps;
+    return Math.max(0,financialNumber(holding.annualIncomeGbp??holding.annual_dps_total??holding.annual_income));
+  }
+  function getCurrentAnnualIncome(state){
+    const source=state||read();
+    return (Array.isArray(source?.squad?.holdings)?source.squad.holdings:[])
+      .reduce((total,holding)=>total+getHoldingAnnualIncome(holding),0);
+  }
+  function getCurrentMonthlyIncome(state){return getCurrentAnnualIncome(state)/12}
+  function getProjectedAnnualIncome(route,state){
+    const allocations=Array.isArray(route?.allocations)?route.allocations:[];
+    const uplift=allocations.reduce((total,item)=>total+Math.max(0,financialNumber(item?.expectedAnnualIncome)),0);
+    return getCurrentAnnualIncome(state)+uplift;
+  }
   function setActiveNav(){
     const path=(location.pathname.split('/').pop()||'index.html').toLowerCase();
     document.querySelectorAll('.nav a').forEach(a=>{
@@ -877,6 +915,10 @@
 
   w.Aurora2=w.Aurora2||{};
   w.Aurora2.core={KEY,VERSION,BACKUP_KEY,read,write,update,defaultState,normalize,migrate,validate,diagnostics,backup,restoreBackup,uid};
+  w.AuroraFinancialTruth=Object.freeze({
+    getHoldingAnnualIncome,getCurrentAnnualIncome,getCurrentMonthlyIncome,getProjectedAnnualIncome,
+    isActiveHolding:isActiveIncomeHolding,isIncomeExempt:incomeExemptHolding
+  });
   w.Aurora2.ui={money,text,escape};
   document.addEventListener('DOMContentLoaded',()=>{activateBuiltDepartments();setActiveNav();wireSoon();wireNavigationFallback();});
 })(window);

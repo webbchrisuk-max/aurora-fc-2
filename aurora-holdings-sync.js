@@ -91,11 +91,7 @@
       const value=num(h.marketValueGbp)>0
         ? num(h.marketValueGbp)
         : num(h.shares)*num(h.livePriceGbp);
-      const income=incomeExempt(h)
-        ? 0
-        : (num(h.annualDpsGbp)>0
-            ? num(h.shares)*num(h.annualDpsGbp)
-            : Math.max(0,num(h.annualIncomeGbp)));
+      const income=w.AuroraFinancialTruth.getHoldingAnnualIncome(h);
 
       teamValue+=value;
       annualIncome+=income;

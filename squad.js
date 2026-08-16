@@ -284,7 +284,7 @@
   function holdingMetrics(h){
     const shares=num(h.shares),book=num(h.bookCostGbp),price=num(h.livePriceGbp),dps=num(h.annualDpsGbp);
     const value=shares>0&&price>0 ? shares*price : num(h.marketValueGbp);
-    const income=shares>0&&dps>0 ? shares*dps : num(h.annualIncomeGbp);
+    const income=w.AuroraFinancialTruth.getHoldingAnnualIncome(h);
     const profit=value-book,yoc=book>0?income/book*100:0,avg=shares>0?book/shares:0;
     return {shares,book,price,value,income,profit,yoc,avg};
   }

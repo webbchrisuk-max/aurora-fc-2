@@ -34,15 +34,14 @@ function activeHoldings(s){
   return arr(s.squad?.holdings).filter(h=>['ACTIVE','LOCKED'].includes(String(h.status||'ACTIVE').toUpperCase())&&num(h.shares)>0);
 }
 function holdingIncome(h){
-  const shares=num(h.shares),dps=num(h.annualDpsGbp);
-  return dps>0?shares*dps:num(h.annualIncomeGbp);
+  return w.AuroraFinancialTruth.getHoldingAnnualIncome(h);
 }
 function portfolioMetrics(s){
   const hs=activeHoldings(s);
   const value=hs.reduce((x,h)=>x+num(h.marketValueGbp),0);
   const book=hs.reduce((x,h)=>x+num(h.bookCostGbp),0);
   const pl=hs.reduce((x,h)=>x+num(h.profitLossGbp),0);
-  const annual=hs.reduce((x,h)=>x+holdingIncome(h),0);
+  const annual=w.AuroraFinancialTruth.getCurrentAnnualIncome(s);
   return {hs,value,book,pl,annual,monthly:annual/12};
 }
 function nextDividend(s){

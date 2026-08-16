@@ -32,7 +32,7 @@
     return tk==='TSCO'&&(acct==='CHECK'||/saye|save as you earn|2029|legacy/.test(reason));
   }
   function dividendEligibleHoldings(state=A().core.read()){return activeHoldings(state).filter(h=>!incomeExempt(h))}
-  function holdingIncome(h){if(incomeExempt(h))return 0;const shares=num(h.shares),dps=num(h.annualDpsGbp);return shares>0&&dps>0?shares*dps:Math.max(0,num(h.annualIncomeGbp))}
+  function holdingIncome(h){return w.AuroraFinancialTruth.getHoldingAnnualIncome(h)}
   function holdingValue(h){const shares=num(h.shares),price=num(h.livePriceGbp);return shares>0&&price>0?shares*price:Math.max(0,num(h.marketValueGbp))}
   function holdingBook(h){return Math.max(0,num(h.bookCostGbp))}
 

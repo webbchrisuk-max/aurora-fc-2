@@ -11,7 +11,11 @@ function loadBrowserModule(file){
     getElementById(){return null},
     querySelectorAll(){return []}
   };
-  const window={document,addEventListener(){},Aurora2:{
+  const financialTruth={
+    getHoldingAnnualIncome(h){return h.status==='ACTIVE'&&h.shares>0?(h.annualDpsGbp>0?h.shares*h.annualDpsGbp:Number(h.annualIncomeGbp)||0):0},
+    getCurrentAnnualIncome(state){return (state.squad?.holdings||[]).reduce((sum,h)=>sum+this.getHoldingAnnualIncome(h),0)}
+  };
+  const window={document,addEventListener(){},AuroraFinancialTruth:financialTruth,Aurora2:{
     core:{read(){return {}}},
     ui:{escape:value=>String(value),money:value=>`£${Number(value).toFixed(2)}`}
   }};
@@ -27,7 +31,7 @@ test('Portfolio Preview adds proposed Transfer income to canonical current incom
   const state={
     portfolio:{annualIncome:5273.22},
     squad:{holdings:[
-      {ticker:'BASE',account:'IG',status:'ACTIVE',shares:1,marketValueGbp:62500}
+      {ticker:'BASE',account:'IG',status:'ACTIVE',shares:1000,annualDpsGbp:5.18485,annualIncomeGbp:5273.22,marketValueGbp:62500}
     ]},
     transfer:{route:{
       baselineAnnualIncome:0,
@@ -41,12 +45,12 @@ test('Portfolio Preview adds proposed Transfer income to canonical current incom
 
   const preview=transfer.portfolioPreview(state);
 
-  assert.equal(preview.currentAnnualIncome,5273.22);
+  assert.equal(preview.currentAnnualIncome,5184.85);
   assert.equal(preview.totals.income,83.45);
-  assert.equal(preview.projectedAnnualIncome,5356.67);
-  assert.equal(Number((preview.currentAnnualIncome/12).toFixed(2)),439.44);
-  assert.equal(Number((preview.projectedAnnualIncome/12).toFixed(2)),446.39);
-  assert.equal(Number(preview.projectedIncomeYield.toFixed(2)),8.46);
+  assert.equal(preview.projectedAnnualIncome,5268.3);
+  assert.equal(Number((preview.currentAnnualIncome/12).toFixed(2)),432.07);
+  assert.equal(Number((preview.projectedAnnualIncome/12).toFixed(2)),439.03);
+  assert.equal(Number(preview.projectedIncomeYield.toFixed(2)),8.32);
 });
 
 test('Income Centre suppresses estimated Transfer income for a completed mission',()=>{
