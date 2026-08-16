@@ -35,7 +35,7 @@
   function scouting(state=A().core.read()){return state.scouting||{status:'SCOUTING_REVIEW',targets:[]}}
   function validMission(m){
     if(!m||num(m.approvedBudget)<=0)return false;
-    return !['CANCELLED','COMPLETED','ARCHIVED'].includes(String(m.status||'').toUpperCase());
+    return !['CANCELLED','COMPLETE','COMPLETED','ARCHIVED'].includes(String(m.status||'').toUpperCase());
   }
   function routeBudget(state=A().core.read()){
     const m=mission(state);
@@ -206,7 +206,10 @@
       createdAt:previous?.missionId===m.id?previous.createdAt:now(),
       updatedAt:now()
     };
-    A().core.update(s=>({...s,transfer:{...s.transfer,route,updatedAt:now()}}));
+    A().core.update(s=>{
+      const planned=window.AuroraTransferMission.plan(s.mission,route,now());
+      return {...s,mission:planned.mission,transfer:{...s.transfer,route:planned.route,updatedAt:now()}};
+    });
     toast('Draft transfer route built.');
   }
 
@@ -272,17 +275,20 @@
       baselineAnnualIncome:missionIncomeBaseline(state,r),
       baselinePortfolioValue:activeHoldings(state).reduce((sum,h)=>sum+holdingValue(h),0),
       baselineHoldings:activeHoldings(state).map(h=>({ticker:ticker(h.ticker),account:accountCode(h.account),shares:num(h.shares),livePriceGbp:num(h.livePriceGbp),marketValueGbp:holdingValue(h)})),
-      status:'TRANSFER_READY',locked:true,updatedAt:now()
+      status:'READY',locked:false,updatedAt:now()
     };
-    A().core.update(s=>({
+    A().core.update(s=>{
+      const prepared=window.AuroraTransferMission.plan({...s.mission,status:'READY'},approved,now());
+      const locked=window.AuroraTransferMission.lock(prepared.mission,prepared.route,now());
+      return {
       ...s,
-      transfer:{...s.transfer,route:approved,updatedAt:now()},
-      mission:{...s.mission,status:'TRANSFER_READY',transferRouteId:approved.id,updatedAt:now()},
+      transfer:{...s.transfer,route:locked.route,updatedAt:now()},
+      mission:{...locked.mission,transferRouteId:approved.id},
       alerts:[
         {id:A().core.uid('ALERT'),title:'Transfer route approved',note:`${money(totals.allocated)} allocated • ${money(totals.remaining)} held back.`,when:'now'},
         ...arr(s.alerts).filter(a=>a?.title!=='Transfer route approved')
       ].slice(0,8)
-    }));
+    }});
     toast('Final route approved and locked.');
   }
 
@@ -296,7 +302,7 @@
     A().core.update(s=>({
       ...s,
       transfer:{...s.transfer,route:{...s.transfer.route,status:'DRAFT',locked:false,updatedAt:now()},updatedAt:now()},
-      mission:{...s.mission,status:'SCOUTING_READY',updatedAt:now()}
+      mission:{...s.mission,status:'READY',executionStatus:'READY',updatedAt:now()}
     }));
     toast('Route unlocked. Finance budget is still unchanged.');
   }

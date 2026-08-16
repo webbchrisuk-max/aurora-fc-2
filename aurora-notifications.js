@@ -144,6 +144,16 @@ function financeEvents(s,todayDate,today){
   if(diff===2||diff===0)emit({key:`PAYDAY:${today}:${diff===0?'TODAY':'TWO_DAYS'}:${s.finance.plan.paydayDate}`,eventType:'payday',category:'finance',priority:diff===0?'positive':'important',title:diff===0?'Payday today':'Payday approaching',detail:diff===0?'Payday has arrived. Review wage routing and protected commitments.':'Payday is in two days. Finance can confirm the protected runway.',actionLabel:'Open Finance',actionUrl:'finance.html',source:'FINANCE'});
   arr(s.finance?.bills).filter(b=>!b.paid&&!b.archived&&b.included!==false).forEach(b=>{const due=dateAt(b.due);if(!due)return;const d=dayDiff(todayDate,due);let stage='';if(d===3)stage='THREE_DAYS';else if(d===1)stage='TOMORROW';else if(d===0)stage='TODAY';else if(d<0)stage='OVERDUE';if(!stage)return;emit({key:`BILL:${b.id}:${stage}:${b.due}`,eventType:d<0?'bill-overdue':'bill-due',category:'finance',priority:d<0?'critical':d===0?'important':'info',title:d<0?'Bill overdue':d===0?'Bill due today':d===1?'Bill due tomorrow':'Bill due in three days',detail:`${b.name} • ${money(b.amount)} from ${b.fundingSource||'Current Account'}.`,actionLabel:'Review Bill',actionUrl:'finance.html#billsPanel',source:'FINANCE'})});
 }
+function workflowEvents(s){
+  const m=s.mission;if(!m?.id)return;
+  const status=String(m.status||''),p=w.AuroraTransferMission?.progress?.(s)||m.registrationStatus||{};
+  const common={eventType:'transfer',category:'investments',actionUrl:'transfer.html',source:'TRANSFER'};
+  if(status==='DRAFT')emit({...common,key:`MISSION:${m.id}:DRAFT`,title:'Payday money ready',detail:`Finance released ${money(m.approvedBudget)} for one canonical Transfer mission.`,actionLabel:'Open Transfer'});
+  if(status==='READY')emit({...common,key:`MISSION:${m.id}:READY`,title:'Transfer plan ready for review',detail:`${p.total||m.legIds?.length||0} planned purchase legs await route approval.`,actionLabel:'Review Route'});
+  if(status==='LOCKED')emit({...common,key:`MISSION:${m.id}:LOCKED`,title:'Transfer route locked',detail:`The approved route is ready for Registration.`,actionLabel:'Open Registration',actionUrl:'registration.html'});
+  if(status==='PARTIALLY_REGISTERED')emit({...common,key:`MISSION:${m.id}:PARTIAL:${p.registered}`,title:'Transfer partially complete',detail:`${p.registered} of ${p.total} purchases are confirmed by AuroraData 2.`,actionLabel:'Continue Registration',actionUrl:'registration.html'});
+  if(status==='COMPLETE')emit({...common,key:`MISSION:${m.id}:COMPLETE`,title:'Payday transfer complete',detail:`Actual investment ${money(p.actualInvested)} • remaining cash ${money(p.remaining)}.`,actionLabel:'View Transfer Review'});
+}
 function marketEvents(s){
   const ns=notificationState(s),next={...ns.marketState};
   arr(s.squad?.holdings).filter(h=>['ACTIVE','LOCKED'].includes(String(h.status||'').toUpperCase())&&Number(h.shares)>0).forEach(h=>{
@@ -180,7 +190,7 @@ function evaluate(){
   const closedOffers=new Set(arr(s.transfer?.offers).filter(o=>o.reviewedAt||o.dismissedAt||o.acceptedAt||['REVIEWED','ACCEPTED','DISMISSED'].includes(String(o.status||'').toUpperCase())).map(o=>String(o.id||o.offerId)));
   const currentNotifications=notificationState(s);
   if(currentNotifications.records.some(r=>(!r.archivedAt&&r.key.startsWith('BILL:')&&paidBills.has(r.key.split(':')[1]))||(r.pinned&&r.key.startsWith('CHAIRMAN_OFFER:')&&closedOffers.has(r.key.split(':')[2]))))save(n=>({records:n.records.map(r=>{if(!r.archivedAt&&r.key.startsWith('BILL:')&&paidBills.has(r.key.split(':')[1]))return {...r,archivedAt:now(),readAt:r.readAt||now()};if(r.pinned&&r.key.startsWith('CHAIRMAN_OFFER:')&&closedOffers.has(r.key.split(':')[2]))return {...r,pinned:false,readAt:r.readAt||now()};return r})}));
-  dividendEvents(s,today);financeEvents(s,d,today);marketEvents(state());offerEvents(state());healthEvents(state());render();return status();
+  dividendEvents(s,today);financeEvents(s,d,today);workflowEvents(s);marketEvents(state());offerEvents(state());healthEvents(state());render();return status();
 }
 function scheduleEvaluate(){clearTimeout(evaluateTimer);evaluateTimer=setTimeout(evaluate,350)}
 function init(){
