@@ -171,16 +171,16 @@
     return A().transferEngine?.securityId?.(c)||String(c.securityId||c.id||ticker(c.ticker));
   }
 
-  function transferSimulation(state,h,scenario){
+  function transferSimulation(state,h,scenario,lensName=lens){
     const engine=A().transferEngine;
     if(!engine?.simulate)return {
       financeBudget:scenario.cashReleased,allocations:[],allocated:0,income:0,
       remaining:scenario.cashReleased,status:'SIMULATION',reason:'ENGINE_MISSING'
     };
 
-    let targetIds=null,strategy=lens==='maximum'?'maximum':'sustainable';
-    if(lens==='custom'){
-      targetIds=[...customIds];
+    let targetIds=null,strategy=lensName==='maximum'?'maximum':'sustainable';
+    if(lensName==='custom'){
+      targetIds=canonicalBasket(state);
       strategy='sustainable';
     }
 
@@ -262,14 +262,14 @@
     return {code:'keep',title:'KEEP',reason:'The current holding remains more compelling than the simulated rotation at this point.'};
   }
 
-  function caseData(state=A().core.read()){
+  function caseData(state=A().core.read(),lensName=lens){
     const h=selectedHolding(state);
     if(!h)return null;
     const metrics=holdingMetrics(h);
     const mat=materiality(state,h,metrics);
     const scenario=scenarioMetrics(metrics);
     const exEvent=nextExDate(state,h,scenario);
-    const sim=transferSimulation(state,h,scenario);
+    const sim=transferSimulation(state,h,scenario,lensName);
     const replacementIncome=num(sim.income);
     const netAnnual=replacementIncome-scenario.incomeSurrendered;
     const netMonthly=netAnnual/12;
@@ -280,6 +280,33 @@
     const conc=concentration(state,h,scenario,sim);
     const verdict=buildVerdict({holding:h,metrics,mat,scenario,sim,exEvent,concentration:conc});
     return {holding:h,metrics,mat,scenario,exEvent,sim,replacementIncome,netAnnual,netMonthly,coverage,profitYears,profitCushion,replacementYield,concentration:conc,verdict};
+  }
+
+  function basketStatus(selected,sim){
+    const allocatedIds=new Set(arr(sim?.allocations).filter(row=>num(row.amount)>0).map(row=>String(row.securityId)));
+    const executable=arr(selected).filter(row=>row.available);
+    return {
+      selected:arr(selected).length,
+      executable:executable.length,
+      allocated:executable.filter(row=>allocatedIds.has(String(row.securityId))).length,
+      blocked:arr(selected).filter(row=>!row.available).length
+    };
+  }
+
+  function strategyComparison(state,h,scenario){
+    const names=['sustainable','maximum'];
+    if(canonicalBasket(state).length)names.push('custom');
+    return names.map(name=>{
+      const sim=transferSimulation(state,h,scenario,name);
+      const replacementIncome=num(sim.income);
+      const conc=concentration(state,h,scenario,sim);
+      return {name,sim,replacementIncome,netAnnual:replacementIncome-scenario.incomeSurrendered,
+        netMonthly:(replacementIncome-scenario.incomeSurrendered)/12,
+        replacementYield:scenario.cashReleased>0?replacementIncome/scenario.cashReleased*100:0,
+        coverage:scenario.incomeSurrendered>0?replacementIncome/scenario.incomeSurrendered*100:(replacementIncome>0?100:0),
+        deployed:num(sim.allocated),holdback:num(sim.remaining),holdings:arr(sim.allocations).filter(a=>num(a.amount)>0).length,
+        largestAfter:num(conc?.after?.largestTickerPct),concentration:conc};
+    });
   }
 
   function renderKpis(state){
@@ -384,33 +411,37 @@
     );
   }
 
+  function blockedGate(reason){
+    return ({SECURITY_NOT_FOUND:'Canonical Active Scouting candidate unavailable',MISSING_PRICE_EVIDENCE:'Supported market price unavailable',MISSING_BROKER_ROUTE:'Broker eligibility unresolved',MISSING_INCOME_EVIDENCE:'Supported income evidence unavailable'})[reason]||'Required evidence unavailable';
+  }
+  function zeroAllocationReason(row,data){
+    const requested=num(data.sim.requestedMinAllocation||data.sim.minAllocation);
+    if(data.sim.remaining<requested)return 'budget exhausted';
+    if(num(row.concentrationFactor)<.7)return 'concentration';
+    if(data.scenario.cashReleased<requested)return 'minimum allocation';
+    return 'ranking';
+  }
   function renderBasket(data){
     const host=$('basketList');if(!host)return;
-    const rows=arr(data.sim.allocations);
-    const selected=lens==='custom'
-      ?A().transferEngine.resolveReplacementBasket(A().core.read(),canonicalBasket())
-      :[];
+    const rows=arr(data.sim.allocations).filter(row=>num(row.amount)>0);
+    const selected=lens==='custom'?A().transferEngine.resolveReplacementBasket(A().core.read(),canonicalBasket()):[];
+    const status=basketStatus(selected,data.sim);
     const incomplete=selected.filter(x=>!x.available);
-    const included=selected.filter(x=>x.available);
-    set('basketMeta',rows.length
-      ?`${lens==='custom'?`${selected.length} SELECTED • ${included.length} EXECUTABLE • ${incomplete.length} BLOCKED • `:''}${rows.length} included in simulation • ${money(data.sim.allocated)} invested • ${money(data.sim.remaining)} holdback • scenario only`
-      :incomplete.length?'Selected replacements need income evidence before simulation.':'Transfer could not build a replacement route from the current Active Scouting pool.'
-    );
-    if(!rows.length&&!incomplete.length){
-      host.innerHTML='<div class="empty-state compact"><strong>No Transfer simulation</strong><p>Promote/clear eligible candidates in Scouting, or select a different custom basket.</p></div>';
-      return;
-    }
-    host.innerHTML=rows.map(r=>`<div class="basket-row">
-      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${lens==='custom'?'SELECTED • INCLUDED IN SIMULATION • ':''}${esc(accountLabel(r.account))} • ${esc(String(r.scoutingStatus||'caution').toUpperCase())}${r.sector?' • '+esc(r.sector):''}${r.priceEvidence?.stale?' • STALE PRICE — REVIEW BEFORE EXECUTION':''}</span></div>
-      <div class="basket-num"><b>${money(r.amount)}</b><small>allocation</small></div>
-      <div class="basket-num"><b>${num(r.yieldPct).toFixed(2)}%</b><small>yield</small></div>
-      <div class="basket-num"><b>${money(r.expectedAnnualIncome)}</b><small>income / yr</small></div>
-      <div class="basket-num"><b>${Math.round(num(r.scoutingScore))}/100</b><small>Scouting score</small></div>
-      <div class="basket-num"><b>${num(r.concentrationFactor).toFixed(2)}×</b><small>route fit</small></div>
-    </div>`).concat(incomplete.map(r=>`<div class="basket-row" data-incomplete="true">
-      <div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>SELECTED • NOT INCLUDED IN SIMULATION • SIMULATION DATA INCOMPLETE • ${{SECURITY_NOT_FOUND:'Canonical security is not present in Active Scouting',MISSING_PRICE_EVIDENCE:'NO SUPPORTED PRICE DATA',MISSING_BROKER_ROUTE:'Missing executable broker route',MISSING_INCOME_EVIDENCE:'Missing supported yield/dividend income evidence'}[r.incompleteReason]||'Required simulation evidence is unavailable'}</span></div>
-      <div class="basket-num"><b>—</b><small>income unavailable</small></div>
-    </div>`)).join('');
+    const allocatedIds=new Set(rows.map(row=>String(row.securityId)));
+    const zero=selected.filter(row=>row.available&&!allocatedIds.has(String(row.securityId)));
+    set('basketMeta',lens==='custom'
+      ?`${status.selected} SELECTED • ${status.executable} EXECUTABLE • ${status.allocated} ALLOCATED • ${status.blocked} BLOCKED • ${money(data.sim.allocated)} deployed • ${money(data.sim.remaining)} holdback • scenario only`
+      :rows.length?`${rows.length} allocated • ${money(data.sim.allocated)} deployed • ${money(data.sim.remaining)} holdback • scenario only`:'Transfer could not build a replacement route from the current Active Scouting pool.');
+    if(!rows.length&&!incomplete.length&&!zero.length){host.innerHTML='<div class="empty-state compact"><strong>No Transfer simulation</strong><p>Promote/clear eligible candidates in Scouting, or select a different custom basket.</p></div>';return}
+    const allocatedHtml=rows.map(r=>`<div class="basket-row">
+      <div><strong>${esc(r.ticker)} — ${esc(r.name)}</strong><span>${lens==='custom'?'SELECTED • EXECUTABLE • ALLOCATED • ':''}${esc(accountLabel(r.account))} • ${esc(String(r.scoutingStatus||'caution').toUpperCase())}${r.sector?' • '+esc(r.sector):''}${r.priceEvidence?.stale?' • STALE PRICE — REVIEW BEFORE EXECUTION':''}</span></div>
+      <div class="basket-num"><b>${money(r.amount)} • ${data.scenario.cashReleased>0?(num(r.amount)/data.scenario.cashReleased*100).toFixed(1):'0.0'}%</b><small>of released cash</small></div>
+      <div class="basket-num"><b>${num(r.yieldPct).toFixed(2)}%</b><small>yield</small></div><div class="basket-num"><b>${money(r.expectedAnnualIncome)}</b><small>income / yr</small></div>
+      <div class="basket-num"><b>${Math.round(num(r.scoutingScore))}/100</b><small>Scouting score</small></div><div class="basket-num"><b>${num(r.concentrationFactor).toFixed(2)}×</b><small>route fit</small></div>
+    </div>`).join('');
+    const zeroHtml=zero.map(r=>`<div class="basket-row"><div><strong>${esc(ticker(r.ticker)||r.securityId)} — ${esc(r.name||'Selected security')}</strong><span>SELECTED • EXECUTABLE • NOT ALLOCATED • ${esc(zeroAllocationReason(r,data))}</span></div><div class="basket-num"><b>£0.00</b><small>not a purchase</small></div></div>`).join('');
+    const blockedHtml=incomplete.map(r=>`<div class="basket-row" data-incomplete="true"><div><strong>${esc(ticker(r.ticker)||r.securityId)} — BLOCKED</strong><span>${esc(blockedGate(r.incompleteReason))}</span></div><div class="basket-num"><b>—</b><small>required gate missing</small></div></div>`).join('');
+    host.innerHTML=allocatedHtml+zeroHtml+blockedHtml;
   }
 
   function paintSigned(id,value){
@@ -453,6 +484,41 @@
     if(card)card.className=`verdict-card ${data.verdict.code}`;
     set('verdictTitle',data.verdict.title);
     set('verdictReason',data.verdict.reason);
+    const allocations=arr(data.sim.allocations).filter(row=>num(row.amount)>0);
+    const pass=allocations.filter(row=>String(row.scoutingStatus).toLowerCase()==='pass').length;
+    const caution=allocations.length-pass;
+    const blocked=lens==='custom'?A().transferEngine.resolveReplacementBasket(A().core.read(),canonicalBasket()).filter(row=>!row.available).length:0;
+    set('evidenceSummary',`${pass} PASS • ${caution} CAUTION • ${blocked} BLOCKED`);
+    const delta=Math.abs(data.netAnnual);
+    set('verdictContext',`${lens==='maximum'?'Maximum Income':lens==='custom'?'Custom':'Sustainable'} produces ${data.netAnnual>=0?money(delta)+' more':money(delta)+' less'} annual income than the surrendered position${caution?`, but ${caution} replacement Scout${caution===1?' remains':'s remain'} CAUTION, so the board verdict cannot exceed REVIEW.`:`; allocated evidence is PASS and the existing economics and concentration rules determine ${data.verdict.title}.`}`);
+  }
+
+  function renderDecisionIntelligence(state,data){
+    const comparisons=strategyComparison(state,data.holding,data.scenario);
+    const maxIncome=Math.max(...comparisons.map(x=>x.replacementIncome));
+    const maxCash=Math.max(...comparisons.map(x=>x.holdback));
+    const minLargest=Math.min(...comparisons.map(x=>x.largestAfter));
+    const host=$('strategyComparison');
+    if(host)host.innerHTML=comparisons.map(row=>{
+      const tags=[];
+      if(Math.abs(row.replacementIncome-maxIncome)<.005)tags.push('BEST INCOME');
+      if(Math.abs(row.largestAfter-minLargest)<.005)tags.push('BEST DIVERSIFICATION');
+      if(Math.abs(row.holdback-maxCash)<.005)tags.push('MOST CASH RETAINED');
+      const label=row.name==='maximum'?'Maximum Income':row.name==='custom'?'Custom':'Sustainable';
+      const metrics=[['Replacement income',money(row.replacementIncome)],['Net annual',`${row.netAnnual>=0?'+':''}${money(row.netAnnual)}`],['Net monthly',`${row.netMonthly>=0?'+':''}${money(row.netMonthly)}`],['Replacement yield',`${row.replacementYield.toFixed(2)}%`],['Income coverage',`${row.coverage.toFixed(1)}%`],['Amount deployed',money(row.deployed)],['Holdback',money(row.holdback)],['Holdings',row.holdings],['Largest after',`${row.largestAfter.toFixed(1)}%`]];
+      return `<article class="strategy-card ${lens===row.name?'active':''}"><h4>${label}</h4><div class="strategy-tags">${tags.map(tag=>`<b>${tag}</b>`).join('')}</div><div class="strategy-metrics">${metrics.map(([key,value])=>`<div><small>${key}</small><strong>${value}</strong></div>`).join('')}</div></article>`;
+    }).join('');
+
+    const watch=$('concentrationWatch'),c=data.concentration;
+    const securityIncrease=c?num(c.after.largestTickerPct)-num(c.before.largestTickerPct):0;
+    const sectorIncrease=c?num(c.after.largestSectorPct)-num(c.before.largestSectorPct):0;
+    if(watch){
+      watch.hidden=!(securityIncrease>5||sectorIncrease>5);
+      if(!watch.hidden)watch.innerHTML=`<strong>CONCENTRATION WATCH</strong>${securityIncrease>=sectorIncrease?`${esc(c.after.largestTicker)} would become ${num(c.after.largestTickerPct).toFixed(1)}% of simulated portfolio exposure.`:`${esc(c.after.largestSector)} would become ${num(c.after.largestSectorPct).toFixed(1)}% of known simulated sector exposure.`}`;
+    }
+    const details=$('routeExplanation'),explanation=$('routeExplanationRows');
+    if(details)details.hidden=lens==='custom';
+    if(explanation)explanation.innerHTML=arr(data.sim.allocations).filter(row=>num(row.amount)>0).map(row=>`<div class="route-explanation-row"><strong>${esc(row.ticker)}</strong><span>Score ${Math.round(num(row.scoutingScore))}/100</span><span>${num(row.yieldPct).toFixed(2)}% yield</span><span>${esc(accountLabel(row.account))}</span><span>${num(row.concentrationFactor).toFixed(2)}× fit</span><span>${esc(String(row.scoutingStatus||'caution').toUpperCase())}</span></div>`).join('');
   }
 
   function renderCase(state){
@@ -492,6 +558,7 @@
     renderBasket(data);
     renderComparison(data);
     renderVerdict(data);
+    renderDecisionIntelligence(state,data);
   }
 
   function render(){
@@ -602,6 +669,8 @@
     materiality,
     scenarioMetrics,
     buildVerdict,
-    caseData
+    caseData,
+    basketStatus,
+    strategyComparison
   };
 })(window);

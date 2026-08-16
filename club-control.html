@@ -158,7 +158,9 @@
 
 .verdict-card{position:relative;overflow:hidden;margin-top:12px;padding:20px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.018);box-shadow:0 15px 36px rgba(0,0,0,.18)}
 .verdict-card strong{display:block;margin-top:7px;font-size:30px;letter-spacing:-.05em}
-.verdict-card>span:last-child{display:block;color:#898071;font-size:9px;line-height:1.6;margin-top:7px}
+.verdict-context{display:block!important;color:#c4b893!important;border-top:1px solid rgba(243,201,105,.09);padding-top:9px}
+.evidence-summary{display:inline-flex!important;width:max-content;padding:6px 8px;border:1px solid rgba(243,201,105,.14);border-radius:999px;color:#ffe09a!important;font-size:7px!important;font-weight:1000;letter-spacing:.06em}
+.verdict-card>span:last-child,.verdict-card #verdictReason{display:block;color:#898071;font-size:9px;line-height:1.6;margin-top:7px}
 .verdict-card.strong{border-color:rgba(89,255,154,.25);background:rgba(89,255,154,.04)}
 .verdict-card.strong strong,.verdict-card.attractive strong{color:#baffd0}
 .verdict-card.attractive{border-color:rgba(74,222,128,.20);background:rgba(74,222,128,.03)}
@@ -175,6 +177,10 @@
 .basket-list{display:grid;gap:8px;margin-top:14px}
 .basket-row{display:grid;grid-template-columns:minmax(0,1fr) repeat(5,minmax(80px,.3fr));gap:9px;align-items:center;padding:11px;border-radius:13px;border:1px solid rgba(106,168,255,.07);background:rgba(106,168,255,.012)}
 .basket-row strong{font-size:10px}.basket-row span,.basket-row small{font-size:7px;color:#707a87}.basket-num{text-align:right}.basket-num b{display:block;font-size:10px}.basket-num small{display:block;margin-top:2px}
+.basket-row[data-incomplete="true"]{border-color:rgba(255,113,136,.14);background:rgba(255,113,136,.018)}
+.concentration-watch{margin-top:10px;padding:11px;border:1px solid rgba(246,185,79,.22);border-radius:12px;background:rgba(246,185,79,.035);color:#d9c38a;font-size:8px;line-height:1.5}.concentration-watch strong{display:block;color:#ffe09a;font-size:8px;letter-spacing:.09em}
+.route-explanation{margin-top:10px;border:1px solid rgba(106,168,255,.09);border-radius:12px;background:rgba(106,168,255,.012)}.route-explanation summary{padding:11px;color:#c5d6ee;font-size:8px;font-weight:950;cursor:pointer}.route-explanation-row{display:grid;grid-template-columns:minmax(120px,1fr) repeat(5,minmax(70px,.4fr));gap:8px;padding:9px 11px;border-top:1px solid rgba(255,255,255,.04);font-size:7px;color:#7e8998}.route-explanation-row strong{color:#e5e9ef}
+.strategy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:14px}.strategy-card{padding:13px;border:1px solid rgba(243,201,105,.08);border-radius:14px;background:rgba(255,255,255,.012)}.strategy-card.active{border-color:rgba(243,201,105,.25)}.strategy-card h4{margin:0;font-size:12px}.strategy-tags{display:flex;gap:4px;flex-wrap:wrap;min-height:19px;margin:7px 0}.strategy-tags b{padding:4px 6px;border-radius:999px;background:rgba(243,201,105,.07);color:#ffe09a;font-size:6px}.strategy-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px}.strategy-metrics div{padding:7px;border-radius:8px;background:rgba(255,255,255,.015)}.strategy-metrics small,.strategy-metrics strong{display:block}.strategy-metrics small{color:#777368;font-size:6px;text-transform:uppercase}.strategy-metrics strong{margin-top:3px;font-size:9px}
 
 .compare-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
 .compare{padding:13px;border-radius:12px;border:1px solid rgba(89,255,154,.065);background:rgba(89,255,154,.01)}
@@ -206,6 +212,7 @@
   .lens-row{grid-template-columns:1fr}
   .custom-pool{grid-template-columns:1fr 1fr}
   .basket-row{grid-template-columns:1fr 1fr}.basket-row>div:first-child{grid-column:1/-1}
+  .strategy-grid{grid-template-columns:1fr}.route-explanation-row{grid-template-columns:1fr 1fr}
 }
 @media(max-width:700px){
   .chairman-shell-page{width:calc(100% - 24px)}
@@ -253,7 +260,7 @@
   <div class="chairman-hero-copy">
     <div class="chairman-status-line">
       <span class="chairman-live-pill">● BOARDROOM LIVE</span>
-      <span class="chairman-version-pill">ROTATION ENGINE v0.2</span>
+      <span class="chairman-version-pill">ROTATION ENGINE v0.3</span>
     </div>
 
     <span class="chairman-eyebrow">Aurora City FC • Club Control</span>
@@ -388,6 +395,8 @@
     <span class="chairman-panel-kicker">Chairman's Verdict</span>
     <strong id="verdictTitle">SELECT A PLAYER</strong>
     <span id="verdictReason">Choose a Squad holding to open the rotation case.</span>
+    <span id="verdictContext" class="verdict-context">The active route will be explained here.</span>
+    <span id="evidenceSummary" class="evidence-summary">0 PASS • 0 CAUTION • 0 BLOCKED</span>
   </article>
 </section>
 
@@ -408,6 +417,19 @@
   <div class="basket-list" id="basketList">
     <div class="empty-state compact"><strong>No case selected</strong><p>Select a holding above.</p></div>
   </div>
+  <div id="concentrationWatch" class="concentration-watch" hidden></div>
+  <details id="routeExplanation" class="route-explanation">
+    <summary>Why these replacements?</summary>
+    <div id="routeExplanationRows"></div>
+  </details>
+</section>
+
+<section class="chairman-panel strategy-panel" id="strategyComparisonSection">
+  <div class="chairman-panel-head">
+    <div><span class="chairman-panel-kicker">Decision Intelligence</span><h3>Strategy Comparison</h3><p class="chairman-copy">Every available lens for this sale case. The active lens is unchanged.</p></div>
+    <span class="chairman-panel-note">SCENARIO ONLY</span>
+  </div>
+  <div class="strategy-grid" id="strategyComparison"></div>
 </section>
 
 <section class="chairman-panel comparison-panel" id="comparisonSection">
