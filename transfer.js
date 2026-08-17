@@ -221,6 +221,15 @@
 
   function updateRouteAccount(id,value){
     const account=accountCode(value);
+    const state=A().core.read();
+    const allocation=arr(state.transfer?.route?.allocations).find(a=>a.id===id);
+    const target=arr(state.scouting?.targets).find(t=>(allocation?.securityId&&String(t.securityId)===String(allocation.securityId))||ticker(t.ticker)===ticker(allocation?.ticker));
+    const eligible=arr(A().transferEngine?.resolveBrokerRoute?.(state,target)?.eligible);
+    if(account!=='CHECK'&&!eligible.includes(account)){
+      toast(`${accountLabel(account)} is not permitted for ${ticker(allocation?.ticker)} by PlatformRules.`);
+      render();
+      return;
+    }
     A().core.update(s=>{
       const r=s.transfer?.route;
       if(!r||r.locked)return s;
@@ -593,7 +602,10 @@
     set('brokerHold',money(totals.remaining));
     if($('routeProgress'))$('routeProgress').style.width=`${budget>0?Math.min(100,totals.allocated/budget*100):0}%`;
 
-    if(host)host.innerHTML=arr(r.allocations).map(a=>`
+    if(host)host.innerHTML=arr(r.allocations).map(a=>{
+      const target=arr(state.scouting?.targets).find(t=>(a.securityId&&String(t.securityId)===String(a.securityId))||ticker(t.ticker)===ticker(a.ticker));
+      const eligible=arr(A().transferEngine?.resolveBrokerRoute?.(state,target)?.eligible);
+      return `
       <article class="route-row">
         <div class="route-main">
           <strong>${esc(ticker(a.ticker))} — ${esc(a.name||ticker(a.ticker))}</strong>
@@ -605,15 +617,15 @@
             :`<div class="route-edit-stack">
                 <select class="route-account" data-route-account="${esc(a.id)}">
                   <option value="CHECK" ${accountCode(a.account)==='CHECK'?'selected':''}>Choose broker</option>
-                  <option value="IG" ${accountCode(a.account)==='IG'?'selected':''}>IG ISA</option>
-                  <option value="T212" ${accountCode(a.account)==='T212'?'selected':''}>Trading 212 ISA</option>
+                  <option value="IG" ${accountCode(a.account)==='IG'?'selected':''} ${eligible.includes('IG')?'':'disabled'}>IG ISA</option>
+                  <option value="T212" ${accountCode(a.account)==='T212'?'selected':''} ${eligible.includes('T212')?'':'disabled'}>Trading 212 ISA</option>
                 </select>
                 <input class="route-input" data-route-amount="${esc(a.id)}" type="number" min="0" step="${r.increment}" value="${num(a.amount).toFixed(2)}">
               </div><span>${accountCode(a.account)==='CHECK'?'BROKER REQUIRED':'editable route'}</span>`
           }
         </div>
-      </article>
-    `).join('');
+      </article>`;
+    }).join('');
 
     const inheritedStrategy=scoutingStrategy(state);
     const strategyMatches=String(r.strategy||'sustainable')===inheritedStrategy;
