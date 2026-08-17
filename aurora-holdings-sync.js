@@ -1,8 +1,6 @@
 (function(w){
   'use strict';
 
-  const ENDPOINT_KEY='aurora2:data2:endpoint';
-  const TOKEN_KEY='aurora2:data2:token';
   const SYNC_MS=15*60*1000;
 
   let running=false;
@@ -120,31 +118,10 @@
   }
 
   async function post(action,payload={}){
-    if(w.AuroraData2Client?.post){
-      return w.AuroraData2Client.post(action,payload);
+    if(!w.AuroraData2Client?.post){
+      throw new Error('The shared Aurora Data client is not loaded.');
     }
-
-    const endpoint=String(localStorage.getItem(ENDPOINT_KEY)||'').trim();
-    const token=String(localStorage.getItem(TOKEN_KEY)||'').trim();
-    if(!endpoint||!token)throw new Error('AuroraData 2 connection is not configured in this browser.');
-
-    const response=await fetch(endpoint,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({action,token,...payload}),
-      redirect:'follow',
-      cache:'no-store'
-    });
-
-    const text=await response.text();
-    let data;
-    try{data=JSON.parse(text)}
-    catch(_){throw new Error('AuroraData 2 returned a non-JSON response.')}
-
-    if(!response.ok||data?.ok===false){
-      throw new Error(data?.message||data?.error||`Backend HTTP ${response.status}`);
-    }
-    return data;
+    return w.AuroraData2Client.post(action,payload);
   }
 
   function signatures(holdings,portfolio){
@@ -197,7 +174,7 @@
     const syncMeta={
       status:'CONNECTED',
       source:'AURORADATA2_HOLDINGS',
-      spreadsheetId:'1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig',
+      spreadsheetId:'1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA',
       lastSyncAt:stamp,
       engineLastRun:snapshot.engine?.lastRunAt||snapshot.engine?.at||null,
       activePositions:canonicalActive.length,
@@ -213,7 +190,7 @@
             ...s.connection,
             mode:'AuroraData2',
             status:'CONNECTED',
-            spreadsheetId:'1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig'
+            spreadsheetId:'1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA'
           },
           squad:{
             ...s.squad,
@@ -230,7 +207,7 @@
         ...s.connection,
         mode:'AuroraData2',
         status:'CONNECTED',
-        spreadsheetId:'1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig'
+        spreadsheetId:'1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA'
       },
       squad:{
         ...s.squad,
@@ -261,10 +238,9 @@
     }
     bootAttempts=0;
 
-    const endpoint=String(localStorage.getItem(ENDPOINT_KEY)||'').trim();
-    const token=String(localStorage.getItem(TOKEN_KEY)||'').trim();
+    const connection=w.AuroraData2Client?.config?.()||{};
 
-    if(!endpoint||!token){
+    if(!connection.endpoint||!connection.token){
       console.warn('Aurora canonical holdings sync: AuroraData 2 is not configured in this browser.');
       return null;
     }

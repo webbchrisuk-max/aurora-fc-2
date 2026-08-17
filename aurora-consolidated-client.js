@@ -1,10 +1,8 @@
+/* Deprecated name retained for cached pages; all routing lives in aurora-data2-client.js. */
 (function(w){
   'use strict';
-  const SPREADSHEET_ID='1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA';
-  const STORAGE_KEY='aurora:data2:registration-connection:v2';
-  function config(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');return {endpoint:String(saved.endpoint||'').trim().replace(/\/dev(?:[?#].*)?$/i,'/exec'),token:String(saved.token||'').trim()}}catch(_){return {endpoint:'',token:''}}}
-  function connected(){const value=config();if(!value.endpoint||!value.token)throw new Error('Connect AuroraData 2 in Registration Desk before editing broker rules.');return value}
-  function get(action,payload={}){const connection=connected();return new Promise((resolve,reject)=>{const callback='auroraPlatformRules'+Date.now()+Math.random().toString(36).slice(2),script=document.createElement('script');let complete=false;const timer=setTimeout(()=>finish(new Error('AuroraData 2 response timed out.')),25000);function finish(error,result){if(complete)return;complete=true;clearTimeout(timer);try{delete w[callback]}catch(_){w[callback]=undefined}script.remove();error?reject(error):resolve(result||{})}w[callback]=result=>result?.ok===false?finish(new Error(result.message||'AuroraData 2 request failed.')):finish(null,result);const url=new URL(connection.endpoint);Object.entries({action,token:connection.token,...payload,callback,_:Date.now()}).forEach(([key,value])=>url.searchParams.set(key,String(value)));script.src=url.toString();script.async=true;script.referrerPolicy='no-referrer';script.onerror=()=>finish(new Error('AuroraData 2 connection could not be opened.'));document.head.appendChild(script)})}
-  async function post(action,payload={}){const connection=connected(),body=new URLSearchParams();body.set('token',connection.token);body.set('payload',JSON.stringify({action,...payload}));const response=await fetch(connection.endpoint,{method:'POST',body,redirect:'follow'}),text=await response.text();let result;try{result=JSON.parse(text)}catch(_){throw new Error('AuroraData 2 returned an unreadable response.')}if(!response.ok||result?.ok===false)throw new Error(result?.message||`AuroraData 2 returned ${response.status}.`);return result}
-  w.AuroraConsolidatedClient={spreadsheetId:SPREADSHEET_ID,config,get,post};
+  if(!w.AuroraData2Client){
+    throw new Error('Load aurora-data2-client.js before the consolidated-client compatibility alias.');
+  }
+  w.AuroraConsolidatedClient=w.AuroraData2Client;
 })(window);
