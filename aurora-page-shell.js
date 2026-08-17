@@ -117,14 +117,16 @@ window.AuroraShell={
   auroraLoadShared('aurora-sync-manager.js?v=101-nexus-recovery','sync-manager');
   auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
 
-  /* Nexus needs its compact top bar normalised before the shared notification
-     centre builds. The recovery module also protects against an accidental
-     blank local foundation state and forces a canonical holdings refresh. */
   if(auroraPageFile==='auroracityfc_nexusv2.html'){
     auroraLoadShared('nexus-v2-runtime-recovery.js?v=20260817-recovery-1','nexus-v2-runtime-recovery');
   }
 
   auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
+
+  if(auroraPageFile==='auroracityfc_nexusv2.html'){
+    auroraLoadShared('nexus-v2-notification-dock.js?v=20260817-bell-1','nexus-v2-notification-dock');
+  }
+
   auroraLoadShared('aurora-nexus-hero-titles.js?v=20260817-nexus-title-2','nexus-hero-titles');
 
   if(auroraPageFile==='transfer.html'||auroraPageFile==='scouting.html'){
@@ -156,8 +158,6 @@ window.AuroraShell={
       else scroll.append(row);
     }
 
-    /* Nexus V2 is the development launch board. Add the new room without
-       rewriting the large Nexus document every time a department is created. */
     if(auroraPageFile==='auroracityfc_nexusv2.html'){
       const launch=document.querySelector('.departments');
       if(launch&&!launch.querySelector('a[href="match-report.html"]')){
