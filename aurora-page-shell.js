@@ -105,17 +105,28 @@ window.AuroraShell={
     if(document.querySelector(`script[data-aurora-shared="${key}"]`))return;
     const script=document.createElement('script');
     script.src=src;
+    script.async=false;
     script.dataset.auroraShared=key;
     document.head.appendChild(script);
   }
-  auroraLoadShared('aurora-release.js?v=100-stable-core','release');
-  auroraLoadShared('aurora-platform.js?v=100-stable-core','platform');
-  auroraLoadShared('aurora-sync-manager.js?v=100-stable-core','sync-manager');
-  auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
-  auroraLoadShared('aurora-notifications.js?v=110-premium-centre','notifications');
-  auroraLoadShared('aurora-nexus-hero-titles.js?v=20260817-nexus-title-2','nexus-hero-titles');
 
   const auroraPageFile=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
+
+  auroraLoadShared('aurora-release.js?v=100-stable-core','release');
+  auroraLoadShared('aurora-platform.js?v=100-stable-core','platform');
+  auroraLoadShared('aurora-sync-manager.js?v=101-nexus-recovery','sync-manager');
+  auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
+
+  /* Nexus needs its compact top bar normalised before the shared notification
+     centre builds. The recovery module also protects against an accidental
+     blank local foundation state and forces a canonical holdings refresh. */
+  if(auroraPageFile==='auroracityfc_nexusv2.html'){
+    auroraLoadShared('nexus-v2-runtime-recovery.js?v=20260817-recovery-1','nexus-v2-runtime-recovery');
+  }
+
+  auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
+  auroraLoadShared('aurora-nexus-hero-titles.js?v=20260817-nexus-title-2','nexus-hero-titles');
+
   if(auroraPageFile==='transfer.html'||auroraPageFile==='scouting.html'){
     auroraLoadShared('aurora-transfer-strategy.js?v=20260817-transfer-owner-1','transfer-strategy-owner');
   }
