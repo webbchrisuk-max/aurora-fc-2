@@ -19,10 +19,10 @@ No Apps Script server source (`.gs`) exists in this repository, so this change n
 
 | File | Backend connection method | Baseline | Exact reference/action found | Change required / disposition |
 |---|---|---:|---|---|
-| `AuroraCityFC_NexusV2.html` | Shared `aurora-data2-client.js`; dashboard calls originate in `nexus-hq-v4.js` | OLD | Old shared client/config and retired spreadsheet indirectly | **Yes, shared fix only.** HTML remains unchanged. |
-| `index.html` | Shared `aurora-data2-client.js`; dashboard action indirectly | OLD | Old shared client/config and retired spreadsheet indirectly | **Yes, shared fix only.** HTML remains unchanged. |
-| `income.html` | Shared `aurora-data2-client.js` | OLD | Income actions listed below went through old client/storage | **Yes, shared fix only.** HTML remains unchanged. |
-| `system-health.html` | Shared `aurora-data2-client.js` | OLD | `health()` went through old client/storage | **Yes, shared fix only.** HTML remains unchanged. |
+| `AuroraCityFC_NexusV2.html` | Shared `aurora-data2-client.js`; dashboard calls originate in `nexus-hq-v4.js` | OLD | Old shared client/config and retired spreadsheet indirectly | **Yes, shared fix plus include cache-bust.** No page logic changed. |
+| `index.html` | Shared `aurora-data2-client.js`; dashboard action indirectly | OLD | Old shared client/config and retired spreadsheet indirectly | **Yes, shared fix plus include cache-bust.** No page logic changed. |
+| `income.html` | Shared `aurora-data2-client.js` | OLD | Income actions listed below went through old client/storage | **Yes, shared fix plus include cache-bust.** No page logic changed. |
+| `system-health.html` | Shared `aurora-data2-client.js` | OLD | `health()` went through old client/storage | **Yes, shared fix plus include cache-bust.** No page logic changed. |
 | `registration.html` | Former inline Registration Desk 2.1 client/router; now shared client | CURRENT | Inline `test`, `listRecentRegistrations`, `registerPurchase`, generic POST; `/exec` settings placeholder; correct Consolidated ID | **Yes.** Removed duplicate inline implementation and loaded shared client. Settings UI remains intentionally browser-local. |
 | `transfer.html` | Former `aurora-consolidated-client.js`; now shared client | CURRENT | `getPlatformRules`, `updatePlatformRule`; separate client implementation | **Yes.** Repointed one script include; no UI/allocation edits. |
 | `club-control.html` | No backend client | NO BACKEND | None | No. |
@@ -94,7 +94,7 @@ These files were individually inspected and contain no Apps Script/Aurora backen
 
 ## Test JavaScript audit
 
-All 13 files under `tests/` were inspected. They use Node VM/localStorage fakes and exercise local business/UI logic; none connects to an Apps Script backend: `chairman-decision-intelligence.test.js`, `core-normalization.test.js`, `finance-commitments.test.js`, `global-scouting-engine.test.js`, `motion-layout-safety.test.js`, `new-holding-executable-resolution.test.js`, `responsive-layout.test.js`, `scouting-league-presentation.test.js`, `scouting-universe.test.js`, `transfer-mission-reset.test.js`, `transfer-mission.test.js`, `transfer-portfolio-preview.test.js`, and `transfer-route-build.test.js`.
+All 14 files under `tests/` were inspected. They use Node VM/localStorage fakes and exercise local business/UI logic; none connects to an Apps Script backend. The architecture test (`backend-connection-architecture.test.js`) recursively enforces the repository-wide connection rules; the remaining files are `chairman-decision-intelligence.test.js`, `core-normalization.test.js`, `finance-commitments.test.js`, `global-scouting-engine.test.js`, `motion-layout-safety.test.js`, `new-holding-executable-resolution.test.js`, `responsive-layout.test.js`, `scouting-league-presentation.test.js`, `scouting-universe.test.js`, `transfer-mission-reset.test.js`, `transfer-mission.test.js`, `transfer-portfolio-preview.test.js`, and `transfer-route-build.test.js`.
 
 ## Consolidated router contract
 
