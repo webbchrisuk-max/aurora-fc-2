@@ -4,6 +4,8 @@
  */
 (function(w){
   'use strict';
+  if(w.__AURORA_TRANSFER_STRATEGY_V1__)return;
+  w.__AURORA_TRANSFER_STRATEGY_V1__=true;
 
   const A=()=>w.Aurora2;
   const now=()=>new Date().toISOString();
