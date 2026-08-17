@@ -114,6 +114,11 @@ window.AuroraShell={
   auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
   auroraLoadShared('aurora-notifications.js?v=110-premium-centre','notifications');
 
+  const auroraPageFile=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
+  if(auroraPageFile==='transfer.html'||auroraPageFile==='scouting.html'){
+    auroraLoadShared('aurora-transfer-strategy.js?v=20260817-transfer-owner-1','transfer-strategy-owner');
+  }
+
   function ensureSystemHealthNavigation(){
     const scroll=document.querySelector('.aurora-shell-nav-scroll');
     if(scroll&&!scroll.querySelector('a[href="system-health.html"]')){
