@@ -142,7 +142,7 @@ window.AuroraShell={
     auroraLoadShared('nexus-v2-manager-polish.js?v=20260817-manager-1','nexus-v2-manager-polish');
     auroraLoadShared('nexus-v2-form-truth.js?v=20260817-form-truth-1','nexus-v2-form-truth');
     auroraLoadShared('nexus-v2-dividend-runway.js?v=20260817-runway-1','nexus-v2-dividend-runway');
-    auroraLoadShared('nexus-v2-truth-polish.js?v=20260817-truth-polish-1','nexus-v2-truth-polish');
+    auroraLoadShared('nexus-v2-truth-polish.js?v=20260817-truth-polish-2','nexus-v2-truth-polish');
   }
 
   function ensureMatchReportNavigation(){
