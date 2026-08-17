@@ -123,7 +123,8 @@ window.AuroraShell={
   }
 
   if(auroraPageFile==='match-report.html'){
-    auroraLoadShared('match-report-page-fix.js?v=20260818-fullpage-1','match-report-page-fix');
+    auroraLoadShared('match-report-page-fix.js?v=20260818-fullpage-2','match-report-page-fix');
+    auroraLoadShared('match-report-hydration.js?v=20260818-hydration-1','match-report-hydration');
   }
 
   auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
