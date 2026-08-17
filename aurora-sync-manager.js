@@ -96,15 +96,8 @@ function loadScript(src,key){
 }
 
 async function backendHealth(){
-  if(w.AuroraData2Client?.health)return w.AuroraData2Client.health();
-  const endpoint=String(localStorage.getItem('aurora2:data2:endpoint')||'').trim();
-  const token=String(localStorage.getItem('aurora2:data2:token')||'').trim();
-  if(!endpoint||!token)throw new Error('AuroraData 2 connection is not configured.');
-  const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'health',token}),redirect:'follow',cache:'no-store'});
-  const text=await response.text();
-  let data;try{data=JSON.parse(text)}catch(_){throw new Error('AuroraData 2 returned a non-JSON health response.')}
-  if(!response.ok||data?.ok===false)throw new Error(data?.message||data?.error||`Backend HTTP ${response.status}`);
-  return data;
+  if(!w.AuroraData2Client?.health)throw new Error('The shared Aurora Data client is not loaded.');
+  return w.AuroraData2Client.health();
 }
 
 async function bootstrap(){

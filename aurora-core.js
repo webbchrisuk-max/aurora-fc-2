@@ -93,7 +93,7 @@
     registration:{
       version:1,
       backend:{
-        spreadsheetId:'1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig',
+        spreadsheetId:'1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA',
         status:'NOT_CONNECTED',
         lastHealthAt:null,
         lastError:null
@@ -567,7 +567,7 @@
       registration:{
         ...d.registration,
         ...object(r.registration),
-        backend:{...d.registration.backend,...object(r.registration?.backend),spreadsheetId:'1kEyuEuHxSt69o8Wy198n9gLBXbx-sGCrxwcHJo9r6Ig'},
+        backend:{...d.registration.backend,...object(r.registration?.backend),spreadsheetId:'1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA'},
         receipts:Array.isArray(r.registration?.receipts)?r.registration.receipts.map(normalizeRegistrationReceipt):[]
       },
       squad:{
