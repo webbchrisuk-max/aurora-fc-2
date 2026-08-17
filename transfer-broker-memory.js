@@ -37,7 +37,7 @@
   }
   if(!document.querySelector('script[data-aurora-shared="transfer-strategy-guard"]')){
     const script=document.createElement('script');
-    script.src='aurora-transfer-strategy-guard.js?v=20260817-strategy-guard-1';
+    script.src='aurora-transfer-strategy-guard.js?v=20260817-strategy-guard-2';
     script.dataset.auroraShared='transfer-strategy-guard';
     document.head.appendChild(script);
   }
