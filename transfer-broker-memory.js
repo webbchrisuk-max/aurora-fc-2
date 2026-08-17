@@ -31,8 +31,14 @@
 
   if(!document.querySelector('script[data-aurora-shared="transfer-strategy-owner"]')){
     const script=document.createElement('script');
-    script.src='aurora-transfer-strategy.js?v=20260817-transfer-owner-2';
+    script.src='aurora-transfer-strategy.js?v=20260817-transfer-owner-3';
     script.dataset.auroraShared='transfer-strategy-owner';
+    document.head.appendChild(script);
+  }
+  if(!document.querySelector('script[data-aurora-shared="transfer-strategy-guard"]')){
+    const script=document.createElement('script');
+    script.src='aurora-transfer-strategy-guard.js?v=20260817-strategy-guard-1';
+    script.dataset.auroraShared='transfer-strategy-guard';
     document.head.appendChild(script);
   }
   if(!document.querySelector('script[data-aurora-shared="transfer-window-layout"]')){
