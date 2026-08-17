@@ -48,7 +48,6 @@
     let value='';
     try{value=new URLSearchParams(location.search).get('return')||''}catch(_){}
     if(!value)return '';
-    // Internal Aurora HTML only — never follow an external URL from this parameter.
     if(!/^[A-Za-z0-9._-]+\.html(?:[?#].*)?$/.test(value))return '';
     if(/^index\.html(?:[?#].*)?$/i.test(value))return '';
     return value;
@@ -153,7 +152,6 @@
   function logout(){
     setSession(false);
     closeNav();
-    // A logout starts a fresh Aurora session, so the boot/login sequence is valid again.
     location.replace('index.html?logout=1');
   }
 
@@ -235,6 +233,30 @@
   auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
   auroraLoadShared('aurora-notifications.js?v=110-premium-centre','notifications');
 
+  function ensureMatchReportNavigation(){
+    const scroll=document.querySelector('.aurora-shell-nav-scroll');
+    if(scroll&&!scroll.querySelector('a[href="match-report.html"]')){
+      const row=document.createElement('a');
+      row.className='aurora-shell-department-row';
+      row.href='match-report.html';
+      row.dataset.name='Match Report';
+      row.innerHTML='<div class="aurora-shell-nav-icon">📋</div><div class="aurora-shell-nav-copy"><strong>Match Report</strong><span>5pm full-time portfolio report</span></div><div class="aurora-shell-nav-arrow">›</div>';
+
+      const clubSection=[...scroll.querySelectorAll('.aurora-shell-nav-section')].find(x=>String(x.textContent||'').trim().toLowerCase()==='club');
+      if(clubSection)scroll.insertBefore(row,clubSection);
+      else scroll.appendChild(row);
+    }
+
+    const grid=document.querySelector('.hq4-department-grid');
+    if(grid&&!grid.querySelector('a[href="match-report.html"]')){
+      const card=document.createElement('a');
+      card.className='match-report';
+      card.href='match-report.html';
+      card.innerHTML='<i>📋</i><div><small>MATCH REPORT</small><strong>5PM Full-Time Report</strong><span>Daily portfolio result, awards and manager team talk</span></div><b>›</b>';
+      grid.appendChild(card);
+    }
+  }
+
   function ensureSystemHealthNavigation(){
     const scroll=document.querySelector('.aurora-shell-nav-scroll');
     if(scroll&&!scroll.querySelector('a[href="system-health.html"]')){
@@ -261,6 +283,7 @@
       context.insertBefore(link,live||null);
     }
   }
+  ensureMatchReportNavigation();
   ensureSystemHealthNavigation();
 }
 })();
