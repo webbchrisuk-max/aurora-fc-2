@@ -477,3 +477,13 @@ test('a Both PlatformRules target may route to its sensible preferred broker',()
   assert.equal(resolved.account,'IG');
   assert.deepEqual(new Set(resolved.eligible),new Set(['IG','T212']));
 });
+
+test('inactive PlatformRules rows cannot override active routing evidence',()=>{
+  const engine=loadEngine();
+  const target={securityId:'LSE:TRIG',exchange:'LSE',ticker:'TRIG',brokerEligibility:['IG ISA'],status:'pass'};
+  const state={scouting:{targets:[target]},transfer:{platformRules:[{ticker:'TRIG',preferred_account:'Trade 212',allowed_accounts:'Trade 212',active:false}]},squad:{holdings:[]}};
+  const resolved=engine.resolveBrokerRoute(state,target);
+  assert.equal(resolved.account,'IG');
+  assert.deepEqual(Array.from(resolved.eligible),['IG']);
+  assert.equal(resolved.source,'EXPLICIT_SECURITY_ELIGIBILITY');
+});
