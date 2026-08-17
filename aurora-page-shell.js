@@ -119,6 +119,7 @@ window.AuroraShell={
 
   if(auroraPageFile==='auroracityfc_nexusv2.html'){
     auroraLoadShared('nexus-v2-runtime-recovery.js?v=20260817-recovery-1','nexus-v2-runtime-recovery');
+    auroraLoadShared('nexus-v2-command-hydration.js?v=20260818-hydration-1','nexus-v2-command-hydration');
   }
 
   auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
