@@ -1,14 +1,19 @@
-/* Aurora City FC — Transfer-owned Income Strategy v1.1
+/* Aurora City FC — Transfer-owned Income Strategy v1.2
  * Sustainable / Maximum is a Transfer deployment choice.
- * Scouting continues to calculate both score sets and owns eligibility/approval.
+ * Scouting calculates both score sets and owns eligibility/approval.
+ * Strategy selection + route rebuild is committed as one Aurora state write so
+ * cloud sync can never observe a temporary "strategy changed, route missing" state.
  */
 (function(w){
   'use strict';
-  if(w.__AURORA_TRANSFER_STRATEGY_V11__)return;
-  w.__AURORA_TRANSFER_STRATEGY_V11__=true;
+  if(w.__AURORA_TRANSFER_STRATEGY_V12__)return;
+  w.__AURORA_TRANSFER_STRATEGY_V12__=true;
 
   const A=()=>w.Aurora2;
   const now=()=>new Date().toISOString();
+  const arr=v=>Array.isArray(v)?v:[];
+  const num=v=>{const n=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0};
+  const cleanTicker=v=>String(v||'').replace(/^LON:/i,'').replace(/\.L$/i,'').replace(/\.GB$/i,'').toUpperCase().trim();
   const valid=v=>String(v||'').toLowerCase()==='maximum'?'maximum':'sustainable';
   const label=v=>valid(v)==='maximum'?'Maximum Income':'Sustainable Income';
   const file=()=>String(location.pathname||'').split('/').pop().toLowerCase();
@@ -21,7 +26,7 @@
       const ids=w.AuroraTransferMission?.registeredLegIds?.(state);
       if(ids&&typeof ids.size==='number')return ids.size;
     }catch(_){}
-    return (Array.isArray(state?.transfer?.registrationDrafts)?state.transfer.registrationDrafts:[])
+    return arr(state?.transfer?.registrationDrafts)
       .filter(row=>String(row?.status||'').toUpperCase()==='CONFIRMED').length;
   }
 
@@ -46,9 +51,7 @@
     const initial=alreadyOwned
       ? ownedStrategy(state)
       : valid(state?.scouting?.strategy || state?.transfer?.settings?.strategy || 'sustainable');
-    const needsWrite=!alreadyOwned ||
-      valid(state?.transfer?.settings?.strategy)!==initial ||
-      valid(state?.scouting?.strategy)!==initial;
+    const needsWrite=!alreadyOwned || valid(state?.transfer?.settings?.strategy)!==initial || valid(state?.scouting?.strategy)!==initial;
     if(!needsWrite)return state;
     return core.update(s=>({
       ...s,
@@ -113,7 +116,6 @@
       const active=button.dataset.transferStrategy===strategy;
       button.classList.toggle('active',active);
       button.setAttribute('aria-checked',String(active));
-      // An approved route is still switchable until a real purchase has been registered.
       button.disabled=hardLocked;
     });
 
@@ -123,8 +125,10 @@
       status.textContent=hardLocked
         ?`${label(strategy)} is fixed because broker execution has already started.`
         :routeLocked
-          ?`${label(strategy)} is approved. Choosing the other strategy will unlock and rebuild the recommendation before any purchase is registered.`
-          :`${label(strategy)} controls target ranking and payday allocation in Transfer.`;
+          ?`${label(strategy)} is approved. Choosing the other strategy will rebuild the recommendation before any purchase is registered.`
+          :state.transfer?.route
+            ?`${label(strategy)} recommendation is live below.`
+            :`${label(strategy)} controls target ranking and payday allocation in Transfer.`;
     }
 
     const panel=card?.closest('.strategy-panel');
@@ -185,6 +189,32 @@
     }
   }
 
+  function decorateAllocation(state,a){
+    const targets=arr(state?.scouting?.targets);
+    const target=targets.find(t=>String(t.securityId||'')&&String(t.securityId)===String(a.securityId||'')) ||
+      targets.find(t=>String(t.id||'')===String(a.targetId||'')) ||
+      targets.find(t=>cleanTicker(t.ticker)===cleanTicker(a.ticker));
+    const evidence=A()?.transferEngine?.resolveMarketPrice?.(state,target||a)||a?.priceEvidence||{};
+    const estimatedPrice=Math.max(0,num(evidence?.priceGbp||a?.priceEvidence?.priceGbp));
+    return {
+      ...a,
+      estimatedPriceGbp:estimatedPrice,
+      estimatedShares:estimatedPrice>0?Math.floor(num(a.amount)/estimatedPrice):null,
+      quoteUpdatedAt:evidence?.timestamp||a?.priceEvidence?.timestamp||null
+    };
+  }
+
+  function buildForStrategy(state,nextStrategy){
+    const engine=A()?.transferEngine;
+    if(!engine?.buildMissionPlan)return {ok:false,reason:'TRANSFER_ENGINE_UNAVAILABLE'};
+    return engine.buildMissionPlan(state,{
+      missionContract:w.AuroraTransferMission,
+      now:now(),
+      idFactory:p=>A().core.uid(p),
+      decorateAllocation:a=>decorateAllocation(state,a)
+    });
+  }
+
   function selectStrategy(nextStrategy){
     if(changing)return;
     const core=A()?.core;
@@ -203,7 +233,7 @@
     if(previous===nextStrategy){renderTransfer(before);return;}
 
     changing=true;
-    let shouldRebuild=false;
+    let buildResult=null;
     let after;
     try{
       after=core.update(current=>{
@@ -214,21 +244,34 @@
           working=w.AuroraTransferMission.rollback(working,'UNLOCK_ROUTE','Change Transfer income strategy',now());
         }
 
-        shouldRebuild=!!working.transfer?.route ||
-          (String(working.scouting?.status||'').toUpperCase()==='SCOUTING_READY'&&Number(working.mission?.approvedBudget)>0);
-
-        return {
+        working={
           ...working,
-          // Compatibility mirror: older route/scouting renderers still read this field.
           scouting:{...working.scouting,strategy:nextStrategy,updatedAt:working.scouting?.updatedAt||now()},
           transfer:{
             ...working.transfer,
             strategyOwner:'TRANSFER',
             settings:{...working.transfer?.settings,strategy:nextStrategy},
-            // A strategy change invalidates the previous recommendation; it will be rebuilt below.
-            route:working.transfer?.route?null:working.transfer?.route,
             updatedAt:now()
           }
+        };
+
+        const ready=String(working.scouting?.status||'').toUpperCase()==='SCOUTING_READY';
+        const budget=Number(working.mission?.approvedBudget)||0;
+        const missionStatus=String(working.mission?.status||'').toUpperCase();
+        if(ready&&budget>0&&['DRAFT','READY'].includes(missionStatus)){
+          buildResult=buildForStrategy(working,nextStrategy);
+          if(buildResult?.ok){
+            return {
+              ...working,
+              mission:buildResult.mission,
+              transfer:{...working.transfer,route:buildResult.route,updatedAt:now()}
+            };
+          }
+        }
+
+        return {
+          ...working,
+          transfer:{...working.transfer,route:null,updatedAt:now()}
         };
       });
     }catch(error){
@@ -239,22 +282,25 @@
       return;
     }
 
-    renderTransfer(after);
     changing=false;
+    renderTransfer(after);
+    renderScouting(after);
 
-    if(shouldRebuild){
-      setTimeout(()=>{
-        const state=core.read();
-        const ready=String(state.scouting?.status||'').toUpperCase()==='SCOUTING_READY';
-        const budget=Number(state.mission?.approvedBudget)||0;
-        if(ready&&budget>0)document.getElementById('autoBuildRoute')?.click();
-      },90);
+    const status=document.getElementById('transferStrategyStatus');
+    if(status&&!after.transfer?.route){
+      status.className='transfer-strategy-status warn';
+      const reasons={
+        NO_FINANCE_MISSION:'Finance has not released a Transfer budget yet.',
+        MISSION_NOT_PLANNABLE:'The current Finance mission cannot be replanned.',
+        SCOUTING_NOT_READY:'Approve the Scouting shortlist before building a recommendation.',
+        NO_ELIGIBLE_TARGETS:'No eligible targets match the current broker rules.',
+        TRANSFER_ENGINE_UNAVAILABLE:'The Transfer recommendation engine is unavailable.'
+      };
+      status.textContent=reasons[buildResult?.reason]||`${label(nextStrategy)} selected. Build the route when Finance and Scouting are ready.`;
     }
   }
 
   function wire(){
-    // Pointer/touch and click are handled through delegation so the iPad can tap
-    // either the button text or its surrounding strategy card reliably.
     document.addEventListener('click',event=>{
       const choice=event.target.closest?.('[data-transfer-strategy]');
       if(choice){
