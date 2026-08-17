@@ -2,6 +2,7 @@
  * Keeps the development Nexus aligned with the shared Aurora page language.
  * - menu/navigation trigger sits on the left
  * - Starting XI always renders canonical active holdings, even while market data is pending
+ * - isolates the tactical pitch from the shared login-screen .pitch class
  */
 (function(w){
   'use strict';
@@ -16,25 +17,57 @@
   const esc=v=>w.Aurora2?.ui?.escape?.(v)||String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=v=>w.Aurora2?.ui?.money?.(v)||new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(num(v));
 
-  function installHeaderPolish(){
+  function installPagePolish(){
     const header=document.querySelector('.n2-header');
     const brand=header?.querySelector('.brand');
     const menu=header?.querySelector('#auroraShellMenuButton');
-    if(!header||!brand||!menu||header.querySelector('.n2-header-left'))return;
+    if(header&&brand&&menu&&!header.querySelector('.n2-header-left')){
+      const left=document.createElement('div');
+      left.className='n2-header-left';
+      header.insertBefore(left,brand);
+      left.append(menu,brand);
+    }
 
-    const left=document.createElement('div');
-    left.className='n2-header-left';
-    header.insertBefore(left,brand);
-    left.append(menu,brand);
-
+    if(document.getElementById('nexusV2PagePolish'))return;
     const style=document.createElement('style');
-    style.id='nexusV2HeaderPolish';
+    style.id='nexusV2PagePolish';
     style.textContent=`
       .n2-header-left{display:flex;align-items:center;gap:12px;min-width:0}
       .n2-header-left .menu{order:0;flex:0 0 auto}
       .n2-header-left .brand{order:1;min-width:0}
       .n2-header{justify-content:space-between!important}
-      @media(max-width:680px){.n2-header-left{gap:8px}.n2-header-left .brand strong{font-size:12px}}
+
+      /* aurora-shell.css also owns a login-screen class called .pitch.
+         Nexus V2 uses .pitch for the Starting XI board, so reset every shell-only
+         positioning property here to keep the football board in normal flow. */
+      .pitch-panel .pitch{
+        position:relative!important;
+        inset:auto!important;
+        z-index:0!important;
+        width:auto!important;
+        height:auto!important;
+        min-height:600px!important;
+        opacity:1!important;
+        transform:none!important;
+        transform-origin:initial!important;
+        pointer-events:auto!important;
+        overflow:hidden!important;
+      }
+      .pitch-panel .pitch:before{
+        z-index:0!important;
+        transform:none!important;
+      }
+      .pitch-panel .players{
+        z-index:2!important;
+        opacity:1!important;
+        transform:none!important;
+        pointer-events:auto!important;
+      }
+      @media(max-width:680px){
+        .n2-header-left{gap:8px}
+        .n2-header-left .brand strong{font-size:12px}
+        .pitch-panel .pitch{min-height:510px!important}
+      }
     `;
     document.head.appendChild(style);
   }
@@ -93,15 +126,15 @@
   }
 
   function init(){
-    installHeaderPolish();
+    installPagePolish();
     renderStartingXI();
     document.addEventListener('click',e=>{
       if(!e.target.closest('[data-lens]'))return;
       setTimeout(renderStartingXI,0);
     });
     w.addEventListener('aurora2:state',()=>setTimeout(renderStartingXI,0));
-    setTimeout(renderStartingXI,300);
-    setTimeout(renderStartingXI,1200);
+    setTimeout(()=>{installPagePolish();renderStartingXI()},300);
+    setTimeout(()=>{installPagePolish();renderStartingXI()},1200);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
