@@ -178,7 +178,8 @@
       .filter(row=>sameSecurity(target,row,state)).map(row=>identity(row).account).filter(a=>a!=='CHECK');
     const remembered=brokerPreference(state,target);
     const preferred=accountCode(target?.preferredAccount);
-    const platformRule=arr(state?.transfer?.platformRules).find(row=>sameSecurity(target,row,state));
+    const platformRule=arr(state?.transfer?.platformRules).find(row=>
+      String(row?.active??'true').toLowerCase()!=='false'&&sameSecurity(target,row,state));
     const platformAccounts=eligibilityAccounts(platformRule?.allowed_accounts||platformRule?.allowedAccounts);
     const platformPreferred=accountCode(platformRule?.preferred_account||platformRule?.preferredAccount);
     const ownedAccounts=resolveExistingExposure(state,target).accounts;
