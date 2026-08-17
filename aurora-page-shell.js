@@ -141,6 +141,7 @@ window.AuroraShell={
     auroraLoadShared('nexus-v2-pitch-centre-fix.js?v=20260817-centre-2','nexus-v2-pitch-centre-fix');
     auroraLoadShared('nexus-v2-manager-polish.js?v=20260817-manager-1','nexus-v2-manager-polish');
     auroraLoadShared('nexus-v2-form-truth.js?v=20260817-form-truth-1','nexus-v2-form-truth');
+    auroraLoadShared('nexus-v2-dividend-runway.js?v=20260817-runway-1','nexus-v2-dividend-runway');
   }
 
   function ensureMatchReportNavigation(){
