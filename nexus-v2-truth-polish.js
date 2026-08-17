@@ -1,8 +1,9 @@
-/* Aurora City FC — Nexus V2 truth polish v1.1
+/* Aurora City FC — Nexus V2 truth polish v1.2
  * Presentation guards for the live Nexus command view:
  * 1) Dividend fixtures never present an unverified zero as a real payment amount.
  * 2) Confirmed/scheduled dividends with no sourced amount say "Amount awaiting source".
  * 3) A whole-squad 0.00% Daily Form feed stays labelled as awaiting genuine market movement.
+ * 4) Portfolio Command cards are green in profit and red in loss.
  */
 (function(w){
 'use strict';
@@ -129,16 +130,50 @@ function patchFormTruth(){
   setTimeout(()=>{formPatching=false},0);
 }
 
+/* ---------- Portfolio Command profit / loss colours ---------- */
+function installBrokerStyle(){
+  if(document.getElementById('n2BrokerProfitLossStyle'))return;
+  const style=document.createElement('style');
+  style.id='n2BrokerProfitLossStyle';
+  style.textContent=`
+    #n2uBrokerGrid .n2u-broker{transition:background .22s ease,border-color .22s ease,box-shadow .22s ease}
+    #n2uBrokerGrid .n2u-broker.n2-broker-profit{
+      background:linear-gradient(145deg,rgba(10,76,52,.78),rgba(5,39,31,.90))!important;
+      border-color:rgba(55,227,154,.62)!important;
+      box-shadow:inset 0 0 36px rgba(55,227,154,.09),0 10px 28px rgba(0,0,0,.20)!important;
+    }
+    #n2uBrokerGrid .n2u-broker.n2-broker-loss{
+      background:linear-gradient(145deg,rgba(91,24,39,.82),rgba(48,12,24,.92))!important;
+      border-color:rgba(255,101,122,.62)!important;
+      box-shadow:inset 0 0 36px rgba(255,101,122,.09),0 10px 28px rgba(0,0,0,.20)!important;
+    }
+    #n2uBrokerGrid .n2u-broker.n2-broker-profit .n2u-broker-bar i{background:linear-gradient(90deg,#16a56e,#55efaa)!important}
+    #n2uBrokerGrid .n2u-broker.n2-broker-loss .n2u-broker-bar i{background:linear-gradient(90deg,#b83150,#ff657a)!important}
+  `;
+  document.head.appendChild(style);
+}
+function patchBrokerColours(){
+  installBrokerStyle();
+  document.querySelectorAll('#n2uBrokerGrid .n2u-broker').forEach(card=>{
+    const pnlRow=[...card.querySelectorAll('.n2u-broker-meta span')].find(x=>/^P\/L\b/i.test(String(x.textContent||'').trim()));
+    const amount=raw(pnlRow?.querySelector('b')?.textContent);
+    card.classList.remove('n2-broker-profit','n2-broker-loss','n2-broker-flat');
+    if(amount===null||Math.abs(amount)<.005){card.classList.add('n2-broker-flat');return;}
+    card.classList.add(amount>0?'n2-broker-profit':'n2-broker-loss');
+  });
+}
+
 function bind(){
   document.addEventListener('click',e=>{
     if(e.target.closest('#n2uRunway .n2u-month'))setTimeout(patchOpenRunway,0);
   });
-  w.addEventListener('aurora2:state',()=>setTimeout(()=>{patchFormTruth();patchOpenRunway()},60));
+  w.addEventListener('aurora2:state',()=>setTimeout(()=>{patchFormTruth();patchOpenRunway();patchBrokerColours()},60));
 
-  let attempts=0,formObserver=null,dialogObserver=null;
+  let attempts=0,formObserver=null,dialogObserver=null,brokerObserver=null;
   const timer=setInterval(()=>{
     attempts++;
     patchFormTruth();
+    patchBrokerColours();
     const form=document.getElementById('n2uFormTable');
     if(form&&!formObserver){
       formObserver=new MutationObserver(()=>setTimeout(patchFormTruth,0));
@@ -148,6 +183,11 @@ function bind(){
     if(list&&!dialogObserver){
       dialogObserver=new MutationObserver(()=>setTimeout(patchOpenRunway,0));
       dialogObserver.observe(list,{childList:true,subtree:true});
+    }
+    const brokers=document.getElementById('n2uBrokerGrid');
+    if(brokers&&!brokerObserver){
+      brokerObserver=new MutationObserver(()=>setTimeout(patchBrokerColours,0));
+      brokerObserver.observe(brokers,{childList:true,subtree:true,characterData:true});
     }
     if(attempts>80)clearInterval(timer);
   },125);
