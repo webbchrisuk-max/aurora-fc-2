@@ -28,4 +28,11 @@
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('brokerRuleSheet')?.hidden)close()});
   document.addEventListener('DOMContentLoaded',loadRules);
   w.Aurora2=w.Aurora2||{};w.Aurora2.transferBrokerRules={loadRules,currentRule,open};
+
+  if(!document.querySelector('script[data-aurora-shared="transfer-strategy-owner"]')){
+    const script=document.createElement('script');
+    script.src='aurora-transfer-strategy.js?v=20260817-transfer-owner-1';
+    script.dataset.auroraShared='transfer-strategy-owner';
+    document.head.appendChild(script);
+  }
 })(window);
