@@ -1,23 +1,33 @@
-/* Aurora City FC — Nexus V2 pitch geometry fix v1.0
+/* Aurora City FC — Nexus V2 pitch geometry fix v1.1
  * Uses explicit DOM markings so the centre circle cannot inherit shell pseudo-element positioning.
+ * Also fully resets the shared shell .pitch:before dimensions so no ghost circle remains top-left.
  */
 (function(){
 'use strict';
-if(window.__AURORA_NEXUS_V2_PITCH_CENTRE_FIX__)return;
-window.__AURORA_NEXUS_V2_PITCH_CENTRE_FIX__=true;
+if(window.__AURORA_NEXUS_V2_PITCH_CENTRE_FIX_V11__)return;
+window.__AURORA_NEXUS_V2_PITCH_CENTRE_FIX_V11__=true;
 
 const page=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
 if(page!=='auroracityfc_nexusv2.html')return;
 
 function installStyle(){
-  if(document.getElementById('nexusV2PitchCentreFixStyle'))return;
+  if(document.getElementById('nexusV2PitchCentreFixStyleV11'))return;
+  const old=document.getElementById('nexusV2PitchCentreFixStyle');
+  if(old)old.remove();
   const style=document.createElement('style');
-  style.id='nexusV2PitchCentreFixStyle';
+  style.id='nexusV2PitchCentreFixStyleV11';
   style.textContent=`
     .pitch-panel .pitch:before{
       content:""!important;
       position:absolute!important;
-      inset:13px!important;
+      left:13px!important;
+      right:13px!important;
+      top:13px!important;
+      bottom:13px!important;
+      width:auto!important;
+      height:auto!important;
+      aspect-ratio:auto!important;
+      transform:none!important;
       border:1px solid rgba(209,250,229,.30)!important;
       border-radius:16px!important;
       background:none!important;
