@@ -39,6 +39,15 @@ test('Transfer platform-rule writes use the explicit shared-client method',()=>{
   assert.match(client,/return post\('updatePlatformRule', \{ spreadsheetId: SPREADSHEET_ID, rule \}\)/);
 });
 
+test('Transfer route editing cannot bypass canonical broker availability',()=>{
+  const transfer=read('transfer.js');
+  assert.match(transfer,/resolveBrokerRoute\?\.\(state,target\)\?\.eligible/);
+  assert.match(transfer,/if\(account!==['"]CHECK['"]&&!eligible\.includes\(account\)\)/);
+  assert.match(transfer,/PlatformRules/);
+  assert.match(transfer,/eligible\.includes\(['"]IG['"]\)\?['"]['"]:['"]disabled['"]/);
+  assert.match(transfer,/eligible\.includes\(['"]T212['"]\)\?['"]['"]:['"]disabled['"]/);
+});
+
 test('backend helpers contain no direct transport or storage bypass',()=>{
   for(const name of ['aurora-holdings-sync.js','aurora-sync-manager.js']){
     const source=read(name);
