@@ -119,6 +119,35 @@ window.AuroraShell={
     auroraLoadShared('aurora-transfer-strategy.js?v=20260817-transfer-owner-1','transfer-strategy-owner');
   }
 
+  function ensureMatchReportNavigation(){
+    const scroll=document.querySelector('.aurora-shell-nav-scroll');
+    if(scroll&&!scroll.querySelector('a[href="match-report.html"]')){
+      const row=document.createElement('a');
+      row.className='aurora-shell-department-row';
+      if(auroraPageFile==='match-report.html')row.classList.add('is-current');
+      row.href='match-report.html';
+      row.dataset.name='Match Report';
+      row.innerHTML='<div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Match Report</strong><span>5pm portfolio full-time report</span></div><div class="aurora-shell-nav-arrow">›</div>';
+
+      const systemSection=[...scroll.querySelectorAll('.aurora-shell-nav-section')].find(x=>String(x.textContent||'').trim().toLowerCase()==='system');
+      if(systemSection)scroll.insertBefore(row,systemSection);
+      else scroll.append(row);
+    }
+
+    /* Nexus V2 is the development launch board. Add the new room without
+       rewriting the large Nexus document every time a department is created. */
+    if(auroraPageFile==='auroracityfc_nexusv2.html'){
+      const launch=document.querySelector('.departments');
+      if(launch&&!launch.querySelector('a[href="match-report.html"]')){
+        const card=document.createElement('a');
+        card.className='dept';
+        card.href='match-report.html';
+        card.innerHTML='<i>⚽</i><strong>Match Report</strong><span>5pm full-time portfolio review</span>';
+        launch.appendChild(card);
+      }
+    }
+  }
+
   function ensureSystemHealthNavigation(){
     const scroll=document.querySelector('.aurora-shell-nav-scroll');
     if(scroll&&!scroll.querySelector('a[href="system-health.html"]')){
@@ -145,5 +174,6 @@ window.AuroraShell={
       context.insertBefore(link,live||null);
     }
   }
+  ensureMatchReportNavigation();
   ensureSystemHealthNavigation();
 })();
