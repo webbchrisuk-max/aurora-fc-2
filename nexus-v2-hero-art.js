@@ -1,4 +1,4 @@
-/* Aurora City FC — Nexus V2 hero artwork bridge v1.0
+/* Aurora City FC — Nexus V2 hero artwork bridge v1.1
  * Wires the GitHub-hosted Nexus stadium PNG into the Nexus V2 hero.
  * Presentation only; no portfolio/data logic is changed.
  */
@@ -41,14 +41,18 @@ function install(){
         repeating-linear-gradient(0deg,transparent 0 59px,rgba(111,233,255,.03) 60px)!important;
     }
 
+    /* Keep the manager instruction readable while allowing much more of the
+       stadium artwork to remain visible through the right-hand hero panel. */
     .n2-shell .manager-order{
-      background:linear-gradient(140deg,rgba(7,19,38,.76),rgba(4,16,27,.90))!important;
-      backdrop-filter:blur(4px);
-      -webkit-backdrop-filter:blur(4px);
+      background:linear-gradient(140deg,rgba(7,19,38,.38),rgba(4,16,27,.54))!important;
+      backdrop-filter:blur(1.5px)!important;
+      -webkit-backdrop-filter:blur(1.5px)!important;
+      border-left-color:rgba(62,136,168,.22)!important;
     }
 
     @media(max-width:1100px){
       .n2-shell .hero{background-position:68% center!important;}
+      .n2-shell .manager-order{background:linear-gradient(140deg,rgba(7,19,38,.42),rgba(4,16,27,.58))!important;}
     }
     @media(max-width:680px){
       .n2-shell .hero{background-position:74% center!important;}
