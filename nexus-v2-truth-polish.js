@@ -1,7 +1,8 @@
-/* Aurora City FC — Nexus V2 truth polish v1.0
- * Two presentation guards for the live Nexus command view:
- * 1) Dividend fixture amounts use the same non-zero expected/confirmed value logic as the runway tiles.
- * 2) A whole-squad 0.00% Daily Form feed stays labelled as awaiting genuine market movement.
+/* Aurora City FC — Nexus V2 truth polish v1.1
+ * Presentation guards for the live Nexus command view:
+ * 1) Dividend fixtures never present an unverified zero as a real payment amount.
+ * 2) Confirmed/scheduled dividends with no sourced amount say "Amount awaiting source".
+ * 3) A whole-squad 0.00% Daily Form feed stays labelled as awaiting genuine market movement.
  */
 (function(w){
 'use strict';
@@ -35,13 +36,17 @@ function rowAmount(row){
   const fields=status==='PAID'
     ? ['actualAmountGbp','amountGbp','amount','expectedAmountGbp','forecastAmountGbp']
     : ['amountGbp','amount','expectedAmountGbp','forecastAmountGbp','actualAmountGbp'];
-  let zero=null;
+  let sawZero=false;
   for(const field of fields){
     const n=raw(row?.[field]);if(n===null)continue;
-    if(Math.abs(n)>1e-12)return {value:n,field};
-    if(!zero)zero={value:n,field};
+    if(Math.abs(n)>1e-12)return {value:n,field,awaiting:false};
+    sawZero=true;
   }
-  return zero||{value:null,field:''};
+  /* A future/confirmed dividend with only zero placeholders has a date but no
+     verified cash amount. Do not turn that absence into a genuine £0.00. */
+  if(status!=='PAID'&&sawZero)return {value:null,field:'',awaiting:true};
+  if(status!=='PAID')return {value:null,field:'',awaiting:true};
+  return {value:sawZero?0:null,field:sawZero?'actualAmountGbp':'',awaiting:false};
 }
 function fixturesFor(key){
   return arr(state()?.income?.calendar).map(row=>{
@@ -57,11 +62,33 @@ function patchRunwayDialog(key){
   cards.forEach((card,index)=>{
     const item=rows[index],strong=card.querySelector('.n2-runway-money strong');
     if(!strong||!item)return;
-    strong.textContent=item.amount.value===null?'—':money(item.amount.value);
+    if(item.amount.awaiting||item.amount.value===null){
+      strong.textContent='Amount awaiting source';
+      strong.style.color='#fde68a';
+      strong.style.fontSize='10px';
+      strong.style.whiteSpace='nowrap';
+      card.classList.add('n2-runway-awaiting-amount');
+    }else{
+      strong.textContent=money(item.amount.value);
+      strong.style.removeProperty('color');
+      strong.style.removeProperty('font-size');
+      strong.style.removeProperty('white-space');
+      card.classList.remove('n2-runway-awaiting-amount');
+    }
   });
-  const total=rows.reduce((sum,item)=>sum+(item.amount.value??0),0);
+  const known=rows.filter(item=>item.amount.value!==null&&!item.amount.awaiting);
+  const awaiting=rows.filter(item=>item.amount.awaiting||item.amount.value===null);
+  const total=known.reduce((sum,item)=>sum+item.amount.value,0);
   const totalEl=document.getElementById('n2DividendRunwayTotal');
-  if(totalEl)totalEl.textContent=rows.some(item=>item.amount.value!==null)?money(total):'Amount not mapped';
+  if(totalEl){
+    if(awaiting.length&&known.length)totalEl.textContent=`${money(total)} + ${awaiting.length} awaiting`;
+    else if(awaiting.length)totalEl.textContent='Amount awaiting source';
+    else totalEl.textContent=known.length?money(total):'Amount not mapped';
+  }
+  const meta=document.getElementById('n2DividendRunwayMeta');
+  if(meta&&awaiting.length){
+    meta.textContent=`${rows.length} dividend${rows.length===1?'':'s'} mapped • ${awaiting.length} amount${awaiting.length===1?'':'s'} awaiting verified source`;
+  }
 }
 function patchOpenRunway(){
   const tile=document.querySelector('#n2uRunway .n2-runway-selected');
