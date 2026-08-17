@@ -1,7 +1,6 @@
-/* Aurora City FC — Nexus V2 document scroll fix
- * The shared Aurora shell intentionally locks body scrolling for app-shell pages.
- * Nexus V2 is currently a standalone development document, so it needs normal
- * document scrolling until it is promoted into the main app shell.
+/* Aurora City FC — Nexus V2 dedicated viewport scroller v2
+ * The shared Aurora shell locks body scrolling. Nexus V2 is still a standalone
+ * preview, so make .n2-shell the scroll container instead of fighting body.
  */
 (function(){
   'use strict';
@@ -11,40 +10,57 @@
   const style=document.createElement('style');
   style.id='auroraNexusV2ScrollFix';
   style.textContent=`
-    html{
-      height:auto!important;
+    html,body{
+      width:100%!important;
+      height:100%!important;
       min-height:100%!important;
-      overflow-x:hidden!important;
-      overflow-y:auto!important;
-    }
-    body{
-      height:auto!important;
-      min-height:100vh!important;
-      overflow-x:hidden!important;
-      overflow-y:auto!important;
-      -webkit-overflow-scrolling:touch!important;
-      overscroll-behavior-y:auto!important;
+      overflow:hidden!important;
     }
     body.shell-navigation-open{
       overflow:hidden!important;
     }
     .n2-shell{
-      min-height:100vh!important;
-      height:auto!important;
-      overflow:visible!important;
+      position:fixed!important;
+      inset:0!important;
+      width:100%!important;
+      height:100dvh!important;
+      min-height:0!important;
+      overflow-x:hidden!important;
+      overflow-y:auto!important;
+      -webkit-overflow-scrolling:touch!important;
+      overscroll-behavior-y:contain!important;
+      touch-action:pan-y!important;
+      z-index:1!important;
+    }
+    .n2-header{
+      position:sticky!important;
+      top:0!important;
+      z-index:30!important;
     }
     main.page{
       height:auto!important;
-      min-height:0!important;
+      min-height:max-content!important;
       overflow:visible!important;
+      padding-bottom:max(64px,env(safe-area-inset-bottom))!important;
+    }
+    #n2ReplacementLayer,
+    .section,
+    .n2u-panel{
+      overflow:visible;
+    }
+    #auroraShellNavigationOverlay,
+    #auroraShellNavigation{
+      position:fixed!important;
+      z-index:1000!important;
     }
   `;
   document.head.appendChild(style);
 
-  // Inline properties make the fix resilient to late-loading shared shell CSS.
-  document.documentElement.style.setProperty('height','auto','important');
-  document.documentElement.style.setProperty('overflow-y','auto','important');
-  document.body.style.setProperty('height','auto','important');
-  document.body.style.setProperty('min-height','100vh','important');
-  document.body.style.setProperty('overflow-y','auto','important');
+  const shell=document.querySelector('.n2-shell');
+  if(shell){
+    shell.style.setProperty('overflow-y','auto','important');
+    shell.style.setProperty('-webkit-overflow-scrolling','touch','important');
+    shell.style.setProperty('touch-action','pan-y','important');
+    shell.scrollTop=0;
+  }
 })();
