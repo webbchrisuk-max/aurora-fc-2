@@ -195,3 +195,69 @@ body :where(.app, .main, .content, .shell-stage, .shell-page,
 
   body table :where(th, td) { padding: 9px 10px; }
 }
+
+/*
+ * Nexus HQ hero-title contract.
+ * This lives in CSS loaded from <head> so the correct outlined second line is
+ * painted on the very first frame. Do not rebuild hero title DOM after load —
+ * that caused the visible double flash on department navigation.
+ */
+body :where(
+  .finance-command-hero h2,
+  .scouting-command-hero h2,
+  .transfer-command-hero h2,
+  .registration-command-hero h2,
+  .squad-command-hero h2,
+  .income-command-hero h2,
+  .chairman-command-hero h2,
+  .health-hero h2
+) {
+  margin: 15px 0 17px !important;
+  font-size: clamp(42px, 6vw, 82px) !important;
+  line-height: .83 !important;
+  letter-spacing: -.065em !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  color: #effaff !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+}
+
+body :where(
+  .finance-command-hero h2,
+  .scouting-command-hero h2,
+  .transfer-command-hero h2,
+  .registration-command-hero h2,
+  .squad-command-hero h2,
+  .income-command-hero h2,
+  .chairman-command-hero h2,
+  .health-hero h2
+) > span {
+  display: block !important;
+  color: transparent !important;
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: transparent !important;
+  -webkit-text-stroke: 1px #68dfff !important;
+  text-shadow: 0 0 28px rgba(37, 221, 255, .08) !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 700px) {
+  body :where(
+    .finance-command-hero h2,
+    .scouting-command-hero h2,
+    .transfer-command-hero h2,
+    .registration-command-hero h2,
+    .squad-command-hero h2,
+    .income-command-hero h2,
+    .chairman-command-hero h2,
+    .health-hero h2
+  ) {
+    font-size: clamp(42px, 11vw, 58px) !important;
+    line-height: .86 !important;
+  }
+}
