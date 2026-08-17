@@ -1,13 +1,12 @@
-/* Aurora City FC — Transfer Strategy persistence guard v1.0
+/* Aurora City FC — Transfer Strategy persistence guard v1.1
  * Legacy Transfer settings writes can omit `strategy`; Aurora core then normalises
  * the missing value back to Sustainable. This guard immediately restores the
- * Transfer-owned strategy from the compatibility mirror/current route before
- * Auto Build Route reads state.
+ * Transfer-owned strategy from the compatibility mirror/current route.
  */
 (function(w){
   'use strict';
-  if(w.__AURORA_TRANSFER_STRATEGY_GUARD_V1__)return;
-  w.__AURORA_TRANSFER_STRATEGY_GUARD_V1__=true;
+  if(w.__AURORA_TRANSFER_STRATEGY_GUARD_V11__)return;
+  w.__AURORA_TRANSFER_STRATEGY_GUARD_V11__=true;
 
   const A=()=>w.Aurora2;
   const valid=v=>['sustainable','maximum'].includes(String(v||'').toLowerCase())
@@ -22,11 +21,12 @@
     const scouting=valid(state?.scouting?.strategy);
     const stored=valid(state?.transfer?.settings?.strategy);
 
-    // A live route is the clearest evidence of the recommendation that was just
-    // built. When no route exists, the mirrored Scouting value preserves the
-    // user's Transfer choice across legacy settings writes.
+    // A live route is authoritative for the recommendation currently on screen.
+    // The Scouting mirror preserves the user's Transfer choice if legacy settings
+    // code temporarily drops transfer.settings.strategy during Auto Build Route.
     if(route && scouting===route)return route;
     if(scouting)return scouting;
+    if(route)return route;
     return stored;
   }
 
@@ -58,7 +58,17 @@
   function init(){
     if(!isTransfer())return;
     repair(A()?.core?.read?.());
+
+    // State events catch background/legacy writes.
     w.addEventListener('aurora2:state',event=>repair(event.detail||A()?.core?.read?.()));
+
+    // transfer.js handles Auto Build Route on the button itself. This delegated
+    // bubble handler runs immediately afterwards in the SAME click task, so if
+    // legacy setSettings() drops strategy we restore it before the browser can
+    // paint a false Sustainable label over a Maximum route.
+    document.addEventListener('click',event=>{
+      if(event.target.closest?.('#autoBuildRoute'))repair(A()?.core?.read?.());
+    });
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
