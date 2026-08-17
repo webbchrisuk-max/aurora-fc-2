@@ -122,7 +122,7 @@ window.AuroraShell={
     auroraLoadShared('nexus-v2-scroll-fix.js?v=20260817-scroll-2','nexus-v2-scroll-fix');
     auroraLoadShared('nexus-v2-upgrade.js?v=20260817-replacement-1','nexus-v2-replacement');
     auroraLoadShared('nexus-v2-polish.js?v=20260817-polish-2','nexus-v2-polish');
-    auroraLoadShared('nexus-v2-data-quality.js?v=20260817-quality-1','nexus-v2-data-quality');
+    auroraLoadShared('nexus-v2-data-quality.js?v=20260817-quality-2','nexus-v2-data-quality');
   }
 
   function ensureMatchReportNavigation(){
