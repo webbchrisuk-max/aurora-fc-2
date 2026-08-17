@@ -122,6 +122,10 @@ window.AuroraShell={
     auroraLoadShared('nexus-v2-command-hydration.js?v=20260818-hydration-1','nexus-v2-command-hydration');
   }
 
+  if(auroraPageFile==='match-report.html'){
+    auroraLoadShared('match-report-page-fix.js?v=20260818-fullpage-1','match-report-page-fix');
+  }
+
   auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
 
   if(auroraPageFile==='auroracityfc_nexusv2.html'){
