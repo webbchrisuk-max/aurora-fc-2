@@ -113,6 +113,7 @@ window.AuroraShell={
   auroraLoadShared('aurora-sync-manager.js?v=100-stable-core','sync-manager');
   auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
   auroraLoadShared('aurora-notifications.js?v=110-premium-centre','notifications');
+  auroraLoadShared('aurora-nexus-hero-titles.js?v=20260817-nexus-title-1','nexus-hero-titles');
 
   const auroraPageFile=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
   if(auroraPageFile==='transfer.html'||auroraPageFile==='scouting.html'){
