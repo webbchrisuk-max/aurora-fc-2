@@ -1,4 +1,4 @@
-/* Aurora City FC — Nexus V2 notification header dock v1.0
+/* Aurora City FC — Nexus V2 notification header dock v1.1
  * Pins the shared notification bell into the visible Nexus top bar.
  * This is a presentation/placement guard only; notification data remains owned
  * by aurora-notifications.js and canonical Aurora state.
@@ -20,19 +20,20 @@ function installStyle(){
       display:grid!important;
       grid-template-columns:minmax(0,1fr) auto!important;
       align-items:center!important;
-      gap:10px!important;
+      gap:14px!important;
       overflow:visible!important;
       z-index:320!important;
     }
     .n2-header-left{grid-column:1!important;min-width:0!important;overflow:hidden!important;}
     .n2-header>.head-actions,.n2-header .n2-shell-context{
       grid-column:2!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;
-      gap:7px!important;min-width:0!important;max-width:100%!important;overflow:visible!important;position:relative!important;
+      gap:12px!important;min-width:0!important;max-width:100%!important;overflow:visible!important;position:relative!important;
       z-index:330!important;margin:0!important;
     }
     .n2-notification-slot{
       order:0!important;width:44px!important;min-width:44px!important;height:44px!important;flex:0 0 44px!important;
       display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important;overflow:visible!important;z-index:340!important;
+      border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;
     }
     .n2-notification-slot #auroraNotificationBell{
       position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;
@@ -40,11 +41,35 @@ function installStyle(){
       padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;visibility:visible!important;
       opacity:1!important;transform:none!important;clip:auto!important;overflow:visible!important;pointer-events:auto!important;z-index:341!important;
     }
-    .n2-header #auroraSystemHealthButton{order:1!important;flex:0 0 44px!important;width:44px!important;min-width:44px!important;height:44px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0!important;}
-    .n2-header #auroraLogoutButton{order:2!important;flex:0 0 auto!important;}
-    .n2-header #connectionBadge{order:3!important;flex:0 1 auto!important;white-space:nowrap!important;}
-    @media(max-width:1050px){.n2-header #connectionBadge{max-width:120px!important;overflow:hidden!important;text-overflow:ellipsis!important}.n2-header #auroraLogoutButton{min-width:58px!important;padding-inline:8px!important}}
-    @media(max-width:760px){.n2-header #connectionBadge{display:none!important}.n2-header #auroraLogoutButton{display:none!important}.n2-header>.head-actions,.n2-header .n2-shell-context{gap:5px!important}}
+
+    /* System Health remains available in the navigation. Nexus keeps the top
+       row intentionally clean: notifications, logout and live club status. */
+    .n2-header #auroraSystemHealthButton{display:none!important;}
+
+    .n2-header #auroraLogoutButton{
+      order:1!important;flex:0 0 auto!important;min-width:74px!important;height:44px!important;
+      margin:0!important;padding:0 14px!important;
+    }
+    .n2-header #connectionBadge{
+      order:2!important;flex:0 1 auto!important;white-space:nowrap!important;min-height:44px!important;
+      display:inline-flex!important;align-items:center!important;padding:0 15px!important;margin:0!important;
+    }
+
+    /* The badge text already includes its single live-status dot. Suppress the
+       shared shell pseudo-dot so Nexus never shows a duplicated pair of circles. */
+    .n2-header #connectionBadge:before,
+    .n2-header #connectionBadge::before{content:none!important;display:none!important;}
+
+    @media(max-width:1050px){
+      .n2-header>.head-actions,.n2-header .n2-shell-context{gap:10px!important}
+      .n2-header #connectionBadge{max-width:150px!important;overflow:hidden!important;text-overflow:ellipsis!important;padding-inline:12px!important}
+      .n2-header #auroraLogoutButton{min-width:64px!important;padding-inline:10px!important}
+    }
+    @media(max-width:760px){
+      .n2-header #connectionBadge{display:none!important}
+      .n2-header #auroraLogoutButton{display:none!important}
+      .n2-header>.head-actions,.n2-header .n2-shell-context{gap:8px!important}
+    }
   `;
   document.head.appendChild(style);
 }
@@ -66,6 +91,11 @@ function dockBell(){
   actions.classList.add('aurora-shell-context','n2-shell-context');
   const live=actions.querySelector('#connectionBadge,.live');
   if(live)live.classList.add('aurora-shell-live');
+
+  /* If a previous pass inserted the optional health shortcut, remove it from
+     this compact Nexus bar; it remains in the navigation drawer. */
+  actions.querySelector('#auroraSystemHealthButton')?.remove();
+
   let slot=actions.querySelector('.n2-notification-slot');
   if(!slot){slot=document.createElement('span');slot.className='n2-notification-slot';slot.setAttribute('aria-label','Notification Centre');actions.insertBefore(slot,actions.firstChild||null)}
   const bell=document.getElementById('auroraNotificationBell');
@@ -82,6 +112,7 @@ function start(){
   observer.observe(document.body,{subtree:true,childList:true});
   setTimeout(()=>observer.disconnect(),20000);
   window.addEventListener('resize',dockBell,{passive:true});
+  w.addEventListener('aurora2:state',()=>setTimeout(dockBell,0));
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(dockBell,50)});
 }
 
