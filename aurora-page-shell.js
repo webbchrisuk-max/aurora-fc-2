@@ -118,6 +118,9 @@ window.AuroraShell={
   if(auroraPageFile==='transfer.html'||auroraPageFile==='scouting.html'){
     auroraLoadShared('aurora-transfer-strategy.js?v=20260817-transfer-owner-1','transfer-strategy-owner');
   }
+  if(auroraPageFile==='auroracityfc_nexusv2.html'){
+    auroraLoadShared('nexus-v2-upgrade.js?v=20260817-replacement-1','nexus-v2-replacement');
+  }
 
   function ensureMatchReportNavigation(){
     const scroll=document.querySelector('.aurora-shell-nav-scroll');
