@@ -1,11 +1,12 @@
-/* Aurora City FC — Transfer Window Command layout v1.0
+/* Aurora City FC — Transfer Window Command layout v1.1
  * Keeps the operational decision together:
  * Transfer Window Command -> Transfer Strategy -> Recommended Income Effect.
+ * Strategy controller owns rebuilding; this file is render/layout only.
  */
 (function(w){
   'use strict';
-  if(w.__AURORA_TRANSFER_WINDOW_LAYOUT_V1__)return;
-  w.__AURORA_TRANSFER_WINDOW_LAYOUT_V1__=true;
+  if(w.__AURORA_TRANSFER_WINDOW_LAYOUT_V11__)return;
+  w.__AURORA_TRANSFER_WINDOW_LAYOUT_V11__=true;
 
   const A=()=>w.Aurora2;
   const arr=v=>Array.isArray(v)?v:[];
@@ -13,8 +14,6 @@
   const money=v=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number(v)||0);
   const strategy=v=>String(v||'').toLowerCase()==='maximum'?'maximum':'sustainable';
   const strategyLabel=v=>strategy(v)==='maximum'?'Maximum Income':'Sustainable Income';
-  let lastStrategy=null;
-  let autoBuildQueued=false;
 
   function isTransfer(){
     return (String(location.pathname||'').split('/').pop()||'').toLowerCase()==='transfer.html';
@@ -146,37 +145,15 @@
           ?'Finance has not released a Transfer budget yet.'
           :!ready
             ?'Approve the Scouting shortlist first; then Aurora can calculate the income recommendation.'
-            :'Choose Sustainable Income or Maximum Income above and Aurora will build the recommended route automatically.';
+            :'Choose Sustainable Income or Maximum Income above to create the recommendation.';
     }
-  }
-
-  function queueAutoBuild(state){
-    if(autoBuildQueued||!isTransfer())return;
-    const route=state?.transfer?.route;
-    const locked=!!route?.locked||['LOCKED','PARTIALLY_REGISTERED','COMPLETE','COMPLETED'].includes(String(state?.mission?.status||'').toUpperCase());
-    const ready=String(state?.scouting?.status||'').toUpperCase()==='SCOUTING_READY';
-    const budget=Math.max(0,num(state?.mission?.approvedBudget));
-    if(locked||!ready||!(budget>0))return;
-    autoBuildQueued=true;
-    setTimeout(()=>{
-      autoBuildQueued=false;
-      document.getElementById('autoBuildRoute')?.click();
-    },100);
-  }
-
-  function onState(state){
-    const selected=strategy(state?.transfer?.settings?.strategy||state?.scouting?.strategy);
-    if(lastStrategy!==null&&selected!==lastStrategy)queueAutoBuild(state);
-    lastStrategy=selected;
-    render(state);
   }
 
   function init(){
     if(!isTransfer())return;
     arrange();
-    const state=A()?.core?.read?.();
-    if(state){lastStrategy=strategy(state?.transfer?.settings?.strategy||state?.scouting?.strategy);render(state)}
-    w.addEventListener('aurora2:state',event=>onState(event.detail||A()?.core?.read?.()));
+    render(A()?.core?.read?.());
+    w.addEventListener('aurora2:state',event=>render(event.detail||A()?.core?.read?.()));
     setTimeout(()=>render(A()?.core?.read?.()),180);
   }
 
