@@ -35,4 +35,10 @@
     script.dataset.auroraShared='transfer-strategy-owner';
     document.head.appendChild(script);
   }
+  if(!document.querySelector('script[data-aurora-shared="transfer-window-layout"]')){
+    const script=document.createElement('script');
+    script.src='aurora-transfer-window-layout.js?v=20260817-command-stack-1';
+    script.dataset.auroraShared='transfer-window-layout';
+    document.head.appendChild(script);
+  }
 })(window);
