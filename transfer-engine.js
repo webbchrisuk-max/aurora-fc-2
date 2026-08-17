@@ -178,8 +178,12 @@
       .filter(row=>sameSecurity(target,row,state)).map(row=>identity(row).account).filter(a=>a!=='CHECK');
     const remembered=brokerPreference(state,target);
     const preferred=accountCode(target?.preferredAccount);
+    const platformRule=arr(state?.transfer?.platformRules).find(row=>sameSecurity(target,row,state));
+    const platformAccounts=eligibilityAccounts(platformRule?.allowed_accounts||platformRule?.allowedAccounts);
+    const platformPreferred=accountCode(platformRule?.preferred_account||platformRule?.preferredAccount);
     const ownedAccounts=resolveExistingExposure(state,target).accounts;
     const tiers=[
+      {source:'PLATFORM_RULES',accounts:platformAccounts},
       {source:'EXPLICIT_SECURITY_ELIGIBILITY',accounts:explicit},
       {source:'TRANSFER_BROKER_CONFIGURATION',accounts:transferConfig},
       {source:'CANONICAL_MARKET_SUPPORT',accounts:exchangeAccounts},
@@ -193,10 +197,11 @@
     const eligible=chosen?[...new Set(chosen.accounts)]:[];
     // Assignment and eligibility are deliberately separate. Preserve a saved
     // route first, then a valid owned account; otherwise apply IG-first routing.
-    const canonical=[remembered,...routeAccounts].find(a=>eligible.includes(a));
+    const canonical=[platformPreferred,remembered,...routeAccounts].find(a=>eligible.includes(a));
     const owned=ownedAccounts.find(a=>eligible.includes(a));
     const account=canonical||owned||(eligible.includes('IG')?'IG':eligible.includes('T212')?'T212':'CHECK');
-    const blockedByExplicit=eligibilityDeclared&&!explicit.length;
+    // A manager-saved PlatformRules row repairs stale/negative legacy evidence.
+    const blockedByExplicit=eligibilityDeclared&&!explicit.length&&!platformAccounts.length;
     const finalAccount=blockedByExplicit?'CHECK':account;
     return {account:finalAccount,eligible:blockedByExplicit?[]:eligible,remembered,preferred,
       supported:!blockedByExplicit&&finalAccount!=='CHECK',

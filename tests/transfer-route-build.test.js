@@ -456,3 +456,24 @@ test('intentionally empty canonical Chairman basket retains the zero-income stat
   assert.equal(simulation.income,0);
   assert.equal(simulation.remaining,2757.10);
 });
+
+test('PlatformRules availability is authoritative for future broker routes',()=>{
+  const engine=loadEngine();
+  const target={securityId:'LSE:TRIG',exchange:'LSE',ticker:'TRIG',preferredAccount:'IG ISA',brokerEligibility:[],status:'pass',yieldPct:7,livePriceGbp:1,sustainableScore:90};
+  const state={scouting:{targets:[target]},transfer:{platformRules:[{ticker:'TRIG',preferred_account:'Trade 212',allowed_accounts:'Trade 212',active:true}]},squad:{holdings:[]}};
+  const resolved=engine.resolveBrokerRoute(state,target);
+  assert.equal(resolved.account,'T212');
+  assert.deepEqual(Array.from(resolved.eligible),['T212']);
+  assert.equal(resolved.source,'PLATFORM_RULES');
+  const route=engine.simulate(state,{budget:1000,allowActiveScouting:true,idFactory:p=>p});
+  assert.equal(route.allocations[0].account,'T212');
+});
+
+test('a Both PlatformRules target may route to its sensible preferred broker',()=>{
+  const engine=loadEngine();
+  const target={securityId:'LSE:ARCC',exchange:'LSE',ticker:'ARCC',status:'pass',yieldPct:8,livePriceGbp:10,sustainableScore:90};
+  const state={scouting:{targets:[target]},transfer:{platformRules:[{ticker:'ARCC',preferred_account:'IG ISA',allowed_accounts:'IG ISA, Trade 212',active:true}]},squad:{holdings:[]}};
+  const resolved=engine.resolveBrokerRoute(state,target);
+  assert.equal(resolved.account,'IG');
+  assert.deepEqual(new Set(resolved.eligible),new Set(['IG','T212']));
+});
