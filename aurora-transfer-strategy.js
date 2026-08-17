@@ -1,11 +1,11 @@
-/* Aurora City FC — Transfer-owned Income Strategy v1.0
+/* Aurora City FC — Transfer-owned Income Strategy v1.1
  * Sustainable / Maximum is a Transfer deployment choice.
  * Scouting continues to calculate both score sets and owns eligibility/approval.
  */
 (function(w){
   'use strict';
-  if(w.__AURORA_TRANSFER_STRATEGY_V1__)return;
-  w.__AURORA_TRANSFER_STRATEGY_V1__=true;
+  if(w.__AURORA_TRANSFER_STRATEGY_V11__)return;
+  w.__AURORA_TRANSFER_STRATEGY_V11__=true;
 
   const A=()=>w.Aurora2;
   const now=()=>new Date().toISOString();
@@ -16,10 +16,22 @@
   const isScouting=()=>file()==='scouting.html';
   let changing=false;
 
-  function routeLocked(state){
-    const route=state?.transfer?.route;
-    return !!route?.locked || ['LOCKED','PARTIALLY_REGISTERED','COMPLETE','COMPLETED']
-      .includes(String(state?.mission?.status||'').toUpperCase());
+  function registeredCount(state){
+    try{
+      const ids=w.AuroraTransferMission?.registeredLegIds?.(state);
+      if(ids&&typeof ids.size==='number')return ids.size;
+    }catch(_){}
+    return (Array.isArray(state?.transfer?.registrationDrafts)?state.transfer.registrationDrafts:[])
+      .filter(row=>String(row?.status||'').toUpperCase()==='CONFIRMED').length;
+  }
+
+  function executionLocked(state){
+    const status=String(state?.mission?.status||'').toUpperCase();
+    return registeredCount(state)>0 || ['PARTIALLY_REGISTERED','COMPLETE','COMPLETED'].includes(status);
+  }
+
+  function approvedRouteLocked(state){
+    return !!state?.transfer?.route?.locked || String(state?.mission?.status||'').toUpperCase()==='LOCKED';
   }
 
   function ownedStrategy(state){
@@ -57,11 +69,11 @@
     style.textContent=`
       .transfer-strategy-owner{display:grid;gap:10px;margin-top:14px}
       .transfer-strategy-choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-      .transfer-strategy-choice{appearance:none;-webkit-appearance:none;display:grid;gap:5px;min-height:92px;padding:13px;text-align:left;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:rgba(255,255,255,.015);color:#d8d2d4;cursor:pointer;touch-action:manipulation}
+      .transfer-strategy-choice{appearance:none;-webkit-appearance:none;display:grid;gap:5px;min-height:92px;padding:13px;text-align:left;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:rgba(255,255,255,.015);color:#d8d2d4;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
       .transfer-strategy-choice strong{font-size:12px;color:#f3edf0}.transfer-strategy-choice span{font-size:7px;line-height:1.45;color:#81767b}
       .transfer-strategy-choice.active{border-color:rgba(245,200,91,.42);background:linear-gradient(135deg,rgba(245,200,91,.11),rgba(255,95,119,.045));box-shadow:inset 0 0 0 1px rgba(245,200,91,.08)}
       .transfer-strategy-choice.active strong{color:#ffe19b}.transfer-strategy-choice:disabled{opacity:.45;cursor:not-allowed}
-      .transfer-strategy-status{min-height:18px;color:#a89a91;font-size:7px;line-height:1.45}.transfer-strategy-status.good{color:#aaffc5}.transfer-strategy-status.warn{color:#ffe19b}
+      .transfer-strategy-status{min-height:18px;color:#a89a91;font-size:7px;line-height:1.45}.transfer-strategy-status.good{color:#aaffc5}.transfer-strategy-status.warn{color:#ffe19b}.transfer-strategy-status.block{color:#ffb5c2}
       .scouting-strategy-moved{display:grid;gap:10px}.scouting-strategy-moved strong{font-size:14px}.scouting-strategy-moved p{margin:0;color:#8d8790;font-size:9px;line-height:1.55}
       .scouting-strategy-moved .strategy-readout{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px;border:1px solid rgba(88,244,255,.14);border-radius:12px;background:rgba(88,244,255,.025)}
       .scouting-strategy-moved .strategy-readout small{color:#58f4ff;font-size:7px;font-weight:900;letter-spacing:.09em}.scouting-strategy-moved .strategy-readout b{color:#e9fcff;font-size:11px}
@@ -70,15 +82,14 @@
     document.head.appendChild(style);
   }
 
-  function transferCard(){
-    return document.getElementById('scoutingStrategyCard');
-  }
+  function transferCard(){return document.getElementById('scoutingStrategyCard')}
 
   function renderTransfer(state=A()?.core?.read?.()){
     if(!isTransfer()||!state)return;
     installStyles();
     const strategy=ownedStrategy(state);
-    const locked=routeLocked(state);
+    const hardLocked=executionLocked(state);
+    const routeLocked=approvedRouteLocked(state);
     const card=transferCard();
     if(card && card.dataset.transferStrategyOwner!=='1'){
       card.dataset.transferStrategyOwner='1';
@@ -102,15 +113,18 @@
       const active=button.dataset.transferStrategy===strategy;
       button.classList.toggle('active',active);
       button.setAttribute('aria-checked',String(active));
-      button.disabled=locked;
+      // An approved route is still switchable until a real purchase has been registered.
+      button.disabled=hardLocked;
     });
 
     const status=document.getElementById('transferStrategyStatus');
     if(status){
-      status.className='transfer-strategy-status '+(locked?'warn':'good');
-      status.textContent=locked
-        ?`${label(strategy)} is locked with the approved route. Unlock the route before changing strategy.`
-        :`${label(strategy)} controls target ranking and payday allocation in Transfer.`;
+      status.className='transfer-strategy-status '+(hardLocked?'block':routeLocked?'warn':'good');
+      status.textContent=hardLocked
+        ?`${label(strategy)} is fixed because broker execution has already started.`
+        :routeLocked
+          ?`${label(strategy)} is approved. Choosing the other strategy will unlock and rebuild the recommendation before any purchase is registered.`
+          :`${label(strategy)} controls target ranking and payday allocation in Transfer.`;
     }
 
     const panel=card?.closest('.strategy-panel');
@@ -171,53 +185,81 @@
     }
   }
 
-  function selectStrategy(strategy){
+  function selectStrategy(nextStrategy){
     if(changing)return;
     const core=A()?.core;
     if(!core?.read||!core?.update)return;
-    strategy=valid(strategy);
+    nextStrategy=valid(nextStrategy);
     const before=core.read();
-    if(routeLocked(before)){
+
+    if(executionLocked(before)){
       renderTransfer(before);
       const status=document.getElementById('transferStrategyStatus');
-      if(status)status.textContent='Unlock the approved Transfer route before changing income strategy.';
+      if(status)status.textContent='Strategy cannot change after a real purchase has been registered.';
       return;
     }
+
     const previous=ownedStrategy(before);
-    if(previous===strategy){renderTransfer(before);return;}
-    const hadDraft=!!before.transfer?.route && !before.transfer.route.locked;
+    if(previous===nextStrategy){renderTransfer(before);return;}
+
     changing=true;
-    const after=core.update(s=>({
-      ...s,
-      // Compatibility mirror: legacy Scouting/Transfer renderers still read this
-      // field, but the manager-facing owner is now Transfer Centre.
-      scouting:{...s.scouting,strategy,updatedAt:s.scouting?.updatedAt||now()},
-      transfer:{
-        ...s.transfer,
-        strategyOwner:'TRANSFER',
-        settings:{...s.transfer?.settings,strategy},
-        route:hadDraft?null:s.transfer?.route,
-        updatedAt:now()
-      }
-    }));
+    let shouldRebuild=false;
+    let after;
+    try{
+      after=core.update(current=>{
+        let working=current;
+        if(approvedRouteLocked(working)){
+          const offered=w.AuroraTransferMission?.rollbackAction?.(working);
+          if(offered?.action!=='UNLOCK_ROUTE')throw new Error(offered?.label||'This approved route cannot be changed.');
+          working=w.AuroraTransferMission.rollback(working,'UNLOCK_ROUTE','Change Transfer income strategy',now());
+        }
+
+        shouldRebuild=!!working.transfer?.route ||
+          (String(working.scouting?.status||'').toUpperCase()==='SCOUTING_READY'&&Number(working.mission?.approvedBudget)>0);
+
+        return {
+          ...working,
+          // Compatibility mirror: older route/scouting renderers still read this field.
+          scouting:{...working.scouting,strategy:nextStrategy,updatedAt:working.scouting?.updatedAt||now()},
+          transfer:{
+            ...working.transfer,
+            strategyOwner:'TRANSFER',
+            settings:{...working.transfer?.settings,strategy:nextStrategy},
+            // A strategy change invalidates the previous recommendation; it will be rebuilt below.
+            route:working.transfer?.route?null:working.transfer?.route,
+            updatedAt:now()
+          }
+        };
+      });
+    }catch(error){
+      changing=false;
+      renderTransfer(core.read());
+      const status=document.getElementById('transferStrategyStatus');
+      if(status){status.className='transfer-strategy-status block';status.textContent=error?.message||'Strategy could not be changed.'}
+      return;
+    }
+
     renderTransfer(after);
     changing=false;
 
-    if(hadDraft){
+    if(shouldRebuild){
       setTimeout(()=>{
         const state=core.read();
         const ready=String(state.scouting?.status||'').toUpperCase()==='SCOUTING_READY';
         const budget=Number(state.mission?.approvedBudget)||0;
         if(ready&&budget>0)document.getElementById('autoBuildRoute')?.click();
-      },60);
+      },90);
     }
   }
 
   function wire(){
+    // Pointer/touch and click are handled through delegation so the iPad can tap
+    // either the button text or its surrounding strategy card reliably.
     document.addEventListener('click',event=>{
       const choice=event.target.closest?.('[data-transfer-strategy]');
       if(choice){
         event.preventDefault();
+        event.stopPropagation();
         selectStrategy(choice.dataset.transferStrategy);
       }
     });
@@ -235,8 +277,6 @@
     wire();
     renderTransfer(state);
     renderScouting(state);
-    // Existing page renderers can run immediately after DOMContentLoaded. Re-apply
-    // ownership labels once more after their first paint without changing data.
     setTimeout(()=>{
       const fresh=A()?.core?.read?.();
       renderTransfer(fresh);
