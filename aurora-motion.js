@@ -34,7 +34,7 @@
   }
   function animateRows(root){
     if(reduce.matches)return;
-    root.querySelectorAll?.('tbody tr,.execution-check,.an-card,.scouting12-watch-row').forEach((row,index)=>{
+    root.querySelectorAll?.('tbody tr,.execution-check,.an-card,.scouting12-watch-row,.squad-opportunity-row').forEach((row,index)=>{
       if(row.dataset.auroraMotionRow)return;
       row.dataset.auroraMotionRow='1';row.style.setProperty('--aurora-delay',`${Math.min(index,8)*35}ms`);pulse(row,'aurora-row-enter',700);
     });
@@ -52,8 +52,17 @@
       queueMicrotask(()=>{document.body.classList.remove('aurora-is-scanning');button.removeAttribute('aria-label');pulse(document.getElementById('scoutingStatus'),'aurora-confirmed')});
     },{capture:true});
   }
+  function loadScoutingSquadOpportunities(){
+    const file=String(location.pathname||'').split('/').pop().toLowerCase();
+    if(file!=='scouting.html'||document.querySelector('script[data-aurora-squad-opportunities]'))return;
+    const script=document.createElement('script');
+    script.src='scouting-squad-opportunities.js?v=20260818-squad-value-watch-1';
+    script.async=false;
+    script.dataset.auroraSquadOpportunities='1';
+    document.head.appendChild(script);
+  }
   function init(){
-    remember();animateRows(document);scoutingHooks();
+    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     requestAnimationFrame(()=>requestAnimationFrame(()=>{armed=true;document.documentElement.classList.add('aurora-motion-ready')}));
   }
