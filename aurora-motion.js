@@ -70,8 +70,17 @@
     script.dataset.auroraBackgroundSignals='1';
     document.head.appendChild(script);
   }
+  function loadFinanceHouseDashboardUpgrade(){
+    const file=String(location.pathname||'').split('/').pop().toLowerCase();
+    if(file!=='finance.html'||document.querySelector('script[data-aurora-house-dashboard-upgrade]'))return;
+    const script=document.createElement('script');
+    script.src='finance-house-dashboard-upgrade.js?v=20260818-house-dashboard-1';
+    script.async=false;
+    script.dataset.auroraHouseDashboardUpgrade='1';
+    document.head.appendChild(script);
+  }
   function init(){
-    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();
+    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     requestAnimationFrame(()=>requestAnimationFrame(()=>{armed=true;document.documentElement.classList.add('aurora-motion-ready')}));
   }
