@@ -56,7 +56,7 @@
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='scouting.html'||document.querySelector('script[data-aurora-squad-opportunities]'))return;
     const script=document.createElement('script');
-    script.src='scouting-squad-opportunities.js?v=20260818-squad-value-table-2';
+    script.src='scouting-squad-opportunities.js?v=20260818-real-evidence-3';
     script.async=false;
     script.dataset.auroraSquadOpportunities='1';
     document.head.appendChild(script);
