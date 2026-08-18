@@ -129,6 +129,7 @@ window.AuroraMasterNexus=MASTER_NEXUS;
   if(auroraPageFile==='match-report.html'){
     auroraLoadShared('match-report-page-fix.js?v=20260818-fullpage-2','match-report-page-fix');
     auroraLoadShared('match-report-hydration.js?v=20260818-hydration-1','match-report-hydration');
+    auroraLoadShared('match-report-published-feed.js?v=20260818-published-feed-1','match-report-published-feed');
   }
 
   auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
