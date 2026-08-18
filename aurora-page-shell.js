@@ -26,6 +26,12 @@ function applyCanonicalCrest(){
     if(img.getAttribute('src')!==CREST_URL)img.setAttribute('src',CREST_URL);
   });
 }
+function applyCanonicalHomeLinks(){
+  document.querySelectorAll('.shell-home').forEach(link=>{
+    link.setAttribute('href',MASTER_NEXUS);
+    link.setAttribute('title','Nexus Headquarters');
+  });
+}
 
 function ensureCanonicalShellHeader(){
   const isNexus=auroraPageFile==='auroracityfc_nexusv2.html';
@@ -95,6 +101,7 @@ function ensureNavigationBrandCrest(){
 ensureCanonicalShellHeader();
 ensureNavigationBrandCrest();
 applyCanonicalCrest();
+applyCanonicalHomeLinks();
 
 const menuButton=document.getElementById('auroraShellMenuButton');
 const navClose=document.getElementById('auroraShellNavigationClose');
@@ -135,6 +142,7 @@ auroraLoadShared('aurora-release.js?v=100-stable-core','release');
 auroraLoadShared('aurora-platform.js?v=100-stable-core','platform');
 auroraLoadShared('aurora-sync-manager.js?v=101-nexus-recovery','sync-manager');
 auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
+auroraLoadShared('aurora-club-command.js?v=20260818-club-command-1','club-command');
 if(auroraPageFile==='auroracityfc_nexusv2.html'){
   auroraLoadShared('nexus-v2-runtime-recovery.js?v=20260817-recovery-1','nexus-v2-runtime-recovery');
   auroraLoadShared('nexus-v2-command-hydration.js?v=20260818-hydration-1','nexus-v2-command-hydration');
@@ -147,7 +155,7 @@ if(auroraPageFile==='auroracityfc_nexusv2.html'){
   auroraLoadShared('nexus-v2-data-quality.js?v=20260817-quality-2','nexus-v2-data-quality');
   auroraLoadShared('nexus-v2-pitch-centre-fix.js?v=20260817-centre-2','nexus-v2-pitch-centre-fix');
   auroraLoadShared('nexus-v2-manager-polish.js?v=20260817-manager-1','nexus-v2-manager-polish');
-  auroraLoadShared('nexus-v2-form-truth.js?v=20260817-form-truth-1','nexus-v2-form-truth');
+  auroraLoadShared('nexus-v2-form-truth.js?v=20260818-live-form-2','nexus-v2-form-truth');
   auroraLoadShared('nexus-v2-dividend-runway.js?v=20260817-runway-1','nexus-v2-dividend-runway');
   auroraLoadShared('nexus-v2-truth-polish.js?v=20260817-truth-polish-3','nexus-v2-truth-polish');
 }
@@ -185,6 +193,7 @@ function ensureNexusMasterNavigation(){
     const label=`${link.dataset?.name||''} ${link.textContent||''}`.toLowerCase(),href=String(link.getAttribute('href')||'').toLowerCase();
     if((label.includes('nexus')||label.includes('headquarters'))&&(href==='index.html'||href.endsWith('/index.html')))link.setAttribute('href',MASTER_NEXUS);
   });
+  applyCanonicalHomeLinks();
 }
 
 function ensureMatchReportNavigation(){
@@ -211,5 +220,5 @@ function ensureSystemHealthNavigation(){
   }
 }
 
-ensureNexusMasterNavigation();ensureMatchReportNavigation();ensureSystemHealthNavigation();ensureNavigationBrandCrest();applyCanonicalCrest();
+ensureNexusMasterNavigation();ensureMatchReportNavigation();ensureSystemHealthNavigation();ensureNavigationBrandCrest();applyCanonicalCrest();applyCanonicalHomeLinks();
 })();
