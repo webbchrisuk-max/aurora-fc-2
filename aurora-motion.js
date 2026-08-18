@@ -79,8 +79,17 @@
     script.dataset.auroraHouseDashboardUpgrade='1';
     document.head.appendChild(script);
   }
+  function loadFinanceHouseRoomGroups(){
+    const file=String(location.pathname||'').split('/').pop().toLowerCase();
+    if(file!=='finance.html'||document.querySelector('script[data-aurora-house-room-groups]'))return;
+    const script=document.createElement('script');
+    script.src='finance-house-room-groups.js?v=20260818-room-groups-1';
+    script.async=false;
+    script.dataset.auroraHouseRoomGroups='1';
+    document.head.appendChild(script);
+  }
   function init(){
-    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();
+    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     requestAnimationFrame(()=>requestAnimationFrame(()=>{armed=true;document.documentElement.classList.add('aurora-motion-ready')}));
   }
