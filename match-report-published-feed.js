@@ -1,4 +1,4 @@
-/* Aurora City FC — Match Report published feed v1.0
+/* Aurora City FC — Match Report published feed v1.1
  * Promotes the latest genuine 5PM Match Report into one canonical state slot and makes
  * its provenance/timestamp visible. Uses the existing AuroraData 2 Nexus dashboard
  * snapshot as the backend feed when available; never invents a published report.
@@ -9,7 +9,9 @@ if(w.__AURORA_MATCH_REPORT_PUBLISHED_FEED__)return;
 w.__AURORA_MATCH_REPORT_PUBLISHED_FEED__=true;
 
 const page=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
-if(page!=='match-report.html')return;
+const isMatchReport=page==='match-report.html';
+const isNexus=page==='auroracityfc_nexusv2.html';
+if(!isMatchReport&&!isNexus)return;
 
 const arr=v=>Array.isArray(v)?v:[];
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -93,6 +95,7 @@ function mergeDashboardMarket(snapshot){
   });
 }
 function ensureStamp(){
+  if(!isMatchReport)return null;
   let el=document.getElementById('publishedReportStamp');if(el)return el;
   const hero=document.querySelector('.hero-copy');if(!hero)return null;
   el=document.createElement('div');el.id='publishedReportStamp';el.setAttribute('role','status');
@@ -107,6 +110,7 @@ function ensureStamp(){
 }
 function sameLocalDay(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
 function renderStamp(){
+  if(!isMatchReport)return;
   const el=ensureStamp();if(!el)return;
   const state=w.Aurora2?.core?.read?.()||{},report=reportsFromState(state)[0]||null;
   const strong=el.querySelector('strong'),sub=el.querySelector('span'),today=new Date();
@@ -159,10 +163,11 @@ function bind(){
   renderStamp();
   setTimeout(()=>pullBackend({force:true}),450);
   w.addEventListener('aurora2:match-report-hydrated',()=>setTimeout(()=>pullBackend({force:true}),80));
+  w.addEventListener('aurora2:nexus-hydrated',()=>setTimeout(()=>pullBackend({force:true}),80));
   w.addEventListener('aurora2:state',()=>{if(!canonicalising)renderStamp()});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(()=>pullBackend(),180)});
 }
 
-w.AuroraMatchReportPublishedFeed={version:'1.0',refresh:()=>pullBackend({force:true}),status:()=>lastResult,latest:()=>reportsFromState(w.Aurora2?.core?.read?.()||{})[0]||null};
+w.AuroraMatchReportPublishedFeed={version:'1.1',refresh:()=>pullBackend({force:true}),status:()=>lastResult,latest:()=>reportsFromState(w.Aurora2?.core?.read?.()||{})[0]||null};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(window);
