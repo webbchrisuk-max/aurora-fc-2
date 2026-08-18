@@ -2,6 +2,7 @@
 'use strict';
 
 const SESSION_KEY='aurora2:session:authenticated';
+const MASTER_NEXUS='AuroraCityFC_NexusV2.html';
 
 function sessionActive(){
   try{return sessionStorage.getItem(SESSION_KEY)==='1'}
@@ -93,12 +94,15 @@ setInterval(updateClock,15000);
 window.AuroraShell={
   openNavigation:openNav,
   closeNavigation:closeNav,
+  home(){location.href=MASTER_NEXUS},
+  masterNexus:MASTER_NEXUS,
   logout(){
     clearSession();
     closeNav();
     location.replace('index.html?logout=1');
   }
 };
+window.AuroraMasterNexus=MASTER_NEXUS;
 
   /* Aurora 2 Stable Core — shared platform + managed sync */
   function auroraLoadShared(src,key){
@@ -149,6 +153,49 @@ window.AuroraShell={
     auroraLoadShared('nexus-v2-form-truth.js?v=20260817-form-truth-1','nexus-v2-form-truth');
     auroraLoadShared('nexus-v2-dividend-runway.js?v=20260817-runway-1','nexus-v2-dividend-runway');
     auroraLoadShared('nexus-v2-truth-polish.js?v=20260817-truth-polish-3','nexus-v2-truth-polish');
+  }
+
+  function ensureNexusMasterNavigation(){
+    const nav=document.querySelector('.aurora-shell-nav-scroll');
+    if(nav){
+      let rows=[...nav.querySelectorAll('a.aurora-shell-department-row')].filter(row=>{
+        const label=`${row.dataset?.name||''} ${row.textContent||''}`.toLowerCase();
+        const href=String(row.getAttribute('href')||'').toLowerCase();
+        return label.includes('nexus')||label.includes('headquarters')||href==='index.html'||href.endsWith('/index.html');
+      });
+
+      if(!rows.length){
+        const row=document.createElement('a');
+        row.className='aurora-shell-department-row';
+        row.innerHTML='<div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus Headquarters</strong><span>Master club command centre</span></div><div class="aurora-shell-nav-arrow">›</div>';
+        const firstSection=nav.querySelector('.aurora-shell-nav-section');
+        if(firstSection?.nextSibling)nav.insertBefore(row,firstSection.nextSibling);
+        else nav.prepend(row);
+        rows=[row];
+      }
+
+      rows.forEach((row,index)=>{
+        if(index>0&&rows.length>1&&String(row.textContent||'').toLowerCase().includes('nexus')){
+          row.remove();
+          return;
+        }
+        row.href=MASTER_NEXUS;
+        row.dataset.name='Nexus Headquarters';
+        const strong=row.querySelector('.aurora-shell-nav-copy strong');
+        const span=row.querySelector('.aurora-shell-nav-copy span');
+        if(strong)strong.textContent='Nexus Headquarters';
+        if(span)span.textContent='Master club command centre';
+        row.classList.toggle('is-current',auroraPageFile==='auroracityfc_nexusv2.html');
+      });
+    }
+
+    document.querySelectorAll('a').forEach(link=>{
+      const label=`${link.dataset?.name||''} ${link.textContent||''}`.toLowerCase();
+      const href=String(link.getAttribute('href')||'').toLowerCase();
+      if((label.includes('nexus')||label.includes('headquarters'))&&(href==='index.html'||href.endsWith('/index.html'))){
+        link.setAttribute('href',MASTER_NEXUS);
+      }
+    });
   }
 
   function ensureMatchReportNavigation(){
@@ -204,6 +251,7 @@ window.AuroraShell={
       context.insertBefore(link,live||null);
     }
   }
+  ensureNexusMasterNavigation();
   ensureMatchReportNavigation();
   ensureSystemHealthNavigation();
 })();
