@@ -1,10 +1,7 @@
-/* Aurora 2 — Squad Opportunity Watch
- * Read-only scouting intelligence for:
- *  1) current holdings trading below recorded average cost; and
- *  2) SOLD / ARCHIVED holdings that may deserve re-entry review.
- *
- * Price weakness is a scouting signal only. Existing Aurora Scouting
- * assessment remains the authority for eligibility and Transfer approval.
+/* Aurora 2 — Automated Squad Opportunity Table
+ * Current holdings below recorded average cost and qualifying former holdings
+ * are automatically enrolled into Active Scouting. Scouting remains the
+ * evidence/ranking authority; Transfer remains the purchase authority.
  */
 (function(w){
   'use strict';
@@ -12,14 +9,15 @@
 
   const $=id=>document.getElementById(id);
   const arr=v=>Array.isArray(v)?v:[];
-  const num=v=>Number.isFinite(Number(v))?Number(v):0;
+  const num=v=>{const n=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0};
   const upper=v=>String(v||'').trim().toUpperCase();
-  const esc=v=>String(v??'')
-    .replaceAll('&','&amp;').replaceAll('<','&lt;')
-    .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+  const norm=v=>String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
   const money=v=>`£${num(v).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:4})}`;
-  const pct=v=>`${Math.abs(num(v)).toFixed(1)}%`;
-  const tickerOf=v=>upper(v).replace(/\..*$/,'');
+  const tickerOf=v=>upper(v).replace(/^LON:/,'').replace(/\.L$/,'').replace(/\..*$/,'');
+  const now=()=>new Date().toISOString();
+
+  let syncing=false;
 
   function state(){
     try{return w.Aurora2?.core?.read?.()||null}catch(_){return null}
@@ -31,111 +29,215 @@
     if(!t)return 0;
     return num(strategyOf(s)==='maximum'?t.maximumScore:t.sustainableScore);
   }
-  function targetStatus(t){
-    return String(t?.status||'').toLowerCase();
+  function targetStatus(t){return String(t?.status||'').toLowerCase()}
+  function locked(s){
+    return !!s?.transfer?.route?.locked||['LOCKED','PARTIALLY_REGISTERED','COMPLETE'].includes(upper(s?.mission?.status));
   }
+  function accountCode(v){
+    const x=norm(v);
+    if(/212/.test(x))return 'T212';
+    if(/\big\b|ig isa/.test(x))return 'IG';
+    return 'CHECK';
+  }
+  function accountLabel(v){
+    const x=accountCode(v);
+    return x==='IG'?'IG ISA':x==='T212'?'Trading 212':'Broker check';
+  }
+
   function targetMap(s){
     const map=new Map();
     const strategy=strategyOf(s);
-    const statusWeight={pass:3,caution:2,block:1};
+    const weight={pass:3,caution:2,block:1};
     arr(s?.scouting?.targets).forEach(t=>{
-      const key=tickerOf(t?.ticker);
+      const key=tickerOf(t?.ticker||t?.marketSymbol);
       if(!key)return;
       const prior=map.get(key);
       if(!prior){map.set(key,t);return}
-      const a=statusWeight[targetStatus(t)]||0,b=statusWeight[targetStatus(prior)]||0;
-      const scoreA=num(strategy==='maximum'?t.maximumScore:t.sustainableScore);
-      const scoreB=num(strategy==='maximum'?prior.maximumScore:prior.sustainableScore);
-      if(a>b||(a===b&&scoreA>scoreB))map.set(key,t);
+      const a=weight[targetStatus(t)]||0,b=weight[targetStatus(prior)]||0;
+      const sa=num(strategy==='maximum'?t.maximumScore:t.sustainableScore);
+      const sb=num(strategy==='maximum'?prior.maximumScore:prior.sustainableScore);
+      if(a>b||(a===b&&sa>sb))map.set(key,t);
     });
     return map;
   }
 
-  function latestPrice(h,t){
-    return Math.max(0,num(t?.livePriceGbp)||num(h?.livePriceGbp)||
-      (num(h?.shares)>0&&num(h?.marketValueGbp)>0?num(h.marketValueGbp)/num(h.shares):0));
-  }
   function averageCost(h){
     return Math.max(0,num(h?.avgCostGbp)||
       (num(h?.shares)>0&&num(h?.bookCostGbp)>0?num(h.bookCostGbp)/num(h.shares):0));
   }
-  function discountToCost(h,t){
-    const cost=averageCost(h),live=latestPrice(h,t);
-    return cost>0&&live>0?((cost-live)/cost)*100:null;
+  function rowNames(row){
+    return [row?.name,row?.company,row?.companyName,row?.securityName].map(norm).filter(Boolean);
   }
-  function accountLabel(v){
-    const x=upper(v);
-    if(x.includes('IG'))return 'IG ISA';
-    if(x.includes('212'))return 'Trading 212';
-    return String(v||'Account');
+  function networkMatch(h,s){
+    const t=tickerOf(h?.ticker||h?.marketSymbol);
+    const names=[h?.name,h?.company,h?.companyName].map(norm).filter(Boolean);
+    return arr(s?.scouting?.universe).find(row=>{
+      const rt=tickerOf(row?.ticker||row?.marketSymbol||row?.symbol);
+      if(t&&rt&&(t===rt||rt.endsWith(t)||t.endsWith(rt)))return true;
+      const rn=rowNames(row);
+      return names.some(n=>rn.some(x=>x===n||x.includes(n)||n.includes(x)));
+    })||null;
+  }
+  function networkProfile(row){
+    try{return w.Aurora2?.scouting?.network?.autoProfile?.(row)||null}catch(_){return null}
+  }
+  function latestPrice(h,t,n){
+    return Math.max(0,
+      num(t?.livePriceGbp),num(n?.legacyPriceGbp),num(n?.livePriceGbp),
+      num(h?.livePriceGbp),
+      (num(h?.shares)>0&&num(h?.marketValueGbp)>0?num(h.marketValueGbp)/num(h.shares):0)
+    );
+  }
+  function discount(cost,live){return cost>0&&live>0?((cost-live)/cost)*100:null}
+
+  function candidateFrom(h,n,type){
+    const profile=networkProfile(n)||{};
+    const tick=tickerOf(h?.ticker||n?.ticker||n?.marketSymbol);
+    const live=Math.max(0,num(n?.legacyPriceGbp)||num(n?.livePriceGbp)||num(h?.livePriceGbp));
+    const yieldPct=Math.max(0,num(n?.legacyYieldPct)||num(h?.yieldPct)||num(h?.dividendYield)||num(h?.yield));
+    const safety=Math.max(0,num(profile?.safety)||num(n?.legacyPayoutScore)||num(h?.dividendSafety));
+    const valuation=Math.max(0,num(profile?.valuation)||num(n?.legacyValuationScore)||num(h?.valuationScore));
+    const growth=Math.max(0,num(profile?.growth)||num(n?.legacyGrowthScore)||num(h?.dividendGrowth));
+    const evidence=Math.max(0,num(profile?.evidence)||num(n?.evidenceCount));
+    const enoughEvidence=!!profile?.eligible||(
+      live>0&&yieldPct>0&&safety>=35&&evidence>=4
+    );
+    const confidence=Math.max(0,Math.min(100,
+      num(h?.confidence)||num(h?.dataQuality)||
+      (profile?.eligible?80:evidence>=5?70:evidence>=3?55:40)
+    ));
+
+    return {
+      id:`AUTO-${type}-${tick}`,
+      ticker:tick,
+      name:String(h?.name||n?.name||tick),
+      preferredAccount:accountCode(h?.account||h?.preferredAccount),
+      sector:String(h?.sector||n?.sector||''),
+      livePriceGbp:live,
+      yieldPct,
+      confidence,
+      dataQuality:confidence,
+      dividendSafety:safety||55,
+      valuationScore:valuation||55,
+      dividendGrowth:growth||50,
+      businessQuality:Math.max(0,num(h?.businessQuality)||55),
+      portfolioFit:0,
+      incomeScore:0,
+      dividendStatus:String(h?.dividendStatus||''),
+      payoutRisk:String(n?.legacyPayoutRisk||h?.payoutRisk||''),
+      source:'AURORA2_SQUAD_OPPORTUNITY_AUTO',
+      opportunityType:type,
+      opportunityAutoAdded:true,
+      requiresRefresh:!enoughEvidence,
+      networkSecurityId:n?.securityId||n?.id||null,
+      createdAt:now(),updatedAt:now()
+    };
   }
 
-  function evidenceLabel(t,s){
-    if(!t)return {label:'NEEDS SCOUT',tone:'needs',detail:'Not currently in Active Scouting. Open the Global Network for an evidence refresh.'};
-    const status=targetStatus(t),score=Math.round(activeScore(t,s));
-    if(status==='block')return {label:'BLOCKED',tone:'block',detail:`Scouting ${score}/100 • ${arr(t.eligibilityReasons)[0]||t.reason||'Current evidence blocks a purchase.'}`};
-    if(status==='caution')return {label:'CAUTION',tone:'caution',detail:`Scouting ${score}/100 • ${arr(t.eligibilityReasons)[0]||t.reason||'Controlled review required.'}`};
-    return {label:'PASS',tone:'pass',detail:`Scouting ${score}/100 • ${num(t.yieldPct).toFixed(2)}% yield • ${t.recommendation||'evidence passed'}`};
-  }
-
-  function currentVerdict(h,t,s){
-    const tick=tickerOf(h.ticker);
-    if(h.locked||upper(h.status)==='LOCKED'||tick==='TSCO'){
-      return {label:'LOCKED / HOLD ONLY',tone:'locked',detail:'Aurora rules prevent this holding being treated as an active add opportunity.'};
-    }
-    if(!t)return {label:'NEEDS SCOUT',tone:'needs',detail:'Below recorded cost, but Aurora does not have a current Active Scouting assessment.'};
-    const status=targetStatus(t),score=Math.round(activeScore(t,s));
-    if(status==='block')return {label:'DO NOT AVERAGE DOWN',tone:'block',detail:'The lower price does not override the current Scouting block.'};
-    if(status==='caution')return {label:'REVIEW DIP',tone:'caution',detail:'Price is below cost, but Scouting still requires controlled review before adding.'};
-    if(score>=70)return {label:'ADD OPPORTUNITY',tone:'pass',detail:'Below recorded cost and the current Scouting evidence remains Transfer-eligible. Final allocation still belongs to Transfer.'};
-    return {label:'HOLD / WATCH',tone:'watch',detail:'The holding passes evidence, but its current Scouting score does not make the dip a priority add signal.'};
-  }
-
-  function formerVerdict(h,t,s){
-    if(!t)return {label:'NEEDS SCOUT',tone:'needs',detail:'Former holding detected, but it has no current Active Scouting assessment.'};
-    const status=targetStatus(t),score=Math.round(activeScore(t,s));
-    if(status==='block')return {label:'NO RE-ENTRY',tone:'block',detail:'Current Scouting evidence still blocks a return to the squad.'};
-    if(status==='caution')return {label:'RE-ENTRY REVIEW',tone:'caution',detail:'Former holding is back on the radar, but the evidence is not yet a clean pass.'};
-    if(score>=70)return {label:'RE-ENTRY OPPORTUNITY',tone:'pass',detail:'The former holding has re-earned a positive Scouting assessment. Transfer must still compare it with all other targets.'};
-    return {label:'WATCH FOR RE-ENTRY',tone:'watch',detail:'The investment case is not blocked, but it is not currently strong enough to prioritise.'};
-  }
-
-  function currentRows(s,map){
+  function currentSignals(s,map){
     return arr(s?.squad?.holdings)
       .filter(h=>h&&['ACTIVE','LOCKED'].includes(upper(h.status))&&num(h.shares)>0)
       .map(h=>{
-        const t=map.get(tickerOf(h.ticker))||null;
-        const discount=discountToCost(h,t);
-        return {h,t,discount,live:latestPrice(h,t),cost:averageCost(h),verdict:currentVerdict(h,t,s),evidence:evidenceLabel(t,s)};
+        const tick=tickerOf(h.ticker),t=map.get(tick)||null,n=networkMatch(h,s);
+        const cost=averageCost(h),live=latestPrice(h,t,n),below=discount(cost,live);
+        const excluded=!!h.locked||upper(h.status)==='LOCKED'||tick==='TSCO';
+        return {kind:'CURRENT',h,t,n,cost,live,discount:below,excluded};
       })
       .filter(x=>x.discount!=null&&x.discount>0)
-      .sort((a,b)=>{
-        const passA=a.verdict.tone==='pass'?1:0,passB=b.verdict.tone==='pass'?1:0;
-        return passB-passA||b.discount-a.discount||activeScore(b.t,s)-activeScore(a.t,s);
-      });
+      .sort((a,b)=>b.discount-a.discount);
   }
 
-  function formerRows(s,map){
+  function formerSignals(s,map){
     const holdings=arr(s?.squad?.holdings);
-    const activeTickers=new Set(holdings
-      .filter(h=>h&&['ACTIVE','LOCKED'].includes(upper(h.status))&&num(h.shares)>0)
-      .map(h=>tickerOf(h.ticker)));
+    const active=new Set(holdings.filter(h=>h&&['ACTIVE','LOCKED'].includes(upper(h.status))&&num(h.shares)>0).map(h=>tickerOf(h.ticker)));
     const seen=new Set();
     return holdings
       .filter(h=>h&&['SOLD','ARCHIVED'].includes(upper(h.status)))
-      .filter(h=>{
-        const key=tickerOf(h.ticker);
-        if(!key||activeTickers.has(key)||seen.has(key))return false;
-        seen.add(key);return true;
-      })
+      .filter(h=>{const k=tickerOf(h.ticker);if(!k||active.has(k)||seen.has(k))return false;seen.add(k);return true})
       .map(h=>{
-        const t=map.get(tickerOf(h.ticker))||null;
-        return {h,t,live:latestPrice(h,t),cost:averageCost(h),discount:discountToCost(h,t),verdict:formerVerdict(h,t,s),evidence:evidenceLabel(t,s)};
+        const tick=tickerOf(h.ticker),t=map.get(tick)||null,n=networkMatch(h,s),profile=networkProfile(n);
+        const cost=averageCost(h),live=latestPrice(h,t,n),below=discount(cost,live);
+        const autoSource=String(t?.source||'')==='AURORA2_SQUAD_OPPORTUNITY_AUTO';
+        const signal=(below!=null&&below>0)||!!profile?.eligible||autoSource;
+        return {kind:'FORMER',h,t,n,cost,live,discount:below,profile,signal};
       })
-      .sort((a,b)=>{
-        const passA=a.verdict.tone==='pass'?1:0,passB=b.verdict.tone==='pass'?1:0;
-        return passB-passA||activeScore(b.t,s)-activeScore(a.t,s)||num(b.discount)-num(a.discount);
+      .filter(x=>x.signal)
+      .sort((a,b)=>(Number(!!b.profile?.eligible)-Number(!!a.profile?.eligible))||num(b.discount)-num(a.discount));
+  }
+
+  function autoEnroll(){
+    if(syncing)return 0;
+    const s=state();
+    if(!s||locked(s))return 0;
+    const map=targetMap(s);
+    const additions=[];
+
+    currentSignals(s,map).forEach(x=>{
+      const tick=tickerOf(x.h.ticker);
+      if(x.excluded||map.has(tick))return;
+      additions.push(candidateFrom(x.h,x.n,'BELOW_COST'));
+      map.set(tick,additions[additions.length-1]);
+    });
+
+    formerSignals(s,map).forEach(x=>{
+      const tick=tickerOf(x.h.ticker);
+      if(map.has(tick))return;
+      additions.push(candidateFrom(x.h,x.n,'REENTRY'));
+      map.set(tick,additions[additions.length-1]);
+    });
+
+    if(!additions.length)return 0;
+    syncing=true;
+    try{
+      w.Aurora2?.core?.update?.(current=>{
+        const existing=arr(current?.scouting?.targets);
+        const keys=new Set(existing.map(t=>tickerOf(t?.ticker||t?.marketSymbol)).filter(Boolean));
+        const fresh=additions.filter(t=>!keys.has(tickerOf(t.ticker)));
+        if(!fresh.length)return current;
+        let combined=[...existing,...fresh].map(t=>({...t,approvedForTransfer:false,approvedAt:null,approvalBatchId:null}));
+        if(w.Aurora2?.scouting?.rank)combined=w.Aurora2.scouting.rank(combined,current);
+        return {
+          ...current,
+          scouting:{
+            ...current.scouting,
+            targets:combined,
+            status:'SCOUTING_REVIEW',
+            approvedBatchId:null,
+            source:'AURORA2_SCOUTING',
+            updatedAt:now()
+          }
+        };
       });
+    }finally{
+      syncing=false;
+    }
+    return additions.length;
+  }
+
+  function verdict(x,s){
+    if(x.excluded)return {label:'EXCLUDED',tone:'locked'};
+    const t=x.t;
+    if(!t)return {label:'AUTO QUEUED',tone:'needs'};
+    const status=targetStatus(t),score=Math.round(activeScore(t,s));
+    if(x.kind==='CURRENT'){
+      if(status==='block')return {label:'DO NOT AVERAGE DOWN',tone:'block'};
+      if(status==='caution')return {label:'REVIEW DIP',tone:'caution'};
+      if(score>=70)return {label:'ADD OPPORTUNITY',tone:'pass'};
+      return {label:'HOLD / WATCH',tone:'watch'};
+    }
+    if(status==='block')return {label:'NO RE-ENTRY',tone:'block'};
+    if(status==='caution')return {label:'RE-ENTRY REVIEW',tone:'caution'};
+    if(score>=70)return {label:'RE-ENTRY OPPORTUNITY',tone:'pass'};
+    return {label:'WATCH RE-ENTRY',tone:'watch'};
+  }
+
+  function scoutingLabel(x,s){
+    if(x.excluded)return 'RULE EXCLUDED';
+    const t=x.t;
+    if(!t)return 'AUTO ADDING';
+    const score=Math.round(activeScore(t,s));
+    const status=upper(t.recommendation||t.status||'REVIEW');
+    return `AUTO ADDED • ${score}/100 • ${status}`;
   }
 
   function injectStyles(){
@@ -143,25 +245,22 @@
     const style=document.createElement('style');
     style.id='auroraSquadOpportunityStyles';
     style.textContent=`
-      .squad-opportunity-watch{margin-top:18px;border:1px solid rgba(103,232,249,.2);border-radius:20px;background:radial-gradient(circle at 0 0,rgba(34,211,238,.10),transparent 30%),linear-gradient(145deg,rgba(5,21,39,.96),rgba(3,11,25,.98));box-shadow:0 18px 46px rgba(0,0,0,.24);overflow:hidden}
-      .squad-opportunity-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:20px 22px;border-bottom:1px solid rgba(125,211,252,.13)}
-      .squad-opportunity-head small,.squad-opportunity-lane-head small{display:block;color:#67e8f9;font-size:9px;font-weight:950;letter-spacing:.2em;text-transform:uppercase}
-      .squad-opportunity-head h3{margin:5px 0 7px;font-size:27px;letter-spacing:-.035em}.squad-opportunity-head p{margin:0;max-width:800px;color:#91a8be;font-size:11px;line-height:1.55}
-      .squad-opportunity-rule{flex:0 0 auto;padding:8px 11px;border:1px solid rgba(251,191,36,.26);border-radius:999px;color:#fde68a;background:rgba(120,74,8,.17);font-size:8px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
-      .squad-opportunity-kpis{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(125,211,252,.12)}
-      .squad-opportunity-kpi{padding:14px 18px;border-right:1px solid rgba(125,211,252,.10)}.squad-opportunity-kpi:last-child{border-right:0}
-      .squad-opportunity-kpi small{display:block;color:#71869a;font-size:8px;letter-spacing:.12em;text-transform:uppercase}.squad-opportunity-kpi strong{display:block;margin-top:5px;font-size:20px}
-      .squad-opportunity-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px}.squad-opportunity-lane{min-width:0;border:1px solid rgba(125,211,252,.10);border-radius:16px;background:rgba(2,8,23,.38);overflow:hidden}
-      .squad-opportunity-lane-head{padding:15px 16px;border-bottom:1px solid rgba(125,211,252,.09);background:linear-gradient(90deg,rgba(8,47,73,.28),transparent)}.squad-opportunity-lane-head h4{margin:5px 0 3px;font-size:18px}.squad-opportunity-lane-head p{margin:0;color:#8197ae;font-size:9px;line-height:1.45}
-      .squad-opportunity-list{display:grid;gap:8px;padding:10px}.squad-opportunity-empty{padding:18px;border:1px dashed rgba(125,211,252,.16);border-radius:12px;color:#7f96aa;font-size:10px;line-height:1.5}
-      .squad-opportunity-row{padding:13px;border:1px solid rgba(125,211,252,.09);border-radius:13px;background:linear-gradient(110deg,rgba(8,47,73,.20),rgba(8,17,34,.36))}
-      .squad-opportunity-row-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.squad-opportunity-name strong{display:block;font-size:14px}.squad-opportunity-name span{display:block;margin-top:3px;color:#7f96aa;font-size:9px}.squad-opportunity-chip{display:inline-flex;padding:6px 8px;border-radius:999px;font-size:8px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;border:1px solid rgba(148,163,184,.18);color:#cbd5e1;background:rgba(15,23,42,.75)}
-      .squad-opportunity-chip.pass{border-color:rgba(52,211,153,.35);color:#a7f3d0;background:rgba(6,78,59,.35)}.squad-opportunity-chip.caution{border-color:rgba(251,191,36,.34);color:#fde68a;background:rgba(120,74,8,.26)}.squad-opportunity-chip.block{border-color:rgba(251,113,133,.36);color:#fecdd3;background:rgba(127,29,29,.28)}.squad-opportunity-chip.needs{border-color:rgba(96,165,250,.35);color:#bfdbfe;background:rgba(30,64,175,.24)}.squad-opportunity-chip.locked{border-color:rgba(167,139,250,.35);color:#ddd6fe;background:rgba(76,29,149,.24)}.squad-opportunity-chip.watch{border-color:rgba(125,211,252,.28);color:#bae6fd;background:rgba(8,47,73,.28)}
-      .squad-opportunity-price{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:11px}.squad-opportunity-price div{padding:8px;border:1px solid rgba(125,211,252,.08);border-radius:9px;background:rgba(2,8,23,.42)}.squad-opportunity-price small{display:block;color:#6f8599;font-size:7px;letter-spacing:.10em;text-transform:uppercase}.squad-opportunity-price b{display:block;margin-top:4px;font-size:11px}.squad-opportunity-price .discount b{color:#67e8f9}
-      .squad-opportunity-detail{margin-top:9px;color:#8ea5b9;font-size:9px;line-height:1.5}.squad-opportunity-evidence{margin-top:6px;color:#b6ccdd;font-size:9px;line-height:1.45}
-      .squad-opportunity-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.squad-opportunity-action{padding:7px 9px;border:1px solid rgba(125,211,252,.19);border-radius:8px;color:#c9eff8;background:rgba(8,47,73,.32);font-size:8px;font-weight:900;cursor:pointer}.squad-opportunity-action.primary{border-color:rgba(34,211,238,.45);color:#03131d;background:#3cecff}
-      @media(max-width:900px){.squad-opportunity-grid{grid-template-columns:1fr}.squad-opportunity-kpis{grid-template-columns:1fr 1fr}.squad-opportunity-kpi:nth-child(2){border-right:0}.squad-opportunity-kpi:nth-child(-n+2){border-bottom:1px solid rgba(125,211,252,.10)}}
-      @media(max-width:620px){.squad-opportunity-head{display:block}.squad-opportunity-rule{display:inline-flex;margin-top:12px}.squad-opportunity-price{grid-template-columns:1fr 1fr}.squad-opportunity-price div:last-child{grid-column:1/-1}}
+      .squad-opportunity-watch{margin-top:16px;border:1px solid rgba(103,232,249,.18);border-radius:16px;background:linear-gradient(145deg,rgba(5,21,39,.96),rgba(3,11,25,.98));overflow:hidden}
+      .squad-opportunity-head{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(125,211,252,.11)}
+      .squad-opportunity-head small{display:block;color:#67e8f9;font-size:8px;font-weight:950;letter-spacing:.18em;text-transform:uppercase}
+      .squad-opportunity-head h3{margin:3px 0 0;font-size:18px;letter-spacing:-.02em}.squad-opportunity-head p{margin:3px 0 0;color:#8298ad;font-size:9px;line-height:1.4}
+      .squad-opportunity-auto{padding:6px 9px;border:1px solid rgba(52,211,153,.3);border-radius:999px;color:#a7f3d0;background:rgba(6,78,59,.25);font-size:8px;font-weight:950;letter-spacing:.09em;white-space:nowrap}
+      .squad-opportunity-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .squad-opportunity-table{width:100%;border-collapse:collapse;min-width:790px;font-size:10px}
+      .squad-opportunity-table th{padding:9px 10px;text-align:left;color:#6f879d;background:rgba(3,12,25,.75);font-size:7px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid rgba(125,211,252,.11)}
+      .squad-opportunity-table td{padding:9px 10px;border-bottom:1px solid rgba(125,211,252,.07);vertical-align:middle;color:#bfd0df}.squad-opportunity-table tbody tr:last-child td{border-bottom:0}
+      .squad-opportunity-table tbody tr:hover{background:rgba(8,47,73,.18)}
+      .squad-opportunity-share strong{display:block;color:#eef9ff;font-size:11px}.squad-opportunity-share span{display:block;color:#74899d;font-size:8px;margin-top:2px}
+      .squad-opportunity-type{font-size:8px;font-weight:900;color:#8fb0c8}.squad-opportunity-below{color:#67e8f9;font-weight:900}.squad-opportunity-above{color:#94a3b8}
+      .squad-opportunity-chip{display:inline-flex;padding:5px 7px;border-radius:999px;font-size:7px;font-weight:950;letter-spacing:.06em;white-space:nowrap;border:1px solid rgba(148,163,184,.18);color:#cbd5e1;background:rgba(15,23,42,.72)}
+      .squad-opportunity-chip.pass{border-color:rgba(52,211,153,.35);color:#a7f3d0;background:rgba(6,78,59,.32)}.squad-opportunity-chip.caution{border-color:rgba(251,191,36,.34);color:#fde68a;background:rgba(120,74,8,.25)}.squad-opportunity-chip.block{border-color:rgba(251,113,133,.35);color:#fecdd3;background:rgba(127,29,29,.27)}.squad-opportunity-chip.needs{border-color:rgba(96,165,250,.33);color:#bfdbfe;background:rgba(30,64,175,.22)}.squad-opportunity-chip.locked{border-color:rgba(167,139,250,.33);color:#ddd6fe;background:rgba(76,29,149,.22)}.squad-opportunity-chip.watch{border-color:rgba(125,211,252,.26);color:#bae6fd;background:rgba(8,47,73,.26)}
+      .squad-opportunity-scouting{font-size:8px;font-weight:850;color:#9ed9e9;white-space:nowrap}.squad-opportunity-empty{padding:16px;color:#7f96aa;font-size:9px}
+      @media(max-width:620px){.squad-opportunity-head{align-items:flex-start}.squad-opportunity-head p{max-width:270px}.squad-opportunity-auto{font-size:7px}}
     `;
     document.head.appendChild(style);
   }
@@ -171,103 +270,75 @@
     const anchor=document.querySelector('.scouting-scoreboard')||document.querySelector('.scouting-coverage')||document.querySelector('.scouting3-command');
     if(!anchor)return null;
     const section=document.createElement('section');
-    section.id='squadOpportunityWatch';
-    section.className='squad-opportunity-watch';
+    section.id='squadOpportunityWatch';section.className='squad-opportunity-watch';
     section.innerHTML=`
       <div class="squad-opportunity-head">
-        <div><small>SQUAD VALUE WATCH</small><h3>Existing & Former Squad Opportunities</h3><p>Aurora re-checks shares you already own when they trade below recorded average cost, and keeps exited holdings visible for possible re-entry. A cheaper price is a scouting signal — never automatic buy permission.</p></div>
-        <span class="squad-opportunity-rule">PRICE SIGNAL ≠ BUY</span>
+        <div><small>AUTOMATED SQUAD VALUE SCOUT</small><h3>Squad Opportunities</h3><p>Below-cost holdings and qualifying former holdings are automatically added to Active Scouting. Transfer still decides where money goes.</p></div>
+        <span class="squad-opportunity-auto">AUTO SCOUTING ON</span>
       </div>
-      <div class="squad-opportunity-kpis">
-        <div class="squad-opportunity-kpi"><small>Below Buy Price</small><strong id="squadOpportunityDipCount">0</strong></div>
-        <div class="squad-opportunity-kpi"><small>Clean Add Signals</small><strong id="squadOpportunityAddCount">0</strong></div>
-        <div class="squad-opportunity-kpi"><small>Former Squad</small><strong id="squadOpportunityFormerCount">0</strong></div>
-        <div class="squad-opportunity-kpi"><small>Re-entry Signals</small><strong id="squadOpportunityReentryCount">0</strong></div>
-      </div>
-      <div class="squad-opportunity-grid">
-        <article class="squad-opportunity-lane"><div class="squad-opportunity-lane-head"><small>CURRENT SQUAD</small><h4>Below Buy Price</h4><p>Current positions where the latest supported price is below Aurora's recorded average cost.</p></div><div id="squadOpportunityCurrent" class="squad-opportunity-list"></div></article>
-        <article class="squad-opportunity-lane"><div class="squad-opportunity-lane-head"><small>FORMER SQUAD</small><h4>Re-entry Watch</h4><p>SOLD / ARCHIVED names stay on the radar and can earn their way back through current Scouting evidence.</p></div><div id="squadOpportunityFormer" class="squad-opportunity-list"></div></article>
+      <div class="squad-opportunity-table-wrap">
+        <table class="squad-opportunity-table">
+          <thead><tr><th>Type</th><th>Share</th><th>Average Price</th><th>Live Price</th><th>Below Price</th><th>Opportunity</th><th>Scouting</th></tr></thead>
+          <tbody id="squadOpportunityRows"></tbody>
+        </table>
       </div>`;
     anchor.insertAdjacentElement('afterend',section);
 
     const jump=document.querySelector('.scouting-jumpbar');
     if(jump&&!jump.querySelector('[data-scout-jump="squadOpportunityWatch"]')){
-      const button=document.createElement('button');
-      button.type='button';button.dataset.scoutJump='squadOpportunityWatch';button.textContent='Squad Opportunities';
+      const button=document.createElement('button');button.type='button';button.dataset.scoutJump='squadOpportunityWatch';button.textContent='Squad Opportunities';
       jump.insertBefore(button,jump.firstElementChild||null);
     }
     return section;
   }
 
-  function priceCells(x,former=false){
-    const third=former
-      ? `<div class="discount"><small>vs former cost</small><b>${x.discount==null?'—':(x.discount>=0?`${pct(x.discount)} below`:`${pct(x.discount)} above`)}</b></div>`
-      : `<div class="discount"><small>below buy price</small><b>${x.discount==null?'—':pct(x.discount)}</b></div>`;
-    return `<div class="squad-opportunity-price"><div><small>${former?'former avg cost':'avg buy price'}</small><b>${x.cost>0?money(x.cost):'—'}</b></div><div><small>latest price</small><b>${x.live>0?money(x.live):'—'}</b></div>${third}</div>`;
-  }
-
-  function rowHtml(x,s,former=false){
-    const h=x.h,t=x.t,v=x.verdict;
-    const button=t
-      ? '<button type="button" class="squad-opportunity-action primary" data-opportunity-open="evidence">Open Scouting Evidence</button>'
-      : '<button type="button" class="squad-opportunity-action primary" data-opportunity-open="network">Open Global Network</button>';
-    const score=t?Math.round(activeScore(t,s)):0;
-    return `<article class="squad-opportunity-row" data-opportunity-ticker="${esc(tickerOf(h.ticker))}">
-      <div class="squad-opportunity-row-head"><div class="squad-opportunity-name"><strong>${esc(tickerOf(h.ticker))} <span>${esc(h.name||'')}</span></strong><span>${esc(accountLabel(h.account))}${former?' • FORMER HOLDING':` • ${num(h.shares).toLocaleString('en-GB')} shares`}</span></div><span class="squad-opportunity-chip ${esc(v.tone)}">${esc(v.label)}</span></div>
-      ${priceCells(x,former)}
-      <div class="squad-opportunity-detail">${esc(v.detail)}</div>
-      <div class="squad-opportunity-evidence">${t?`Current ${strategyOf(s)==='maximum'?'Maximum':'Sustainable'} Scouting: ${score}/100 • ${esc(t.recommendation||t.status||'REVIEW')}`:'Current Scouting: not assessed'}</div>
-      <div class="squad-opportunity-actions">${button}<button type="button" class="squad-opportunity-action" data-opportunity-run="1">Run Scouting</button></div>
-    </article>`;
+  function rowHtml(x,s){
+    const v=verdict(x,s),below=x.discount;
+    const belowText=below==null?'—':below>=0?`${below.toFixed(1)}% below`:`${Math.abs(below).toFixed(1)}% above`;
+    const belowClass=below!=null&&below>0?'squad-opportunity-below':'squad-opportunity-above';
+    return `<tr data-opportunity-ticker="${esc(tickerOf(x.h.ticker))}">
+      <td><span class="squad-opportunity-type">${x.kind==='CURRENT'?'CURRENT':'FORMER'}</span></td>
+      <td class="squad-opportunity-share"><strong>${esc(tickerOf(x.h.ticker))}</strong><span>${esc(x.h.name||'')} • ${esc(accountLabel(x.h.account||x.h.preferredAccount))}</span></td>
+      <td>${x.cost>0?money(x.cost):'—'}</td>
+      <td>${x.live>0?money(x.live):'—'}</td>
+      <td class="${belowClass}">${belowText}</td>
+      <td><span class="squad-opportunity-chip ${esc(v.tone)}">${esc(v.label)}</span></td>
+      <td><span class="squad-opportunity-scouting">${esc(scoutingLabel(x,s))}</span></td>
+    </tr>`;
   }
 
   function render(){
-    injectStyles();
-    const panel=ensurePanel();if(!panel)return;
+    if(syncing)return;
+    injectStyles();ensurePanel();
     const s=state();if(!s)return;
-    const map=targetMap(s),current=currentRows(s,map),former=formerRows(s,map);
-    const addCount=current.filter(x=>x.verdict.label==='ADD OPPORTUNITY').length;
-    const reentryCount=former.filter(x=>x.verdict.label==='RE-ENTRY OPPORTUNITY').length;
-    if($('squadOpportunityDipCount'))$('squadOpportunityDipCount').textContent=String(current.length);
-    if($('squadOpportunityAddCount'))$('squadOpportunityAddCount').textContent=String(addCount);
-    if($('squadOpportunityFormerCount'))$('squadOpportunityFormerCount').textContent=String(former.length);
-    if($('squadOpportunityReentryCount'))$('squadOpportunityReentryCount').textContent=String(reentryCount);
-
-    const cur=$('squadOpportunityCurrent'),old=$('squadOpportunityFormer');
-    if(cur)cur.innerHTML=current.length?current.map(x=>rowHtml(x,s,false)).join(''):'<div class="squad-opportunity-empty">No current holding with a supported live price is below its recorded average cost right now.</div>';
-    if(old)old.innerHTML=former.length?former.map(x=>rowHtml(x,s,true)).join(''):'<div class="squad-opportunity-empty">No SOLD / ARCHIVED holdings are currently recorded as a separate former-squad watch.</div>';
-
-    w.AuroraMotion?.pulse?.(panel,'aurora-status-change',500);
+    const map=targetMap(s);
+    const rows=[...currentSignals(s,map),...formerSignals(s,map)];
+    const host=$('squadOpportunityRows');if(!host)return;
+    host.innerHTML=rows.length?rows.map(x=>rowHtml(x,s)).join(''):`<tr><td colspan="7"><div class="squad-opportunity-empty">No below-cost or former-squad re-entry opportunities are currently detected.</div></td></tr>`;
   }
 
-  function jumpTo(id){
-    const target=$(id);if(!target)return;
-    const offset=(document.querySelector('.aurora-shell-header')?.offsetHeight||0)+(document.querySelector('.scouting-jumpbar')?.offsetHeight||0)+18;
-    const top=target.getBoundingClientRect().top+w.scrollY-offset;
-    w.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+  function syncAndRender(){
+    const added=autoEnroll();
+    setTimeout(render,added?50:0);
+    if(added)setTimeout(render,500);
   }
+
   function bind(){
-    document.addEventListener('click',e=>{
-      const open=e.target.closest('[data-opportunity-open]');
-      if(open){
-        e.preventDefault();
-        jumpTo(open.dataset.opportunityOpen==='evidence'?'candidateLab':'globalNetworkSection');
-        return;
-      }
-      const run=e.target.closest('[data-opportunity-run]');
-      if(run){
-        e.preventDefault();
-        $('runScouting')?.click();
-        setTimeout(render,120);setTimeout(render,800);
-      }
-    });
-    w.addEventListener('aurora2:state',()=>setTimeout(render,40));
-    w.addEventListener('storage',()=>setTimeout(render,60));
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(render,70)});
-    const run=$('runScouting');if(run)run.addEventListener('click',()=>{setTimeout(render,80);setTimeout(render,650)});
-    render();setTimeout(render,500);setTimeout(render,1600);
+    injectStyles();ensurePanel();
+    syncAndRender();
+
+    const run=$('runScouting');
+    run?.addEventListener('click',()=>{
+      autoEnroll();
+      setTimeout(render,90);setTimeout(render,700);
+    },{capture:true});
+
+    w.addEventListener('aurora2:state',()=>setTimeout(()=>{if(!syncing){autoEnroll();render()}},60));
+    w.addEventListener('storage',()=>setTimeout(syncAndRender,80));
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(syncAndRender,90)});
+    setTimeout(syncAndRender,500);setTimeout(syncAndRender,1600);
   }
 
-  w.AuroraSquadOpportunityWatch={render,currentRows,formerRows};
+  w.AuroraSquadOpportunityWatch={render,autoEnroll,currentSignals,formerSignals};
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',bind,{once:true}):bind();
 })(window);
