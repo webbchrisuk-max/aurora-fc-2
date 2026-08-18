@@ -70,6 +70,15 @@
     script.dataset.auroraSquadOpportunities='1';
     document.head.appendChild(script);
   }
+  function loadScoutingCleanBoard(){
+    const file=String(location.pathname||'').split('/').pop().toLowerCase();
+    if(file!=='scouting.html'||document.querySelector('script[data-aurora-scouting-clean-board]'))return;
+    const script=document.createElement('script');
+    script.src='scouting-clean-board.js?v=20260818-clean-board-1';
+    script.async=false;
+    script.dataset.auroraScoutingCleanBoard='1';
+    document.head.appendChild(script);
+  }
   function loadBackgroundSignalScouting(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='scouting.html'||document.querySelector('script[data-aurora-background-signals]'))return;
@@ -107,7 +116,7 @@
     document.head.appendChild(script);
   }
   function init(){
-    remember();animateRows(document);scoutingHooks();loadFormerReentryRefresh();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();loadFinanceHousePriorityLayout();
+    remember();animateRows(document);scoutingHooks();loadFormerReentryRefresh();loadScoutingSquadOpportunities();loadScoutingCleanBoard();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();loadFinanceHousePriorityLayout();
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     requestAnimationFrame(()=>requestAnimationFrame(()=>{armed=true;document.documentElement.classList.add('aurora-motion-ready')}));
   }
