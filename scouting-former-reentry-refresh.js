@@ -1,4 +1,4 @@
-/* Aurora 2 — Former Holding Re-entry Refresh v1
+/* Aurora 2 — Former Holding Re-entry Refresh v2
  * Keeps SOLD / ARCHIVED holdings under live evidence review without restoring
  * them to the active portfolio. AuroraData 2 MarketPrices + Watchlist remain
  * the evidence source; Transfer remains the purchase authority.
@@ -32,15 +32,6 @@
     });
   }
 
-  function gvizUrl(sheet){
-    const p=new URLSearchParams({tqx:'out:json',sheet,headers:'1',tq:'select *',_t:String(Date.now())});
-    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?${p.toString()}`;
-  }
-  function parseGviz(text){
-    const start=text.indexOf('{'),end=text.lastIndexOf('}');
-    if(start<0||end<=start)throw new Error('AuroraData 2 sheet response was unreadable.');
-    return JSON.parse(text.slice(start,end+1));
-  }
   function tableObjects(payload){
     const table=payload?.table||{};
     const cols=arr(table.cols).map((c,i)=>String(c?.label||c?.id||`c${i}`).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''));
@@ -53,11 +44,32 @@
       return out;
     });
   }
-  async function fetchSheet(sheet){
-    const url=gvizUrl(sheet);
-    const res=await fetch(url,{cache:'no-store',credentials:'omit'});
-    if(!res.ok)throw new Error(`${sheet} returned HTTP ${res.status}`);
-    return tableObjects(parseGviz(await res.text()));
+
+  /* GViz supports a responseHandler callback. Using script/JSONP here avoids
+     cross-origin fetch failures when Scouting runs from GitHub Pages/Safari. */
+  function fetchSheet(sheet){
+    return new Promise((resolve,reject)=>{
+      const callback=`auroraFormerGviz${Date.now()}${Math.random().toString(36).slice(2)}`;
+      const script=document.createElement('script');
+      let settled=false;
+      const finish=(err,payload)=>{
+        if(settled)return;settled=true;clearTimeout(timer);
+        try{delete w[callback]}catch(_){w[callback]=undefined}
+        try{script.remove()}catch(_){}
+        if(err)reject(err);else resolve(tableObjects(payload));
+      };
+      const timer=setTimeout(()=>finish(new Error(`${sheet} evidence timed out.`)),18000);
+      w[callback]=payload=>finish(null,payload||{});
+      const params=new URLSearchParams({
+        tqx:`out:json;responseHandler:${callback}`,
+        sheet,headers:'1',tq:'select *',_t:String(Date.now())
+      });
+      script.src=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?${params.toString()}`;
+      script.async=true;
+      script.referrerPolicy='no-referrer';
+      script.onerror=()=>finish(new Error(`${sheet} evidence could not be opened.`));
+      document.head.appendChild(script);
+    });
   }
 
   function mapByTicker(rows){
@@ -188,8 +200,9 @@
     const s=state();if(!s)return null;
     running=true;lastRunAt=now();lastError=null;
     try{
-      // Trigger the canonical market engine when the shared backend client is present.
-      try{await w.AuroraData2Client?.post?.('marketPriceSnapshot',{})}catch(_){/* public sheet evidence remains available */}
+      // If the authenticated shared client is already present, ask the canonical
+      // market engine to run too. The public evidence sheets remain the fallback.
+      try{await w.AuroraData2Client?.post?.('marketPriceSnapshot',{})}catch(_){}
       const [watchRows,priceRows]=await Promise.all([fetchSheet('Watchlist'),fetchSheet('MarketPrices')]);
       const evidence=buildEvidence(state()||s,watchRows,priceRows);
       applyEvidence(evidence);
