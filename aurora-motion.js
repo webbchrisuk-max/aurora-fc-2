@@ -88,8 +88,17 @@
     script.dataset.auroraHouseRoomGroups='1';
     document.head.appendChild(script);
   }
+  function loadFinanceHousePriorityLayout(){
+    const file=String(location.pathname||'').split('/').pop().toLowerCase();
+    if(file!=='finance.html'||document.querySelector('script[data-aurora-house-priority-layout]'))return;
+    const script=document.createElement('script');
+    script.src='finance-house-priority-layout.js?v=20260818-priority-layout-1';
+    script.async=false;
+    script.dataset.auroraHousePriorityLayout='1';
+    document.head.appendChild(script);
+  }
   function init(){
-    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();
+    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();loadFinanceHousePriorityLayout();
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     requestAnimationFrame(()=>requestAnimationFrame(()=>{armed=true;document.documentElement.classList.add('aurora-motion-ready')}));
   }
