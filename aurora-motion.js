@@ -61,8 +61,17 @@
     script.dataset.auroraSquadOpportunities='1';
     document.head.appendChild(script);
   }
+  function loadBackgroundSignalScouting(){
+    const file=String(location.pathname||'').split('/').pop().toLowerCase();
+    if(file!=='scouting.html'||document.querySelector('script[data-aurora-background-signals]'))return;
+    const script=document.createElement('script');
+    script.src='scouting-signal-background.js?v=20260818-silent-signals-1';
+    script.async=false;
+    script.dataset.auroraBackgroundSignals='1';
+    document.head.appendChild(script);
+  }
   function init(){
-    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();
+    remember();animateRows(document);scoutingHooks();loadScoutingSquadOpportunities();loadBackgroundSignalScouting();
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     requestAnimationFrame(()=>requestAnimationFrame(()=>{armed=true;document.documentElement.classList.add('aurora-motion-ready')}));
   }
