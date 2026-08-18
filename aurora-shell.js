@@ -4,6 +4,7 @@
   'use strict';
 
   const SESSION_KEY='aurora2:session:authenticated';
+  const MASTER_NEXUS='AuroraCityFC_NexusV2.html';
   const entryApp=document.getElementById('entryApp');
   const gameShell=document.getElementById('gameShell');
   const bootScreen=document.getElementById('bootScreen');
@@ -26,7 +27,7 @@
     {at:19,message:'Connecting to AuroraData 2...',code:'DATA // AURORA 2'},
     {at:42,message:'Synchronising squad intelligence...',code:'SQUAD // READY'},
     {at:64,message:'Opening transfer network...',code:'TRANSFER // ONLINE'},
-    {at:83,message:'Preparing Nexus HQ 2.0...',code:'HQ // READY'},
+    {at:83,message:'Preparing Nexus Headquarters...',code:'HQ // READY'},
     {at:100,message:'Manager access granted.',code:'ACCESS // GRANTED'}
   ];
 
@@ -125,6 +126,10 @@
     document.body.classList.remove('shell-navigation-open');
   }
 
+  function goMasterNexus(){
+    location.replace(MASTER_NEXUS);
+  }
+
   function enterClub(){
     if(entering)return;
     entering=true;
@@ -139,13 +144,7 @@
         location.replace(returnPath);
         return;
       }
-
-      showClubImmediately();
-      try{
-        if(location.search)history.replaceState(null,'',location.pathname+location.hash);
-      }catch(_){}
-      window.scrollTo(0,0);
-      entering=false;
+      goMasterNexus();
     },1180);
   }
 
@@ -161,6 +160,17 @@
     const date=document.getElementById('shellDate');
     if(clock)clock.textContent=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     if(date)date.textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}).toUpperCase();
+  }
+
+  function promoteNexusLinks(){
+    document.querySelectorAll('a').forEach(link=>{
+      const label=`${link.dataset?.name||''} ${link.textContent||''}`.toLowerCase();
+      const href=String(link.getAttribute('href')||'').toLowerCase();
+      if((label.includes('nexus')||label.includes('headquarters'))&&(/(^|\/)index\.html(?:$|[?#])/.test(href)||href==='index.html')){
+        link.setAttribute('href',MASTER_NEXUS);
+        link.dataset.name='Nexus Headquarters';
+      }
+    });
   }
 
   if(enterButton)enterButton.addEventListener('click',enterClub);
@@ -205,14 +215,18 @@
   window.AuroraShell={
     openNavigation:openNav,
     closeNavigation:closeNav,
-    logout
+    logout,
+    home:goMasterNexus,
+    masterNexus:MASTER_NEXUS
   };
+  window.AuroraMasterNexus=MASTER_NEXUS;
 
   updateClock();
   setInterval(updateClock,15000);
+  promoteNexusLinks();
 
   if(sessionActive()){
-    showClubImmediately();
+    goMasterNexus();
   }else{
     document.documentElement.classList.remove('aurora-session-active');
     createParticles();
@@ -285,5 +299,6 @@
   }
   ensureMatchReportNavigation();
   ensureSystemHealthNavigation();
+  promoteNexusLinks();
 }
 })();
