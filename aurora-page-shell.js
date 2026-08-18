@@ -124,12 +124,13 @@ window.AuroraMasterNexus=MASTER_NEXUS;
   if(auroraPageFile==='auroracityfc_nexusv2.html'){
     auroraLoadShared('nexus-v2-runtime-recovery.js?v=20260817-recovery-1','nexus-v2-runtime-recovery');
     auroraLoadShared('nexus-v2-command-hydration.js?v=20260818-hydration-1','nexus-v2-command-hydration');
+    auroraLoadShared('match-report-published-feed.js?v=20260818-published-feed-2','match-report-published-feed');
   }
 
   if(auroraPageFile==='match-report.html'){
     auroraLoadShared('match-report-page-fix.js?v=20260818-fullpage-2','match-report-page-fix');
     auroraLoadShared('match-report-hydration.js?v=20260818-hydration-1','match-report-hydration');
-    auroraLoadShared('match-report-published-feed.js?v=20260818-published-feed-1','match-report-published-feed');
+    auroraLoadShared('match-report-published-feed.js?v=20260818-published-feed-2','match-report-published-feed');
   }
 
   auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
