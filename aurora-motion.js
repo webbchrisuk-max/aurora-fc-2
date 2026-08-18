@@ -56,7 +56,7 @@
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='scouting.html'||document.querySelector('script[data-aurora-former-reentry]'))return;
     const script=document.createElement('script');
-    script.src='scouting-former-reentry-refresh.js?v=20260818-former-reentry-1';
+    script.src='scouting-former-reentry-refresh.js?v=20260818-former-reentry-2';
     script.async=false;
     script.dataset.auroraFormerReentry='1';
     document.head.appendChild(script);
