@@ -20,7 +20,7 @@ function ensureScoutingIntelligence3(){
   if(page!=='scouting.html')return;
   if(!w.AuroraScoutingIntelligence3Migration&&!document.querySelector('script[data-aurora-scouting-intelligence3-migration]')){
     const migration=document.createElement('script');
-    migration.src='scouting-intelligence-3-migration.js?v=20260819-intelligence-3-migration-1';
+    migration.src='scouting-intelligence-3-migration.js?v=20260819-intelligence-3-migration-2';
     migration.async=false;
     migration.dataset.auroraScoutingIntelligence3Migration='1';
     document.head.appendChild(migration);
