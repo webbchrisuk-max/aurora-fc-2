@@ -89,7 +89,7 @@
   function loadFinanceHouseRoomGroups(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-house-room-groups]'))return;
-    const script=document.createElement('script');script.src='finance-house-room-groups.js?v=20260818-room-groups-1';script.async=false;script.dataset.auroraHouseRoomGroups='1';document.head.appendChild(script);
+    const script=document.createElement('script');script.src='finance-house-room-groups.js?v=20260819-house-actions-2';script.async=false;script.dataset.auroraHouseRoomGroups='1';document.head.appendChild(script);
   }
   function loadFinanceHousePriorityLayout(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
