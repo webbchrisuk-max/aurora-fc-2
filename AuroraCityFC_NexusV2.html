@@ -170,13 +170,13 @@ body.aurora-entered .n2-shell{min-height:100svh;padding-top:calc(var(--shell-hea
     <a class="aurora-shell-department-row is-current" href="AuroraCityFC_NexusV2.html"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus Headquarters</strong><span>Master club command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
     <div class="aurora-shell-nav-section">Football Operations</div>
     <a class="aurora-shell-department-row" href="finance.html"><div class="aurora-shell-nav-icon">💷</div><div class="aurora-shell-nav-copy"><strong>Finance Command</strong><span>Protected cash</span></div><div class="aurora-shell-nav-arrow">›</div></a>
-    <a class="aurora-shell-department-row" href="scouting.html"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research and evidence</span></div><div class="aurora-shell-nav-arrow">›</div></a>
-    <a class="aurora-shell-department-row" href="transfer.html"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy approved mission</span></div><div class="aurora-shell-nav-arrow">›</div></a>
-    <a class="aurora-shell-department-row" href="registration.html"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="scouting.html"><div class="aurora-shell-nav-icon">🔎</div><div class="aurora-shell-nav-copy"><strong>Scouting Centre</strong><span>Research and scoring</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="transfer.html"><div class="aurora-shell-nav-icon">🔄</div><div class="aurora-shell-nav-copy"><strong>Transfer Centre</strong><span>Deploy mission budget</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="registration.html"><div class="aurora-shell-nav-icon">📝</div><div class="aurora-shell-nav-copy"><strong>Registration</strong><span>Record broker execution</span></div><div class="aurora-shell-nav-arrow">›</div></a>
     <a class="aurora-shell-department-row" href="squad.html"><div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Squad Hub</strong><span>Canonical holdings</span></div><div class="aurora-shell-nav-arrow">›</div></a>
     <a class="aurora-shell-department-row" href="income.html"><div class="aurora-shell-nav-icon">💰</div><div class="aurora-shell-nav-copy"><strong>Income Centre</strong><span>Dividend truth</span></div><div class="aurora-shell-nav-arrow">›</div></a>
-    <div class="aurora-shell-nav-section">Club</div>
-    <a class="aurora-shell-department-row" href="club-control.html"><div class="aurora-shell-nav-icon">⚙</div><div class="aurora-shell-nav-copy"><strong>Club Control</strong><span>System preferences</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <a class="aurora-shell-department-row" href="match-report.html"><div class="aurora-shell-nav-icon">🏆</div><div class="aurora-shell-nav-copy"><strong>Match Report</strong><span>5PM portfolio full-time</span></div><div class="aurora-shell-nav-arrow">›</div></a>
+    <div class="aurora-shell-nav-section">System</div>
     <a class="aurora-shell-department-row" href="system-health.html"><div class="aurora-shell-nav-icon">🛡</div><div class="aurora-shell-nav-copy"><strong>System Health</strong><span>Integrity and diagnostics</span></div><div class="aurora-shell-nav-arrow">›</div></a>
   </div>
 </aside>
@@ -190,6 +190,7 @@ body.aurora-entered .n2-shell{min-height:100svh;padding-top:calc(var(--shell-hea
 <script>
 (function(){
   'use strict';
+  try{sessionStorage.setItem('aurora2:session:authenticated','1')}catch(_){}
   const menu=document.getElementById('auroraShellMenuButton');
   const close=document.getElementById('auroraShellNavigationClose');
   const overlay=document.getElementById('auroraShellNavigationOverlay');
