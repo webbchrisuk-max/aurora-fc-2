@@ -76,7 +76,7 @@
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-bill-actions-fix]'))return;
     const script=document.createElement('script');
-    script.src='finance-bill-actions-fix.js?v=20260819-bill-payment-modal-2';
+    script.src='finance-bill-actions-fix.js?v=20260819-native-payment-3';
     script.async=false;
     script.dataset.auroraBillActionsFix='1';
     document.head.appendChild(script);
