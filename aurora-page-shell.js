@@ -4,7 +4,7 @@
 const SESSION_KEY='aurora2:session:authenticated';
 const MASTER_NEXUS='AuroraCityFC_NexusV2.html';
 const CREST_URL='assets/aurora-city-fc-badge.svg';
-const SHARED_BUILD='20260819-clean-shell-1';
+const SHARED_BUILD='20260819-nav-stable-1';
 
 function sessionActive(){
   try{return sessionStorage.getItem(SESSION_KEY)==='1'}catch(_){return false}
@@ -146,15 +146,6 @@ auroraLoadShared('aurora-sync-manager.js?v=101-nexus-recovery','sync-manager');
 auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
 auroraLoadShared(`aurora-club-command.js?v=${SHARED_BUILD}`,'club-command');
 
-if(auroraPageFile==='auroracityfc_nexusv2.html'){
-  /* Nexus has one visual authority: nexus-v2-canonical-controller.js.
-     Shared shell only supplies data hydration, feed, notification and artwork support. */
-  auroraLoadShared('nexus-v2-command-hydration.js?v=20260819-clean-hydration-1','nexus-v2-command-hydration');
-  auroraLoadShared('match-report-published-feed.js?v=20260819-report-recovery-3','match-report-published-feed');
-  auroraLoadShared('nexus-v2-notification-dock.js?v=20260819-bell-4','nexus-v2-notification-dock');
-  auroraLoadShared('nexus-v2-hero-art.js?v=20260817-nexus-hero-3','nexus-v2-hero-art');
-}
-
 if(auroraPageFile==='match-report.html'){
   auroraLoadShared('match-report-page-fix.js?v=20260819-clean-match-1','match-report-page-fix');
   auroraLoadShared('match-report-hydration.js?v=20260818-hydration-1','match-report-hydration');
@@ -162,7 +153,6 @@ if(auroraPageFile==='match-report.html'){
 }
 
 auroraLoadShared('aurora-notifications.js?v=111-nexus-header','notifications');
-auroraLoadShared('aurora-nexus-hero-titles.js?v=20260819-pitch-visible-3','nexus-hero-titles');
 if(auroraPageFile==='transfer.html'||auroraPageFile==='scouting.html')auroraLoadShared('aurora-transfer-strategy.js?v=20260817-transfer-owner-1','transfer-strategy-owner');
 
 function ensureNexusMasterNavigation(){
@@ -199,9 +189,6 @@ function ensureMatchReportNavigation(){
     const row=document.createElement('a');row.className='aurora-shell-department-row';if(auroraPageFile==='match-report.html')row.classList.add('is-current');
     row.href='match-report.html';row.dataset.name='Match Report';row.innerHTML='<div class="aurora-shell-nav-icon">⚽</div><div class="aurora-shell-nav-copy"><strong>Match Report</strong><span>5pm portfolio full-time report</span></div><div class="aurora-shell-nav-arrow">›</div>';
     const system=[...scroll.querySelectorAll('.aurora-shell-nav-section')].find(x=>String(x.textContent||'').trim().toLowerCase()==='system');if(system)scroll.insertBefore(row,system);else scroll.append(row);
-  }
-  if(auroraPageFile==='auroracityfc_nexusv2.html'){
-    const launch=document.querySelector('.departments');if(launch&&!launch.querySelector('a[href="match-report.html"]')){const card=document.createElement('a');card.className='dept';card.href='match-report.html';card.innerHTML='<i>⚽</i><strong>Match Report</strong><span>5pm full-time portfolio review</span>';launch.appendChild(card)}
   }
 }
 
