@@ -21,7 +21,7 @@
   function loadScoutingIntelligence3(){loadScriptForPage('scouting.html','script[data-aurora-scouting-intelligence3]','scouting-intelligence-3.js?v=20260819-intelligence-3-1','auroraScoutingIntelligence3')}
   function loadFormerReentryRefresh(){loadScriptForPage('scouting.html','script[data-aurora-former-reentry]','scouting-former-reentry-refresh.js?v=20260818-former-reentry-2','auroraFormerReentry')}
   function loadScoutingSquadOpportunities(){loadScriptForPage('scouting.html','script[data-aurora-squad-opportunities]','scouting-squad-opportunities.js?v=20260818-former-evidence-4','auroraSquadOpportunities')}
-  function loadScoutingCleanBoard(){loadScriptForPage('scouting.html','script[data-aurora-scouting-clean-board]','scouting-clean-board.js?v=20260818-clean-board-1','auroraScoutingCleanBoard')}
+  function loadScoutingCleanBoard(){loadScriptForPage('scouting.html','script[data-aurora-scouting-clean-board]','scouting-clean-board.js?v=20260819-intelligence-3-board-2','auroraScoutingCleanBoard')}
   function loadBackgroundSignalScouting(){loadScriptForPage('scouting.html','script[data-aurora-background-signals]','scouting-signal-background.js?v=20260818-silent-signals-1','auroraBackgroundSignals')}
   function loadFinanceBillActionsFix(){loadScriptForPage('finance.html','script[data-aurora-bill-actions-fix]','finance-bill-actions-fix.js?v=20260819-native-payment-3','auroraBillActionsFix')}
   function loadFinanceHouseDashboardUpgrade(){loadScriptForPage('finance.html','script[data-aurora-house-dashboard-upgrade]','finance-house-dashboard-upgrade.js?v=20260818-house-modal-2','auroraHouseDashboardUpgrade')}
