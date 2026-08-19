@@ -1,4 +1,4 @@
-/* Aurora City FC — Scouting Intelligence 3.0
+/* Aurora City FC — Scouting Intelligence 3.0.1
  * Canonical Scouting score authority.
  *
  * One factor model, two strategy lenses, fixed safety gates, bounded learning.
@@ -13,7 +13,7 @@ if(w.AuroraScoutingIntelligence3)return;
 const PAGE=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
 if(PAGE!=='scouting.html')return;
 
-const VERSION='3.0.0';
+const VERSION='3.0.1';
 const ENGINE='AURORA_SCOUTING_INTELLIGENCE_3';
 const MASTER_URL='AuroraMaster.json';
 const MASTER_REFRESH_MS=10*60*1000;
@@ -31,7 +31,15 @@ const HARD_GATES=Object.freeze({minDividendSafety:35,cleanDividendSafety:60,minC
 
 const arr=v=>Array.isArray(v)?v:[];
 const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
-const num=v=>{const n=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:null};
+const num=v=>{
+  if(v==null)return null;
+  const raw=String(v).trim();
+  if(!raw)return null;
+  const cleaned=raw.replace(/[^0-9.-]/g,'');
+  if(!cleaned||cleaned==='-'||cleaned==='.'||cleaned==='-.')return null;
+  const n=Number(cleaned);
+  return Number.isFinite(n)?n:null;
+};
 const n0=v=>{const n=num(v);return n==null?0:n};
 const clamp=(v,a=0,b=100)=>Math.max(a,Math.min(b,Number(v)||0));
 const upper=v=>String(v||'').trim().toUpperCase();
@@ -118,7 +126,7 @@ function assess(raw,s,weights){
 function rank(targets,s,weights){const assessed=arr(targets).map(t=>assess(t,s,weights)),orderStatus=x=>x.status==='pass'?0:x.status==='caution'?1:x.status==='pending'?2:3,sustainable=[...assessed].sort((a,b)=>orderStatus(a)-orderStatus(b)||b.sustainableScore-a.sustainableScore||b.confidence-a.confidence||b.yieldPct-a.yieldPct);sustainable.forEach((t,i)=>t.rank=i+1);const maximum=[...assessed].sort((a,b)=>orderStatus(a)-orderStatus(b)||b.maximumScore-a.maximumScore||b.confidence-a.confidence||b.yieldPct-a.yieldPct),maxRank=new Map(maximum.map((t,i)=>[t.id||t.ticker,i+1]));sustainable.forEach(t=>t.maximumRank=maxRank.get(t.id||t.ticker)||0);return sustainable}
 function snapshotSamples(learning,targets,s){const now=Date.now(),existing=[...learning.samples],latest=new Map();existing.forEach(x=>{const t=parseDate(x.assessedAt);if(Number.isFinite(t)){const prev=latest.get(x.ticker)||0;if(t>prev)latest.set(x.ticker,t)}});for(const t of targets.filter(t=>t.status!=='block'&&t.status!=='pending'&&t.livePriceGbp>0&&t.evidenceCoverage>=65).slice(0,24)){const tk=ticker(t.ticker);if(now-(latest.get(tk)||0)<SNAPSHOT_GAP_MS)continue;existing.push({id:`${tk}:${dayKey()}`,ticker:tk,assessedAt:nowIso(),strategy:s?.scouting?.strategy==='maximum'?'maximum':'sustainable',recommendation:t.recommendation,status:t.status,startPrice:t.livePriceGbp,startYield:t.yieldPct,confidence:t.confidence,evidenceCoverage:t.evidenceCoverage,factors:{...t.canonicalFactors},sustainableScore:t.sustainableScore,maximumScore:t.maximumScore,outcome30:null,outcome90:null});latest.set(tk,now)}return{...learning,samples:existing.slice(-MAX_SAMPLES),updatedAt:nowIso()}}
 function engineSignature(t){return JSON.stringify([t.ticker,t.livePriceGbp,t.yieldPct,t.dividendSafety,t.incomeScore,t.valuationScore,t.portfolioFit,t.dividendGrowth,t.businessQuality,t.sustainableScore,t.maximumScore,t.status,t.recommendation,t.confidence,t.evidenceCoverage,t.scoringEngineVersion,t.approvedForTransfer])}
-function updateVersionUi(learning){const pill=document.querySelector('.scouting-version-pill');if(pill){const count=learning.learningSampleCount||0,m30=learning.matured30||0,m90=learning.matured90||0;pill.textContent=`INTELLIGENCE 3.0 • ${learning.learningActive?'CALIBRATING':`LEARNING ${Math.min(count,MIN_LEARNING_SAMPLES)}/${MIN_LEARNING_SAMPLES}`}`;pill.title=`One canonical scoring engine. Matured outcomes: ${m30} at 30d • ${m90} at 90d. Hard safety gates never learn away.`}}
+function updateVersionUi(learning){const pill=document.querySelector('.scouting-version-pill');if(pill){const count=learning.learningSampleCount||0,m30=learning.matured30||0,m90=learning.matured90||0;pill.textContent=`INTELLIGENCE 3.0 • ${learning.learningActive?'CALIBRATING':`MATURED ${Math.min(count,MIN_LEARNING_SAMPLES)}/${MIN_LEARNING_SAMPLES}`}`;pill.title=`One canonical scoring engine. Matured outcomes: ${m30} at 30d • ${m90} at 90d. Hard safety gates never learn away.`}}
 function installApi(weights){const api=A().scouting;if(!api)return;if(!legacyApi)legacyApi={assess:api.assess,rank:api.rank,weights:api.weights};api.assess=(raw,s=state())=>assess(raw,s||state(),learningState(s||state()).calibration);api.rank=(targets,s=state())=>rank(targets,s||state(),learningState(s||state()).calibration);api.weights={sustainable:{...weights.sustainable},maximum:{...weights.maximum}};api.engineVersion=VERSION;api.engine=ENGINE;api.hardGates={...HARD_GATES}}
 function applyCanonical({snapshot=false}={}){if(applying)return;const s=state();if(!s?.scouting)return;applying=true;try{let learning=matureLearning(learningState(s),s),weights=learning.calibration;const ranked=rank(arr(s.scouting.targets),s,weights);if(snapshot)learning=snapshotSamples(learning,ranked,s);weights=learning.calibration;const changedTargets=ranked.some((t,i)=>engineSignature(t)!==engineSignature(arr(s.scouting.targets)[i]||{})),learningChanged=JSON.stringify(learning)!==JSON.stringify(learningState(s));installApi(weights);updateVersionUi(learning);if(!changedTargets&&!learningChanged)return;A().core?.update?.(current=>{if(!current?.scouting)return current;const refreshed=rank(arr(current.scouting.targets),current,learning.calibration);return{...current,scouting:{...current.scouting,targets:refreshed,learningV3:learning,scoringEngine:ENGINE,scoringEngineVersion:VERSION,updatedAt:current.scouting.updatedAt||nowIso()}}})}finally{applying=false}}
 function queueApply(opts={}){if(queued)return;queued=true;setTimeout(()=>{queued=false;applyCanonical(opts)},40)}
