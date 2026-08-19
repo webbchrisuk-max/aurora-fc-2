@@ -4,7 +4,7 @@
 const SESSION_KEY='aurora2:session:authenticated';
 const MASTER_NEXUS='AuroraCityFC_NexusV2.html';
 const CREST_URL='assets/aurora-city-fc-badge.svg';
-const SHARED_BUILD='20260819-nav-stable-1';
+const SHARED_BUILD='20260819-nav-stable-2';
 
 function sessionActive(){
   try{return sessionStorage.getItem(SESSION_KEY)==='1'}catch(_){return false}
@@ -109,6 +109,29 @@ const navClose=document.getElementById('auroraShellNavigationClose');
 const navOverlay=document.getElementById('auroraShellNavigationOverlay');
 function openNav(){document.body.classList.add('shell-navigation-open');menuButton?.setAttribute('aria-expanded','true')}
 function closeNav(){document.body.classList.remove('shell-navigation-open');menuButton?.setAttribute('aria-expanded','false')}
+function navigateTop(href){
+  closeNav();
+  const url=new URL(href,location.href).href;
+  try{
+    if(window.top&&window.top!==window){window.top.location.href=url;return}
+  }catch(_){}
+  location.href=url;
+}
+function bindFullPageNavigation(){
+  document.addEventListener('click',event=>{
+    if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+    const link=event.target?.closest?.('a[href]');
+    if(!link)return;
+    const target=String(link.getAttribute('target')||'').toLowerCase();
+    if(target&&target!=='_self'&&target!=='_top')return;
+    const href=String(link.getAttribute('href')||'').trim();
+    if(!href||href.startsWith('#')||href.startsWith('javascript:')||href.startsWith('mailto:')||href.startsWith('tel:'))return;
+    let url;try{url=new URL(href,location.href)}catch(_){return}
+    if(url.origin!==location.origin||!/\.html$/i.test(url.pathname))return;
+    event.preventDefault();
+    navigateTop(url.href);
+  },true);
+}
 function updateClock(){
   const d=new Date(),clock=document.getElementById('shellClock'),date=document.getElementById('shellDate');
   if(clock)clock.textContent=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
@@ -130,9 +153,9 @@ menuButton?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();
 navClose?.addEventListener('click',e=>{e.preventDefault();closeNav()});
 navOverlay?.addEventListener('click',e=>{e.preventDefault();closeNav()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav()});
-ensureLogoutButton();updateClock();setInterval(updateClock,15000);
+ensureLogoutButton();bindFullPageNavigation();updateClock();setInterval(updateClock,15000);
 
-window.AuroraShell={build:SHARED_BUILD,openNavigation:openNav,closeNavigation:closeNav,home(){location.href=MASTER_NEXUS},masterNexus:MASTER_NEXUS,logout(){clearSession();closeNav();location.replace('index.html?logout=1')}};
+window.AuroraShell={build:SHARED_BUILD,openNavigation:openNav,closeNavigation:closeNav,home(){navigateTop(MASTER_NEXUS)},masterNexus:MASTER_NEXUS,logout(){clearSession();closeNav();location.replace('index.html?logout=1')}};
 window.AuroraMasterNexus=MASTER_NEXUS;
 
 function auroraLoadShared(src,key){
