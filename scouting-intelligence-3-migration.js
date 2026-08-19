@@ -1,7 +1,9 @@
-/* Aurora City FC — Scouting Intelligence 3 migration v2
+/* Aurora City FC — Scouting Intelligence 3 migration v3
  *
- * 1) Removes only the unmistakable retired neutral-placeholder pattern.
- * 2) Gives Scouting a first-class DATA PENDING state without weakening Aurora
+ * 1) Removes only the unmistakable retired neutral-placeholder factor pattern.
+ * 2) Preserves confidence/dataQuality; Intelligence 3 caps them by real evidence
+ *    coverage rather than guessing whether an old confidence value was manual.
+ * 3) Gives Scouting a first-class DATA PENDING state without weakening Aurora
  *    Core or Transfer. Core persists pending safely as BLOCK +
  *    transferPermitted=false; Scouting inflates it back to DATA PENDING only
  *    on the Scouting page.
@@ -12,7 +14,7 @@ if(w.AuroraScoutingIntelligence3Migration)return;
 const page=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
 if(page!=='scouting.html')return;
 const ENGINE='AURORA_SCOUTING_INTELLIGENCE_3';
-const VERSION='2026.08.19.2';
+const VERSION='2026.08.19.3';
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
 const arr=v=>Array.isArray(v)?v:[];
 let running=false;
@@ -30,7 +32,6 @@ function clean(t){
   if(num(next.valuationScore)===55)next.valuationScore=null;
   if(num(next.dividendGrowth)===50)next.dividendGrowth=null;
   if(num(next.businessQuality)===55)next.businessQuality=null;
-  if(!next.confidenceSource&&!next.evidenceSources?.confidence){next.confidence=null;next.dataQuality=null}
   next.sustainableScore=0;next.maximumScore=0;next.approvedForTransfer=false;
   next.intelligence3EvidenceMigration=VERSION;
   return next;
