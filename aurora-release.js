@@ -14,31 +14,32 @@ w.AuroraRelease=Object.freeze({
 /* Shared header housekeeping.
  * Club Command owns the honest market freshness pill (#auroraDataFreshness).
  * Older department HTMLs still carry their own .aurora-shell-live badge.
- * Once the real freshness indicator exists, suppress the duplicate legacy
- * badge everywhere so each Aurora page has one live-status control only.
+ * Show exactly one status: prefer freshness whenever it is visible; otherwise
+ * keep the compact legacy LIVE badge for narrow layouts.
  */
 function enforceSingleLiveStatus(){
   document.querySelectorAll('.aurora-shell-context').forEach(context=>{
     const freshness=context.querySelector('#auroraDataFreshness');
     const legacy=[...context.querySelectorAll('.aurora-shell-live')];
+    let freshnessVisible=false;
     if(freshness){
-      legacy.forEach(el=>{
+      freshnessVisible=getComputedStyle(freshness).display!=='none';
+      freshness.hidden=false;
+      freshness.removeAttribute('aria-hidden');
+    }
+    legacy.forEach(el=>{
+      if(freshness&&freshnessVisible){
+        el.dataset.auroraSingleLiveHidden='1';
         el.hidden=true;
         el.setAttribute('aria-hidden','true');
         el.style.setProperty('display','none','important');
-      });
-      freshness.hidden=false;
-      freshness.removeAttribute('aria-hidden');
-    }else{
-      legacy.forEach(el=>{
-        if(el.dataset.auroraSingleLiveHidden==='1'){
-          el.hidden=false;
-          el.removeAttribute('aria-hidden');
-          el.style.removeProperty('display');
-          delete el.dataset.auroraSingleLiveHidden;
-        }
-      });
-    }
+      }else if(el.dataset.auroraSingleLiveHidden==='1'){
+        el.hidden=false;
+        el.removeAttribute('aria-hidden');
+        el.style.removeProperty('display');
+        delete el.dataset.auroraSingleLiveHidden;
+      }
+    });
   });
 }
 
@@ -49,6 +50,7 @@ function installSingleLiveGuard(){
   const observer=new MutationObserver(()=>enforceSingleLiveStatus());
   observer.observe(target,{childList:true,subtree:true});
   [50,180,500,1200,2500].forEach(ms=>setTimeout(enforceSingleLiveStatus,ms));
+  w.addEventListener('resize',enforceSingleLiveStatus,{passive:true});
   w.addEventListener('aurora2:state',enforceSingleLiveStatus);
   w.AuroraSingleLiveStatus={refresh:enforceSingleLiveStatus};
 }
