@@ -5,16 +5,32 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020817">
 <title>Aurora City FC — Nexus Headquarters</title>
-<link rel="stylesheet" href="aurora-shell.css?v=20260819-nexus-clean-3">
-<link rel="stylesheet" href="aurora-typography.css?v=20260819-nexus-clean-3">
-<link rel="stylesheet" href="nexus-v2-clean.css?v=20260819-nexus-clean-3">
+<link rel="stylesheet" href="aurora-shell.css?v=20260819-nexus-standalone-1">
+<link rel="stylesheet" href="aurora-typography.css?v=20260819-nexus-standalone-1">
+<link rel="stylesheet" href="nexus-v2-clean.css?v=20260819-nexus-standalone-1">
 <link rel="stylesheet" href="nexus-v2-pitch-force.css?v=20260819-pitch-visible-3">
+<style>
+body.aurora-entered .n2-shell{min-height:100svh;padding-top:calc(var(--shell-header-height) + var(--safe-top));}
+#auroraTodayAtClub,#auroraDataFreshness,#auroraClubSearchButton,.aurora-command-backdrop{display:none!important;}
+.aurora-shell-context #connectionBadge{width:auto;min-width:92px;padding:0 11px;white-space:nowrap;}
+</style>
 </head>
-<body class="loading">
+<body class="aurora-entered">
 <div class="n2-shell">
-  <header class="n2-header">
-    <div class="brand"><div class="crest">AC</div><div><strong>AURORA CITY FC</strong><span>NEXUS HEADQUARTERS</span></div></div>
-    <div class="head-actions"><span class="live" id="connectionBadge">● CONNECTING</span><button id="auroraShellMenuButton" type="button" aria-label="Open club navigation">☰</button></div>
+  <header class="aurora-shell-header">
+    <div class="aurora-shell-header-inner">
+      <div class="aurora-shell-brand">
+        <button id="auroraShellMenuButton" type="button" aria-label="Open club navigation" aria-expanded="false">☰</button>
+        <div class="aurora-shell-crest"><img src="assets/aurora-city-fc-badge.svg" alt="Aurora City FC"></div>
+        <div class="aurora-shell-copy"><h1>Aurora City FC</h1><p>NEXUS HEADQUARTERS</p></div>
+      </div>
+      <div class="aurora-shell-context">
+        <div class="aurora-shell-datetime"><span class="shell-clock" id="shellClock">--:--</span><span class="shell-date" id="shellDate">---</span></div>
+        <a class="shell-control shell-home" href="AuroraCityFC_NexusV2.html" title="Nexus Headquarters">⌂</a>
+        <button class="shell-control" id="auroraLogoutButton" type="button" title="Log out of Aurora">Logout</button>
+        <span class="aurora-shell-live" id="connectionBadge">Connecting</span>
+      </div>
+    </div>
   </header>
 
   <main class="page">
@@ -142,13 +158,13 @@
     </div></section>
 
     <section class="section"><div class="panel health-strip" id="healthStrip"></div></section>
-    <div class="footer">AURORA NEXUS 2.0 · CANONICAL CONTROLLER · ONE LIVE PERFORMANCE AUTHORITY</div>
+    <div class="footer">AURORA NEXUS 2.0 · STANDALONE CANONICAL CONTROLLER · ONE RENDER OWNER</div>
   </main>
 </div>
 
 <div id="auroraShellNavigationOverlay"></div>
 <aside aria-label="Aurora club navigation" id="auroraShellNavigation">
-  <div class="aurora-shell-nav-head"><div class="aurora-shell-nav-brand"><strong>Aurora City FC</strong><span>Club Navigation 2.0</span></div><button class="nav-close" id="auroraShellNavigationClose" aria-label="Close navigation">×</button></div>
+  <div class="aurora-shell-nav-head"><div class="aurora-shell-nav-crest"><img src="assets/aurora-city-fc-badge.svg" alt=""></div><div class="aurora-shell-nav-brand"><strong>Aurora City FC</strong><span>Club Navigation 2.0</span></div><button class="nav-close" id="auroraShellNavigationClose" type="button" aria-label="Close navigation">×</button></div>
   <div class="aurora-shell-nav-scroll">
     <div class="aurora-shell-nav-section">Club Command</div>
     <a class="aurora-shell-department-row is-current" href="AuroraCityFC_NexusV2.html"><div class="aurora-shell-nav-icon">🏟</div><div class="aurora-shell-nav-copy"><strong>Nexus Headquarters</strong><span>Master club command centre</span></div><div class="aurora-shell-nav-arrow">›</div></a>
@@ -167,19 +183,27 @@
 
 <script src="aurora-core.js?v=12-financial-truth"></script>
 <script src="aurora-data2-client.js?v=20260817-consolidated"></script>
-<script>
-window.__AURORA_NEXUS_V2_UPGRADE__=true;
-window.__AURORA_NEXUS_V2_POLISH__=true;
-window.__AURORA_NEXUS_V2_DATA_QUALITY_V11__=true;
-window.__AURORA_NEXUS_V2_MANAGER_POLISH_V11__=true;
-window.__AURORA_NEXUS_V2_FORM_TRUTH__=true;
-window.__AURORA_NEXUS_STARTING_XI_LIVE_BRIDGE__=true;
-window.__AURORA_NEXUS_V2_TRUTH_POLISH__=true;
-window.__AURORA_NEXUS_LIVE_PERFORMANCE_AUTHORITY__=true;
-window.__AURORA_NEXUS_V2_PITCH_CENTRE_FIX_V11__=true;
-</script>
-<script src="aurora-nexus-hero-titles.js?v=20260819-pitch-visible-3"></script>
-<script src="aurora-page-shell.js?v=20260819-clean-shell-1"></script>
+<script src="aurora-club-command.js?v=20260819-nexus-data-only-1"></script>
+<script src="match-report-published-feed.js?v=20260819-report-recovery-3"></script>
+<script src="nexus-v2-command-hydration.js?v=20260819-clean-hydration-1"></script>
 <script src="nexus-v2-canonical-controller.js?v=20260819-nexus-fulltime-4"></script>
+<script>
+(function(){
+  'use strict';
+  const menu=document.getElementById('auroraShellMenuButton');
+  const close=document.getElementById('auroraShellNavigationClose');
+  const overlay=document.getElementById('auroraShellNavigationOverlay');
+  const logout=document.getElementById('auroraLogoutButton');
+  const badge=document.getElementById('connectionBadge');
+  function openNav(){document.body.classList.add('shell-navigation-open');menu?.setAttribute('aria-expanded','true')}
+  function closeNav(){document.body.classList.remove('shell-navigation-open');menu?.setAttribute('aria-expanded','false')}
+  function updateClock(){const d=new Date(),clock=document.getElementById('shellClock'),date=document.getElementById('shellDate');if(clock)clock.textContent=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});if(date)date.textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'}).toUpperCase()}
+  function updateBadge(){if(!badge)return;const market=window.AuroraClubCommand?.status?.()||{},state=window.Aurora2?.core?.read?.()||{};if(market.marketLastSuccess){badge.textContent='● FEED LIVE';return}badge.textContent=String(state?.connection?.status||'LOCAL').toUpperCase()==='CONNECTED'?'● CLUB LIVE':'● LOCAL STATE'}
+  menu?.addEventListener('click',e=>{e.preventDefault();document.body.classList.contains('shell-navigation-open')?closeNav():openNav()});
+  close?.addEventListener('click',closeNav);overlay?.addEventListener('click',closeNav);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav()});
+  logout?.addEventListener('click',()=>{try{sessionStorage.removeItem('aurora2:session:authenticated')}catch(_){}location.href='index.html?logout=1'});
+  updateClock();updateBadge();setInterval(updateClock,15000);setInterval(updateBadge,15000);window.addEventListener('aurora:market-live',updateBadge);window.addEventListener('aurora2:state',updateBadge);
+})();
+</script>
 </body>
 </html>
