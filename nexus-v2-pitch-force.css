@@ -1,0 +1,140 @@
+/* Aurora City FC — Nexus tactical pitch isolation v2
+ * Loaded after the shared shell and clean Nexus stylesheet.
+ * The unique n2-tactical-* hooks deliberately override any historical
+ * generic .pitch / .players styles still present in shared Aurora CSS.
+ */
+.pitch-panel .n2-tactical-pitch{
+  position:relative!important;
+  inset:auto!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:610px!important;
+  margin:0!important;
+  overflow:hidden!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+  filter:none!important;
+  clip-path:none!important;
+  isolation:isolate!important;
+  pointer-events:auto!important;
+  border:2px solid rgba(134,239,172,.58)!important;
+  border-radius:22px!important;
+  background-color:#0b4b34!important;
+  background-image:
+    linear-gradient(180deg,rgba(3,20,14,.05),rgba(1,12,9,.18)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 10%,rgba(255,255,255,.095) 10% 20%)!important;
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,.22),
+    0 0 0 1px rgba(34,211,153,.10),
+    0 18px 40px rgba(0,0,0,.28)!important;
+}
+.pitch-panel .n2-tactical-pitch::before{
+  content:""!important;
+  position:absolute!important;
+  inset:18px!important;
+  display:block!important;
+  border:2px solid rgba(236,253,245,.62)!important;
+  border-radius:12px!important;
+  background:transparent!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:none!important;
+  z-index:1!important;
+}
+.pitch-panel .n2-tactical-pitch::after{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:18px!important;
+  bottom:18px!important;
+  width:0!important;
+  border-left:2px solid rgba(236,253,245,.56)!important;
+  transform:none!important;
+  background:none!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  z-index:1!important;
+}
+.pitch-panel .n2-tactical-pitch .n2-halfway-line{
+  position:absolute!important;
+  left:18px!important;
+  right:18px!important;
+  top:50%!important;
+  height:2px!important;
+  display:block!important;
+  background:rgba(236,253,245,.60)!important;
+  opacity:1!important;
+  z-index:1!important;
+}
+.pitch-panel .n2-tactical-pitch .n2-centre-circle{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:138px!important;
+  height:138px!important;
+  transform:translate(-50%,-50%)!important;
+  display:block!important;
+  border:2px solid rgba(236,253,245,.62)!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  opacity:1!important;
+  z-index:1!important;
+}
+.pitch-panel .n2-tactical-pitch .n2-centre-spot{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:8px!important;
+  height:8px!important;
+  transform:translate(-50%,-50%)!important;
+  display:block!important;
+  border-radius:50%!important;
+  background:#ecfdf5!important;
+  opacity:1!important;
+  z-index:2!important;
+}
+.pitch-panel .n2-tactical-pitch .n2-pitch-box{
+  position:absolute!important;
+  left:50%!important;
+  width:44%!important;
+  height:82px!important;
+  transform:translateX(-50%)!important;
+  display:block!important;
+  border:2px solid rgba(236,253,245,.56)!important;
+  opacity:1!important;
+  z-index:1!important;
+}
+.pitch-panel .n2-tactical-pitch .n2-pitch-box.top{top:18px!important;border-top:0!important}
+.pitch-panel .n2-tactical-pitch .n2-pitch-box.bottom{bottom:18px!important;border-bottom:0!important}
+.pitch-panel .n2-tactical-players{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  pointer-events:none!important;
+  animation:none!important;
+  transition:none!important;
+  z-index:5!important;
+}
+.pitch-panel .n2-tactical-players .n2-player-node{
+  visibility:visible!important;
+  opacity:1!important;
+  filter:none!important;
+  pointer-events:auto!important;
+  background:linear-gradient(160deg,rgba(4,18,34,.98),rgba(3,10,22,.98))!important;
+  border-color:rgba(125,211,252,.58)!important;
+  color:#f5fbff!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.48),0 0 0 1px rgba(37,221,255,.07)!important;
+}
+.pitch-panel .n2-tactical-players .n2-player-node.good{border-color:rgba(52,211,153,.78)!important}
+.pitch-panel .n2-tactical-players .n2-player-node.review{border-color:rgba(251,191,36,.78)!important}
+.pitch-panel .n2-tactical-players .n2-player-node.bad{border-color:rgba(251,113,133,.82)!important}
+.pitch-panel .n2-tactical-players .n2-player-node b{color:#f8fdff!important;text-shadow:0 1px 8px rgba(0,0,0,.72)!important}
+.pitch-panel .n2-tactical-players .n2-player-node>span:last-child{opacity:1!important}
+@media(max-width:900px){.pitch-panel .n2-tactical-pitch{min-height:560px!important}}
