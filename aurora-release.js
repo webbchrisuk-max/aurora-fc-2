@@ -2,14 +2,29 @@
 'use strict';
 w.AuroraRelease=Object.freeze({
   product:'Aurora 2.0',
-  release:'Club Command v1',
-  build:'2026.08.19.2',
+  release:'Scouting Intelligence 3',
+  build:'2026.08.19.3',
   schemaVersion:11,
   syncManagerVersion:1,
   platformVersion:1,
-  releasedAt:'2026-08-19T15:58:00+01:00',
+  releasedAt:'2026-08-19T16:58:00+01:00',
   channel:'stable-candidate'
 });
+
+/* Scouting Intelligence 3 is the canonical final scoring authority. Load it
+ * from the shared release layer as well as aurora-motion so an older cached
+ * motion controller cannot leave Scouting on the retired scoring model.
+ */
+function ensureScoutingIntelligence3(){
+  const page=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
+  if(page!=='scouting.html'||w.AuroraScoutingIntelligence3||document.querySelector('script[data-aurora-scouting-intelligence3]'))return;
+  const script=document.createElement('script');
+  script.src='scouting-intelligence-3.js?v=20260819-intelligence-3-1';
+  script.async=false;
+  script.dataset.auroraScoutingIntelligence3='1';
+  document.head.appendChild(script);
+}
+ensureScoutingIntelligence3();
 
 /* Shared header housekeeping.
  * Club Command owns the honest market freshness pill (#auroraDataFreshness).
