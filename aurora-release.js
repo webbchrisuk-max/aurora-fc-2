@@ -3,11 +3,11 @@
 w.AuroraRelease=Object.freeze({
   product:'Aurora 2.0',
   release:'Scouting Intelligence 3 + Match Report Truth',
-  build:'2026.08.19.4',
+  build:'2026.08.19.5',
   schemaVersion:11,
   syncManagerVersion:1,
   platformVersion:1,
-  releasedAt:'2026-08-19T17:25:00+01:00',
+  releasedAt:'2026-08-19T17:28:00+01:00',
   channel:'stable-candidate'
 });
 
@@ -45,7 +45,7 @@ function ensureMatchReportLiveAuthority(){
   if(page!=='match-report.html')return;
   if(w.AuroraMatchReportLiveAuthority||document.querySelector('script[data-aurora-match-report-live-authority]'))return;
   const script=document.createElement('script');
-  script.src='match-report-live-authority.js?v=20260819-match-truth-1';
+  script.src='match-report-live-authority.js?v=20260819-match-truth-2';
   script.async=false;
   script.dataset.auroraMatchReportLiveAuthority='1';
   document.head.appendChild(script);
