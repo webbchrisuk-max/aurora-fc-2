@@ -27,7 +27,7 @@ function ensureScoutingIntelligence3(){
   }
   if(!w.AuroraScoutingIntelligence3&&!document.querySelector('script[data-aurora-scouting-intelligence3]')){
     const script=document.createElement('script');
-    script.src='scouting-intelligence-3.js?v=20260819-intelligence-3-1';
+    script.src='scouting-intelligence-3.js?v=20260819-intelligence-3-2';
     script.async=false;
     script.dataset.auroraScoutingIntelligence3='1';
     document.head.appendChild(script);
