@@ -1,8 +1,8 @@
-/* Aurora City FC — Nexus V2 truth polish v1.2
+/* Aurora City FC — Nexus V2 truth polish v1.3
  * Presentation guards for the live Nexus command view:
  * 1) Dividend fixtures never present an unverified zero as a real payment amount.
  * 2) Confirmed/scheduled dividends with no sourced amount say "Amount awaiting source".
- * 3) A whole-squad 0.00% Daily Form feed stays labelled as awaiting genuine market movement.
+ * 3) A whole-squad 0.00% holding-state feed is only treated as missing when no genuine LivePrices evidence exists.
  * 4) Portfolio Command cards are green in profit and red in loss.
  */
 (function(w){
@@ -43,8 +43,6 @@ function rowAmount(row){
     if(Math.abs(n)>1e-12)return {value:n,field,awaiting:false};
     sawZero=true;
   }
-  /* A future/confirmed dividend with only zero placeholders has a date but no
-     verified cash amount. Do not turn that absence into a genuine £0.00. */
   if(status!=='PAID'&&sawZero)return {value:null,field:'',awaiting:true};
   if(status!=='PAID')return {value:null,field:'',awaiting:true};
   return {value:sawZero?0:null,field:sawZero?'actualAmountGbp':'',awaiting:false};
@@ -110,9 +108,16 @@ function allZeroPlaceholder(rows){
   const values=rows.map(dailyValue).filter(v=>v!==null);
   return !values.length||values.every(v=>Math.abs(v)<1e-12);
 }
+function genuineLiveMarketAvailable(){
+  const authority=w.AuroraLivePerformanceAuthority?.snapshot?.();
+  if(authority?.coverage>0)return true;
+  if(arr(w.AuroraClubCommand?.marketRows?.()).length)return true;
+  if(arr(w.AuroraNexusLiveForm?.rows?.()).length)return true;
+  return Boolean(document.querySelector('#n2uFormTable [data-live-form]'));
+}
 let formPatching=false;
 function patchFormTruth(){
-  if(formPatching)return;
+  if(formPatching||genuineLiveMarketAvailable())return;
   const s=state();if(!s)return;
   const rows=activeHoldings(s);if(!allZeroPlaceholder(rows))return;
   formPatching=true;
@@ -168,6 +173,7 @@ function bind(){
     if(e.target.closest('#n2uRunway .n2u-month'))setTimeout(patchOpenRunway,0);
   });
   w.addEventListener('aurora2:state',()=>setTimeout(()=>{patchFormTruth();patchOpenRunway();patchBrokerColours()},60));
+  w.addEventListener('aurora:market-live',()=>setTimeout(()=>{patchFormTruth();patchBrokerColours()},40));
 
   let attempts=0,formObserver=null,dialogObserver=null,brokerObserver=null;
   const timer=setInterval(()=>{
