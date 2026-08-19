@@ -5,6 +5,8 @@
 
   const SESSION_KEY='aurora2:session:authenticated';
   const MASTER_NEXUS='AuroraCityFC_NexusV2.html';
+  const CREST_URL='assets/aurora-city-fc-badge.svg';
+  const SHARED_BUILD='20260819-housekeeping-1';
   const entryApp=document.getElementById('entryApp');
   const gameShell=document.getElementById('gameShell');
   const bootScreen=document.getElementById('bootScreen');
@@ -21,6 +23,22 @@
   const navOverlay=document.getElementById('auroraShellNavigationOverlay');
   const logoutButton=document.getElementById('logoutButton');
   const currentDepartment=document.getElementById('currentDepartment');
+
+  function canonicaliseEntryBranding(){
+    document.title='Aurora City FC — Club Access';
+    document.querySelectorAll('#entryApp img,.aurora-shell-nav-crest img').forEach(img=>{
+      const src=String(img.getAttribute('src')||'');
+      if(!src||src.includes('aurora-city-fc/assets/aurora-city-fc/icons/'))img.setAttribute('src',CREST_URL);
+    });
+    document.querySelectorAll('*').forEach(el=>{
+      if(el.children.length)return;
+      const text=String(el.textContent||'');
+      if(text==='Nexus HQ 4.5.1')el.textContent='Nexus Headquarters';
+      else if(text==='Opening Nexus HQ 4.5.1')el.textContent='Opening Nexus Headquarters';
+      else if(text==='Aurora 2.0 • Nexus HQ 4.5.1')el.textContent='Aurora 2.0 • Nexus Headquarters';
+    });
+  }
+  canonicaliseEntryBranding();
 
   const stages=[
     {at:0,message:'Authenticating manager profile...',code:'AUTH // MANAGER'},
@@ -209,10 +227,11 @@
 
   const searchButton=document.getElementById('shellSearch');
   if(searchButton){
-    searchButton.addEventListener('click',()=>alert('Global Aurora search will be enabled after the shared shell rollout.'));
+    searchButton.addEventListener('click',()=>alert('Global Aurora search is available from Nexus Headquarters and all live departments.'));
   }
 
   window.AuroraShell={
+    build:SHARED_BUILD,
     openNavigation:openNav,
     closeNavigation:closeNav,
     logout,
@@ -233,7 +252,7 @@
     runBoot();
   }
 
-  /* Aurora 2 Stable Core — shared platform + managed sync */
+  /* Aurora 2 shared platform + managed sync */
   function auroraLoadShared(src,key){
     if(document.querySelector(`script[data-aurora-shared="${key}"]`))return;
     const script=document.createElement('script');
@@ -241,7 +260,7 @@
     script.dataset.auroraShared=key;
     document.head.appendChild(script);
   }
-  auroraLoadShared('aurora-release.js?v=100-stable-core','release');
+  auroraLoadShared(`aurora-release.js?v=${SHARED_BUILD}`,'release');
   auroraLoadShared('aurora-platform.js?v=100-stable-core','platform');
   auroraLoadShared('aurora-sync-manager.js?v=100-stable-core','sync-manager');
   auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
