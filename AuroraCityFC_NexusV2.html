@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020817">
 <title>Aurora City FC — Nexus Headquarters</title>
-<link rel="stylesheet" href="aurora-shell.css?v=20260819-nexus-clean-1">
-<link rel="stylesheet" href="aurora-typography.css?v=20260819-nexus-clean-1">
-<link rel="stylesheet" href="nexus-v2-clean.css?v=20260819-nexus-clean-1">
+<link rel="stylesheet" href="aurora-shell.css?v=20260819-nexus-clean-2">
+<link rel="stylesheet" href="aurora-typography.css?v=20260819-nexus-clean-2">
+<link rel="stylesheet" href="nexus-v2-clean.css?v=20260819-nexus-clean-2">
+<link rel="stylesheet" href="nexus-v2-pitch-force.css?v=20260819-pitch-visible-2">
 </head>
 <body class="loading">
 <div class="n2-shell">
@@ -39,7 +40,6 @@
       </div>
     </section>
 
-    <!-- Club Command inserts the live Today-at-the-Club strip after this anchor. -->
     <div id="n2ReplacementLayer" aria-hidden="true"></div>
 
     <section class="section">
@@ -61,7 +61,7 @@
       <div class="analysis-grid">
         <article class="panel pitch-panel">
           <div class="n2-lens-context" id="lensContext"><b>VALUE XI</b><span>Ranked by current live portfolio value.</span></div>
-          <div class="pitch"><div class="players" id="players"></div></div>
+          <div class="pitch n2-tactical-pitch"><div class="players n2-tactical-players" id="players"></div></div>
           <p class="bench-note" id="pitchNote">Building the canonical Starting XI…</p>
         </article>
         <aside class="panel leaders-panel"><span class="section-kicker">Squad leaders</span><div class="leader-list" id="leaderList"></div></aside>
@@ -168,8 +168,6 @@
 <script src="aurora-core.js?v=12-financial-truth"></script>
 <script src="aurora-data2-client.js?v=20260817-consolidated"></script>
 <script>
-/* Retire the old Nexus render owners without deleting their rollback files.
-   The shared shell may still request them, but they immediately return. */
 window.__AURORA_NEXUS_V2_UPGRADE__=true;
 window.__AURORA_NEXUS_V2_POLISH__=true;
 window.__AURORA_NEXUS_V2_DATA_QUALITY_V11__=true;
@@ -180,7 +178,8 @@ window.__AURORA_NEXUS_V2_TRUTH_POLISH__=true;
 window.__AURORA_NEXUS_LIVE_PERFORMANCE_AUTHORITY__=true;
 window.__AURORA_NEXUS_V2_PITCH_CENTRE_FIX_V11__=true;
 </script>
-<script src="aurora-page-shell.js?v=20260819-nexus-clean-1"></script>
-<script src="nexus-v2-canonical-controller.js?v=20260819-nexus-clean-1"></script>
+<script src="aurora-nexus-hero-titles.js?v=20260819-pitch-visible-2"></script>
+<script src="aurora-page-shell.js?v=20260819-nexus-clean-2"></script>
+<script src="nexus-v2-canonical-controller.js?v=20260819-nexus-clean-2"></script>
 </body>
 </html>
