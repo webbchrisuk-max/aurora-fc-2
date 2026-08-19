@@ -4,7 +4,7 @@
 const SESSION_KEY='aurora2:session:authenticated';
 const MASTER_NEXUS='AuroraCityFC_NexusV2.html';
 const CREST_URL='assets/aurora-city-fc-badge.svg';
-const SHARED_BUILD='20260819-housekeeping-1';
+const SHARED_BUILD='20260819-starting-xi-live-1';
 
 function sessionActive(){
   try{return sessionStorage.getItem(SESSION_KEY)==='1'}catch(_){return false}
@@ -177,7 +177,7 @@ if(auroraPageFile==='auroracityfc_nexusv2.html'){
   auroraLoadShared('nexus-v2-runtime-recovery.js?v=20260817-recovery-1','nexus-v2-runtime-recovery');
   auroraLoadShared('nexus-v2-command-hydration.js?v=20260818-hydration-1','nexus-v2-command-hydration');
   auroraLoadShared('match-report-published-feed.js?v=20260819-report-recovery-3','match-report-published-feed');
-  auroraLoadShared('nexus-v2-notification-dock.js?v=20260817-bell-2','nexus-v2-notification-dock');
+  auroraLoadShared('nexus-v2-notification-dock.js?v=20260819-bell-4','nexus-v2-notification-dock');
   auroraLoadShared('nexus-v2-hero-art.js?v=20260817-nexus-hero-3','nexus-v2-hero-art');
   auroraLoadShared('nexus-v2-scroll-fix.js?v=20260817-scroll-2','nexus-v2-scroll-fix');
   auroraLoadShared('nexus-v2-upgrade.js?v=20260817-replacement-1','nexus-v2-replacement');
@@ -186,6 +186,7 @@ if(auroraPageFile==='auroracityfc_nexusv2.html'){
   auroraLoadShared('nexus-v2-pitch-centre-fix.js?v=20260817-centre-2','nexus-v2-pitch-centre-fix');
   auroraLoadShared('nexus-v2-manager-polish.js?v=20260817-manager-1','nexus-v2-manager-polish');
   auroraLoadShared('nexus-v2-form-truth.js?v=20260818-live-form-2','nexus-v2-form-truth');
+  auroraLoadShared('nexus-v2-starting-xi-live-bridge.js?v=20260819-starting-xi-live-1','nexus-v2-starting-xi-live');
   auroraLoadShared('nexus-v2-dividend-runway.js?v=20260817-runway-1','nexus-v2-dividend-runway');
   auroraLoadShared('nexus-v2-truth-polish.js?v=20260817-truth-polish-3','nexus-v2-truth-polish');
 }
