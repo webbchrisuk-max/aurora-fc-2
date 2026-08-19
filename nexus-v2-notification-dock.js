@@ -1,5 +1,5 @@
-/* Aurora City FC — Nexus V2 notification/status dock v1.3
- * Compact Nexus header + loader for the shared live performance authority.
+/* Aurora City FC — Nexus V2 notification/status dock v1.4
+ * Compact Nexus header + loaders for shared live performance authorities.
  * Notification data remains owned by aurora-notifications.js.
  */
 (function(w){
@@ -9,9 +9,9 @@ w.__AURORA_NEXUS_V2_NOTIFICATION_DOCK__=true;
 const page=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
 if(page!=='auroracityfc_nexusv2.html')return;
 
-function loadAuthority(){
-  if(document.querySelector('script[data-nexus-live-authority]'))return;
-  const s=document.createElement('script');s.src='nexus-v2-live-performance-authority.js?v=20260819-live-authority-1';s.async=false;s.dataset.nexusLiveAuthority='1';document.head.appendChild(s);
+function loadEvidence(){
+  if(!document.querySelector('script[data-nexus-live-authority]')){const s=document.createElement('script');s.src='nexus-v2-live-performance-authority.js?v=20260819-live-authority-1';s.async=false;s.dataset.nexusLiveAuthority='1';document.head.appendChild(s)}
+  if(!document.querySelector('script[data-nexus-starting-xi-live]')){const s=document.createElement('script');s.src='nexus-v2-starting-xi-live-bridge.js?v=20260819-starting-xi-live-1';s.async=false;s.dataset.nexusStartingXiLive='1';document.head.appendChild(s)}
 }
 function installStyle(){
   if(document.getElementById('nexusV2NotificationDockStyle'))return;
@@ -45,6 +45,6 @@ function liveStatus(){
   const live=document.querySelector('.aurora-shell-header #connectionBadge,.n2-header #connectionBadge');if(!live)return;const s=w.AuroraClubCommand?.status?.(),last=s?.marketLastSuccess?new Date(s.marketLastSuccess):null,mins=last&&Number.isFinite(last.getTime())?Math.max(0,Math.floor((Date.now()-last.getTime())/60000)):null,offline=!navigator.onLine||Boolean(s?.marketLastError&&!last);live.classList.remove('is-feed-stale','is-feed-offline');if(offline){live.textContent='● OFFLINE';live.classList.add('is-feed-offline')}else if(last&&mins<=2)live.textContent=`● LIVE • ${last.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;else if(last){live.textContent=`● STALE • ${mins}M`;live.classList.add('is-feed-stale')}else live.textContent='● SYSTEMS LIVE';
 }
 function tidy(){dockBell();liveStatus()}
-function start(){loadAuthority();tidy();let n=0;const timer=setInterval(()=>{n++;tidy();if(n>80)clearInterval(timer)},125);const observer=new MutationObserver(()=>requestAnimationFrame(tidy));observer.observe(document.body,{subtree:true,childList:true});setTimeout(()=>observer.disconnect(),22000);setInterval(liveStatus,15000);window.addEventListener('online',tidy);window.addEventListener('offline',tidy);w.addEventListener('aurora2:state',()=>setTimeout(tidy,0));w.addEventListener('aurora:market-live',()=>setTimeout(tidy,0));document.addEventListener('visibilitychange',()=>{if(!document.hidden){loadAuthority();setTimeout(tidy,50)}})}
+function start(){loadEvidence();tidy();let n=0;const timer=setInterval(()=>{n++;tidy();if(n>80)clearInterval(timer)},125);const observer=new MutationObserver(()=>requestAnimationFrame(tidy));observer.observe(document.body,{subtree:true,childList:true});setTimeout(()=>observer.disconnect(),22000);setInterval(liveStatus,15000);window.addEventListener('online',tidy);window.addEventListener('offline',tidy);w.addEventListener('aurora2:state',()=>setTimeout(tidy,0));w.addEventListener('aurora:market-live',()=>setTimeout(tidy,0));document.addEventListener('visibilitychange',()=>{if(!document.hidden){loadEvidence();setTimeout(tidy,50)}})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })(window);
