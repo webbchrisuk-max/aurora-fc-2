@@ -1,5 +1,6 @@
 name: Aurora Housekeeping 2026-08-19
 
+# One-off housekeeping runner. Updating this file intentionally triggers the correction pass.
 on:
   push:
     paths:
@@ -52,7 +53,6 @@ jobs:
               if path.name == 'index.html':
                   text = text.replace('<title>Aurora City FC — Nexus HQ 4.5.1</title>', '<title>Aurora City FC — Club Access</title>')
                   text = text.replace('Nexus HQ 4.5.1', 'Nexus Headquarters')
-                  text = text.replace('Opening Nexus Headquarters', 'Opening Nexus Headquarters')
 
               if text != original:
                   path.write_text(text, encoding='utf-8')
