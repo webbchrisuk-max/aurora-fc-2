@@ -3,11 +3,11 @@
 w.AuroraRelease=Object.freeze({
   product:'Aurora 2.0',
   release:'Club Command v1',
-  build:'2026.08.18.1',
+  build:'2026.08.19.1',
   schemaVersion:11,
   syncManagerVersion:1,
   platformVersion:1,
-  releasedAt:'2026-08-18T11:53:00Z',
+  releasedAt:'2026-08-19T03:02:00Z',
   channel:'stable-candidate'
 });
 })(window);
