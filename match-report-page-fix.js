@@ -1,11 +1,10 @@
-/* Aurora City FC — Match Report full-page scroll/layout guard v1.1
+/* Aurora City FC — Match Report full-page scroll/layout guard v1.2
  * The shared shell intentionally locks body scrolling for manager access/PWA shells.
  * Match Report is a document-length report, so it must own normal vertical scrolling.
  *
- * v1.1 also hands final page rendering to match-report-canonical.js after the
- * legacy Match Report renderer has attached. The legacy renderer remains in the
- * repository as rollback code, but the canonical controller is always the last
- * visible authority for live performance, breadth, contributions and ratings.
+ * v1.2 loads the canonical Match Report controller after the rollback renderer,
+ * then loads the full-time freeze guard so the 5PM headline/breadth can never be
+ * overwritten by later live tick updates.
  */
 (function(w){
 'use strict';
@@ -91,12 +90,22 @@ function unlock(){
   }
 }
 
-function loadCanonicalController(){
-  if(w.AuroraMatchReportCanonical||document.querySelector('script[data-aurora-match-canonical]'))return;
+function loadFreezeGuard(){
+  if(w.AuroraMatchReportFullTimeFreeze||document.querySelector('script[data-aurora-match-freeze]'))return;
   const script=document.createElement('script');
-  script.src='match-report-canonical.js?v=20260819-canonical-match-1';
+  script.src='match-report-fulltime-freeze.js?v=20260819-fulltime-freeze-1';
+  script.async=false;
+  script.dataset.auroraMatchFreeze='1';
+  document.head.appendChild(script);
+}
+function loadCanonicalController(){
+  if(w.AuroraMatchReportCanonical){loadFreezeGuard();return}
+  if(document.querySelector('script[data-aurora-match-canonical]'))return;
+  const script=document.createElement('script');
+  script.src='match-report-canonical.js?v=20260819-canonical-match-2';
   script.async=false;
   script.dataset.auroraMatchCanonical='1';
+  script.onload=loadFreezeGuard;
   document.head.appendChild(script);
 }
 
