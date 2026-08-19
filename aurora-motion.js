@@ -88,6 +88,15 @@
     script.dataset.auroraBackgroundSignals='1';
     document.head.appendChild(script);
   }
+  function loadFinanceBillActionsFix(){
+    const file=String(location.pathname||'').split('/').pop().toLowerCase();
+    if(file!=='finance.html'||document.querySelector('script[data-aurora-bill-actions-fix]'))return;
+    const script=document.createElement('script');
+    script.src='finance-bill-actions-fix.js?v=20260819-bill-actions-1';
+    script.async=false;
+    script.dataset.auroraBillActionsFix='1';
+    document.head.appendChild(script);
+  }
   function loadFinanceHouseDashboardUpgrade(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-house-dashboard-upgrade]'))return;
@@ -110,13 +119,13 @@
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-house-priority-layout]'))return;
     const script=document.createElement('script');
-    script.src='finance-house-priority-layout.js?v=20260818-priority-layout-1';
+    script.src='finance-house-priority-layout.js?v=20260819-bill-actions-1';
     script.async=false;
     script.dataset.auroraHousePriorityLayout='1';
     document.head.appendChild(script);
   }
   function init(){
-    remember();animateRows(document);scoutingHooks();loadFormerReentryRefresh();loadScoutingSquadOpportunities();loadScoutingCleanBoard();loadBackgroundSignalScouting();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();loadFinanceHousePriorityLayout();
+    remember();animateRows(document);scoutingHooks();loadFormerReentryRefresh();loadScoutingSquadOpportunities();loadScoutingCleanBoard();loadBackgroundSignalScouting();loadFinanceBillActionsFix();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();loadFinanceHousePriorityLayout();
     observer.observe(document.body,{subtree:true,childList:true,characterData:true});
     requestAnimationFrame(()=>requestAnimationFrame(()=>{armed=true;document.documentElement.classList.add('aurora-motion-ready')}));
   }
