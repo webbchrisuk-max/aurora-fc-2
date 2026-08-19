@@ -1,6 +1,7 @@
-/* Aurora 2 — House Dashboard Priority Layout v1
+/* Aurora 2 — House Dashboard Priority Layout v1.1
  * Presentation-only ordering for Finance > House Projects.
- * Keeps finance-house.js and finance-ui.js as the data/calculation authority.
+ * Also loads the Finance bill action bridge so dynamically rendered bill
+ * buttons reliably reach finance.js on iPad/Safari.
  */
 (function(w){
   'use strict';
@@ -11,6 +12,15 @@
 
   const $=id=>document.getElementById(id);
   let applying=false;
+
+  function loadBillActionsFix(){
+    if(document.querySelector('script[data-aurora-bill-actions-fix]'))return;
+    const script=document.createElement('script');
+    script.src='finance-bill-actions-fix.js?v=20260819-bill-actions-1';
+    script.async=false;
+    script.dataset.auroraBillActionsFix='1';
+    document.head.appendChild(script);
+  }
 
   function injectStyles(){
     if($('auroraHousePriorityLayoutStyles'))return;
@@ -89,6 +99,7 @@
   }
 
   function init(){
+    loadBillActionsFix();
     injectStyles();
     [0,80,220,500,1000].forEach(delay=>setTimeout(applyLayout,delay));
     const panel=$('housePanel');
