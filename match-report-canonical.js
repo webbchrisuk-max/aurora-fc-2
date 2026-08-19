@@ -1,4 +1,4 @@
-/* Aurora City FC — Match Report Canonical Controller v1.0
+/* Aurora City FC — Match Report Canonical Controller v1.1
  * One render authority for the Match Report page.
  *
  * Performance source: AuroraMaster LivePrices / AuroraClubCommand live rows.
@@ -22,6 +22,14 @@ const ticker=v=>String(v||'').replace(/^LON:/i,'').replace(/\.L$/i,'').replace(/
 const esc=v=>w.Aurora2?.ui?.escape?.(String(v??''))||String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:2}).format(safe(Number(v)));
 const pct=v=>Number.isFinite(v)?`${v>=0?'+':''}${v.toFixed(2)}%`:'—';
+const key=v=>String(v||'').trim().toLowerCase().replace(/%/g,' pct ').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+function field(row,...keys){
+  if(!row||typeof row!=='object')return undefined;
+  for(const k of keys){if(row[k]!==undefined&&row[k]!==null&&row[k]!=='')return row[k]}
+  const wanted=new Set(keys.map(key));
+  for(const [k,v] of Object.entries(row)){if(v!==undefined&&v!==null&&v!==''&&wanted.has(key(k)))return v}
+  return undefined;
+}
 let master=null,loading=null,rendering=false,lastRenderKey='';
 
 function state(){try{return w.Aurora2?.core?.read?.()||null}catch(_){return null}}
@@ -35,10 +43,19 @@ function publishedReport(s){const rows=[],md=s?.matchday||s?.matchReport||{};if(
 function reportField(r,...keys){for(const k of keys){if(r&&r[k]!==undefined&&r[k]!==null&&String(r[k]).trim()!=='')return r[k]}return undefined}
 function setText(id,value,cls=''){const el=$(id);if(!el)return;el.textContent=value;el.classList.remove('positive','negative');if(cls)el.classList.add(cls)}
 
-function latestMap(rows,timeKeys=[]){const map=new Map();arr(rows).forEach(row=>{const tk=ticker(row?.ticker||row?.symbol);if(!tk)return;let stamp=0;for(const k of timeKeys){const t=Date.parse(row?.[k]||'');if(Number.isFinite(t)){stamp=t;break}}const prev=map.get(tk);if(!prev||stamp>=prev.__stamp)map.set(tk,{...row,__stamp:stamp})});return map}
+function latestMap(rows,timeKeys=[]){
+  const map=new Map();
+  arr(rows).forEach(row=>{
+    const tk=ticker(field(row,'ticker','symbol','Symbol'));if(!tk)return;
+    let stamp=0;
+    for(const k of timeKeys){const raw=field(row,k);const t=Date.parse(raw||'');if(Number.isFinite(t)){stamp=t;break}}
+    const prev=map.get(tk);if(!prev||stamp>=prev.__stamp)map.set(tk,{...row,__stamp:stamp});
+  });
+  return map;
+}
 function liveMaps(){
   const payload=master||{};
-  const live=latestMap(payload.LivePrices,['tradeTime','trade_time','updated_at','timestamp']);
+  const live=latestMap(payload.LivePrices,['Trade Time','tradeTime','trade_time','updated_at','timestamp']);
   const intelligence=latestMap(payload.AuroraIntelligence,['generated_at','updated_at','timestamp']);
   return{live,intelligence};
 }
@@ -48,16 +65,16 @@ async function refreshMaster(force=false){
   loading=(async()=>{try{const res=await fetch(`${MASTER_URL}?v=${Date.now()}`,{cache:'no-store'});if(res.ok)master=await res.json()}catch(err){console.warn('[Match Report] AuroraMaster refresh failed',err)}finally{loading=null}return master})();
   return loading;
 }
-function clubLiveMap(){const rows=arr(w.AuroraClubCommand?.marketRows?.());return new Map(rows.map(r=>[ticker(r?.ticker||r?.symbol),r]).filter(x=>x[0]))}
+function clubLiveMap(){const rows=arr(w.AuroraClubCommand?.marketRows?.());return new Map(rows.map(r=>[ticker(field(r,'ticker','symbol','Symbol')),r]).filter(x=>x[0]))}
 function liveQuote(tk,maps,club){
   const a=maps.live.get(tk)||{},b=club.get(tk)||{};
-  const price=[num(b.price),num(a.price),num(a.live_price),num(a.livePrice)].find(Number.isFinite);
-  const change=[num(b.change),num(a.change),num(a.day_change_pct),num(a.daily_change_pct),num(a.change_pct)].find(Number.isFinite);
-  const tradeTime=b.tradeTime||a.tradeTime||a.trade_time||a.updated_at||a.timestamp||'';
+  const price=[num(field(b,'price','Price')),num(field(a,'price','Price','live_price','livePrice'))].find(Number.isFinite);
+  const change=[num(field(b,'change','Day Change %','day_change_pct','daily_change_pct','change_pct')),num(field(a,'change','Day Change %','day_change_pct','daily_change_pct','change_pct'))].find(Number.isFinite);
+  const tradeTime=field(b,'tradeTime','Trade Time','trade_time')||field(a,'tradeTime','Trade Time','trade_time','updated_at','timestamp')||'';
   return{price:Number.isFinite(price)?price:NaN,change:Number.isFinite(change)?change:NaN,tradeTime};
 }
 function confidenceFor(tk,maps,s){
-  const intel=maps.intelligence.get(tk)||{};const n=num(intel.confidence_score);if(Number.isFinite(n)&&n>0)return clamp(n,0,100);
+  const intel=maps.intelligence.get(tk)||{};const n=num(field(intel,'confidence_score','confidenceScore','confidence'));if(Number.isFinite(n)&&n>0)return clamp(n,0,100);
   const target=arr(s?.scouting?.targets).find(t=>ticker(t?.ticker)===tk);const c=num(target?.confidence);return Number.isFinite(c)&&c>0?clamp(c,0,100):NaN;
 }
 function safetyFor(tk,s){const target=arr(s?.scouting?.targets).find(t=>ticker(t?.ticker)===tk);const n=num(target?.dividendSafety);return Number.isFinite(n)&&n>0?clamp(n,0,100):NaN}
@@ -102,7 +119,7 @@ function renderAwards(m,report){
 function renderContributors(m){const row=(x,pos)=>`<div class="contrib-row"><strong>${esc(x.ticker)} — ${esc(x.name||x.ticker)}</strong><span class="${pos?'positive':'negative'}">${x.dayGbp>=0?'+':''}${money(x.dayGbp)}</span></div>`;const pos=[...m.evidenced].filter(x=>x.dayGbp>0).sort((a,b)=>b.dayGbp-a.dayGbp).slice(0,5),neg=[...m.evidenced].filter(x=>x.dayGbp<0).sort((a,b)=>a.dayGbp-b.dayGbp).slice(0,5);$('positiveContrib').innerHTML=pos.map(x=>row(x,true)).join('')||'<div class="empty">No supported positive holding contribution.</div>';$('negativeContrib').innerHTML=neg.map(x=>row(x,false)).join('')||'<div class="empty">No supported negative holding contribution.</div>'}
 function renderRatings(positions,m){
   const rows=[...positions].sort((a,b)=>{const ar=rating(a,m.annual),br=rating(b,m.annual);return safe(br)-safe(ar)||safe(b._marketValue)-safe(a._marketValue)});
-  $('ratingsBody').innerHTML=rows.map((h,i)=>{const r=rating(h,m.annual),d=h._dayGbp,p=h._dayPct,confidence=h._confidence;return `<tr><td><b>#${i+1}</b></td><td class="holding-name"><strong>${esc(h.ticker)}</strong><span>${esc(h.name||h.ticker)}</span></td><td><span class="account-chip">${esc(accountLabel(h))}</span></td><td>${money(h._marketValue)}</td><td class="move ${Number.isFinite(d)?d>0?'positive':d<0?'negative':'':''}">${Number.isFinite(d)?`${d>=0?'+':''}${money(d)}`:'—'}</td><td class="${Number.isFinite(p)?p>0?'positive':p<0?'negative':''}">${pct(p)}</td><td>${money(income(h))}/yr</td><td>${Number.isFinite(confidence)?Math.round(confidence)+'/100':'—'}</td><td><span class="player-rating">${Number.isFinite(r)?r.toFixed(1):'—'}</span><div class="rating-bar"><i style="width:${Number.isFinite(r)?r*10:0}%"></i></div></td></tr>`}).join('');
+  $('ratingsBody').innerHTML=rows.map((h,i)=>{const r=rating(h,m.annual),d=h._dayGbp,p=h._dayPct,confidence=h._confidence;return `<tr><td><b>#${i+1}</b></td><td class="holding-name"><strong>${esc(h.ticker)}</strong><span>${esc(h.name||h.ticker)}</span></td><td><span class="account-chip">${esc(accountLabel(h))}</span></td><td>${money(h._marketValue)}</td><td class="move ${Number.isFinite(d)?d>0?'positive':d<0?'negative':''}">${Number.isFinite(d)?`${d>=0?'+':''}${money(d)}`:'—'}</td><td class="${Number.isFinite(p)?p>0?'positive':p<0?'negative':''}">${pct(p)}</td><td>${money(income(h))}/yr</td><td>${Number.isFinite(confidence)?Math.round(confidence)+'/100':'—'}</td><td><span class="player-rating">${Number.isFinite(r)?r.toFixed(1):'—'}</span><div class="rating-bar"><i style="width:${Number.isFinite(r)?r*10:0}%"></i></div></td></tr>`}).join('');
 }
 function nextDividend(s){const direct=s?.income?.nextDividend;if(direct)return direct;const cutoff=Date.now()-86400000;return arr(s?.income?.calendar).filter(x=>{const d=new Date(x?.payDate||x?.pay_date||x?.exDate||x?.ex_date||'');return !Number.isNaN(d.getTime())&&d.getTime()>=cutoff&&!['PAID','CANCELLED','ARCHIVED'].includes(String(x?.status||'').toUpperCase())}).sort((a,b)=>new Date(a.payDate||a.pay_date||a.exDate||a.ex_date)-new Date(b.payDate||b.pay_date||b.exDate||b.ex_date))[0]||null}
 function dividendDescription(d){if(!d)return'No upcoming dividend event is currently loaded.';const date=d.payDate||d.pay_date||d.exDate||d.ex_date||d.date,amount=num(d.amount??d.expectedAmountGbp??d.expected_amount_gbp);return`${ticker(d.ticker)||'Dividend'}${date?` • ${new Date(date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`:''}${Number.isFinite(amount)?` • ${money(amount)}`:''}`}
@@ -111,7 +128,7 @@ function renderForm(s){const rows=[...arr(s?.portfolio?.history),...arr(s?.marke
 
 function render(){
   if(rendering)return;const s=state();if(!s)return;rendering=true;try{
-    const positions=enrichPositions(s),report=publishedReport(s),m=metrics(s,positions,report),resultClass=Number.isFinite(m.gain)?m.gain>0?'positive':m.gain<0?'negative':'':'';
+    const positions=enrichPositions(s),report=publishedReport(s),m=metrics(s,positions,report),resultClass=Number.isFinite(m.gain)?m.gain>0?'positive':m.gain<0?'negative':'';
     const signature=[positions.map(h=>`${h.ticker}:${h._dayPct}:${h._marketValue}`).join('|'),report?.report_id||report?.id||reportDateValue(report),m.gain,m.up,m.down].join('~');if(signature===lastRenderKey)return;lastRenderKey=signature;
     setText('portfolioValue',money(m.value));setText('dayGain',Number.isFinite(m.gain)?`${m.gain>=0?'+':''}${money(m.gain)}`:'Awaiting feed',resultClass);setText('annualIncome',money(m.annual));setText('monthlyIncome',money(m.monthly));setText('breadth',m.coverage?`${m.up} ↑ • ${m.down} ↓`:'Awaiting feed');setText('marketRegime',String(reportField(report,'market_regime','regime')||s?.market?.regime||'Monitoring'));setText('resultPct',pct(m.changePct));$('scoreOrb')?.classList.toggle('loss',Number.isFinite(m.changePct)&&m.changePct<0);setText('matchStatus',new Date().getHours()>=17?'FULL TIME':'MATCHDAY LIVE');setText('upCount',m.coverage?String(m.up):'—');setText('downCount',m.coverage?String(m.down):'—');setText('flatCount',m.coverage?String(m.flat):'—');setText('coverageCount',`${m.coverage}/${m.total}`);
     const summary=reportField(report,'summary','result_summary','resultSummary')||(m.coverage?`Full time: Aurora finished ${pct(m.changePct)} with ${m.up} securities up, ${m.down} down and ${m.flat} flat.`:'Daily performance evidence is still loading.');setText('reportSummary',String(summary));
@@ -125,6 +142,6 @@ async function refresh(){const b=$('refreshReport');if(b){b.disabled=true;b.text
 function schedule(){setTimeout(render,40)}
 function bind(){refreshMaster(true).finally(render);w.addEventListener('aurora2:state',schedule);w.addEventListener('aurora:market-live',()=>refreshMaster(false).finally(render));w.addEventListener('aurora2:match-report-hydrated',schedule);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMaster(true).finally(render)});$('refreshReport')?.addEventListener('click',refresh);setInterval(()=>refreshMaster(true).finally(render),60000)}
 
-w.AuroraMatchReportCanonical={version:'1.0',render,refresh};
+w.AuroraMatchReportCanonical={version:'1.1',render,refresh};
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',bind,{once:true}):bind();
 })(window);
