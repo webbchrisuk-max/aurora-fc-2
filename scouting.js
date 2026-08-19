@@ -24,8 +24,8 @@
    * Global Network -> Active Scouting -> Approved Shortlist -> Transfer.
    */
   const NETWORK_URLS=[
-    'https://webbchrisuk-max.github.io/aurora-city-fc/AuroraMaster.json',
-    'https://raw.githubusercontent.com/webbchrisuk-max/aurora-city-fc/main/AuroraMaster.json'
+    'https://webbchrisuk-max.github.io/aurora-fc-2/AuroraMaster.json',
+    'https://raw.githubusercontent.com/webbchrisuk-max/aurora-fc-2/main/AuroraMaster.json'
   ];
   const NETWORK_SYNC_MS=6*60*60*1000;
   // This limits DOM rows, never the stored/scanned universe.
@@ -49,7 +49,7 @@
     clearTimeout(w.__a2ScoutToast);
     w.__a2ScoutToast=setTimeout(()=>el.style.opacity='0',2300);
   }
-  function set(id,v){const el=$(id);if(el)el.textContent=v}
+  function set(id,v){const el=$('toast');if(false&&el)el.textContent=v;const target=$(id);if(target)target.textContent=v}
   function setValue(id,v){const el=$(id);if(el)el.value=v??''}
   function readJson(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(_){return null}}
   function accountCode(v){
@@ -85,7 +85,6 @@
     ]));
     if(explicit>0)return {yieldPct:explicit,source:'reported'};
 
-    // Same-currency annual DPS ÷ current price. Currency cancels, so no FX is needed.
     const annualDps=Math.max(0,num(field(row,[
       'annual_dps','annualDps','annual_dividend_per_share','annualDividendPerShare',
       'forward_dps','forwardDps'
@@ -100,7 +99,6 @@
       }
     }
 
-    // Aurora 1 sometimes stores expected annual income from a £500 test investment.
     const income500=Math.max(0,num(field(row,[
       'income_from_500','incomeFrom500','annual_income_from_500'
     ])));
@@ -121,8 +119,6 @@
   }
   function activeTicker(v){
     const s=displayTicker(v);
-    // Aurora core v9 stores a base ticker. Keep the full exchange symbol separately
-    // in scouting.activeMeta so foreign symbols are never lost.
     if(/^[A-Z0-9-]+\.[A-Z]{1,4}$/.test(s))return s.split('.')[0];
     return s;
   }
@@ -618,34 +614,23 @@
     toast(`${scan.targets.length} Aurora 1 candidate${scan.targets.length===1?'':'s'} imported for review.`);
   }
 
-  /* ========================= GLOBAL NETWORK ========================= */
-
   function regionFor(row,symbol){
     const text=norm([
       field(row,['country','market','exchange','region','benchmark']),
       symbol
     ].filter(Boolean).join(' '));
-
-    if(/\b(uk|united kingdom|lse|london|ftse)\b/.test(text)||
-       /^LON:/.test(symbol)||/\.L$/.test(symbol))return 'UK';
-
+    if(/\b(uk|united kingdom|lse|london|ftse)\b/.test(text)||/^LON:/.test(symbol)||/\.L$/.test(symbol))return 'UK';
     if(/\b(usa|united states|us|nasdaq|nyse|amex)\b/.test(text))return 'US';
-
     return 'WORLD';
   }
 
   function evidenceCount(row){
     const keys=[
-      ['buy_strength','buyStrength'],
-      ['promotion_impact_score','impact','promotionImpactScore'],
-      ['dividend_yield','yield_pct','yieldPct'],
-      ['annual_dps','annualDps','forward_dps','forwardDps'],
-      ['income_from_500','incomeFrom500'],
-      ['live_price_gbp','livePriceGbp','live_price','livePrice'],
-      ['valuation_score','valuationScore'],
-      ['payout_score','dividend_safety','dividendSafety'],
-      ['growth_score','dividend_growth_5y','dividendGrowth'],
-      ['payout_risk','payoutRisk'],
+      ['buy_strength','buyStrength'],['promotion_impact_score','impact','promotionImpactScore'],
+      ['dividend_yield','yield_pct','yieldPct'],['annual_dps','annualDps','forward_dps','forwardDps'],
+      ['income_from_500','incomeFrom500'],['live_price_gbp','livePriceGbp','live_price','livePrice'],
+      ['valuation_score','valuationScore'],['payout_score','dividend_safety','dividendSafety'],
+      ['growth_score','dividend_growth_5y','dividendGrowth'],['payout_risk','payoutRisk'],
       ['sector'],['country','market'],['currency']
     ];
     return keys.reduce((n,group)=>n+(field(row,group)!=null?1:0),0);
@@ -654,51 +639,35 @@
   function likelyScoutingRow(row,path){
     if(!row||typeof row!=='object'||Array.isArray(row))return false;
     if(/holding|transaction|dividend|bill|pot|finance|route|mission|house|account|payment/i.test(path))return false;
-
     let symbol=cleanMarketSymbol(field(row,['ticker','symbol','code','Ticker']));
     let name=String(field(row,['company_name','name','company','companyName','security_name'])||'').trim();
     if(symbol.replace(/[^A-Z]/gi,'').toUpperCase()==='RETURNEDWATCHLIST'){
-      // Aurora 1 exported some returned-watchlist rows shifted one column:
-      // company_name contains the real ticker; scout_status contains the company name.
       symbol=cleanMarketSymbol(field(row,['company_name','symbol','code']));
       name=String(field(row,['scout_status','name','company'])||symbol).trim();
     }
     if(!symbol||!name)return false;
-
     const scoutingPath=/scout|watch|trial|candidate|global|intelligence/i.test(path);
-    const scoutingFields=[
-      'buy_strength','scout_status','scout_rating','promotion_impact_score',
-      'trial_status','trial_rank','trial_verdict','watchlist_status',
-      'yield_score','payout_score','growth_score','role_score'
-    ].some(k=>row[k]!=null&&row[k]!=='');
+    const scoutingFields=['buy_strength','scout_status','scout_rating','promotion_impact_score','trial_status','trial_rank','trial_verdict','watchlist_status','yield_score','payout_score','growth_score','role_score'].some(k=>row[k]!=null&&row[k]!=='');
     return scoutingPath||scoutingFields;
   }
 
   function normalizeNetworkRow(row,path,sourceGeneratedAt){
     let rawSymbol=cleanMarketSymbol(field(row,['ticker','symbol','code','Ticker']));
-    let name=String(field(row,['company_name','name','company','companyName','security_name'])||
-      displayTicker(rawSymbol)).trim();
+    let name=String(field(row,['company_name','name','company','companyName','security_name'])||displayTicker(rawSymbol)).trim();
     if(rawSymbol.replace(/[^A-Z]/gi,'').toUpperCase()==='RETURNEDWATCHLIST'){
       rawSymbol=cleanMarketSymbol(field(row,['company_name','symbol','code']));
       name=String(field(row,['scout_status','name','company'])||displayTicker(rawSymbol)).trim();
     }
     if(!rawSymbol||!name)return null;
-
     const region=regionFor(row,rawSymbol);
-    const currency=String(field(row,['currency','currency_code'])||
-      (region==='UK'?'GBP':region==='US'?'USD':'')).toUpperCase();
+    const currency=String(field(row,['currency','currency_code'])||(region==='UK'?'GBP':region==='US'?'USD':'')).toUpperCase();
     const liveGbpRaw=field(row,['live_price_gbp','livePriceGbp']);
     const liveNative=field(row,['live_price','livePrice','price','live_price_native']);
     const livePriceGbp=Math.max(0,num(liveGbpRaw!=null?liveGbpRaw:(currency==='GBP'?liveNative:0)));
     const yieldEvidence=deriveNetworkYield(row);
     const y=yieldEvidence.yieldPct;
-    const annualDps=Math.max(0,num(field(row,[
-      'annual_dps','annualDps','annual_dividend_per_share','annualDividendPerShare',
-      'forward_dps','forwardDps'
-    ])));
-    const incomeFrom500=Math.max(0,num(field(row,[
-      'income_from_500','incomeFrom500','annual_income_from_500'
-    ])));
+    const annualDps=Math.max(0,num(field(row,['annual_dps','annualDps','annual_dividend_per_share','annualDividendPerShare','forward_dps','forwardDps'])));
+    const incomeFrom500=Math.max(0,num(field(row,['income_from_500','incomeFrom500','annual_income_from_500'])));
     const strength=Math.max(0,num(field(row,['buy_strength','buyStrength'])));
     const impact=Math.max(0,num(field(row,['promotion_impact_score','promotionImpactScore','impact'])));
     const val=Math.max(0,num(field(row,['valuation_score','valuationScore'])));
@@ -707,132 +676,47 @@
     const checked=String(field(row,['date_checked','last_updated','updated_at','updatedAt'])||sourceGeneratedAt||'');
     const symbolKey=displayTicker(rawSymbol).replace(/\.(L|LON)$/i,'').toUpperCase();
     const id=`NET-${region}-${symbolKey.replace(/[^A-Z0-9]+/g,'-')}`;
-
-    return {
-      id,
-      marketSymbol:rawSymbol,
-      ticker:displayTicker(rawSymbol),
-      name,
-      region,
-      country:String(field(row,['country','market'])||'').trim(),
-      exchange:String(field(row,['exchange','market'])||'').trim(),
-      currency,
-      sector:String(field(row,['sector','industry'])||'').trim(),
-      role:String(field(row,['role','squad_role','chemistry_role'])||'').trim(),
-      sourceStatus:String(field(row,['scout_status','watchlist_status','trial_status','status'])||'MONITOR'),
-      legacyStrength:strength,
-      legacyImpact:impact,
-      legacyYieldPct:Number(y.toFixed(4)),
-      legacyYieldSource:yieldEvidence.source,
-      legacyAnnualDps:Number(annualDps.toFixed(8)),
-      legacyIncomeFrom500:Number(incomeFrom500.toFixed(6)),
-      legacyPriceNative:Number(Math.max(0,num(liveNative)).toFixed(8)),
-      legacyPriceGbp:Number(livePriceGbp.toFixed(6)),
-      legacyValuation:String(field(row,['valuation_status','valuation'])||'').trim(),
-      legacyValuationScore:val,
-      legacyPayoutScore:payoutScore,
-      legacyGrowthScore:growthScore,
-      legacyPayoutRisk:String(field(row,['payout_risk','payoutRisk','chemistry_risk'])||'').trim(),
-      legacyVerdict:String(field(row,['trial_verdict','manager_note','notes'])||'').trim(),
-      legacyCheckedAt:checked,
-      evidenceCount:evidenceCount(row),
-      sourcePath:path,
-      source:'AURORA1_GLOBAL_NETWORK',
-      sourceUpdatedAt:sourceGeneratedAt||null,
-      updatedAt:now()
-    };
+    return {id,marketSymbol:rawSymbol,ticker:displayTicker(rawSymbol),name,region,country:String(field(row,['country','market'])||'').trim(),exchange:String(field(row,['exchange','market'])||'').trim(),currency,sector:String(field(row,['sector','industry'])||'').trim(),role:String(field(row,['role','squad_role','chemistry_role'])||'').trim(),sourceStatus:String(field(row,['scout_status','watchlist_status','trial_status','status'])||'MONITOR'),legacyStrength:strength,legacyImpact:impact,legacyYieldPct:Number(y.toFixed(4)),legacyYieldSource:yieldEvidence.source,legacyAnnualDps:Number(annualDps.toFixed(8)),legacyIncomeFrom500:Number(incomeFrom500.toFixed(6)),legacyPriceNative:Number(Math.max(0,num(liveNative)).toFixed(8)),legacyPriceGbp:Number(livePriceGbp.toFixed(6)),legacyValuation:String(field(row,['valuation_status','valuation'])||'').trim(),legacyValuationScore:val,legacyPayoutScore:payoutScore,legacyGrowthScore:growthScore,legacyPayoutRisk:String(field(row,['payout_risk','payoutRisk','chemistry_risk'])||'').trim(),legacyVerdict:String(field(row,['trial_verdict','manager_note','notes'])||'').trim(),legacyCheckedAt:checked,evidenceCount:evidenceCount(row),sourcePath:path,source:'AURORA1_GLOBAL_NETWORK',sourceUpdatedAt:sourceGeneratedAt||null,updatedAt:now()};
   }
 
   function collectNetworkRows(master){
     const found=[];
     const sourceGeneratedAt=String(master?.meta?.generated_at||master?.meta?.updated_at||'');
     const seenObjects=new Set();
-
     function walk(value,path,depth){
       if(depth>5||value==null)return;
       if(Array.isArray(value)){
         value.forEach((item,i)=>{
           if(likelyScoutingRow(item,path)){
-            const n=normalizeNetworkRow(item,path,sourceGeneratedAt);
-            if(n)found.push(n);
-          }else if(item&&typeof item==='object'){
-            walk(item,`${path}[${i}]`,depth+1);
-          }
-        });
-        return;
+            const n=normalizeNetworkRow(item,path,sourceGeneratedAt);if(n)found.push(n);
+          }else if(item&&typeof item==='object')walk(item,`${path}[${i}]`,depth+1);
+        });return;
       }
       if(typeof value!=='object')return;
       if(seenObjects.has(value))return;
       seenObjects.add(value);
-      Object.entries(value).forEach(([k,v])=>{
-        if(k==='meta')return;
-        walk(v,path?`${path}.${k}`:k,depth+1);
-      });
+      Object.entries(value).forEach(([k,v])=>{if(k!=='meta')walk(v,path?`${path}.${k}`:k,depth+1)});
     }
     walk(master,'',0);
-
     const best=new Map();
     found.forEach(r=>{
-      const key=`${r.region}|${displayTicker(r.marketSymbol).toUpperCase()}`;
-      const prior=best.get(key);
-      if(!prior){
-        best.set(key,r);
-        return;
-      }
-
-      const rWins=
-        r.evidenceCount>prior.evidenceCount||
-        (r.evidenceCount===prior.evidenceCount&&r.legacyStrength>prior.legacyStrength);
-      const base=rWins?{...r}:{...prior};
-      const other=rWins?prior:r;
-
-      const fill=(k)=>{
-        const v=base[k],ov=other[k];
-        const missing=v==null||v===''||(typeof v==='number'&&!(v>0));
-        if(missing&&ov!=null&&ov!==''&&(typeof ov!=='number'||ov>0))base[k]=ov;
-      };
-      [
-        'legacyYieldPct','legacyYieldSource','legacyAnnualDps','legacyIncomeFrom500',
-        'legacyPriceNative','legacyPriceGbp','legacyValuation','legacyValuationScore',
-        'legacyPayoutScore','legacyGrowthScore','legacyPayoutRisk','sector','role',
-        'country','exchange','currency','legacyVerdict','legacyCheckedAt'
-      ].forEach(fill);
-
-      // Re-derive after merging if the strongest row was missing yield.
+      const k=`${r.region}|${displayTicker(r.marketSymbol).toUpperCase()}`;
+      const p=best.get(k);
+      if(!p){best.set(k,r);return}
+      const rWins=r.evidenceCount>p.evidenceCount||(r.evidenceCount===p.evidenceCount&&r.legacyStrength>p.legacyStrength);
+      const base=rWins?{...r}:{...p},other=rWins?p:r;
+      const fill=name=>{const v=base[name],ov=other[name];const missing=v==null||v===''||(typeof v==='number'&&!(v>0));if(missing&&ov!=null&&ov!==''&&(typeof ov!=='number'||ov>0))base[name]=ov};
+      ['legacyYieldPct','legacyYieldSource','legacyAnnualDps','legacyIncomeFrom500','legacyPriceNative','legacyPriceGbp','legacyValuation','legacyValuationScore','legacyPayoutScore','legacyGrowthScore','legacyPayoutRisk','sector','role','country','exchange','currency','legacyVerdict','legacyCheckedAt'].forEach(fill);
       if(!(base.legacyYieldPct>0)){
-        if(base.legacyAnnualDps>0&&base.legacyPriceNative>0){
-          const y=(base.legacyAnnualDps/base.legacyPriceNative)*100;
-          if(Number.isFinite(y)&&y>0&&y<100){
-            base.legacyYieldPct=Number(y.toFixed(4));
-            base.legacyYieldSource='DPS ÷ price';
-          }
-        }else if(base.legacyIncomeFrom500>0){
-          const y=(base.legacyIncomeFrom500/500)*100;
-          if(Number.isFinite(y)&&y>0&&y<100){
-            base.legacyYieldPct=Number(y.toFixed(4));
-            base.legacyYieldSource='£500 income';
-          }
-        }
+        if(base.legacyAnnualDps>0&&base.legacyPriceNative>0){const y=(base.legacyAnnualDps/base.legacyPriceNative)*100;if(Number.isFinite(y)&&y>0&&y<100){base.legacyYieldPct=Number(y.toFixed(4));base.legacyYieldSource='DPS ÷ price'}}
+        else if(base.legacyIncomeFrom500>0){const y=(base.legacyIncomeFrom500/500)*100;if(Number.isFinite(y)&&y>0&&y<100){base.legacyYieldPct=Number(y.toFixed(4));base.legacyYieldSource='£500 income'}}
       }
-
-      base.evidenceCount=Math.max(prior.evidenceCount,r.evidenceCount);
-      best.set(key,base);
+      base.evidenceCount=Math.max(p.evidenceCount,r.evidenceCount);best.set(k,base);
     });
-
-    return [...best.values()].sort((a,b)=>
-      b.legacyStrength-a.legacyStrength||
-      b.legacyImpact-a.legacyImpact||
-      b.evidenceCount-a.evidenceCount||
-      b.legacyYieldPct-a.legacyYieldPct||
-      a.ticker.localeCompare(b.ticker)
-    );
+    return [...best.values()].sort((a,b)=>b.legacyStrength-a.legacyStrength||b.legacyImpact-a.legacyImpact||b.evidenceCount-a.evidenceCount||b.legacyYieldPct-a.legacyYieldPct||a.ticker.localeCompare(b.ticker));
   }
 
-  function membershipApiUrl(source){
-    return `https://en.wikipedia.org/w/api.php?action=parse&page=${source.page}`+
-      '&prop=text&formatversion=2&format=json&origin=*';
-  }
-
+  function membershipApiUrl(source){return `https://en.wikipedia.org/w/api.php?action=parse&page=${source.page}&prop=text&formatversion=2&format=json&origin=*`}
   function parseMembershipHtml(html,source){
     const doc=new DOMParser().parseFromString(String(html||''),'text/html'),rows=[];
     doc.querySelectorAll('table.wikitable').forEach(table=>{
@@ -846,968 +730,192 @@
         const cells=[...tr.querySelectorAll('th,td')];
         const ticker=cleanMarketSymbol(cells[tickerIndex]?.textContent).replace(/\[[^\]]*\]/g,'');
         const name=String(cells[companyIndex]?.textContent||'').replace(/\[[^\]]*\]/g,'').trim();
-        if(!ticker||!name)return;
-        rows.push({ticker,marketSymbol:ticker,name,region:source.region,country:source.region,
-          exchange:source.exchange,currency:source.currency,memberships:[source.label],
-          source:'INDEX_MEMBERSHIP',sources:[`Wikipedia:${source.page}`],sourceStatus:'UNSCOUTED',
-          dataStatus:'MISSING',evidenceCount:0,updatedAt:now()});
+        if(ticker&&name)rows.push({ticker,marketSymbol:ticker,name,region:source.region,country:source.region,exchange:source.exchange,currency:source.currency,memberships:[source.label],source:'INDEX_MEMBERSHIP',sources:[`Wikipedia:${source.page}`],sourceStatus:'UNSCOUTED',dataStatus:'MISSING',evidenceCount:0,updatedAt:now()});
       });
     });
     return rows;
   }
 
   async function fetchMembershipUniverse(){
-    const api=A().scoutingUniverse;
-    if(!api)return {rows:[],errors:['Universe module unavailable']};
+    const api=A().scoutingUniverse;if(!api)return {rows:[],errors:['Universe module unavailable']};
     const configured=arr(A().core.read()?.scouting?.universeConfig?.membershipSourceIds);
-    const sources=configured.length
-      ?api.MEMBERSHIP_SOURCES.filter(source=>configured.includes(source.id))
-      :api.MEMBERSHIP_SOURCES;
-    const settled=await Promise.allSettled(sources.map(async source=>{
-      const res=await fetch(membershipApiUrl(source),{cache:'no-store'});
-      if(!res.ok)throw new Error(`${source.label}: HTTP ${res.status}`);
-      const body=await res.json();
-      const rows=parseMembershipHtml(body?.parse?.text,source);
-      if(!rows.length)throw new Error(`${source.label}: no constituent table found`);
-      return rows;
-    }));
-    return {rows:settled.flatMap(x=>x.status==='fulfilled'?x.value:[]),
-      errors:settled.filter(x=>x.status==='rejected').map(x=>String(x.reason?.message||x.reason))};
+    const sources=configured.length?api.MEMBERSHIP_SOURCES.filter(source=>configured.includes(source.id)):api.MEMBERSHIP_SOURCES;
+    const settled=await Promise.allSettled(sources.map(async source=>{const res=await fetch(membershipApiUrl(source),{cache:'no-store'});if(!res.ok)throw new Error(`${source.label}: HTTP ${res.status}`);const body=await res.json();const rows=parseMembershipHtml(body?.parse?.text,source);if(!rows.length)throw new Error(`${source.label}: no constituent table found`);return rows}));
+    return {rows:settled.flatMap(x=>x.status==='fulfilled'?x.value:[]),errors:settled.filter(x=>x.status==='rejected').map(x=>String(x.reason?.message||x.reason))};
   }
 
   function mergeUniverse(membershipRows,legacyRows){
-    const api=A().scoutingUniverse;
-    if(!api)return legacyRows;
-    const legacy=legacyRows.map(r=>({...r,memberships:r.memberships||[],
-      dataStatus:r.evidenceCount>0?'AVAILABLE':'MISSING'}));
-    return api.merge([...membershipRows,...legacy]).sort((a,b)=>
-      b.memberships.length-a.memberships.length||num(b.legacyStrength)-num(a.legacyStrength)||a.ticker.localeCompare(b.ticker));
+    const api=A().scoutingUniverse;if(!api)return legacyRows;
+    const legacy=legacyRows.map(r=>({...r,memberships:r.memberships||[],dataStatus:r.evidenceCount>0?'AVAILABLE':'MISSING'}));
+    return api.merge([...membershipRows,...legacy]).sort((a,b)=>b.memberships.length-a.memberships.length||num(b.legacyStrength)-num(a.legacyStrength)||a.ticker.localeCompare(b.ticker));
   }
 
   function networkCounts(rows){
     if(A().scoutingUniverse)return A().scoutingUniverse.coverage(rows);
-    return {
-      total:rows.length,
-      UK:rows.filter(r=>r.region==='UK').length,
-      US:rows.filter(r=>r.region==='US').length,
-      WORLD:rows.filter(r=>r.region==='WORLD').length
-    };
+    return {total:rows.length,UK:rows.filter(r=>r.region==='UK').length,US:rows.filter(r=>r.region==='US').length,WORLD:rows.filter(r=>r.region==='WORLD').length};
   }
 
   async function fetchNetworkMaster(){
     let lastError=null;
     for(const url of NETWORK_URLS){
       try{
-        const res=await fetch(`${url}${url.includes('?')?'&':'?'}v=${Date.now()}`,{
-          cache:'no-store'
-        });
+        const res=await fetch(`${url}${url.includes('?')?'&':'?'}v=${Date.now()}`,{cache:'no-store'});
         if(!res.ok)throw new Error(`HTTP ${res.status}`);
-        const data=await res.json();
-        return {data,url};
-      }catch(err){
-        lastError=err;
-      }
+        const data=await res.json();return {data,url};
+      }catch(err){lastError=err}
     }
     throw lastError||new Error('Global scouting source unavailable.');
   }
 
-  function autoBenchEnabled(state=A().core.read()){
-    return state.scouting?.autoBench?.enabled!==false;
-  }
-
+  function autoBenchEnabled(state=A().core.read()){return state.scouting?.autoBench?.enabled!==false}
   function isAutoManagedTarget(t,state=A().core.read()){
-    if(!t)return false;
-    if(t.autoManaged===true)return true;
-    const source=String(t.source||'').toUpperCase();
-    if(source==='AURORA1_GLOBAL_AUTO_BENCH')return true;
-    const ids=new Set(arr(state.scouting?.autoBench?.autoIds).map(String));
-    return ids.has(String(t.id||''));
+    if(!t)return false;if(t.autoManaged===true)return true;
+    const source=String(t.source||'').toUpperCase();if(source==='AURORA1_GLOBAL_AUTO_BENCH')return true;
+    const ids=new Set(arr(state.scouting?.autoBench?.autoIds).map(String));return ids.has(String(t.id||''));
   }
 
   function autoPromotionProfile(n){
-    const y=Math.max(0,num(n.legacyYieldPct));
-    const strength=Math.max(0,num(n.legacyStrength));
-    const impact=Math.max(0,num(n.legacyImpact));
-    const safety=Math.max(0,num(n.legacyPayoutScore));
-    const valuation=Math.max(0,num(n.legacyValuationScore));
-    const growth=Math.max(0,num(n.legacyGrowthScore));
-    const evidence=Math.max(0,num(n.evidenceCount));
-    const status=norm(n.sourceStatus);
-    const risk=norm(n.legacyPayoutRisk);
-    const tk=activeTicker(n.marketSymbol);
-
+    const y=Math.max(0,num(n.legacyYieldPct)),strength=Math.max(0,num(n.legacyStrength)),impact=Math.max(0,num(n.legacyImpact)),safety=Math.max(0,num(n.legacyPayoutScore)),valuation=Math.max(0,num(n.legacyValuationScore)),growth=Math.max(0,num(n.legacyGrowthScore)),evidence=Math.max(0,num(n.evidenceCount)),status=norm(n.sourceStatus),risk=norm(n.legacyPayoutRisk),tk=activeTicker(n.marketSymbol);
     const blockers=[];
-    if(tk==='TSCO')blockers.push('locked legacy ticker');
-    if(!(y>0))blockers.push('no dividend yield');
-    if(y>AUTO_BENCH_MAX_YIELD)blockers.push('yield above auto-promotion ceiling');
-    if(strength<AUTO_BENCH_MIN_STRENGTH)blockers.push('legacy scout strength below 60');
-    if(evidence<3)blockers.push('thin evidence');
-    if(/suspend|cancel|omit|avoid|sell/.test(status))blockers.push('negative source status');
-    if(/very high|extreme/.test(risk))blockers.push('payout risk too high');
-
-    const fundamentalSignals=[safety>0,valuation>0,growth>0,n.legacyPriceGbp>0||n.legacyPriceNative>0]
-      .filter(Boolean).length;
-    if(fundamentalSignals<1)blockers.push('no supporting fundamental/price evidence');
-
-    const incomeFit=incomeScoreFromYield(y);
-    const evidenceScore=clamp(evidence*12.5,0,100);
-    const priority=
-      strength*.38+
-      impact*.20+
-      incomeFit*.12+
-      (safety||55)*.10+
-      (valuation||55)*.08+
-      (growth||50)*.05+
-      evidenceScore*.07;
-
-    return {
-      eligible:blockers.length===0,
-      blockers,
-      priority:Number(priority.toFixed(3)),
-      strength,impact,yieldPct:y,safety,valuation,growth,evidence
-    };
+    if(tk==='TSCO')blockers.push('locked legacy ticker');if(!(y>0))blockers.push('no dividend yield');if(y>AUTO_BENCH_MAX_YIELD)blockers.push('yield above auto-promotion ceiling');if(strength<AUTO_BENCH_MIN_STRENGTH)blockers.push('legacy scout strength below 60');if(evidence<3)blockers.push('thin evidence');if(/suspend|cancel|omit|avoid|sell/.test(status))blockers.push('negative source status');if(/very high|extreme/.test(risk))blockers.push('payout risk too high');
+    const fundamentalSignals=[safety>0,valuation>0,growth>0,n.legacyPriceGbp>0||n.legacyPriceNative>0].filter(Boolean).length;if(fundamentalSignals<1)blockers.push('no supporting fundamental/price evidence');
+    const incomeFit=incomeScoreFromYield(y),evidenceScore=clamp(evidence*12.5,0,100),priority=strength*.38+impact*.20+incomeFit*.12+(safety||55)*.10+(valuation||55)*.08+(growth||50)*.05+evidenceScore*.07;
+    return {eligible:blockers.length===0,blockers,priority:Number(priority.toFixed(3)),strength,impact,yieldPct:y,safety,valuation,growth,evidence};
   }
 
   function autoCandidateFromNetwork(n){
-    const p=autoPromotionProfile(n);
-    const safety=p.safety>0?clamp(p.safety):55;
-    const valuation=p.valuation>0?clamp(p.valuation):55;
-    const growth=p.growth>0?clamp(p.growth):50;
-    const explicitFields=[
-      n.legacyPriceGbp>0,n.legacyYieldPct>0,p.safety>0,p.valuation>0,p.growth>0,
-      p.evidence>=5
-    ].filter(Boolean).length;
+    const p=autoPromotionProfile(n),safety=p.safety>0?clamp(p.safety):55,valuation=p.valuation>0?clamp(p.valuation):55,growth=p.growth>0?clamp(p.growth):50;
+    const explicitFields=[n.legacyPriceGbp>0,n.legacyYieldPct>0,p.safety>0,p.valuation>0,p.growth>0,p.evidence>=5].filter(Boolean).length;
     const confidence=Math.round(clamp((explicitFields/6)*100,50,90));
-
-    return {
-      id:`AUTO-${n.id}`,
-      securityId:n.securityId,
-      exchange:n.exchange,
-      ticker:activeTicker(n.marketSymbol),
-      name:n.name,
-      preferredAccount:'CHECK',
-      sector:n.sector,
-      livePriceGbp:n.legacyPriceGbp,
-      yieldPct:n.legacyYieldPct,
-      confidence,
-      dividendSafety:safety,
-      incomeScore:0,
-      valuationScore:valuation,
-      portfolioFit:0,
-      dividendGrowth:growth,
-      businessQuality:55,
-      dividendStatus:'',
-      payoutRisk:n.legacyPayoutRisk,
-      requiresRefresh:false,
-      autoManaged:true,
-      autoPriority:p.priority,
-      autoRegion:n.region,
-      source:'AURORA1_GLOBAL_AUTO_BENCH',
-      sourceUpdatedAt:n.sourceUpdatedAt||n.legacyCheckedAt||null,
-      createdAt:now(),
-      updatedAt:now()
-    };
+    return {id:`AUTO-${n.id}`,securityId:n.securityId,exchange:n.exchange,ticker:activeTicker(n.marketSymbol),name:n.name,preferredAccount:'CHECK',sector:n.sector,livePriceGbp:n.legacyPriceGbp,yieldPct:n.legacyYieldPct,confidence,dividendSafety:safety,incomeScore:0,valuationScore:valuation,portfolioFit:0,dividendGrowth:growth,businessQuality:55,dividendStatus:'',payoutRisk:n.legacyPayoutRisk,requiresRefresh:false,autoManaged:true,autoPriority:p.priority,autoRegion:n.region,source:'AURORA1_GLOBAL_AUTO_BENCH',sourceUpdatedAt:n.sourceUpdatedAt||n.legacyCheckedAt||null,createdAt:now(),updatedAt:now()};
   }
 
   function selectAutoBench(state){
-    const universe=arr(state.scouting?.universe);
-    const manual=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state));
-    const slots=Math.max(0,AUTO_BENCH_TOTAL-manual.length);
-
-    const manualTickers=new Set(manual.map(t=>String(t.ticker||'').toUpperCase()));
-    const qualified=universe
-      .map(n=>({n,p:autoPromotionProfile(n)}))
-      .filter(x=>x.p.eligible)
-      .filter(x=>!manualTickers.has(activeTicker(x.n.marketSymbol).toUpperCase()))
-      .sort((a,b)=>b.p.priority-a.p.priority||b.p.strength-a.p.strength||b.p.yieldPct-a.p.yieldPct);
-
+    const universe=arr(state.scouting?.universe),manual=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state)),slots=Math.max(0,AUTO_BENCH_TOTAL-manual.length),manualTickers=new Set(manual.map(t=>String(t.ticker||'').toUpperCase()));
+    const qualified=universe.map(n=>({n,p:autoPromotionProfile(n)})).filter(x=>x.p.eligible).filter(x=>!manualTickers.has(activeTicker(x.n.marketSymbol).toUpperCase())).sort((a,b)=>b.p.priority-a.p.priority||b.p.strength-a.p.strength||b.p.yieldPct-a.p.yieldPct);
     if(!slots)return {selected:[],qualified:qualified.length,slots,manual:manual.length};
-
     const picked=[],used=new Set();
-    const take=(region,count)=>{
-      for(const x of qualified){
-        if(picked.length>=slots||count<=0)break;
-        if(used.has(x.n.id)||x.n.region!==region)continue;
-        picked.push(x);used.add(x.n.id);count--;
-      }
-    };
-
-    if(slots>=6){
-      take('US',Math.min(2,slots));
-      take('WORLD',Math.min(1,Math.max(0,slots-picked.length)));
-    }
-    for(const x of qualified){
-      if(picked.length>=slots)break;
-      if(used.has(x.n.id))continue;
-      picked.push(x);used.add(x.n.id);
-    }
-
-    return {
-      selected:picked.map(x=>autoCandidateFromNetwork(x.n)),
-      qualified:qualified.length,
-      slots,
-      manual:manual.length
-    };
+    const take=(region,count)=>{for(const x of qualified){if(picked.length>=slots||count<=0)break;if(used.has(x.n.id)||x.n.region!==region)continue;picked.push(x);used.add(x.n.id);count--}};
+    if(slots>=6){take('US',Math.min(2,slots));take('WORLD',Math.min(1,Math.max(0,slots-picked.length)))}
+    for(const x of qualified){if(picked.length>=slots)break;if(used.has(x.n.id))continue;picked.push(x);used.add(x.n.id)}
+    return {selected:picked.map(x=>autoCandidateFromNetwork(x.n)),qualified:qualified.length,slots,manual:manual.length};
   }
 
-  function autoBenchSignature(rows){
-    return arr(rows).map(t=>[
-      t.id,t.ticker,t.yieldPct,t.livePriceGbp,t.dividendSafety,t.valuationScore,
-      t.dividendGrowth,t.confidence,t.source,t.sourceUpdatedAt
-    ].join('|')).sort().join('||');
-  }
+  function autoBenchSignature(rows){return arr(rows).map(t=>[t.id,t.ticker,t.yieldPct,t.livePriceGbp,t.dividendSafety,t.valuationScore,t.dividendGrowth,t.confidence,t.source,t.sourceUpdatedAt].join('|')).sort().join('||')}
 
   function rebalanceAutoBench({silent=false}={}){
     const state=A().core.read();
-    if(!autoBenchEnabled(state)){
-      if(!silent)toast('Auto Bench is paused.');
-      return {changed:false,paused:true};
-    }
-    if(scoutingLocked(state)){
-      if(!silent)toast('Auto Bench is frozen while Transfer is locked.');
-      return {changed:false,locked:true};
-    }
-    const universe=arr(state.scouting?.universe);
-    if(!universe.length){
-      if(!silent)toast('Sync the Global Network before refreshing Auto Bench.');
-      return {changed:false,empty:true};
-    }
-
-    const plan=selectAutoBench(state);
-    const manual=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state));
-    const currentAuto=arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state));
-    const nextAuto=plan.selected.map(t=>assessTarget(t,state));
-    const changed=autoBenchSignature(currentAuto)!==autoBenchSignature(nextAuto);
-
-    if(!changed){
-      A().core.update(s=>({
-        ...s,
-        scouting:{
-          ...s.scouting,
-          autoBench:{
-            ...obj(s.scouting?.autoBench),
-            enabled:true,
-            targetSize:AUTO_BENCH_TOTAL,
-            qualified:plan.qualified,
-            autoCount:nextAuto.length,
-            manualCount:manual.length,
-            autoIds:nextAuto.map(t=>String(t.id||'')),
-            lastRunAt:now(),
-            lastChangeAt:s.scouting?.autoBench?.lastChangeAt||null,
-            status:'CURRENT'
-          }
-        }
-      }));
-      if(!silent)toast(`Auto Bench already current • ${nextAuto.length} automatic + ${manual.length} manual.`);
-      return {changed:false,plan};
-    }
-
-    if(!invalidateApproval(s=>{
-      const liveManual=arr(s.scouting?.targets).filter(t=>!isAutoManagedTarget(t,s));
-      const meta={...obj(s.scouting?.activeMeta)};
-      Object.keys(meta).forEach(k=>{
-        if(String(k).startsWith('AUTO-NET-'))delete meta[k];
-      });
-      nextAuto.forEach(t=>{
-        const n=universe.find(x=>`AUTO-${x.id}`===t.id);
-        if(!n)return;
-        meta[t.id]={
-          networkId:n.id,
-          marketSymbol:n.marketSymbol,
-          region:n.region,
-          country:n.country,
-          exchange:n.exchange,
-          currency:n.currency,
-          source:'AURORA1_GLOBAL_AUTO_BENCH',
-          autoManaged:true,
-          promotedAt:now()
-        };
-      });
-      return {
-        ...s,
-        scouting:{
-          ...s.scouting,
-          targets:rankTargets([...liveManual,...nextAuto],s),
-          activeMeta:meta,
-          autoBench:{
-            ...obj(s.scouting?.autoBench),
-            enabled:true,
-            targetSize:AUTO_BENCH_TOTAL,
-            qualified:plan.qualified,
-            autoCount:nextAuto.length,
-            manualCount:liveManual.length,
-            autoIds:nextAuto.map(t=>String(t.id||'')),
-            lastRunAt:now(),
-            lastChangeAt:now(),
-            status:'UPDATED'
-          },
-          source:'AURORA2_SCOUTING_AUTO_BENCH',
-          updatedAt:now()
-        }
-      };
-    }))return {changed:false,blocked:true};
-
-    if(!silent)toast(`Auto Bench updated • ${nextAuto.length} best available scouts promoted automatically.`);
-    return {changed:true,plan};
+    if(!autoBenchEnabled(state)){if(!silent)toast('Auto Bench is paused.');return {changed:false,paused:true}}
+    if(scoutingLocked(state)){if(!silent)toast('Auto Bench is frozen while Transfer is locked.');return {changed:false,locked:true}}
+    const universe=arr(state.scouting?.universe);if(!universe.length){if(!silent)toast('Sync the Global Network before refreshing Auto Bench.');return {changed:false,empty:true}}
+    const plan=selectAutoBench(state),manual=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state)),currentAuto=arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state)),nextAuto=plan.selected.map(t=>assessTarget(t,state)),changed=autoBenchSignature(currentAuto)!==autoBenchSignature(nextAuto);
+    if(!changed){A().core.update(s=>({...s,scouting:{...s.scouting,autoBench:{...obj(s.scouting?.autoBench),enabled:true,targetSize:AUTO_BENCH_TOTAL,qualified:plan.qualified,autoCount:nextAuto.length,manualCount:manual.length,autoIds:nextAuto.map(t=>String(t.id||'')),lastRunAt:now(),lastChangeAt:s.scouting?.autoBench?.lastChangeAt||null,status:'CURRENT'}}}));if(!silent)toast(`Auto Bench already current • ${nextAuto.length} automatic + ${manual.length} manual.`);return {changed:false,plan}}
+    if(!invalidateApproval(s=>{const liveManual=arr(s.scouting?.targets).filter(t=>!isAutoManagedTarget(t,s)),meta={...obj(s.scouting?.activeMeta)};Object.keys(meta).forEach(k=>{if(String(k).startsWith('AUTO-NET-'))delete meta[k]});nextAuto.forEach(t=>{const n=universe.find(x=>`AUTO-${x.id}`===t.id);if(n)meta[t.id]={networkId:n.id,marketSymbol:n.marketSymbol,region:n.region,country:n.country,exchange:n.exchange,currency:n.currency,source:'AURORA1_GLOBAL_AUTO_BENCH',autoManaged:true,promotedAt:now()}});return {...s,scouting:{...s.scouting,targets:rankTargets([...liveManual,...nextAuto],s),activeMeta:meta,autoBench:{...obj(s.scouting?.autoBench),enabled:true,targetSize:AUTO_BENCH_TOTAL,qualified:plan.qualified,autoCount:nextAuto.length,manualCount:liveManual.length,autoIds:nextAuto.map(t=>String(t.id||'')),lastRunAt:now(),lastChangeAt:now(),status:'UPDATED'},source:'AURORA2_SCOUTING_AUTO_BENCH',updatedAt:now()}}}))return {changed:false,blocked:true};
+    if(!silent)toast(`Auto Bench updated • ${nextAuto.length} best available scouts promoted automatically.`);return {changed:true,plan};
   }
 
   function setAutoBenchEnabled(enabled){
-    const state=A().core.read();
-    if(scoutingLocked(state)){
-      toast('Unlock Transfer before changing Auto Bench.');
-      return;
-    }
-    A().core.update(s=>({
-      ...s,
-      scouting:{
-        ...s.scouting,
-        autoBench:{
-          ...obj(s.scouting?.autoBench),
-          enabled:!!enabled,
-          targetSize:AUTO_BENCH_TOTAL,
-          status:enabled?'READY':'PAUSED',
-          updatedAt:now()
-        }
-      }
-    }));
-    if(enabled){
-      rebalanceAutoBench({silent:false});
-    }else{
-      toast('Auto Bench paused. Current Active Scouting stays in place.');
-    }
+    const state=A().core.read();if(scoutingLocked(state)){toast('Unlock Transfer before changing Auto Bench.');return}
+    A().core.update(s=>({...s,scouting:{...s.scouting,autoBench:{...obj(s.scouting?.autoBench),enabled:!!enabled,targetSize:AUTO_BENCH_TOTAL,status:enabled?'READY':'PAUSED',updatedAt:now()}}}));
+    if(enabled)rebalanceAutoBench({silent:false});else toast('Auto Bench paused. Current Active Scouting stays in place.');
   }
 
   async function syncGlobalNetwork(force=true){
-    const btn=$('syncGlobalNetwork');
-    if(btn){btn.disabled=true;btn.textContent='Syncing…'}
+    const btn=$('syncGlobalNetwork');if(btn){btn.disabled=true;btn.textContent='Syncing…'}
     try{
-      const [legacyResult,membership]=await Promise.all([
-        fetchNetworkMaster().then(value=>({value})).catch(error=>({error})),fetchMembershipUniverse()
-      ]);
-      const data=legacyResult.value?.data||{};
-      const url=legacyResult.value?.url||'';
-      const universe=mergeUniverse(membership.rows,collectNetworkRows(data));
-      if(!universe.length)throw new Error('No valid scouting rows found in Aurora 1 network.');
+      const [legacyResult,membership]=await Promise.all([fetchNetworkMaster().then(value=>({value})).catch(error=>({error})),fetchMembershipUniverse()]);
+      const data=legacyResult.value?.data||{},url=legacyResult.value?.url||'',universe=mergeUniverse(membership.rows,collectNetworkRows(data));if(!universe.length)throw new Error('No valid scouting rows found in Aurora 1 network.');
       const counts=networkCounts(universe);
-      A().core.update(s=>({
-        ...s,
-        scouting:{
-          ...s.scouting,
-          universe,
-          networkMeta:{
-            status:membership.errors.length||legacyResult.error?'PARTIAL':'CONNECTED',
-            sourceUrl:url,
-            sourceGeneratedAt:String(data?.meta?.generated_at||''),
-            lastSyncAt:now(),
-            lastError:[...membership.errors,legacyResult.error?.message].filter(Boolean).join(' • '),
-            counts
-          },
-          updatedAt:now()
-        }
-      }));
-      const autoResult=rebalanceAutoBench({silent:true});
-      toast(`Global Network synced • ${universe.length} stocks • Auto Bench ${autoResult.locked?'frozen':autoBenchEnabled()?'checked':'paused'}.`);
-      return universe;
-    }catch(err){
-      A().core.update(s=>({
-        ...s,
-        scouting:{
-          ...s.scouting,
-          networkMeta:{
-            ...obj(s.scouting?.networkMeta),
-            status:'ERROR',
-            lastAttemptAt:now(),
-            lastError:String(err.message||err)
-          }
-        }
-      }));
-      toast(`Global Network sync failed: ${String(err.message||err)}`);
-      return [];
-    }finally{
-      if(btn){btn.disabled=false;btn.textContent='Sync Global Network'}
-    }
+      A().core.update(s=>({...s,scouting:{...s.scouting,universe,networkMeta:{status:membership.errors.length||legacyResult.error?'PARTIAL':'CONNECTED',sourceUrl:url,sourceGeneratedAt:String(data?.meta?.generated_at||''),lastSyncAt:now(),lastError:[...membership.errors,legacyResult.error?.message].filter(Boolean).join(' • '),counts},updatedAt:now()}}));
+      const autoResult=rebalanceAutoBench({silent:true});toast(`Global Network synced • ${universe.length} stocks • Auto Bench ${autoResult.locked?'frozen':autoBenchEnabled()?'checked':'paused'}.`);return universe;
+    }catch(err){A().core.update(s=>({...s,scouting:{...s.scouting,networkMeta:{...obj(s.scouting?.networkMeta),status:'ERROR',lastAttemptAt:now(),lastError:String(err.message||err)}}}));toast(`Global Network sync failed: ${String(err.message||err)}`);return []}
+    finally{if(btn){btn.disabled=false;btn.textContent='Sync Global Network'}}
   }
 
   function networkEvidenceToCandidate(n){
-    const safety=n.legacyPayoutScore>0?clamp(n.legacyPayoutScore):0;
-    const valuation=n.legacyValuationScore>0?clamp(n.legacyValuationScore):0;
-    const growth=n.legacyGrowthScore>0?clamp(n.legacyGrowthScore):0;
-
-    // Promotion is deliberately review-gated. We carry only explicit evidence.
-    // Business quality is not inferred from old buy-strength/role scores.
-    const explicitFields=[
-      n.legacyPriceGbp>0,n.legacyYieldPct>0,safety>0,valuation>0,growth>0
-    ].filter(Boolean).length;
+    const safety=n.legacyPayoutScore>0?clamp(n.legacyPayoutScore):0,valuation=n.legacyValuationScore>0?clamp(n.legacyValuationScore):0,growth=n.legacyGrowthScore>0?clamp(n.legacyGrowthScore):0;
+    const explicitFields=[n.legacyPriceGbp>0,n.legacyYieldPct>0,safety>0,valuation>0,growth>0].filter(Boolean).length;
     const confidence=Math.round(clamp((explicitFields/6)*100,35,85));
-
-    return {
-      id:`ACTIVE-${n.id}`,
-      securityId:n.securityId,
-      exchange:n.exchange,
-      ticker:activeTicker(n.marketSymbol),
-      name:n.name,
-      preferredAccount:'CHECK',
-      sector:n.sector,
-      livePriceGbp:n.legacyPriceGbp,
-      yieldPct:n.legacyYieldPct,
-      confidence,
-      dividendSafety:safety,
-      incomeScore:0,
-      valuationScore:valuation,
-      portfolioFit:0,
-      dividendGrowth:growth,
-      businessQuality:0,
-      dividendStatus:'',
-      payoutRisk:n.legacyPayoutRisk,
-      requiresRefresh:true,
-      source:'AURORA1_GLOBAL_NETWORK',
-      sourceUpdatedAt:n.sourceUpdatedAt||n.legacyCheckedAt||null,
-      createdAt:now(),updatedAt:now()
-    };
+    return {id:`ACTIVE-${n.id}`,securityId:n.securityId,exchange:n.exchange,ticker:activeTicker(n.marketSymbol),name:n.name,preferredAccount:'CHECK',sector:n.sector,livePriceGbp:n.legacyPriceGbp,yieldPct:n.legacyYieldPct,confidence,dividendSafety:safety,incomeScore:0,valuationScore:valuation,portfolioFit:0,dividendGrowth:growth,businessQuality:0,dividendStatus:'',payoutRisk:n.legacyPayoutRisk,requiresRefresh:true,source:'AURORA1_GLOBAL_NETWORK',sourceUpdatedAt:n.sourceUpdatedAt||n.legacyCheckedAt||null,createdAt:now(),updatedAt:now()};
   }
 
   function promoteNetworkCandidate(id){
-    const state=A().core.read();
-    if(scoutingLocked(state)){
-      toast('Transfer is locked. Global Network stays monitor-only until the route is unlocked.');
-      return;
-    }
-    const n=arr(state.scouting?.universe).find(x=>x.id===id);
-    if(!n)return;
-    const base=activeTicker(n.marketSymbol);
-    const already=arr(state.scouting?.targets).find(t=>
-      String(t.ticker||'').toUpperCase()===base.toUpperCase()
-    );
-    if(already){
-      toast(`${base} is already in Active Scouting.`);
-      editCandidate(already.id);
-      return;
-    }
-    const candidate=networkEvidenceToCandidate(n);
-    const assessed=assessTarget(candidate,state);
-
-    if(!invalidateApproval(s=>{
-      const meta={...obj(s.scouting?.activeMeta)};
-      meta[candidate.id]={
-        networkId:n.id,
-        marketSymbol:n.marketSymbol,
-        region:n.region,
-        country:n.country,
-        exchange:n.exchange,
-        currency:n.currency,
-        source:'AURORA1_GLOBAL_NETWORK',
-        promotedAt:now()
-      };
-      return {
-        ...s,
-        scouting:{
-          ...s.scouting,
-          targets:rankTargets([...arr(s.scouting?.targets),assessed],s),
-          activeMeta:meta,
-          updatedAt:now()
-        }
-      };
-    }))return;
-
-    toast(`${n.ticker} promoted to Active Scouting • evidence review required.`);
-    setTimeout(()=>editCandidate(candidate.id),50);
+    const state=A().core.read();if(scoutingLocked(state)){toast('Transfer is locked. Global Network stays monitor-only until the route is unlocked.');return}
+    const n=arr(state.scouting?.universe).find(x=>x.id===id);if(!n)return;
+    const base=activeTicker(n.marketSymbol),already=arr(state.scouting?.targets).find(t=>String(t.ticker||'').toUpperCase()===base.toUpperCase());
+    if(already){toast(`${base} is already in Active Scouting.`);editCandidate(already.id);return}
+    const candidate=networkEvidenceToCandidate(n),assessed=assessTarget(candidate,state);
+    if(!invalidateApproval(s=>{const meta={...obj(s.scouting?.activeMeta)};meta[candidate.id]={networkId:n.id,marketSymbol:n.marketSymbol,region:n.region,country:n.country,exchange:n.exchange,currency:n.currency,source:'AURORA1_GLOBAL_NETWORK',promotedAt:now()};return {...s,scouting:{...s.scouting,targets:rankTargets([...arr(s.scouting?.targets),assessed],s),activeMeta:meta,updatedAt:now()}}}))return;
+    toast(`${n.ticker} promoted to Active Scouting • evidence review required.`);setTimeout(()=>editCandidate(candidate.id),50);
   }
 
-  function maybeAutoSyncNetwork(){
-    const state=A().core.read();
-    const rows=arr(state.scouting?.universe);
-    const last=Date.parse(state.scouting?.networkMeta?.lastSyncAt||'');
-    const stale=!Number.isFinite(last)||(Date.now()-last)>NETWORK_SYNC_MS;
-    if(!rows.length||stale)syncGlobalNetwork(false);
-  }
+  function maybeAutoSyncNetwork(){const state=A().core.read(),rows=arr(state.scouting?.universe),last=Date.parse(state.scouting?.networkMeta?.lastSyncAt||''),stale=!Number.isFinite(last)||(Date.now()-last)>NETWORK_SYNC_MS;if(!rows.length||stale)syncGlobalNetwork(false)}
 
   function injectNetworkUI(){
     if($('globalNetworkSection'))return;
-
-    const style=document.createElement('style');
-    style.id='auroraGlobalScoutStyles';
-    style.textContent=`
-      .network-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
-      .network-kpi{padding:12px;border-radius:14px;border:1px solid rgba(74,222,128,.10);background:rgba(255,255,255,.018)}
-      .network-kpi small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:900}
-      .network-kpi strong{display:block;margin-top:5px;font-size:18px}
-      .network-pipeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0}
-      .network-node{position:relative;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018);font-size:8px;color:var(--muted)}
-      .network-node strong{display:block;color:#d7f8e3;font-size:9px;margin-bottom:3px}
-      .network-node:not(:last-child):after{content:'›';position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:#4ade80;font-size:18px;z-index:2}
-      .network-toolbar{display:grid;grid-template-columns:minmax(190px,1.2fr) 140px minmax(160px,.8fr) auto;gap:8px;margin:10px 0}
-      .network-toolbar .field{margin:0}
-      .network-table-wrap{overflow:auto;border:1px solid rgba(255,255,255,.06);border-radius:15px}
-      .network-table{width:100%;min-width:920px;border-collapse:collapse}
-      .network-table th,.network-table td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.05);text-align:left;font-size:8px}
-      .network-table th{position:sticky;top:0;background:#08120e;color:var(--muted);font-size:7px;text-transform:uppercase;z-index:2}
-      .network-table tr:last-child td{border-bottom:0}
-      .network-table tr:hover td{background:rgba(74,222,128,.025)}
-      .region-pill{display:inline-flex;padding:4px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.09);font-size:7px;font-weight:900}
-      .region-pill.uk{color:#9df0ba}.region-pill.us{color:#a7efff}.region-pill.world{color:#f7d77d}
-      .network-name strong{display:block;font-size:9px}.network-name span{display:block;color:var(--muted);font-size:7px;margin-top:2px}
-      .network-source-note{font-size:7px;color:var(--muted)}
-      .network-active{color:#9df0ba;font-weight:900}
-      .auto-bench-bar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin:10px 0;padding:12px;border-radius:14px;border:1px solid rgba(74,222,128,.16);background:rgba(74,222,128,.028)}
-      .auto-bench-copy strong{display:block;font-size:10px;color:#c9f7d8}.auto-bench-copy span{display:block;color:var(--muted);font-size:8px;line-height:1.45;margin-top:3px}
-      .auto-tag{display:inline-flex;padding:4px 6px;border-radius:999px;border:1px solid rgba(74,222,128,.2);color:#9df0ba;font-size:7px;font-weight:1000}
-      @media(max-width:900px){.network-toolbar{grid-template-columns:1fr 1fr}.network-toolbar #networkSearch{grid-column:1/-1}.network-kpis{grid-template-columns:1fr 1fr}.network-pipeline{grid-template-columns:1fr 1fr}.network-node:not(:last-child):after{display:none}.auto-bench-bar{grid-template-columns:1fr 1fr}.auto-bench-copy{grid-column:1/-1}}
-      @media(max-width:600px){.network-toolbar{grid-template-columns:1fr}.network-toolbar #networkSearch{grid-column:auto}}
-    `;
-    document.head.appendChild(style);
-
-    const section=document.createElement('section');
-    section.id='globalNetworkSection';
-    section.className='section card card-pad';
-    section.innerHTML=`
-      <div class="section-head">
-        <div>
-          <h2>Global Scouting Network</h2>
-          <p class="muted">Broad monitor pool from Aurora 1 • UK + US + selected world markets • only promoted players enter Aurora 2 scoring</p>
-        </div>
-        <span class="scout-badge" id="networkBadge">CONNECTING</span>
-      </div>
-
-      <div class="network-kpis">
-        <div class="network-kpi"><small>Network</small><strong id="networkTotal">0</strong></div>
-        <div class="network-kpi"><small>🇬🇧 UK</small><strong id="networkUK">0</strong></div>
-        <div class="network-kpi"><small>🇺🇸 US</small><strong id="networkUS">0</strong></div>
-        <div class="network-kpi"><small>🌍 World</small><strong id="networkWorld">0</strong></div>
-      </div>
-      <div id="universeBreakdown" class="notice">Loading index membership coverage…</div>
-
-      <div class="network-pipeline">
-        <div class="network-node"><strong>1 • Global Network</strong>UK + US + World candidates.</div>
-        <div class="network-node"><strong>2 • Auto Bench</strong>Best evidence-qualified names rotate in automatically.</div>
-        <div class="network-node"><strong>3 • Active Scouting</strong>Aurora 2 scores manual + automatic scouts.</div>
-        <div class="network-node"><strong>4 • Transfer</strong>Only an approved shortlist can be deployed.</div>
-      </div>
-
-      <div class="auto-bench-bar">
-        <div class="auto-bench-copy"><strong id="autoBenchTitle">AUTO BENCH ON</strong><span id="autoBenchMeta">Building the best available Active Scouting bench…</span></div>
-        <button class="btn secondary" id="refreshAutoBench" type="button">Refresh Auto Bench</button>
-        <button class="btn secondary" id="toggleAutoBench" type="button">Pause Auto Bench</button>
-      </div>
-
-      <div class="network-toolbar">
-        <div class="field" id="networkSearch"><input id="networkSearchInput" placeholder="Search ticker, company, country or sector"></div>
-        <div class="field"><select id="networkRegion"><option value="ALL">All regions</option><option value="UK">🇬🇧 UK</option><option value="US">🇺🇸 US</option><option value="WORLD">🌍 World</option></select></div>
-        <div class="field"><select id="networkSector"><option value="ALL">All sectors</option></select></div>
-        <button class="btn secondary" id="syncGlobalNetwork" type="button">Sync Global Network</button>
-      </div>
-
-      <div id="networkNote" class="notice">
-        Auto Bench promotes only evidence-qualified names. A locked Transfer route is never changed.
-      </div>
-
-      <div class="section-head" style="margin-top:14px">
-        <div><h2 style="font-size:16px">Scouting Pool</h2><p class="muted">Sorted by legacy scout strength / impact as a monitoring priority — not an Aurora 2 buy recommendation.</p></div>
-        <span class="muted" id="networkShown">0 shown</span>
-      </div>
-      <div class="network-table-wrap"><table class="network-table">
-        <thead><tr>
-          <th>#</th><th>Player</th><th>Region</th><th>Sector</th><th>Yield</th><th>Legacy strength</th><th>Value / risk</th><th>Status</th><th></th>
-        </tr></thead>
-        <tbody id="networkRows"><tr><td colspan="9">Connecting to the old Aurora scouting network…</td></tr></tbody>
-      </table></div>
-    `;
-
-    const ranked=[...document.querySelectorAll('section')]
-      .find(s=>/Ranked Shortlist/i.test(s.querySelector('h2')?.textContent||''));
-    if(ranked)ranked.parentNode.insertBefore(section,ranked);
-    else document.querySelector('.content')?.appendChild(section);
-
-    $('syncGlobalNetwork')?.addEventListener('click',()=>syncGlobalNetwork(true));
-    $('refreshAutoBench')?.addEventListener('click',()=>rebalanceAutoBench({silent:false}));
-    $('toggleAutoBench')?.addEventListener('click',()=>setAutoBenchEnabled(!autoBenchEnabled()));
-    $('networkSearchInput')?.addEventListener('input',()=>renderNetwork(A().core.read()));
-    $('networkRegion')?.addEventListener('change',()=>renderNetwork(A().core.read()));
-    $('networkSector')?.addEventListener('change',()=>renderNetwork(A().core.read()));
+    const style=document.createElement('style');style.id='auroraGlobalScoutStyles';style.textContent=`.network-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}.network-kpi{padding:12px;border-radius:14px;border:1px solid rgba(74,222,128,.10);background:rgba(255,255,255,.018)}.network-kpi small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;font-weight:900}.network-kpi strong{display:block;margin-top:5px;font-size:18px}.network-pipeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0}.network-node{position:relative;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.018);font-size:8px;color:var(--muted)}.network-node strong{display:block;color:#d7f8e3;font-size:9px;margin-bottom:3px}.network-node:not(:last-child):after{content:'›';position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:#4ade80;font-size:18px;z-index:2}.network-toolbar{display:grid;grid-template-columns:minmax(190px,1.2fr) 140px minmax(160px,.8fr) auto;gap:8px;margin:10px 0}.network-toolbar .field{margin:0}.network-table-wrap{overflow:auto;border:1px solid rgba(255,255,255,.06);border-radius:15px}.network-table{width:100%;min-width:920px;border-collapse:collapse}.network-table th,.network-table td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.05);text-align:left;font-size:8px}.network-table th{position:sticky;top:0;background:#08120e;color:var(--muted);font-size:7px;text-transform:uppercase;z-index:2}.network-table tr:last-child td{border-bottom:0}.network-table tr:hover td{background:rgba(74,222,128,.025)}.region-pill{display:inline-flex;padding:4px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.09);font-size:7px;font-weight:900}.region-pill.uk{color:#9df0ba}.region-pill.us{color:#a7efff}.region-pill.world{color:#f7d77d}.network-name strong{display:block;font-size:9px}.network-name span{display:block;color:var(--muted);font-size:7px;margin-top:2px}.network-source-note{font-size:7px;color:var(--muted)}.network-active{color:#9df0ba;font-weight:900}.auto-bench-bar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin:10px 0;padding:12px;border-radius:14px;border:1px solid rgba(74,222,128,.16);background:rgba(74,222,128,.028)}.auto-bench-copy strong{display:block;font-size:10px;color:#c9f7d8}.auto-bench-copy span{display:block;color:var(--muted);font-size:8px;line-height:1.45;margin-top:3px}.auto-tag{display:inline-flex;padding:4px 6px;border-radius:999px;border:1px solid rgba(74,222,128,.2);color:#9df0ba;font-size:7px;font-weight:1000}@media(max-width:900px){.network-toolbar{grid-template-columns:1fr 1fr}.network-toolbar #networkSearch{grid-column:1/-1}.network-kpis{grid-template-columns:1fr 1fr}.network-pipeline{grid-template-columns:1fr 1fr}.network-node:not(:last-child):after{display:none}.auto-bench-bar{grid-template-columns:1fr 1fr}.auto-bench-copy{grid-column:1/-1}}@media(max-width:600px){.network-toolbar{grid-template-columns:1fr}.network-toolbar #networkSearch{grid-column:auto}}`;document.head.appendChild(style);
+    const section=document.createElement('section');section.id='globalNetworkSection';section.className='section card card-pad';section.innerHTML=`<div class="section-head"><div><h2>Global Scouting Network</h2><p class="muted">Broad monitor pool from Aurora 1 • UK + US + selected world markets • only promoted players enter Aurora 2 scoring</p></div><span class="scout-badge" id="networkBadge">CONNECTING</span></div><div class="network-kpis"><div class="network-kpi"><small>Network</small><strong id="networkTotal">0</strong></div><div class="network-kpi"><small>🇬🇧 UK</small><strong id="networkUK">0</strong></div><div class="network-kpi"><small>🇺🇸 US</small><strong id="networkUS">0</strong></div><div class="network-kpi"><small>🌍 World</small><strong id="networkWorld">0</strong></div></div><div id="universeBreakdown" class="notice">Loading index membership coverage…</div><div class="network-pipeline"><div class="network-node"><strong>1 • Global Network</strong>UK + US + World candidates.</div><div class="network-node"><strong>2 • Auto Bench</strong>Best evidence-qualified names rotate in automatically.</div><div class="network-node"><strong>3 • Active Scouting</strong>Aurora 2 scores manual + automatic scouts.</div><div class="network-node"><strong>4 • Transfer</strong>Only an approved shortlist can be deployed.</div></div><div class="auto-bench-bar"><div class="auto-bench-copy"><strong id="autoBenchTitle">AUTO BENCH ON</strong><span id="autoBenchMeta">Building the best available Active Scouting bench…</span></div><button class="btn secondary" id="refreshAutoBench" type="button">Refresh Auto Bench</button><button class="btn secondary" id="toggleAutoBench" type="button">Pause Auto Bench</button></div><div class="network-toolbar"><div class="field" id="networkSearch"><input id="networkSearchInput" placeholder="Search ticker, company, country or sector"></div><div class="field"><select id="networkRegion"><option value="ALL">All regions</option><option value="UK">🇬🇧 UK</option><option value="US">🇺🇸 US</option><option value="WORLD">🌍 World</option></select></div><div class="field"><select id="networkSector"><option value="ALL">All sectors</option></select></div><button class="btn secondary" id="syncGlobalNetwork" type="button">Sync Global Network</button></div><div id="networkNote" class="notice">Auto Bench promotes only evidence-qualified names. A locked Transfer route is never changed.</div><div class="section-head" style="margin-top:14px"><div><h2 style="font-size:16px">Scouting Pool</h2><p class="muted">Sorted by legacy scout strength / impact as a monitoring priority — not an Aurora 2 buy recommendation.</p></div><span class="muted" id="networkShown">0 shown</span></div><div class="network-table-wrap"><table class="network-table"><thead><tr><th>#</th><th>Player</th><th>Region</th><th>Sector</th><th>Yield</th><th>Legacy strength</th><th>Value / risk</th><th>Status</th><th></th></tr></thead><tbody id="networkRows"><tr><td colspan="9">Connecting to the old Aurora scouting network…</td></tr></tbody></table></div>`;
+    const ranked=[...document.querySelectorAll('section')].find(s=>/Ranked Shortlist/i.test(s.querySelector('h2')?.textContent||''));if(ranked)ranked.parentNode.insertBefore(section,ranked);else document.querySelector('.content')?.appendChild(section);
+    $('syncGlobalNetwork')?.addEventListener('click',()=>syncGlobalNetwork(true));$('refreshAutoBench')?.addEventListener('click',()=>rebalanceAutoBench({silent:false}));$('toggleAutoBench')?.addEventListener('click',()=>setAutoBenchEnabled(!autoBenchEnabled()));$('networkSearchInput')?.addEventListener('input',()=>renderNetwork(A().core.read()));$('networkRegion')?.addEventListener('change',()=>renderNetwork(A().core.read()));$('networkSector')?.addEventListener('change',()=>renderNetwork(A().core.read()));
   }
 
   function renderNetwork(state){
-    injectNetworkUI();
-    const rows=arr(state.scouting?.universe);
-    const meta=obj(state.scouting?.networkMeta);
-    const counts=networkCounts(rows);
-    set('networkTotal',counts.total);set('networkUK',counts.UK);
-    set('networkUS',counts.US);set('networkWorld',counts.WORLD);
-
-    const auto=obj(state.scouting?.autoBench);
-    const autoOn=autoBenchEnabled(state);
-    const autoRows=arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state));
-    const manualRows=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state));
-    set('autoBenchTitle',autoOn?(scoutingLocked(state)?'AUTO BENCH FROZEN':'AUTO BENCH ON'):'AUTO BENCH PAUSED');
-    set('autoBenchMeta',autoOn
-      ?`${autoRows.length} automatic + ${manualRows.length} manual = ${autoRows.length+manualRows.length} Active Scouts • ${auto.qualified??'—'} global names currently clear the auto-promotion gate • target ${AUTO_BENCH_TOTAL}.`
-      :`${autoRows.length} automatic scouts remain in Active Scouting, but automatic rotation is paused.`
-    );
-    const toggle=$('toggleAutoBench');
-    if(toggle){
-      toggle.textContent=autoOn?'Pause Auto Bench':'Resume Auto Bench';
-      toggle.disabled=scoutingLocked(state);
-    }
-    const refresh=$('refreshAutoBench');
-    if(refresh)refresh.disabled=!autoOn||scoutingLocked(state)||!rows.length;
-
-    const badge=$('networkBadge');
-    if(badge){
-      badge.textContent=meta.status==='ERROR'?'SOURCE ERROR':meta.status==='PARTIAL'?'PARTIAL COVERAGE':rows.length?'NETWORK LIVE':'CONNECTING';
-    }
-
-    const sectorEl=$('networkSector');
-    if(sectorEl){
-      const current=sectorEl.value||'ALL';
-      const sectors=[...new Set(rows.map(r=>r.sector).filter(Boolean))].sort();
-      sectorEl.innerHTML='<option value="ALL">All sectors</option>'+
-        sectors.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
-      if(current==='ALL'||sectors.includes(current))sectorEl.value=current;
-    }
-
-    const q=norm($('networkSearchInput')?.value||'');
-    const region=$('networkRegion')?.value||'ALL';
-    const sector=$('networkSector')?.value||'ALL';
-    const activeIds=new Set(arr(state.scouting?.targets).map(t=>String(t.id||'')));
-    const activeTickers=new Set(arr(state.scouting?.targets)
-      .map(t=>String(t.ticker||'').toUpperCase()));
-    const autoTickers=new Set(arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state))
-      .map(t=>String(t.ticker||'').toUpperCase()));
-
-    const filtered=rows.filter(r=>{
-      if(region!=='ALL'&&r.region!==region)return false;
-      if(sector!=='ALL'&&r.sector!==sector)return false;
-      if(q){
-        const hay=norm(`${r.ticker} ${r.marketSymbol} ${r.name} ${r.country} ${r.exchange} ${r.sector} ${r.role}`);
-        if(!hay.includes(q))return false;
-      }
-      return true;
-    }).slice(0,NETWORK_RENDER_LIMIT);
-
-    set('networkShown',`${filtered.length} shown${rows.length>filtered.length?' of '+rows.length:''}`);
-    const sourceDate=meta.sourceGeneratedAt?
-      new Date(meta.sourceGeneratedAt).toLocaleString('en-GB'):'unknown source time';
-    set('networkNote',
-      meta.status==='ERROR'
-        ?`Last sync failed: ${meta.lastError||'source unavailable'}. Existing network remains cached.`
-        :rows.length
-          ?`${rows.length} global scouting candidates • source ${sourceDate} • syncing this network does not alter Active Scouting or Transfer.`
-          :'Connecting to the Aurora 1 scouting network…'
-    );
-
-    const host=$('networkRows');
-    if(!host)return;
-    if(!filtered.length){
-      host.innerHTML='<tr><td colspan="9">No network candidates match the current filters.</td></tr>';
-      return;
-    }
-
-    host.innerHTML=filtered.map((r,i)=>{
-      const active=activeIds.has(`ACTIVE-${r.id}`)||
-        activeTickers.has(activeTicker(r.marketSymbol).toUpperCase());
-      const auto=autoTickers.has(activeTicker(r.marketSymbol).toUpperCase());
-      const profile=autoPromotionProfile(r);
-      const valueRisk=[r.legacyValuation,r.legacyPayoutRisk].filter(Boolean).join(' • ')||'—';
-      return `<tr>
-        <td>${i+1}</td>
-        <td class="network-name"><strong>${esc(r.ticker)}</strong><span>${esc(r.name)}${r.marketSymbol&&r.marketSymbol!==r.ticker?' • '+esc(r.marketSymbol):''}</span></td>
-        <td><span class="region-pill ${r.region.toLowerCase()}">${r.region==='UK'?'🇬🇧 UK':r.region==='US'?'🇺🇸 US':'🌍 World'}</span><div class="network-source-note">${esc(r.country||r.exchange||r.currency||'')}</div></td>
-        <td>${esc(r.sector||'—')}</td>
-        <td>${r.legacyYieldPct>0
-          ?`${r.legacyYieldPct.toFixed(2)}%${r.legacyYieldSource&&r.legacyYieldSource!=='reported'
-            ?`<div class="network-source-note">${esc(r.legacyYieldSource)}</div>`:''}`
-          :'—<div class="network-source-note">needs data</div>'}</td>
-        <td>${r.legacyStrength>0?Math.round(r.legacyStrength):'—'}${r.legacyImpact>0?` <span class="network-source-note">• impact ${Math.round(r.legacyImpact)}</span>`:''}</td>
-        <td>${esc(valueRisk)}</td>
-        <td>${esc(r.sourceStatus||'MONITOR')}${profile.eligible?'<div class="network-source-note">AUTO READY</div>':''}</td>
-        <td>${auto
-          ?'<span class="auto-tag">AUTO</span>'
-          :active
-            ?'<span class="network-active">MANUAL</span>'
-            :`<button class="btn secondary" type="button" data-promote-network="${esc(r.id)}">Promote</button>`}
-        </td>
-      </tr>`;
-    }).join('');
+    injectNetworkUI();const rows=arr(state.scouting?.universe),meta=obj(state.scouting?.networkMeta),counts=networkCounts(rows);set('networkTotal',counts.total);set('networkUK',counts.UK);set('networkUS',counts.US);set('networkWorld',counts.WORLD);
+    const auto=obj(state.scouting?.autoBench),autoOn=autoBenchEnabled(state),autoRows=arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state)),manualRows=arr(state.scouting?.targets).filter(t=>!isAutoManagedTarget(t,state));
+    set('autoBenchTitle',autoOn?(scoutingLocked(state)?'AUTO BENCH FROZEN':'AUTO BENCH ON'):'AUTO BENCH PAUSED');set('autoBenchMeta',autoOn?`${autoRows.length} automatic + ${manualRows.length} manual = ${autoRows.length+manualRows.length} Active Scouts • ${auto.qualified??'—'} global names currently clear the auto-promotion gate • target ${AUTO_BENCH_TOTAL}.`:`${autoRows.length} automatic scouts remain in Active Scouting, but automatic rotation is paused.`);
+    const toggle=$('toggleAutoBench');if(toggle){toggle.textContent=autoOn?'Pause Auto Bench':'Resume Auto Bench';toggle.disabled=scoutingLocked(state)}const refresh=$('refreshAutoBench');if(refresh)refresh.disabled=!autoOn||scoutingLocked(state)||!rows.length;
+    const badge=$('networkBadge');if(badge)badge.textContent=meta.status==='ERROR'?'SOURCE ERROR':meta.status==='PARTIAL'?'PARTIAL COVERAGE':rows.length?'NETWORK LIVE':'CONNECTING';
+    const sectorEl=$('networkSector');if(sectorEl){const current=sectorEl.value||'ALL',sectors=[...new Set(rows.map(r=>r.sector).filter(Boolean))].sort();sectorEl.innerHTML='<option value="ALL">All sectors</option>'+sectors.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');if(current==='ALL'||sectors.includes(current))sectorEl.value=current}
+    const q=norm($('networkSearchInput')?.value||''),region=$('networkRegion')?.value||'ALL',sector=$('networkSector')?.value||'ALL',activeIds=new Set(arr(state.scouting?.targets).map(t=>String(t.id||''))),activeTickers=new Set(arr(state.scouting?.targets).map(t=>String(t.ticker||'').toUpperCase())),autoTickers=new Set(arr(state.scouting?.targets).filter(t=>isAutoManagedTarget(t,state)).map(t=>String(t.ticker||'').toUpperCase()));
+    const filtered=rows.filter(r=>{if(region!=='ALL'&&r.region!==region)return false;if(sector!=='ALL'&&r.sector!==sector)return false;if(q){const hay=norm(`${r.ticker} ${r.marketSymbol} ${r.name} ${r.country} ${r.exchange} ${r.sector} ${r.role}`);if(!hay.includes(q))return false}return true}).slice(0,NETWORK_RENDER_LIMIT);
+    set('networkShown',`${filtered.length} shown${rows.length>filtered.length?' of '+rows.length:''}`);const sourceDate=meta.sourceGeneratedAt?new Date(meta.sourceGeneratedAt).toLocaleString('en-GB'):'unknown source time';set('networkNote',meta.status==='ERROR'?`Last sync failed: ${meta.lastError||'source unavailable'}. Existing network remains cached.`:rows.length?`${rows.length} global scouting candidates • source ${sourceDate} • syncing this network does not alter Active Scouting or Transfer.`:'Connecting to the Aurora 1 scouting network…');
+    const host=$('networkRows');if(!host)return;if(!filtered.length){host.innerHTML='<tr><td colspan="9">No network candidates match the current filters.</td></tr>';return}
+    host.innerHTML=filtered.map((r,i)=>{const active=activeIds.has(`ACTIVE-${r.id}`)||activeTickers.has(activeTicker(r.marketSymbol).toUpperCase()),auto=autoTickers.has(activeTicker(r.marketSymbol).toUpperCase()),profile=autoPromotionProfile(r),valueRisk=[r.legacyValuation,r.legacyPayoutRisk].filter(Boolean).join(' • ')||'—';return `<tr><td>${i+1}</td><td class="network-name"><strong>${esc(r.ticker)}</strong><span>${esc(r.name)}${r.marketSymbol&&r.marketSymbol!==r.ticker?' • '+esc(r.marketSymbol):''}</span></td><td><span class="region-pill ${r.region.toLowerCase()}">${r.region==='UK'?'🇬🇧 UK':r.region==='US'?'🇺🇸 US':'🌍 World'}</span><div class="network-source-note">${esc(r.country||r.exchange||r.currency||'')}</div></td><td>${esc(r.sector||'—')}</td><td>${r.legacyYieldPct>0?`${r.legacyYieldPct.toFixed(2)}%${r.legacyYieldSource&&r.legacyYieldSource!=='reported'?`<div class="network-source-note">${esc(r.legacyYieldSource)}</div>`:''}`:'—<div class="network-source-note">needs data</div>'}</td><td>${r.legacyStrength>0?Math.round(r.legacyStrength):'—'}${r.legacyImpact>0?` <span class="network-source-note">• impact ${Math.round(r.legacyImpact)}</span>`:''}</td><td>${esc(valueRisk)}</td><td>${esc(r.sourceStatus||'MONITOR')}${profile.eligible?'<div class="network-source-note">AUTO READY</div>':''}</td><td>${auto?'<span class="auto-tag">AUTO</span>':active?'<span class="network-active">MANUAL</span>':`<button class="btn secondary" type="button" data-promote-network="${esc(r.id)}">Promote</button>`}</td></tr>`}).join('');
   }
 
-  function changeLens(value){
-    if(!['sustainable','maximum'].includes(value))return;
-    A().core.update(s=>({
-      ...s,scouting:{...s.scouting,strategy:value,updatedAt:now()}
-    }));
-  }
+  function changeLens(value){if(!['sustainable','maximum'].includes(value))return;A().core.update(s=>({...s,scouting:{...s.scouting,strategy:value,updatedAt:now()}}))}
+  function ensureEvaluated(){const state=A().core.read(),targets=arr(state.scouting?.targets);if(!targets.length)return;const needs=targets.some(t=>!num(t.sustainableScore)||!num(t.maximumScore)||!t.recommendation);if(!needs)return;const ranked=rankTargets(targets,state);A().core.update(s=>({...s,scouting:{...s.scouting,targets:ranked,updatedAt:now()}}))}
 
-  function ensureEvaluated(){
-    const state=A().core.read(),targets=arr(state.scouting?.targets);
-    if(!targets.length)return;
-    const needs=targets.some(t=>
-      !num(t.sustainableScore)||!num(t.maximumScore)||!t.recommendation
-    );
-    if(!needs)return;
-    const ranked=rankTargets(targets,state);
-    A().core.update(s=>({
-      ...s,scouting:{...s.scouting,targets:ranked,updatedAt:now()}
-    }));
-  }
-
-  function renderMission(state){
-    const m=state.mission,b=Math.max(0,num(m?.approvedBudget));
-    set('missionBudget',money(b));set('missionStatus',m?.status||'NO ACTIVE MISSION');
-    set('missionMeta',m
-      ?`${m.id}${m.paydayDate?' • payday '+m.paydayDate:''}`
-      :'Scouting can prepare targets without a mission. Transfer cannot deploy them until Finance releases money.'
-    );
-    const locked=scoutingLocked(state),el=$('scoutingLock');
-    if(el){
-      el.textContent=locked
-        ?'Transfer route is locked — Active Scouting changes are frozen.'
-        :'Active Scouting editor available.';
-      el.className=locked?'lock red':'lock';
-    }
-  }
-
-  function renderWeights(strategy){
-    const weights=strategy==='maximum'?MAXIMUM_WEIGHTS:SUSTAINABLE_WEIGHTS;
-    set('weightsTitle',strategy==='maximum'?'Maximum Income Weights':'Sustainable Income Weights');
-    const labels={
-      dividendSafety:'Dividend safety',incomeScore:'Income',
-      valuationScore:'Valuation',portfolioFit:'Portfolio fit',
-      dividendGrowth:'Dividend growth',businessQuality:'Business quality'
-    };
-    const host=$('weights');
-    if(host)host.innerHTML=Object.entries(weights)
-      .map(([k,v])=>`<div class="weight"><small>${esc(labels[k])}</small><strong>${v}%</strong></div>`)
-      .join('');
-  }
-
-  function setScoutKpi(id,label,value,meta){
-    const strong=$(id);if(!strong)return;
-    strong.textContent=value;
-    const card=strong.closest('.scout-kpi');
-    if(!card)return;
-    const small=card.querySelector('small');
-    const span=card.querySelector('span');
-    if(small)small.textContent=label;
-    if(span)span.textContent=meta;
-  }
+  function renderMission(state){const m=state.mission,b=Math.max(0,num(m?.approvedBudget));set('missionBudget',money(b));set('missionStatus',m?.status||'NO ACTIVE MISSION');set('missionMeta',m?`${m.id}${m.paydayDate?' • payday '+m.paydayDate:''}`:'Scouting can prepare targets without a mission. Transfer cannot deploy them until Finance releases money.');const locked=scoutingLocked(state),el=$('scoutingLock');if(el){el.textContent=locked?'Transfer route is locked — Active Scouting changes are frozen.':'Active Scouting editor available.';el.className=locked?'lock red':'lock'}}
+  function renderWeights(strategy){const weights=strategy==='maximum'?MAXIMUM_WEIGHTS:SUSTAINABLE_WEIGHTS;set('weightsTitle',strategy==='maximum'?'Maximum Income Weights':'Sustainable Income Weights');const labels={dividendSafety:'Dividend safety',incomeScore:'Income',valuationScore:'Valuation',portfolioFit:'Portfolio fit',dividendGrowth:'Dividend growth',businessQuality:'Business quality'},host=$('weights');if(host)host.innerHTML=Object.entries(weights).map(([k,v])=>`<div class="weight"><small>${esc(labels[k])}</small><strong>${v}%</strong></div>`).join('')}
+  function setScoutKpi(id,label,value,meta){const strong=$(id);if(!strong)return;strong.textContent=value;const card=strong.closest('.scout-kpi');if(!card)return;const small=card.querySelector('small'),span=card.querySelector('span');if(small)small.textContent=label;if(span)span.textContent=meta}
 
   function renderTargets(state){
-    const strategy=state.scouting?.strategy||'sustainable';
-    const scoreKey=strategy==='maximum'?'maximumScore':'sustainableScore';
-    const leagueAuthority=w.AuroraScoutingLeagues;
-    const rows=leagueAuthority?.table(arr(state.scouting?.targets),strategy)||[];
-    const targets=rows.map(row=>row.target);
-    const host=$('targetList');
-
-    const universe=arr(state.scouting?.universe);
-    const globalCount=universe.length||targets.length;
-    const permitted=targets.filter(t=>t.status!=='block').length;
-    const needsReview=targets.filter(t=>t.status==='block'||t.status==='caution'||t.requiresRefresh).length;
-    setScoutKpi('kCandidates','Global Candidates',globalCount,universe.length?'UK + US + World network':'Active list until network sync');
-    setScoutKpi('kPass','Active Scouting',targets.length,'Aurora 2 scored / review queue');
-    setScoutKpi('kCaution','Transfer Permitted',permitted,'Current active shortlist');
-    setScoutKpi('kBlock','Needs Review',needsReview,'Blocked / caution / evidence refresh');
-
-    const topS=[...targets].filter(t=>t.status!=='block').sort((a,b)=>b.sustainableScore-a.sustainableScore)[0];
-    const topM=[...targets].filter(t=>t.status!=='block').sort((a,b)=>b.maximumScore-a.maximumScore)[0];
-    set('kTopSustainable',topS?.ticker||'—');
-    set('kTopSustainableMeta',topS?`${topS.sustainableScore}/100 • ${topS.recommendation}`:'—');
-    set('kTopMaximum',topM?.ticker||'—');
-    set('kTopMaximumMeta',topM?`${topM.maximumScore}/100 • ${topM.recommendation}`:'—');
-    set('scoutingStatus',state.scouting?.status||'SCOUTING REVIEW');
-    const universeCount=universe.length;
-    set('shortlistMeta',targets.length?`${permitted} permitted • ${targets.length} active from ${universeCount||targets.length} global candidate${(universeCount||targets.length)===1?'':'s'} • ranked by ${strategy==='maximum'?'Maximum Income':'Sustainable Income'} logic.`:'No Active Scouting candidates stored yet.');
-    if(!host)return;
-    if(!targets.length){host.innerHTML='<div class="empty-state compact"><strong>No active candidates yet</strong><p>Promote a player from the Global Network or add a candidate below.</p></div>';return}
-
-    const meta=obj(state.scouting?.activeMeta);
-    const money2=v=>money(Math.max(0,num(v)));
-    const evidence=t=>t.requiresRefresh?'REFRESH':num(t.confidence)>=75?'STRONG':num(t.confidence)>=50?'SUPPORTED':'LIMITED';
-    const detail=(t,row)=>{const m=meta[t.id]||{};const reasons=arr(t.eligibilityReasons);return `<div class="scouting-row-detail-grid">
-      <div><small>Exchange / country</small><strong>${esc(m.marketSymbol||t.exchange||'—')} • ${esc(m.region||t.country||'—')}</strong></div>
-      <div><small>Sector</small><strong>${esc(t.sector||'—')}</strong></div><div><small>Supported price</small><strong>${num(t.livePriceGbp)>0?money(t.livePriceGbp):'—'}</strong></div>
-      <div><small>Evidence freshness</small><strong>${t.requiresRefresh?'Refresh required':esc(t.evidenceAsOf||t.updatedAt||'Stored evidence')}</strong></div>
-      <div><small>Dividend evidence</small><strong>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'% supported forward yield':'No supported yield'}</strong></div>
-      <div><small>Broker eligibility</small><strong>${esc(brokerLabel(state,t))}</strong></div>
-      <div class="wide"><small>Scoring components</small><strong>Income ${Math.round(num(t.incomeScore))} • Value ${Math.round(num(t.valuationScore))} • Fit ${Math.round(num(t.portfolioFit))} • Growth ${Math.round(num(t.dividendGrowth))} • Quality ${Math.round(num(t.businessQuality))}</strong></div>
-      <div class="wide"><small>Decision reasons</small><strong>${esc(reasons.join(' • ')||t.reason||'No caution or blocking reason recorded.')}</strong></div>
-      <div class="wide scouting-row-actions"><button class="btn secondary" data-edit="${esc(t.id)}">${isAutoManagedTarget(t,state)?'Take Over':'Edit'}</button><button class="btn secondary" data-delete="${esc(t.id)}">Remove</button></div></div>`};
+    const strategy=state.scouting?.strategy||'sustainable',scoreKey=strategy==='maximum'?'maximumScore':'sustainableScore',leagueAuthority=w.AuroraScoutingLeagues,rows=leagueAuthority?.table(arr(state.scouting?.targets),strategy)||[],targets=rows.map(row=>row.target),host=$('targetList'),universe=arr(state.scouting?.universe),globalCount=universe.length||targets.length,permitted=targets.filter(t=>t.status!=='block').length,needsReview=targets.filter(t=>t.status==='block'||t.status==='caution'||t.requiresRefresh).length;
+    setScoutKpi('kCandidates','Global Candidates',globalCount,universe.length?'UK + US + World network':'Active list until network sync');setScoutKpi('kPass','Active Scouting',targets.length,'Aurora 2 scored / review queue');setScoutKpi('kCaution','Transfer Permitted',permitted,'Current active shortlist');setScoutKpi('kBlock','Needs Review',needsReview,'Blocked / caution / evidence refresh');
+    const topS=[...targets].filter(t=>t.status!=='block').sort((a,b)=>b.sustainableScore-a.sustainableScore)[0],topM=[...targets].filter(t=>t.status!=='block').sort((a,b)=>b.maximumScore-a.maximumScore)[0];set('kTopSustainable',topS?.ticker||'—');set('kTopSustainableMeta',topS?`${topS.sustainableScore}/100 • ${topS.recommendation}`:'—');set('kTopMaximum',topM?.ticker||'—');set('kTopMaximumMeta',topM?`${topM.maximumScore}/100 • ${topM.recommendation}`:'—');set('scoutingStatus',state.scouting?.status||'SCOUTING REVIEW');const universeCount=universe.length;set('shortlistMeta',targets.length?`${permitted} permitted • ${targets.length} active from ${universeCount||targets.length} global candidate${(universeCount||targets.length)===1?'':'s'} • ranked by ${strategy==='maximum'?'Maximum Income':'Sustainable Income'} logic.`:'No Active Scouting candidates stored yet.');if(!host)return;if(!targets.length){host.innerHTML='<div class="empty-state compact"><strong>No active candidates yet</strong><p>Promote a player from the Global Network or add a candidate below.</p></div>';return}
+    const meta=obj(state.scouting?.activeMeta),money2=v=>money(Math.max(0,num(v))),evidence=t=>t.requiresRefresh?'REFRESH':num(t.confidence)>=75?'STRONG':num(t.confidence)>=50?'SUPPORTED':'LIMITED';
+    const detail=(t,row)=>{const m=meta[t.id]||{},reasons=arr(t.eligibilityReasons);return `<div class="scouting-row-detail-grid"><div><small>Exchange / country</small><strong>${esc(m.marketSymbol||t.exchange||'—')} • ${esc(m.region||t.country||'—')}</strong></div><div><small>Sector</small><strong>${esc(t.sector||'—')}</strong></div><div><small>Supported price</small><strong>${num(t.livePriceGbp)>0?money(t.livePriceGbp):'—'}</strong></div><div><small>Evidence freshness</small><strong>${t.requiresRefresh?'Refresh required':esc(t.evidenceAsOf||t.updatedAt||'Stored evidence')}</strong></div><div><small>Dividend evidence</small><strong>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'% supported forward yield':'No supported yield'}</strong></div><div><small>Broker eligibility</small><strong>${esc(brokerLabel(state,t))}</strong></div><div class="wide"><small>Scoring components</small><strong>Income ${Math.round(num(t.incomeScore))} • Value ${Math.round(num(t.valuationScore))} • Fit ${Math.round(num(t.portfolioFit))} • Growth ${Math.round(num(t.dividendGrowth))} • Quality ${Math.round(num(t.businessQuality))}</strong></div><div class="wide"><small>Decision reasons</small><strong>${esc(reasons.join(' • ')||t.reason||'No caution or blocking reason recorded.')}</strong></div><div class="wide scouting-row-actions"><button class="btn secondary" data-edit="${esc(t.id)}">${isAutoManagedTarget(t,state)?'Take Over':'Edit'}</button><button class="btn secondary" data-delete="${esc(t.id)}">Remove</button></div></div>`};
     const columns='<colgroup><col><col><col><col><col><col><col><col><col><col><col></colgroup><thead><tr><th>Rank</th><th>Ticker</th><th>Company</th><th>League</th><th>Yield</th><th>Safety</th><th>Confidence</th><th>Strategy Score</th><th>Income / £1,000</th><th>Evidence</th><th>Status</th></tr></thead>';
-    const grouped=leagueAuthority.LEAGUES.map(league=>{const leagueRows=rows.filter(r=>r.league?.id===league.id);if(!leagueRows.length)return '';return `<section class="scouting-league scouting-league--${league.id}"><header><div><small>ACTIVE SCOUTING DIVISION</small><strong>${league.name}</strong></div><span>${leagueRows.length} eligible</span></header><div class="football-table-scroll"><table class="football-table">${columns}<tbody>${leagueRows.map(row=>{const t=row.target,id=`scout-${esc(t.id)}`;const annual=leagueAuthority.incomePerThousand(t);return `<tr class="football-data-row" data-expand-row="${id}" tabindex="0"><td><b>#${row.rank}</b></td><td><strong>${esc(t.ticker)}</strong></td><td>${esc(t.name||t.ticker)}</td><td><span class="league-badge league-badge--${row.league.id}">${row.league.name}</span></td><td>${num(t.yieldPct).toFixed(2)}%</td><td>${Math.round(num(t.dividendSafety))}</td><td>${Math.round(num(t.confidence))}</td><td><b>${Math.round(num(t[scoreKey]))}</b><small>${strategy==='maximum'?'Maximum':'Sustainable'}</small></td><td><b>${money2(annual)}/yr</b><small>${money2(annual/12)}/mo</small></td><td>${evidence(t)}</td><td><span class="status-pill ${esc(t.status)}">${esc(t.recommendation||t.status)}</span></td></tr><tr class="football-detail-row" id="${id}" hidden><td colspan="11">${detail(t,row)}</td></tr>`}).join('')}</tbody></table></div></section>`}).join('');
+    const grouped=leagueAuthority.LEAGUES.map(league=>{const leagueRows=rows.filter(r=>r.league?.id===league.id);if(!leagueRows.length)return '';return `<section class="scouting-league scouting-league--${league.id}"><header><div><small>ACTIVE SCOUTING DIVISION</small><strong>${league.name}</strong></div><span>${leagueRows.length} eligible</span></header><div class="football-table-scroll"><table class="football-table">${columns}<tbody>${leagueRows.map(row=>{const t=row.target,id=`scout-${esc(t.id)}`,annual=leagueAuthority.incomePerThousand(t);return `<tr class="football-data-row" data-expand-row="${id}" tabindex="0"><td><b>#${row.rank}</b></td><td><strong>${esc(t.ticker)}</strong></td><td>${esc(t.name||t.ticker)}</td><td><span class="league-badge league-badge--${row.league.id}">${row.league.name}</span></td><td>${num(t.yieldPct).toFixed(2)}%</td><td>${Math.round(num(t.dividendSafety))}</td><td>${Math.round(num(t.confidence))}</td><td><b>${Math.round(num(t[scoreKey]))}</b><small>${strategy==='maximum'?'Maximum':'Sustainable'}</small></td><td><b>${money2(annual)}/yr</b><small>${money2(annual/12)}/mo</small></td><td>${evidence(t)}</td><td><span class="status-pill ${esc(t.status)}">${esc(t.recommendation||t.status)}</span></td></tr><tr class="football-detail-row" id="${id}" hidden><td colspan="11">${detail(t,row)}</td></tr>`}).join('')}</tbody></table></div></section>`}).join('');
     const blocked=rows.filter(r=>!r.league);
     const picks=`<section class="approved-picks"><header><div><small>DIRECTOR OF FOOTBALL</small><strong>Approved Picks / 12</strong></div><span>${targets.filter(t=>t.approvedForTransfer).length} approved</span></header><div class="football-table-scroll"><table class="football-table approved-table"><thead><tr><th>#</th><th>Ticker</th><th>League</th><th>Yield</th><th>Safety</th><th>Confidence</th><th>Sustainable</th><th>Maximum</th><th>Broker status</th><th>Approval</th></tr></thead><tbody>${rows.map((row,i)=>{const t=row.target;return `<tr><td>${row.rank<Number.MAX_SAFE_INTEGER?row.rank:i+1}</td><td><strong>${esc(t.ticker)}</strong></td><td>${row.league?`<span class="league-badge league-badge--${row.league.id}">${row.league.name}</span>`:'—'}</td><td>${num(t.yieldPct)>0?num(t.yieldPct).toFixed(2)+'%':'—'}</td><td>${Math.round(num(t.dividendSafety))}</td><td>${Math.round(num(t.confidence))}</td><td>${Math.round(num(t.sustainableScore))}</td><td>${Math.round(num(t.maximumScore))}</td><td>${esc(brokerLabel(state,t))}</td><td><span class="status-pill ${t.approvedForTransfer?'pass':t.status==='block'?'block':'caution'}">${t.approvedForTransfer?'APPROVED':t.status==='block'?'BLOCKED':'AWAITING'}</span></td></tr>`}).join('')}</tbody></table></div></section>`;
     host.innerHTML=grouped+(blocked.length?`<div class="scouting-ineligible-note"><strong>${blocked.length} blocked candidate${blocked.length===1?'':'s'} excluded from league placement.</strong> PASS / CAUTION / BLOCK rules remain unchanged; blocked evidence stays visible in Approved Picks.</div>`:'')+picks;
   }
 
   function renderHealth(state){
-    const targets=arr(state.scouting?.targets);
-    const full=targets.filter(t=>
-      num(t.livePriceGbp)>0&&num(t.yieldPct)>0&&num(t.dividendSafety)>0&&
-      num(t.valuationScore)>0&&num(t.businessQuality)>0&&num(t.confidence)>=75&&!t.requiresRefresh
-    ).length;
-    const review=targets.filter(t=>
-      t.status==='caution'||t.requiresRefresh||num(t.confidence)<75||num(t.livePriceGbp)<=0
-    ).length;
-    const broker=targets.filter(t=>!brokerRoute(state,t).supported).length;
-    const legacy=targets.filter(t=>/AURORA1/i.test(String(t.source||''))).length;
-
-    set('healthFull',full);set('healthReview',review);
-    set('healthBroker',broker);set('healthLegacy',legacy);
-    set('healthNote',targets.length
-      ?`${full} active candidate${full===1?' has':'s have'} strong Aurora 2 evidence coverage. `+
-        `Global Network players stay monitor-only until promoted and reviewed.`
-      :'Promote or add candidates to assess Active Scouting data health.'
-    );
-
-    const scan=scanLegacy(),box=$('legacySummary'),btn=$('importLegacy');
-    if(box){
-      box.className=scan.targets.length?'notice good':'notice';
-      box.textContent=scan.targets.length
-        ?`${scan.targets.length} old browser-shortlist candidate${scan.targets.length===1?'':'s'} found${scan.stale?' • source marked stale':''}.`
-        :'No old browser shortlist found. The Global Network above is sourced separately from Aurora 1.';
-    }
-    if(btn)btn.disabled=!scan.targets.length||scoutingLocked(state);
+    const targets=arr(state.scouting?.targets),full=targets.filter(t=>num(t.livePriceGbp)>0&&num(t.yieldPct)>0&&num(t.dividendSafety)>0&&num(t.valuationScore)>0&&num(t.businessQuality)>0&&num(t.confidence)>=75&&!t.requiresRefresh).length,review=targets.filter(t=>t.status==='caution'||t.requiresRefresh||num(t.confidence)<75||num(t.livePriceGbp)<=0).length,broker=targets.filter(t=>!brokerRoute(state,t).supported).length,legacy=targets.filter(t=>/AURORA1/i.test(String(t.source||''))).length;
+    set('healthFull',full);set('healthReview',review);set('healthBroker',broker);set('healthLegacy',legacy);set('healthNote',targets.length?`${full} active candidate${full===1?' has':'s have'} strong Aurora 2 evidence coverage. Global Network players stay monitor-only until promoted and reviewed.`:'Promote or add candidates to assess Active Scouting data health.');
+    const scan=scanLegacy(),box=$('legacySummary'),btn=$('importLegacy');if(box){box.className=scan.targets.length?'notice good':'notice';box.textContent=scan.targets.length?`${scan.targets.length} old browser-shortlist candidate${scan.targets.length===1?'':'s'} found${scan.stale?' • source marked stale':''}.`:'No old browser shortlist found. The Global Network above is sourced separately from Aurora 1.'}if(btn)btn.disabled=!scan.targets.length||scoutingLocked(state);
   }
 
-  function renderHistory(state){
-    const rows=arr(state.scouting?.decisionHistory),host=$('historyList');
-    if(!host)return;
-    if(!rows.length){
-      host.innerHTML='<div class="empty-state compact"><strong>No approvals yet</strong><p>The first approved Scouting shortlist will appear here.</p></div>';
-      return;
-    }
-    host.innerHTML=rows.map(r=>
-      `<div class="history-row"><strong>${esc(r.topTicker||'—')} ranked #1 • `+
-      `${r.count||0} permitted target${r.count===1?'':'s'}</strong>`+
-      `<span>${new Date(r.approvedAt).toLocaleString('en-GB')} • mission `+
-      `${esc(r.missionId||'none')} • top sustainable score ${Math.round(num(r.topScore))}/100</span></div>`
-    ).join('');
-  }
+  function renderHistory(state){const rows=arr(state.scouting?.decisionHistory),host=$('historyList');if(!host)return;if(!rows.length){host.innerHTML='<div class="empty-state compact"><strong>No approvals yet</strong><p>The first approved Scouting shortlist will appear here.</p></div>';return}host.innerHTML=rows.map(r=>`<div class="history-row"><strong>${esc(r.topTicker||'—')} ranked #1 • ${r.count||0} permitted target${r.count===1?'':'s'}</strong><span>${new Date(r.approvedAt).toLocaleString('en-GB')} • mission ${esc(r.missionId||'none')} • top sustainable score ${Math.round(num(r.topScore))}/100</span></div>`).join('')}
 
-  function renderEditorGuard(state){
-    const locked=scoutingLocked(state),guard=$('editorGuard');
-    if(guard){
-      guard.className=locked?'notice locked-box':'notice good';
-      guard.textContent=locked
-        ?'Active Scouting is frozen because Transfer is already locked. The Global Network can still sync, but no player can be promoted until Transfer is unlocked.'
-        :'Active Scouting can be edited. Global Network sync is separate and never invalidates an approved shortlist.';
-    }
-    ['saveCandidate','runScouting','approveShortlist']
-      .forEach(id=>{const el=$(id);if(el)el.disabled=locked});
-    document.querySelectorAll('[data-delete]').forEach(b=>b.disabled=locked);
-    document.querySelectorAll('[data-promote-network]').forEach(b=>b.disabled=locked);
-  }
+  function renderEditorGuard(state){const locked=scoutingLocked(state),guard=$('editorGuard');if(guard){guard.className=locked?'notice locked-box':'notice good';guard.textContent=locked?'Active Scouting is frozen because Transfer is already locked. The Global Network can still sync, but no player can be promoted until Transfer is unlocked.':'Active Scouting can be edited. Global Network sync is separate and never invalidates an approved shortlist.'}['saveCandidate','runScouting','approveShortlist'].forEach(id=>{const el=$(id);if(el)el.disabled=locked});document.querySelectorAll('[data-delete]').forEach(b=>b.disabled=locked);document.querySelectorAll('[data-promote-network]').forEach(b=>b.disabled=locked)}
 
-  function updateVersionLabels(){
-    const notice=document.querySelector('.scout-notice b');
-    if(notice)notice.textContent='Scouting Centre 2.0 — Auto Bench v0.3.1.';
-    const badge=document.querySelector('.page-head .scout-badge');
-    if(badge)badge.textContent='AUTO BENCH v0.3.1';
-    const hero=document.querySelector('.scout-hero p');
-    if(hero)hero.textContent=
-      'Scouting now rotates the best evidence-qualified names from the UK, US and world network into a 12-player Active Scouting bench automatically. Transfer still requires shortlist approval.';
-  }
+  function updateVersionLabels(){const notice=document.querySelector('.scout-notice b');if(notice)notice.textContent='Scouting Centre 2.0 — Auto Bench v0.3.1.';const badge=document.querySelector('.page-head .scout-badge');if(badge)badge.textContent='AUTO BENCH v0.3.1';const hero=document.querySelector('.scout-hero p');if(hero)hero.textContent='Scouting now rotates the best evidence-qualified names from the UK, US and world network into a 12-player Active Scouting bench automatically. Transfer still requires shortlist approval.'}
 
-  function render(){
-    const state=A().core.read(),strategy=state.scouting?.strategy||'sustainable';
-    injectNetworkUI();
-    updateVersionLabels();
-    renderMission(state);renderWeights(strategy);renderTargets(state);
-    renderNetwork(state);renderHealth(state);renderHistory(state);renderEditorGuard(state);
-    renderCoverage(state);
+  function render(){const state=A().core.read(),strategy=state.scouting?.strategy||'sustainable';injectNetworkUI();updateVersionLabels();renderMission(state);renderWeights(strategy);renderTargets(state);renderNetwork(state);renderHealth(state);renderHistory(state);renderEditorGuard(state);renderCoverage(state);$('lensSustainable')?.classList.toggle('active',strategy==='sustainable');$('lensMaximum')?.classList.toggle('active',strategy==='maximum');const radio=document.querySelector(`input[name="scoutLens"][value="${strategy}"]`);if(radio)radio.checked=true;set('lensNote',strategy==='maximum'?'Maximum Income is ranking Active Scouting by income-led logic. Eligibility gates still apply.':'Sustainable Income balances six weighted factors with a confidence adjustment.');set('lastUpdated',new Date(state.updatedAt).toLocaleString('en-GB'))}
 
-    $('lensSustainable')?.classList.toggle('active',strategy==='sustainable');
-    $('lensMaximum')?.classList.toggle('active',strategy==='maximum');
-    const radio=document.querySelector(`input[name="scoutLens"][value="${strategy}"]`);
-    if(radio)radio.checked=true;
-    set('lensNote',strategy==='maximum'
-      ?'Maximum Income is ranking Active Scouting by income-led logic. Eligibility gates still apply.'
-      :'Sustainable Income balances six weighted factors with a confidence adjustment.'
-    );
-    set('lastUpdated',new Date(state.updatedAt).toLocaleString('en-GB'));
-  }
-
-  function renderCoverage(state){
-    const universe=arr(state.scouting?.universe);
-    const uk=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='UK').length;
-    const us=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='US').length;
-    const targets=arr(state.scouting?.targets),passed=targets.filter(x=>x.status!=='block').length;
-    const approved=(A().scoutingUniverse?.approvedCandidates(targets)||
-      targets.filter(x=>x.approvedForTransfer)).length;
-    const approvalCandidates=(A().scoutingUniverse?.approvalCandidates(targets)||
-      targets.filter(x=>x.status!=='block'&&!x.approvedForTransfer)).length;
-    const eligible=universe.filter(x=>autoPromotionProfile(x).eligible).length;
-    const coverage=A().scoutingUniverse?.coverage(universe)||{};
-    const missing=universe.filter(x=>x.dataStatus==='MISSING').length;
-    const ruleExcluded=Math.max(0,universe.length-missing-eligible);
-    set('coverageUK',uk);set('coverageUS',us);set('coverageGlobal',universe.length);
-    const scanned=state.scouting?.scanMeta?.lastFullScanAt||state.scouting?.networkMeta?.lastSyncAt;
-    set('coverageScan',scanned?new Date(scanned).toLocaleString('en-GB'):'Not yet scanned');
-    set('coveragePipeline',`${universe.length} universe · ${eligible} eligible · ${passed} passed · `+
-      `${targets.length} deep-scouted · ${approvalCandidates} approval candidates · ${approved} approved`);
-    set('universeBreakdown',`FTSE 100 ${coverage.ftse100||0} • FTSE 250 ${coverage.ftse250||0} • `+
-      `additional UK income ${coverage.ukIncome||0} • US ${coverage.US||0} • Europe ${coverage.EUROPE||0} • `+
-      `Canada ${coverage.CANADA||0} • Australia ${coverage.AUSTRALIA||0} • other supported markets ${coverage.OTHER||0} • `+
-      `${missing} awaiting market data • ${ruleExcluded} excluded by investment rules. Missing-data securities remain in Universe Coverage.`);
-  }
+  function renderCoverage(state){const universe=arr(state.scouting?.universe),uk=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='UK').length,us=universe.filter(x=>String(x.region||x.country||'').toUpperCase()==='US').length,targets=arr(state.scouting?.targets),passed=targets.filter(x=>x.status!=='block').length,approved=(A().scoutingUniverse?.approvedCandidates(targets)||targets.filter(x=>x.approvedForTransfer)).length,approvalCandidates=(A().scoutingUniverse?.approvalCandidates(targets)||targets.filter(x=>x.status!=='block'&&!x.approvedForTransfer)).length,eligible=universe.filter(x=>autoPromotionProfile(x).eligible).length,coverage=A().scoutingUniverse?.coverage(universe)||{},missing=universe.filter(x=>x.dataStatus==='MISSING').length,ruleExcluded=Math.max(0,universe.length-missing-eligible);set('coverageUK',uk);set('coverageUS',us);set('coverageGlobal',universe.length);const scanned=state.scouting?.scanMeta?.lastFullScanAt||state.scouting?.networkMeta?.lastSyncAt;set('coverageScan',scanned?new Date(scanned).toLocaleString('en-GB'):'Not yet scanned');set('coveragePipeline',`${universe.length} universe · ${eligible} eligible · ${passed} passed · ${targets.length} deep-scouted · ${approvalCandidates} approval candidates · ${approved} approved`);set('universeBreakdown',`FTSE 100 ${coverage.ftse100||0} • FTSE 250 ${coverage.ftse250||0} • additional UK income ${coverage.ukIncome||0} • US ${coverage.US||0} • Europe ${coverage.EUROPE||0} • Canada ${coverage.CANADA||0} • Australia ${coverage.AUSTRALIA||0} • other supported markets ${coverage.OTHER||0} • ${missing} awaiting market data • ${ruleExcluded} excluded by investment rules. Missing-data securities remain in Universe Coverage.`)}
 
   function wire(){
-    $('runScouting')?.addEventListener('click',runScouting);
-    $('approveShortlist')?.addEventListener('click',approveShortlist);
-    $('saveCandidate')?.addEventListener('click',saveCandidate);
-    $('resetCandidate')?.addEventListener('click',resetEditor);
-    $('importLegacy')?.addEventListener('click',importLegacy);
-
-    document.querySelectorAll('input[name="scoutLens"]')
-      .forEach(r=>r.addEventListener('change',()=>changeLens(r.value)));
-
-    document.addEventListener('click',e=>{
-      const row=e.target.closest('[data-expand-row]');
-      if(row){
-        const detail=document.getElementById(row.dataset.expandRow);
-        if(detail){detail.hidden=!detail.hidden;row.setAttribute('aria-expanded',String(!detail.hidden))}
-        return;
-      }
-      const edit=e.target.closest('[data-edit]');
-      if(edit){editCandidate(edit.dataset.edit);return}
-      const del=e.target.closest('[data-delete]');
-      if(del){deleteCandidate(del.dataset.delete);return}
-      const promote=e.target.closest('[data-promote-network]');
-      if(promote){promoteNetworkCandidate(promote.dataset.promoteNetwork)}
-    });
+    $('runScouting')?.addEventListener('click',runScouting);$('approveShortlist')?.addEventListener('click',approveShortlist);$('saveCandidate')?.addEventListener('click',saveCandidate);$('resetCandidate')?.addEventListener('click',resetEditor);$('importLegacy')?.addEventListener('click',importLegacy);document.querySelectorAll('input[name="scoutLens"]').forEach(r=>r.addEventListener('change',()=>changeLens(r.value)));
+    document.addEventListener('click',e=>{const row=e.target.closest('[data-expand-row]');if(row){const detail=document.getElementById(row.dataset.expandRow);if(detail){detail.hidden=!detail.hidden;row.setAttribute('aria-expanded',String(!detail.hidden))}return}const edit=e.target.closest('[data-edit]');if(edit){editCandidate(edit.dataset.edit);return}const del=e.target.closest('[data-delete]');if(del){deleteCandidate(del.dataset.delete);return}const promote=e.target.closest('[data-promote-network]');if(promote)promoteNetworkCandidate(promote.dataset.promoteNetwork)});
   }
 
-  document.addEventListener('DOMContentLoaded',()=>{
-    injectNetworkUI();
-    updateVersionLabels();
-    ensureEvaluated();
-    resetEditor();
-    wire();
-    render();
-    maybeAutoSyncNetwork();
-    if(arr(A().core.read().scouting?.universe).length&&autoBenchEnabled()){
-      setTimeout(()=>rebalanceAutoBench({silent:true}),80);
-    }
-  });
-
+  document.addEventListener('DOMContentLoaded',()=>{injectNetworkUI();updateVersionLabels();ensureEvaluated();resetEditor();wire();render();maybeAutoSyncNetwork();if(arr(A().core.read().scouting?.universe).length&&autoBenchEnabled())setTimeout(()=>rebalanceAutoBench({silent:true}),80)});
   w.addEventListener('aurora2:state',render);
-
   w.Aurora2=w.Aurora2||{};
-  w.Aurora2.scouting={
-    assess:assessTarget,
-    rank:rankTargets,
-    weights:{sustainable:SUSTAINABLE_WEIGHTS,maximum:MAXIMUM_WEIGHTS},
-    incomeScoreFromYield,
-    autoPortfolioFit,
-    network:{
-      parse:collectNetworkRows,
-      counts:networkCounts,
-      sync:syncGlobalNetwork,
-      promote:promoteNetworkCandidate,
-      autoProfile:autoPromotionProfile,
-      autoSelect:selectAutoBench,
-      rebalanceAutoBench,
-      setAutoBenchEnabled,
-      isAutoManagedTarget
-    }
-  };
+  w.Aurora2.scouting={assess:assessTarget,rank:rankTargets,weights:{sustainable:SUSTAINABLE_WEIGHTS,maximum:MAXIMUM_WEIGHTS},incomeScoreFromYield,autoPortfolioFit,network:{parse:collectNetworkRows,counts:networkCounts,sync:syncGlobalNetwork,promote:promoteNetworkCandidate,autoProfile:autoPromotionProfile,autoSelect:selectAutoBench,rebalanceAutoBench,setAutoBenchEnabled,isAutoManagedTarget}};
 })(window);
