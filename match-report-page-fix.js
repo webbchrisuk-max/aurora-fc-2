@@ -1,6 +1,11 @@
-/* Aurora City FC — Match Report full-page scroll/layout guard v1.0
+/* Aurora City FC — Match Report full-page scroll/layout guard v1.1
  * The shared shell intentionally locks body scrolling for manager access/PWA shells.
  * Match Report is a document-length report, so it must own normal vertical scrolling.
+ *
+ * v1.1 also hands final page rendering to match-report-canonical.js after the
+ * legacy Match Report renderer has attached. The legacy renderer remains in the
+ * repository as rollback code, but the canonical controller is always the last
+ * visible authority for live performance, breadth, contributions and ratings.
  */
 (function(w){
 'use strict';
@@ -86,11 +91,24 @@ function unlock(){
   }
 }
 
+function loadCanonicalController(){
+  if(w.AuroraMatchReportCanonical||document.querySelector('script[data-aurora-match-canonical]'))return;
+  const script=document.createElement('script');
+  script.src='match-report-canonical.js?v=20260819-canonical-match-1';
+  script.async=false;
+  script.dataset.auroraMatchCanonical='1';
+  document.head.appendChild(script);
+}
+
 function init(){
   unlock();
   requestAnimationFrame(unlock);
   setTimeout(unlock,150);
   setTimeout(unlock,800);
+  /* DOMContentLoaded has now allowed match-report.js to attach its rollback
+     listeners. Load the canonical controller on the next task so its render
+     listener is registered last and therefore owns the final visible page. */
+  setTimeout(loadCanonicalController,0);
   w.addEventListener('resize',unlock,{passive:true});
   w.addEventListener('orientationchange',()=>setTimeout(unlock,180),{passive:true});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(unlock,50)});
