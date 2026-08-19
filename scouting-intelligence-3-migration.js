@@ -1,7 +1,10 @@
-/* Aurora City FC — Scouting Intelligence 3 migration
- * Removes only the unmistakable neutral placeholder pattern created by the
- * retired scorer, so Intelligence 3 cannot mistake synthetic 55/50 values for
- * evidence. Runs once and never changes genuine explicit evidence.
+/* Aurora City FC — Scouting Intelligence 3 migration v2
+ *
+ * 1) Removes only the unmistakable retired neutral-placeholder pattern.
+ * 2) Gives Scouting a first-class DATA PENDING state without weakening Aurora
+ *    Core or Transfer. Core persists pending safely as BLOCK +
+ *    transferPermitted=false; Scouting inflates it back to DATA PENDING only
+ *    on the Scouting page.
  */
 (function(w){
 'use strict';
@@ -9,7 +12,7 @@ if(w.AuroraScoutingIntelligence3Migration)return;
 const page=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
 if(page!=='scouting.html')return;
 const ENGINE='AURORA_SCOUTING_INTELLIGENCE_3';
-const VERSION='2026.08.19.1';
+const VERSION='2026.08.19.2';
 const num=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
 const arr=v=>Array.isArray(v)?v:[];
 let running=false;
@@ -28,13 +31,55 @@ function clean(t){
   if(num(next.dividendGrowth)===50)next.dividendGrowth=null;
   if(num(next.businessQuality)===55)next.businessQuality=null;
   if(!next.confidenceSource&&!next.evidenceSources?.confidence){next.confidence=null;next.dataQuality=null}
-  next.sustainableScore=0;next.maximumScore=0;
-  next.approvedForTransfer=false;
+  next.sustainableScore=0;next.maximumScore=0;next.approvedForTransfer=false;
   next.intelligence3EvidenceMigration=VERSION;
   return next;
 }
+
+function cloneState(s){
+  return s&&typeof s==='object'?{...s,scouting:{...(s.scouting||{}),targets:arr(s.scouting?.targets).map(t=>({...t}))}}:s;
+}
+function inflate(input){
+  const s=cloneState(input);if(!s?.scouting)return s;
+  s.scouting.targets=s.scouting.targets.map(t=>{
+    const pending=String(t.eligibilityStatus||'').toUpperCase()==='DATA_PENDING'&&String(t.status||'').toLowerCase()==='block';
+    if(!pending)return t;
+    return {...t,status:'pending',recommendation:'DATA PENDING',transferPermitted:false,approvedForTransfer:false};
+  });
+  return s;
+}
+function deflate(input){
+  const s=cloneState(input);if(!s?.scouting)return s;
+  s.scouting.targets=s.scouting.targets.map(t=>{
+    const status=String(t.status||'').toLowerCase();
+    if(status==='pending'){
+      return {...t,status:'block',recommendation:'WATCH',eligibilityStatus:'DATA_PENDING',transferPermitted:false,approvedForTransfer:false,approvedAt:null,approvalBatchId:null};
+    }
+    if(String(t.eligibilityStatus||'').toUpperCase()==='DATA_PENDING'){
+      return {...t,eligibilityStatus:'',transferPermitted:status==='pass'||status==='caution'};
+    }
+    return t;
+  });
+  return s;
+}
+
+function installCoreCompatibility(){
+  const core=w.Aurora2?.core;if(!core?.read||core.__intelligence3PendingCompat)return false;
+  const originalRead=core.read.bind(core),originalWrite=core.write.bind(core),originalUpdate=core.update.bind(core);
+  core.read=()=>inflate(originalRead());
+  core.write=next=>inflate(originalWrite(deflate(next)));
+  core.update=updater=>inflate(originalUpdate(current=>{
+    const visible=inflate(current);
+    const next=typeof updater==='function'?updater(visible):{...visible,...(updater||{})};
+    return deflate(next);
+  }));
+  core.__intelligence3PendingCompat=true;
+  return true;
+}
+
 function run(){
   if(running)return;const core=w.Aurora2?.core;if(!core?.read||!core?.update)return setTimeout(run,100);
+  installCoreCompatibility();
   const s=core.read();if(s?.scouting?.intelligence3Migration===VERSION)return;
   running=true;
   try{
@@ -44,6 +89,7 @@ function run(){
     });
   }finally{running=false}
 }
-w.AuroraScoutingIntelligence3Migration={version:VERSION,run};
+
+w.AuroraScoutingIntelligence3Migration={version:VERSION,run,inflate,deflate};
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',run,{once:true}):run();
 })(window);
