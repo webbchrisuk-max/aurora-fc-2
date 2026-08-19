@@ -11,18 +11,27 @@ w.AuroraRelease=Object.freeze({
   channel:'stable-candidate'
 });
 
-/* Scouting Intelligence 3 is the canonical final scoring authority. Load it
- * from the shared release layer as well as aurora-motion so an older cached
- * motion controller cannot leave Scouting on the retired scoring model.
+/* Scouting Intelligence 3 is the canonical final scoring authority. Load the
+ * one-time evidence migration first, then the engine. This also gives Scouting
+ * a second loader path if an older cached aurora-motion.js is still present.
  */
 function ensureScoutingIntelligence3(){
   const page=(String(location.pathname||'').split('/').pop()||'').toLowerCase();
-  if(page!=='scouting.html'||w.AuroraScoutingIntelligence3||document.querySelector('script[data-aurora-scouting-intelligence3]'))return;
-  const script=document.createElement('script');
-  script.src='scouting-intelligence-3.js?v=20260819-intelligence-3-1';
-  script.async=false;
-  script.dataset.auroraScoutingIntelligence3='1';
-  document.head.appendChild(script);
+  if(page!=='scouting.html')return;
+  if(!w.AuroraScoutingIntelligence3Migration&&!document.querySelector('script[data-aurora-scouting-intelligence3-migration]')){
+    const migration=document.createElement('script');
+    migration.src='scouting-intelligence-3-migration.js?v=20260819-intelligence-3-migration-1';
+    migration.async=false;
+    migration.dataset.auroraScoutingIntelligence3Migration='1';
+    document.head.appendChild(migration);
+  }
+  if(!w.AuroraScoutingIntelligence3&&!document.querySelector('script[data-aurora-scouting-intelligence3]')){
+    const script=document.createElement('script');
+    script.src='scouting-intelligence-3.js?v=20260819-intelligence-3-1';
+    script.async=false;
+    script.dataset.auroraScoutingIntelligence3='1';
+    document.head.appendChild(script);
+  }
 }
 ensureScoutingIntelligence3();
 
