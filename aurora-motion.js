@@ -55,44 +55,28 @@
   function loadFormerReentryRefresh(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='scouting.html'||document.querySelector('script[data-aurora-former-reentry]'))return;
-    const script=document.createElement('script');
-    script.src='scouting-former-reentry-refresh.js?v=20260818-former-reentry-2';
-    script.async=false;
-    script.dataset.auroraFormerReentry='1';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='scouting-former-reentry-refresh.js?v=20260818-former-reentry-2';script.async=false;script.dataset.auroraFormerReentry='1';document.head.appendChild(script);
   }
   function loadScoutingSquadOpportunities(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='scouting.html'||document.querySelector('script[data-aurora-squad-opportunities]'))return;
-    const script=document.createElement('script');
-    script.src='scouting-squad-opportunities.js?v=20260818-former-evidence-4';
-    script.async=false;
-    script.dataset.auroraSquadOpportunities='1';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='scouting-squad-opportunities.js?v=20260818-former-evidence-4';script.async=false;script.dataset.auroraSquadOpportunities='1';document.head.appendChild(script);
   }
   function loadScoutingCleanBoard(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='scouting.html'||document.querySelector('script[data-aurora-scouting-clean-board]'))return;
-    const script=document.createElement('script');
-    script.src='scouting-clean-board.js?v=20260818-clean-board-1';
-    script.async=false;
-    script.dataset.auroraScoutingCleanBoard='1';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='scouting-clean-board.js?v=20260818-clean-board-1';script.async=false;script.dataset.auroraScoutingCleanBoard='1';document.head.appendChild(script);
   }
   function loadBackgroundSignalScouting(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='scouting.html'||document.querySelector('script[data-aurora-background-signals]'))return;
-    const script=document.createElement('script');
-    script.src='scouting-signal-background.js?v=20260818-silent-signals-1';
-    script.async=false;
-    script.dataset.auroraBackgroundSignals='1';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='scouting-signal-background.js?v=20260818-silent-signals-1';script.async=false;script.dataset.auroraBackgroundSignals='1';document.head.appendChild(script);
   }
   function loadFinanceBillActionsFix(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-bill-actions-fix]'))return;
     const script=document.createElement('script');
-    script.src='finance-bill-actions-fix.js?v=20260819-bill-actions-1';
+    script.src='finance-bill-actions-fix.js?v=20260819-bill-payment-modal-2';
     script.async=false;
     script.dataset.auroraBillActionsFix='1';
     document.head.appendChild(script);
@@ -100,29 +84,17 @@
   function loadFinanceHouseDashboardUpgrade(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-house-dashboard-upgrade]'))return;
-    const script=document.createElement('script');
-    script.src='finance-house-dashboard-upgrade.js?v=20260818-house-modal-2';
-    script.async=false;
-    script.dataset.auroraHouseDashboardUpgrade='1';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='finance-house-dashboard-upgrade.js?v=20260818-house-modal-2';script.async=false;script.dataset.auroraHouseDashboardUpgrade='1';document.head.appendChild(script);
   }
   function loadFinanceHouseRoomGroups(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-house-room-groups]'))return;
-    const script=document.createElement('script');
-    script.src='finance-house-room-groups.js?v=20260818-room-groups-1';
-    script.async=false;
-    script.dataset.auroraHouseRoomGroups='1';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='finance-house-room-groups.js?v=20260818-room-groups-1';script.async=false;script.dataset.auroraHouseRoomGroups='1';document.head.appendChild(script);
   }
   function loadFinanceHousePriorityLayout(){
     const file=String(location.pathname||'').split('/').pop().toLowerCase();
     if(file!=='finance.html'||document.querySelector('script[data-aurora-house-priority-layout]'))return;
-    const script=document.createElement('script');
-    script.src='finance-house-priority-layout.js?v=20260819-bill-actions-1';
-    script.async=false;
-    script.dataset.auroraHousePriorityLayout='1';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='finance-house-priority-layout.js?v=20260819-bill-actions-1';script.async=false;script.dataset.auroraHousePriorityLayout='1';document.head.appendChild(script);
   }
   function init(){
     remember();animateRows(document);scoutingHooks();loadFormerReentryRefresh();loadScoutingSquadOpportunities();loadScoutingCleanBoard();loadBackgroundSignalScouting();loadFinanceBillActionsFix();loadFinanceHouseDashboardUpgrade();loadFinanceHouseRoomGroups();loadFinanceHousePriorityLayout();
