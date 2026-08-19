@@ -174,21 +174,15 @@ auroraLoadShared('aurora-sync-manager.js?v=101-nexus-recovery','sync-manager');
 auroraLoadShared('aurora-cloud-sync.js?v=100-cross-device','cloud-sync');
 auroraLoadShared(`aurora-club-command.js?v=${SHARED_BUILD}`,'club-command');
 if(auroraPageFile==='auroracityfc_nexusv2.html'){
+  /* Nexus now has one render authority: nexus-v2-canonical-controller.js.
+     Only state/feed/shell enhancements are loaded here; retired Nexus renderers
+     are deliberately not requested, so they cannot compete for the same DOM. */
   auroraLoadShared('nexus-v2-runtime-recovery.js?v=20260817-recovery-1','nexus-v2-runtime-recovery');
   auroraLoadShared('nexus-v2-command-hydration.js?v=20260818-hydration-1','nexus-v2-command-hydration');
   auroraLoadShared('match-report-published-feed.js?v=20260819-report-recovery-3','match-report-published-feed');
   auroraLoadShared('nexus-v2-notification-dock.js?v=20260819-bell-4','nexus-v2-notification-dock');
   auroraLoadShared('nexus-v2-hero-art.js?v=20260817-nexus-hero-3','nexus-v2-hero-art');
   auroraLoadShared('nexus-v2-scroll-fix.js?v=20260817-scroll-2','nexus-v2-scroll-fix');
-  auroraLoadShared('nexus-v2-upgrade.js?v=20260817-replacement-1','nexus-v2-replacement');
-  auroraLoadShared('nexus-v2-polish.js?v=20260817-polish-2','nexus-v2-polish');
-  auroraLoadShared('nexus-v2-data-quality.js?v=20260817-quality-2','nexus-v2-data-quality');
-  auroraLoadShared('nexus-v2-pitch-centre-fix.js?v=20260817-centre-2','nexus-v2-pitch-centre-fix');
-  auroraLoadShared('nexus-v2-manager-polish.js?v=20260817-manager-1','nexus-v2-manager-polish');
-  auroraLoadShared('nexus-v2-form-truth.js?v=20260818-live-form-2','nexus-v2-form-truth');
-  auroraLoadShared('nexus-v2-starting-xi-live-bridge.js?v=20260819-starting-xi-live-1','nexus-v2-starting-xi-live');
-  auroraLoadShared('nexus-v2-dividend-runway.js?v=20260817-runway-1','nexus-v2-dividend-runway');
-  auroraLoadShared('nexus-v2-truth-polish.js?v=20260817-truth-polish-3','nexus-v2-truth-polish');
 }
 if(auroraPageFile==='match-report.html'){
   auroraLoadShared('match-report-page-fix.js?v=20260818-fullpage-2','match-report-page-fix');
