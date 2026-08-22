@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-22T15:44:43.651Z",
+    "generated_at": "2026-08-22T16:14:42.730Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -3891,7 +3891,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "22/08/2026",
-      "last_updated": "22/08/2026 16:37:05",
+      "last_updated": "22/08/2026 17:05:33",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -7739,7 +7739,7 @@
       "scout_rating": "?",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "22/08/2026",
-      "last_updated": "22/08/2026 16:37:05",
+      "last_updated": "22/08/2026 17:05:33",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -26332,6 +26332,142 @@
       "price": "1.1050",
       "low_price": "1.0100",
       "high_price": "1.1590"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "ARCC",
+      "name": "ARES CAPITAL",
+      "price": "14.5513",
+      "low_price": "13.2444",
+      "high_price": "14.8904"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:AV",
+      "name": "AVIVA",
+      "price": "7.1999",
+      "low_price": "6.1040",
+      "high_price": "7.3401"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:BATS",
+      "name": "BRITISH AMERICAN TOBACCO",
+      "price": "40.9600",
+      "low_price": "40.9600",
+      "high_price": "44.2100"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:FGEN",
+      "name": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
+      "price": "0.8975",
+      "low_price": "0.8090",
+      "high_price": "0.8975"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:FSFL",
+      "name": "FORESIGHT SOLAR FUND",
+      "price": "0.6970",
+      "low_price": "0.6850",
+      "high_price": "0.7490"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:GCP",
+      "name": "GCP INFRASTRUCTURE",
+      "price": "0.8260",
+      "low_price": "0.8180",
+      "high_price": "0.8260"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:HICL",
+      "name": "HICL INFRASTRUCTURE",
+      "price": "1.3920",
+      "low_price": "1.3724",
+      "high_price": "1.3987"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:IMB",
+      "name": "IMPERIAL BRANDS",
+      "price": "25.2500",
+      "low_price": "25.2500",
+      "high_price": "27.8700"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:LAND",
+      "name": "LAND SECURITIES",
+      "price": "6.8800",
+      "low_price": "6.8050",
+      "high_price": "7.2200"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:LMP",
+      "name": "LONDONMETRIC PROPERTY",
+      "price": "1.9039",
+      "low_price": "1.9030",
+      "high_price": "1.9770"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:PHP",
+      "name": "PRIMARY HEALTH PROPERTIES",
+      "price": "0.9495",
+      "low_price": "0.9110",
+      "high_price": "0.9675"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:RGL",
+      "name": "REGIONAL REIT",
+      "price": "0.9464",
+      "low_price": "0.9200",
+      "high_price": "0.9910"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:SBRY",
+      "name": "SAINSBURY'S",
+      "price": "3.3560",
+      "low_price": "3.3030",
+      "high_price": "3.5600"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:SUPR",
+      "name": "SUPERMARKET INCOME REIT",
+      "price": "0.8415",
+      "low_price": "0.8250",
+      "high_price": "0.8893"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:TRIG",
+      "name": "THE RENEWABLES INFRASTRUCTURE GROUP",
+      "price": "0.7670",
+      "low_price": "0.7530",
+      "high_price": "0.7810"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:TW",
+      "name": "TAYLOR WIMPEY",
+      "price": "0.8450",
+      "low_price": "0.7454",
+      "high_price": "0.8668"
+    },
+    {
+      "date": "22/08/2026",
+      "ticker": "LON:UKW",
+      "name": "GREENCOAT WIND",
+      "price": "1.1050",
+      "low_price": "1.0100",
+      "high_price": "1.1590"
     }
   ],
   "IncomeLog": [
@@ -26540,167 +26676,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "22/08/2026 16:37:05": "Balance Note"
+      "22/08/2026 17:05:33": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "Concentration Watch",
-      "22/08/2026 16:37:05": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 17:05:33": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "22/08/2026 16:37:05": "No major chemistry issue."
+      "22/08/2026 17:05:33": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "22/08/2026 16:37:05": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 17:05:33": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LEGAL & GENERAL",
       "Last updated": "Cyclical / Financial Watch",
-      "22/08/2026 16:37:05": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
+      "22/08/2026 17:05:33": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "Balance Booster",
-      "22/08/2026 16:37:05": "Could improve balance if promoted."
+      "22/08/2026 17:05:33": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "22/08/2026 16:37:05": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 17:05:33": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "22/08/2026 16:37:05": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 17:05:33": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "22/08/2026 16:37:05": "Could improve balance if promoted."
+      "22/08/2026 17:05:33": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "22/08/2026 16:37:05": "Balance Note"
+      "22/08/2026 17:05:33": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SUPERMARKET INCOME REIT",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "22/08/2026 16:37:05": "#REF!"
+      "22/08/2026 17:05:33": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 16:37:05": ""
+      "22/08/2026 17:05:33": ""
     }
   ],
   "AuroraTimes": [
