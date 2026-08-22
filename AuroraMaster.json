@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-22T19:44:44.779Z",
+    "generated_at": "2026-08-22T20:14:42.886Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -1812,6 +1812,28 @@
       "t212_profit_loss_gbp": "-298.69",
       "t212_today_change_gbp": "79.61",
       "t212_today_change_pct": "0.6422336598"
+    },
+    {
+      "timestamp": "2026-08-22T20:00:35.924Z",
+      "date": "2026-08-22",
+      "hour_key": "2026-08-22-21",
+      "portfolio_value_gbp": "63718.08",
+      "book_cost_gbp": "62335.22",
+      "profit_loss_gbp": "1382.86",
+      "annual_income_gbp": "5273.23",
+      "today_change_gbp": "420.53",
+      "today_change_pct": "0.6643727822",
+      "active_tickers": "17",
+      "ig_value_gbp": "51242.67",
+      "ig_book_cost_gbp": "49561.12",
+      "ig_profit_loss_gbp": "1681.55",
+      "ig_today_change_gbp": "391.82",
+      "ig_today_change_pct": "0.7705279263",
+      "t212_value_gbp": "12475.41",
+      "t212_book_cost_gbp": "12774.1",
+      "t212_profit_loss_gbp": "-298.69",
+      "t212_today_change_gbp": "28.71",
+      "t212_today_change_pct": "0.2306635494"
     }
   ],
   "NexusMarketDaily": [
@@ -1820,15 +1842,15 @@
       "name": "ARES CAPITAL",
       "symbol": "NASDAQ:ARCC",
       "price_unit": "MAJOR",
-      "live_native": "19.8",
+      "live_native": "19.92",
       "previous_close_native": "19.78",
       "currency": "USD",
-      "fx_to_gbp": "0.734915",
-      "live_gbp": "14.551317",
-      "previous_close_gbp": "14.5366187",
-      "day_change_pct": "0.1011122346",
-      "day_change_gbp_per_share": "0.0146983",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "fx_to_gbp": "0.7330841",
+      "live_gbp": "14.60303527",
+      "previous_close_gbp": "14.5004035",
+      "day_change_pct": "0.7077856421",
+      "day_change_gbp_per_share": "0.102631774",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1836,15 +1858,15 @@
       "name": "AVIVA",
       "symbol": "LON:AV",
       "price_unit": "PENCE",
-      "live_native": "719.99",
+      "live_native": "717.2",
       "previous_close_native": "714.2",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "7.1999",
+      "live_gbp": "7.172",
       "previous_close_gbp": "7.142",
-      "day_change_pct": "0.8106972837",
-      "day_change_gbp_per_share": "0.0579",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0.420050406",
+      "day_change_gbp_per_share": "0.03",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1852,15 +1874,15 @@
       "name": "BRITISH AMERICAN TOBACCO",
       "symbol": "LON:BATS",
       "price_unit": "PENCE",
-      "live_native": "4096",
+      "live_native": "4158.14",
       "previous_close_native": "4161",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "40.96",
+      "live_gbp": "41.5814",
       "previous_close_gbp": "41.61",
-      "day_change_pct": "-1.562124489",
-      "day_change_gbp_per_share": "-0.65",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "-0.06873347753",
+      "day_change_gbp_per_share": "-0.0286",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1868,15 +1890,15 @@
       "name": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "symbol": "LON:FGEN",
       "price_unit": "PENCE",
-      "live_native": "89.75",
+      "live_native": "90.6",
       "previous_close_native": "90.2",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.8975",
+      "live_gbp": "0.906",
       "previous_close_gbp": "0.902",
-      "day_change_pct": "-0.4988913525",
-      "day_change_gbp_per_share": "-0.0045",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0.44345898",
+      "day_change_gbp_per_share": "0.004",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1884,15 +1906,15 @@
       "name": "FORESIGHT SOLAR FUND",
       "symbol": "LON:FSFL",
       "price_unit": "PENCE",
-      "live_native": "69.7",
+      "live_native": "70.4",
       "previous_close_native": "70",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.697",
+      "live_gbp": "0.704",
       "previous_close_gbp": "0.7",
-      "day_change_pct": "-0.4285714286",
-      "day_change_gbp_per_share": "-0.003",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0.5714285714",
+      "day_change_gbp_per_share": "0.004",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1900,15 +1922,15 @@
       "name": "GCP INFRASTRUCTURE",
       "symbol": "LON:GCP",
       "price_unit": "PENCE",
-      "live_native": "82.6",
+      "live_native": "82.5",
       "previous_close_native": "82.5",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.826",
+      "live_gbp": "0.825",
       "previous_close_gbp": "0.825",
-      "day_change_pct": "0.1212121212",
-      "day_change_gbp_per_share": "0.001",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0",
+      "day_change_gbp_per_share": "0",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1916,15 +1938,15 @@
       "name": "HICL INFRASTRUCTURE",
       "symbol": "LON:HICL",
       "price_unit": "PENCE",
-      "live_native": "139.2",
+      "live_native": "140.4",
       "previous_close_native": "140",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "1.392",
+      "live_gbp": "1.404",
       "previous_close_gbp": "1.4",
-      "day_change_pct": "-0.5714285714",
-      "day_change_gbp_per_share": "-0.008",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0.2857142857",
+      "day_change_gbp_per_share": "0.004",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1932,15 +1954,15 @@
       "name": "IMPERIAL BRANDS",
       "symbol": "LON:IMB",
       "price_unit": "PENCE",
-      "live_native": "2525",
+      "live_native": "2505.44",
       "previous_close_native": "2515",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "25.25",
+      "live_gbp": "25.0544",
       "previous_close_gbp": "25.15",
-      "day_change_pct": "0.3976143141",
-      "day_change_gbp_per_share": "0.1",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "-0.3801192843",
+      "day_change_gbp_per_share": "-0.0956",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1948,15 +1970,15 @@
       "name": "LAND SECURITIES",
       "symbol": "LON:LAND",
       "price_unit": "PENCE",
-      "live_native": "688",
+      "live_native": "687",
       "previous_close_native": "683",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "6.88",
+      "live_gbp": "6.87",
       "previous_close_gbp": "6.83",
-      "day_change_pct": "0.7320644217",
-      "day_change_gbp_per_share": "0.05",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0.5856515373",
+      "day_change_gbp_per_share": "0.04",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1964,15 +1986,15 @@
       "name": "LONDONMETRIC PROPERTY",
       "symbol": "LON:LMP",
       "price_unit": "PENCE",
-      "live_native": "190.39",
+      "live_native": "193",
       "previous_close_native": "190.8",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "1.9039",
+      "live_gbp": "1.93",
       "previous_close_gbp": "1.908",
-      "day_change_pct": "-0.214884696",
-      "day_change_gbp_per_share": "-0.0041",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "1.153039832",
+      "day_change_gbp_per_share": "0.022",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1980,15 +2002,15 @@
       "name": "PRIMARY HEALTH PROPERTIES",
       "symbol": "LON:PHP",
       "price_unit": "PENCE",
-      "live_native": "94.95",
+      "live_native": "96.35",
       "previous_close_native": "95.35",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.9495",
+      "live_gbp": "0.9635",
       "previous_close_gbp": "0.9535",
-      "day_change_pct": "-0.4195070792",
-      "day_change_gbp_per_share": "-0.004",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "1.048767698",
+      "day_change_gbp_per_share": "0.01",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -1996,15 +2018,15 @@
       "name": "REGIONAL REIT",
       "symbol": "LON:RGL",
       "price_unit": "PENCE",
-      "live_native": "94.64",
+      "live_native": "95",
       "previous_close_native": "96.2",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.9464",
+      "live_gbp": "0.95",
       "previous_close_gbp": "0.962",
-      "day_change_pct": "-1.621621622",
-      "day_change_gbp_per_share": "-0.0156",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "-1.247401247",
+      "day_change_gbp_per_share": "-0.012",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -2012,15 +2034,15 @@
       "name": "SAINSBURY'S",
       "symbol": "LON:SBRY",
       "price_unit": "PENCE",
-      "live_native": "335.6",
+      "live_native": "333.5",
       "previous_close_native": "328.7",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "3.356",
+      "live_gbp": "3.335",
       "previous_close_gbp": "3.287",
-      "day_change_pct": "2.099178582",
-      "day_change_gbp_per_share": "0.069",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "1.460298144",
+      "day_change_gbp_per_share": "0.048",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -2028,15 +2050,15 @@
       "name": "SUPERMARKET INCOME REIT",
       "symbol": "LON:SUPR",
       "price_unit": "PENCE",
-      "live_native": "84.15",
+      "live_native": "85.1",
       "previous_close_native": "84.25",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.8415",
+      "live_gbp": "0.851",
       "previous_close_gbp": "0.8425",
-      "day_change_pct": "-0.118694362",
-      "day_change_gbp_per_share": "-0.001",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "1.008902077",
+      "day_change_gbp_per_share": "0.0085",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -2044,15 +2066,15 @@
       "name": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "symbol": "LON:TRIG",
       "price_unit": "PENCE",
-      "live_native": "76.7",
+      "live_native": "77",
       "previous_close_native": "76.6",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.767",
+      "live_gbp": "0.77",
       "previous_close_gbp": "0.766",
-      "day_change_pct": "0.1305483029",
-      "day_change_gbp_per_share": "0.001",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0.5221932115",
+      "day_change_gbp_per_share": "0.004",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -2060,15 +2082,15 @@
       "name": "TAYLOR WIMPEY",
       "symbol": "LON:TW",
       "price_unit": "PENCE",
-      "live_native": "84.5",
+      "live_native": "82.82",
       "previous_close_native": "82.54",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "0.845",
+      "live_gbp": "0.8282",
       "previous_close_gbp": "0.8254",
-      "day_change_pct": "2.374606252",
-      "day_change_gbp_per_share": "0.0196",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "0.3392294645",
+      "day_change_gbp_per_share": "0.0028",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     },
     {
@@ -2076,15 +2098,15 @@
       "name": "GREENCOAT WIND",
       "symbol": "LON:UKW",
       "price_unit": "PENCE",
-      "live_native": "110.5",
+      "live_native": "110",
       "previous_close_native": "110.2",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
-      "live_gbp": "1.105",
+      "live_gbp": "1.1",
       "previous_close_gbp": "1.102",
-      "day_change_pct": "0.2722323049",
-      "day_change_gbp_per_share": "0.003",
-      "updated_at": "2026-08-19T20:57:52.778Z",
+      "day_change_pct": "-0.1814882033",
+      "day_change_gbp_per_share": "-0.002",
+      "updated_at": "2026-08-22T20:00:37.161Z",
       "status": "UPDATED"
     }
   ],
@@ -3891,7 +3913,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "22/08/2026",
-      "last_updated": "22/08/2026 20:44:45",
+      "last_updated": "22/08/2026 21:00:37",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -7739,7 +7761,7 @@
       "scout_rating": "?",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "22/08/2026",
-      "last_updated": "22/08/2026 20:44:45",
+      "last_updated": "22/08/2026 21:00:37",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -26676,167 +26698,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "22/08/2026 20:44:45": "Balance Note"
+      "22/08/2026 21:00:37": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "Concentration Watch",
-      "22/08/2026 20:44:45": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 21:00:37": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "22/08/2026 20:44:45": "No major chemistry issue."
+      "22/08/2026 21:00:37": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "22/08/2026 20:44:45": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 21:00:37": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LEGAL & GENERAL",
       "Last updated": "Cyclical / Financial Watch",
-      "22/08/2026 20:44:45": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
+      "22/08/2026 21:00:37": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "Balance Booster",
-      "22/08/2026 20:44:45": "Could improve balance if promoted."
+      "22/08/2026 21:00:37": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "22/08/2026 20:44:45": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 21:00:37": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "22/08/2026 20:44:45": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 21:00:37": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "22/08/2026 20:44:45": "Could improve balance if promoted."
+      "22/08/2026 21:00:37": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "22/08/2026 20:44:45": "Balance Note"
+      "22/08/2026 21:00:37": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SUPERMARKET INCOME REIT",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "22/08/2026 20:44:45": "#REF!"
+      "22/08/2026 21:00:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 20:44:45": ""
+      "22/08/2026 21:00:37": ""
     }
   ],
   "AuroraTimes": [
