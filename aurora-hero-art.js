@@ -41,3 +41,15 @@
   observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true});
   window.addEventListener('aurora:statechange',syncHeroFacts);
 })();
+
+/* Club Control page extension loader. Keeps optional Chairman intelligence out of other departments. */
+(function(){
+  'use strict';
+  if(!document.querySelector('.chairman-command-page'))return;
+  if(document.querySelector('script[data-aurora-chairman-offer-ladder]'))return;
+  const script=document.createElement('script');
+  script.src='chairman-offer-ladder.js?v=20260822-v04';
+  script.async=false;
+  script.dataset.auroraChairmanOfferLadder='v0.4';
+  document.head.appendChild(script);
+})();
