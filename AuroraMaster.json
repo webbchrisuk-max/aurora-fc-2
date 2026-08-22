@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-22T07:44:43.037Z",
+    "generated_at": "2026-08-22T08:14:46.124Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -2514,14 +2514,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:23:50.960Z",
+      "last_checked_at": "2026-08-22T07:53:53.838Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer website/news",
-      "updated_at": "2026-08-21T21:23:50.960Z",
+      "updated_at": "2026-08-22T07:53:53.838Z",
       "alpha_symbol": "RGL.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2534,14 +2534,14 @@
       "currency": "USD",
       "enabled": "TRUE",
       "auto_write": "FALSE",
-      "last_checked_at": "2026-08-21T21:23:51.677Z",
+      "last_checked_at": "2026-08-22T07:53:54.386Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Foreign-currency declarations are review-only until an FX entitlement is confirmed.",
-      "updated_at": "2026-08-21T21:23:51.677Z",
+      "updated_at": "2026-08-22T07:53:54.386Z",
       "alpha_symbol": "ARCC",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2554,14 +2554,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:23:53.386Z",
+      "last_checked_at": "2026-08-22T07:53:56.111Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer website/RNS links",
-      "updated_at": "2026-08-21T21:23:53.386Z",
+      "updated_at": "2026-08-22T07:53:56.111Z",
       "alpha_symbol": "FSFL.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2574,14 +2574,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "FALSE",
-      "last_checked_at": "2026-08-21T21:24:00.597Z",
+      "last_checked_at": "2026-08-22T07:54:01.503Z",
       "last_status": "OK",
       "last_candidates": "1",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer shareholder distributions ? review-only until dedicated dynamic-page parser is proven.",
-      "updated_at": "2026-08-21T21:24:00.597Z",
+      "updated_at": "2026-08-22T07:54:01.503Z",
       "alpha_symbol": "TW.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2594,14 +2594,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:04.446Z",
-      "last_status": "UPDATED",
-      "last_candidates": "1",
-      "last_auto_updates": "2",
+      "last_checked_at": "2026-08-22T07:54:02.478Z",
+      "last_status": "NO_COMPLETE_DECLARATION",
+      "last_candidates": "0",
+      "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer dividend table",
-      "updated_at": "2026-08-21T21:24:04.446Z",
+      "updated_at": "2026-08-22T07:54:02.478Z",
       "alpha_symbol": "PHP.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2614,14 +2614,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:07.093Z",
+      "last_checked_at": "2026-08-22T07:54:04.013Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer investor/RNS page",
-      "updated_at": "2026-08-21T21:24:07.093Z",
+      "updated_at": "2026-08-22T07:54:04.013Z",
       "alpha_symbol": "FGEN.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2634,14 +2634,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:09.381Z",
+      "last_checked_at": "2026-08-22T07:54:06.029Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer dividend table",
-      "updated_at": "2026-08-21T21:24:09.381Z",
+      "updated_at": "2026-08-22T07:54:06.029Z",
       "alpha_symbol": "SUPR.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2654,14 +2654,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:16.173Z",
+      "last_checked_at": "2026-08-22T07:54:10.786Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer investor/regulatory news",
-      "updated_at": "2026-08-21T21:24:16.173Z",
+      "updated_at": "2026-08-22T07:54:10.786Z",
       "alpha_symbol": "TRIG.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2674,14 +2674,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:17.242Z",
+      "last_checked_at": "2026-08-22T07:54:11.644Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer dividend page",
-      "updated_at": "2026-08-21T21:24:17.242Z",
+      "updated_at": "2026-08-22T07:54:11.644Z",
       "alpha_symbol": "SBRY.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2694,14 +2694,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:19.699Z",
+      "last_checked_at": "2026-08-22T07:54:13.221Z",
       "last_status": "UPDATED",
       "last_candidates": "1",
       "last_auto_updates": "1",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer dividend table",
-      "updated_at": "2026-08-21T21:24:19.699Z",
+      "updated_at": "2026-08-22T07:54:13.221Z",
       "alpha_symbol": "LMP.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2714,14 +2714,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:24.429Z",
+      "last_checked_at": "2026-08-22T07:54:17.861Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer investor/regulatory news",
-      "updated_at": "2026-08-21T21:24:24.429Z",
+      "updated_at": "2026-08-22T07:54:17.861Z",
       "alpha_symbol": "HICL.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2734,14 +2734,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:25.266Z",
+      "last_checked_at": "2026-08-22T07:54:18.390Z",
       "last_status": "ERROR",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "HTTP 403 from https://www.aviva.com/investors/dividends/",
       "notes": "Issuer dividend table",
-      "updated_at": "2026-08-21T21:24:25.266Z",
+      "updated_at": "2026-08-22T07:54:18.390Z",
       "alpha_symbol": "AV.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2754,14 +2754,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:32.087Z",
+      "last_checked_at": "2026-08-22T07:54:20.984Z",
       "last_status": "UPDATED",
-      "last_candidates": "3",
+      "last_candidates": "2",
       "last_auto_updates": "2",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer quarterly payment schedule",
-      "updated_at": "2026-08-21T21:24:32.087Z",
+      "updated_at": "2026-08-22T07:54:20.984Z",
       "alpha_symbol": "BATS.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2774,14 +2774,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:33.479Z",
+      "last_checked_at": "2026-08-22T07:54:22.069Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer dividend table",
-      "updated_at": "2026-08-21T21:24:33.479Z",
+      "updated_at": "2026-08-22T07:54:22.069Z",
       "alpha_symbol": "LAND.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2794,14 +2794,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:35.634Z",
+      "last_checked_at": "2026-08-22T07:54:23.501Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Company investment adviser RNS page",
-      "updated_at": "2026-08-21T21:24:35.634Z",
+      "updated_at": "2026-08-22T07:54:23.501Z",
       "alpha_symbol": "GCP.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2814,14 +2814,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:37.737Z",
+      "last_checked_at": "2026-08-22T07:54:25.234Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer investor hub/financial calendar",
-      "updated_at": "2026-08-21T21:24:37.737Z",
+      "updated_at": "2026-08-22T07:54:25.234Z",
       "alpha_symbol": "IMB.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -2834,14 +2834,14 @@
       "currency": "GBP",
       "enabled": "TRUE",
       "auto_write": "TRUE",
-      "last_checked_at": "2026-08-21T21:24:43.664Z",
+      "last_checked_at": "2026-08-22T07:54:29.757Z",
       "last_status": "NO_COMPLETE_DECLARATION",
       "last_candidates": "0",
       "last_auto_updates": "0",
       "last_review_items": "0",
       "last_error": "",
       "notes": "Issuer investor relations / regulatory news",
-      "updated_at": "2026-08-21T21:24:43.664Z",
+      "updated_at": "2026-08-22T07:54:29.757Z",
       "alpha_symbol": "UKW.LON",
       "last_alpha_checked_at": "",
       "last_alpha_status": "NOT_CONFIGURED"
@@ -3643,7 +3643,7 @@
       "received_gbp": "0",
       "status": "CONFIRMED",
       "source": "https://www.bat.com/investors-and-reporting/shareholder-information/dividend-information/quarterly-dividend-payments",
-      "updated_at": "2026-08-21T21:24:30.980Z",
+      "updated_at": "2026-08-22T07:54:20.332Z",
       "expected_amount_gbp": "23.89",
       "actual_amount_gbp": "0",
       "notes": "Declared quarterly instalment 61.26p. Eligible shares remain live until 1 Oct ex-date; current 39-share forecast shown. ? Auto-verified by Dividend Update Engine from configured official issuer/IR source.",
@@ -3664,7 +3664,7 @@
       "received_gbp": "0",
       "status": "CONFIRMED",
       "source": "https://www.bat.com/investors-and-reporting/shareholder-information/dividend-information/quarterly-dividend-payments",
-      "updated_at": "2026-08-21T21:24:32.073Z",
+      "updated_at": "2026-08-22T07:54:20.980Z",
       "expected_amount_gbp": "23.89",
       "actual_amount_gbp": "0",
       "notes": "Declared quarterly instalment 61.26p. Eligible shares remain live until 24 Dec ex-date; current 39-share forecast shown. ? Auto-verified by Dividend Update Engine from configured official issuer/IR source.",
@@ -3685,7 +3685,7 @@
       "received_gbp": "",
       "status": "CONFIRMED",
       "source": "https://www.londonmetric.com/investors/shareholder-information",
-      "updated_at": "2026-08-21T21:24:19.688Z",
+      "updated_at": "2026-08-22T07:54:13.209Z",
       "expected_amount_gbp": "25.64",
       "actual_amount_gbp": "0",
       "notes": "Auto-verified by Dividend Update Engine from configured official issuer/IR source.",
@@ -3867,7 +3867,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "22/08/2026",
-      "last_updated": "22/08/2026 08:43:20",
+      "last_updated": "22/08/2026 09:14:46",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -7715,7 +7715,7 @@
       "scout_rating": "?",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "22/08/2026",
-      "last_updated": "22/08/2026 08:43:20",
+      "last_updated": "22/08/2026 09:14:46",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -26516,167 +26516,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "22/08/2026 08:43:20": "Balance Note"
+      "22/08/2026 09:14:46": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "Concentration Watch",
-      "22/08/2026 08:43:20": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 09:14:46": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "22/08/2026 08:43:20": "No major chemistry issue."
+      "22/08/2026 09:14:46": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "22/08/2026 08:43:20": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 09:14:46": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LEGAL & GENERAL",
       "Last updated": "Cyclical / Financial Watch",
-      "22/08/2026 08:43:20": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
+      "22/08/2026 09:14:46": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "Balance Booster",
-      "22/08/2026 08:43:20": "Could improve balance if promoted."
+      "22/08/2026 09:14:46": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "22/08/2026 08:43:20": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 09:14:46": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "22/08/2026 08:43:20": "Good candidate, but check sector concentration before buying."
+      "22/08/2026 09:14:46": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "22/08/2026 08:43:20": "Could improve balance if promoted."
+      "22/08/2026 09:14:46": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "22/08/2026 08:43:20": "Balance Note"
+      "22/08/2026 09:14:46": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SUPERMARKET INCOME REIT",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "22/08/2026 08:43:20": "#REF!"
+      "22/08/2026 09:14:46": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "22/08/2026 08:43:20": ""
+      "22/08/2026 09:14:46": ""
     }
   ],
   "AuroraTimes": [
