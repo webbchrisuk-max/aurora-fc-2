@@ -49,9 +49,11 @@
     document.head.appendChild(style);
   }
 
-  function removePotActionsList(){
+  function hidePotActionsList(){
     const details=$('financeAllPotsDetails');
-    if(details)details.remove();
+    if(!details)return;
+    details.open=false;
+    details.setAttribute('aria-hidden','true');
   }
 
   function stripUpcomingBillActions(){
@@ -198,7 +200,7 @@
 
   function apply(){
     installStyles();
-    removePotActionsList();
+    hidePotActionsList();
     stripUpcomingBillActions();
     syncPotEditorActions();
     resetMonthGroupingFlag();
