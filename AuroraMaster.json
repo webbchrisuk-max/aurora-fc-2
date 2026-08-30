@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-30T22:44:45.840Z",
+    "generated_at": "2026-08-30T23:14:48.853Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -2263,8 +2263,8 @@
       "enabled": "TRUE",
       "native_price": "19.95",
       "quote_currency": "USD",
-      "fx_to_gbp": "0.738729754",
-      "price_gbp": "14.73765859",
+      "fx_to_gbp": "0.738735",
+      "price_gbp": "14.73776325",
       "trade_time": "46262.66668",
       "data_delay_minutes": "0",
       "status": "UPDATED",
@@ -2599,8 +2599,8 @@
       "enabled": "TRUE",
       "native_price": "194.75",
       "quote_currency": "USD",
-      "fx_to_gbp": "0.738729754",
-      "price_gbp": "143.8676196",
+      "fx_to_gbp": "0.738735",
+      "price_gbp": "143.8686413",
       "trade_time": "46262.7906",
       "data_delay_minutes": "0",
       "status": "",
@@ -4175,8 +4175,8 @@
       "watchlist_status": "SCOUT",
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
-      "date_checked": "30/08/2026",
-      "last_updated": "30/08/2026 23:44:46",
+      "date_checked": "31/08/2026",
+      "last_updated": "31/08/2026 00:14:49",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -5494,11 +5494,11 @@
       "sector": "Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "22.10279424",
+      "live_price": "22.1029512",
       "dividend_yield": "0.02055520898",
-      "annual_dps": "0.4868229079",
-      "low_52w": "19.82423107",
-      "high_52w": "25.96146194",
+      "annual_dps": "0.486826365",
+      "low_52w": "19.82437185",
+      "high_52w": "25.9616463",
       "fair_value": "22.91019584",
       "valuation_status": "Neutral",
       "payout_risk": "LOW",
@@ -5533,7 +5533,7 @@
       "benchmark": "FTSE 100",
       "live_price": "10.18",
       "dividend_yield": "0.01916676741",
-      "annual_dps": "0.1965021146",
+      "annual_dps": "0.19650351",
       "low_52w": "9.102",
       "high_52w": "12.38",
       "fair_value": "10.741",
@@ -5681,7 +5681,7 @@
       "benchmark": "FTSE 100",
       "live_price": "3.394",
       "dividend_yield": "0.01607594303",
-      "annual_dps": "0.05244981253",
+      "annual_dps": "0.052450185",
       "low_52w": "2.1208",
       "high_52w": "4.362",
       "fair_value": "3.239",
@@ -7751,11 +7751,11 @@
       "sector": "Travel & leisure",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 100",
-      "live_price": "120.4868229",
+      "live_price": "120.4876785",
       "dividend_yield": "0.01161473088",
-      "annual_dps": "1.362956396",
-      "low_52w": "84.0969952",
-      "high_52w": "129.7948178",
+      "annual_dps": "1.362966075",
+      "low_52w": "84.0975924",
+      "high_52w": "129.7957395",
       "fair_value": "107.0269554",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -8011,20 +8011,20 @@
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
       "live_price": "42.1441",
-      "dividend_yield": "0.004031592641",
-      "annual_dps": "0.1699078434",
+      "dividend_yield": "0.004031621271",
+      "annual_dps": "0.16990905",
       "low_52w": "22.0639",
       "high_52w": "43.21",
       "fair_value": "32.63695",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
-      "income_from_500": "2.01579632",
-      "income_from_2000": "8.063185282",
+      "income_from_500": "2.015810635",
+      "income_from_2000": "8.063242542",
       "watchlist_status": "SCOUT",
       "scout_rating": "?",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
-      "date_checked": "30/08/2026",
-      "last_updated": "30/08/2026 23:44:46",
+      "date_checked": "31/08/2026",
+      "last_updated": "31/08/2026 00:14:49",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -9745,7 +9745,7 @@
       "valuation_score": "70",
       "yield_score": "98",
       "notes": "",
-      "date_checked": "30/08/2026",
+      "date_checked": "31/08/2026",
       "squad_role": "System Player / Trialist",
       "promotion_impact_score": "83",
       "trial_status": "Promotion Candidate",
@@ -9817,7 +9817,7 @@
       "valuation_score": "67",
       "yield_score": "75",
       "notes": "Promoted from Aurora Scout ? FTSE 100 shortlist.",
-      "date_checked": "30/08/2026",
+      "date_checked": "31/08/2026",
       "squad_role": "Quality Defensive Scout",
       "promotion_impact_score": "63",
       "trial_status": "Scout Candidate",
@@ -9865,7 +9865,7 @@
       "valuation_score": "60",
       "yield_score": "75",
       "notes": "Former holding auto re-scout ? live price and current-year dividend evidence refreshed automatically. No automatic purchase.",
-      "date_checked": "30/08/2026",
+      "date_checked": "31/08/2026",
       "squad_role": "Former Holding / Re-entry Candidate",
       "promotion_impact_score": "65",
       "trial_status": "Monitor",
@@ -10033,7 +10033,7 @@
       "valuation_score": "56",
       "yield_score": "60",
       "notes": "Former holding auto re-scout ? live price and current-year dividend evidence refreshed automatically. No automatic purchase.",
-      "date_checked": "30/08/2026",
+      "date_checked": "31/08/2026",
       "squad_role": "Former Holding / Re-entry Candidate",
       "promotion_impact_score": "55",
       "trial_status": "Deep Watch",
@@ -10129,7 +10129,7 @@
       "valuation_score": "52",
       "yield_score": "59",
       "notes": "Former holding auto re-scout ? live price and current-year dividend evidence refreshed automatically. No automatic purchase.",
-      "date_checked": "30/08/2026",
+      "date_checked": "31/08/2026",
       "squad_role": "Former Holding / Re-entry Candidate",
       "promotion_impact_score": "53",
       "trial_status": "Deep Watch",
@@ -10249,12 +10249,12 @@
       "annual_dps_native": "4.12",
       "low_52w_native": "71.73",
       "high_52w_native": "91.15",
-      "fx_rate_to_gbp": "0.855805",
-      "live_price_gbp": "66.11093625",
-      "annual_dps_gbp": "3.5259166",
-      "low_52w_gbp": "61.38689265",
-      "high_52w_gbp": "78.00662575",
-      "fair_value_gbp": "69.6967592",
+      "fx_rate_to_gbp": "0.855825",
+      "live_price_gbp": "66.11248125",
+      "annual_dps_gbp": "3.525999",
+      "low_52w_gbp": "61.38832725",
+      "high_52w_gbp": "78.00844875",
+      "fair_value_gbp": "69.698388",
       "sector": "HEALTHCARE",
       "role": "EUROPEAN HEALTHCARE INCOME",
       "yield_pct": "0.05333333333",
@@ -10282,7 +10282,7 @@
       "annual_dps_native": "1.75",
       "low_52w_native": "29.68",
       "high_52w_native": "36.25",
-      "fx_rate_to_gbp": "0.531385",
+      "fx_rate_to_gbp": "0.531405",
       "live_price_gbp": "12.502469",
       "annual_dps_gbp": "0.932225",
       "low_52w_gbp": "15.810536",
@@ -10315,7 +10315,7 @@
       "annual_dps_native": "30",
       "low_52w_native": "521",
       "high_52w_native": "606.8",
-      "fx_rate_to_gbp": "0.912965",
+      "fx_rate_to_gbp": "0.912835",
       "live_price_gbp": "538.54398",
       "annual_dps_gbp": "27.25425",
       "low_52w_gbp": "473.315475",
@@ -10348,7 +10348,7 @@
       "annual_dps_native": "1.8",
       "low_52w_native": "26.55",
       "high_52w_native": "34.01",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "19.48767386",
       "annual_dps_gbp": "1.33072128",
       "low_52w_gbp": "19.62813888",
@@ -10381,7 +10381,7 @@
       "annual_dps_native": "2.6",
       "low_52w_native": "36.25",
       "high_52w_native": "50.94",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "34.02950029",
       "annual_dps_gbp": "1.92215296",
       "low_52w_gbp": "26.799248",
@@ -10414,7 +10414,7 @@
       "annual_dps_native": "1.72",
       "low_52w_native": "23.11",
       "high_52w_native": "28.75",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "19.80556838",
       "annual_dps_gbp": "1.271578112",
       "low_52w_gbp": "17.08498266",
@@ -10447,7 +10447,7 @@
       "annual_dps_native": "3.24",
       "low_52w_native": "55.86",
       "high_52w_native": "67.94",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "46.3830295",
       "annual_dps_gbp": "2.395298304",
       "low_52w_gbp": "41.29671706",
@@ -10480,7 +10480,7 @@
       "annual_dps_native": "6.56",
       "low_52w_native": "82",
       "high_52w_native": "122.41",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "77.2557632",
       "annual_dps_gbp": "4.849739776",
       "low_52w_gbp": "60.6217472",
@@ -10513,7 +10513,7 @@
       "annual_dps_native": "4.53",
       "low_52w_native": "65.35",
       "high_52w_native": "84.04",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "64.84309082",
       "annual_dps_gbp": "3.348981888",
       "low_52w_gbp": "48.31257536",
@@ -10546,7 +10546,7 @@
       "annual_dps_native": "4.56",
       "low_52w_native": "73.4",
       "high_52w_native": "117.63",
-      "fx_rate_to_gbp": "0.531385",
+      "fx_rate_to_gbp": "0.531405",
       "live_price_gbp": "48.763358",
       "annual_dps_gbp": "2.429112",
       "low_52w_gbp": "39.10018",
@@ -10579,7 +10579,7 @@
       "annual_dps_native": "3.63",
       "low_52w_native": "70.8",
       "high_52w_native": "95.175",
-      "fx_rate_to_gbp": "0.52907",
+      "fx_rate_to_gbp": "0.52906",
       "live_price_gbp": "46.43836167",
       "annual_dps_gbp": "1.900465083",
       "low_52w_gbp": "37.06692228",
@@ -10612,7 +10612,7 @@
       "annual_dps_native": "2.83",
       "low_52w_native": "38.39",
       "high_52w_native": "51.68",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "35.84075981",
       "annual_dps_gbp": "2.092189568",
       "low_52w_gbp": "28.38132774",
@@ -10645,7 +10645,7 @@
       "annual_dps_native": "4.35",
       "low_52w_native": "137.62",
       "high_52w_native": "167.25",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "106.8643117",
       "annual_dps_gbp": "3.21590976",
       "low_52w_gbp": "101.7410348",
@@ -10678,7 +10678,7 @@
       "annual_dps_native": "3.1",
       "low_52w_native": "69.9",
       "high_52w_native": "85.075",
-      "fx_rate_to_gbp": "0.912965",
+      "fx_rate_to_gbp": "0.912835",
       "live_price_gbp": "73.59555975",
       "annual_dps_gbp": "2.8162725",
       "low_52w_gbp": "63.5024025",
@@ -10711,7 +10711,7 @@
       "annual_dps_native": "2.25",
       "low_52w_native": "40.97",
       "high_52w_native": "55.05",
-      "fx_rate_to_gbp": "0.855805",
+      "fx_rate_to_gbp": "0.855825",
       "live_price_gbp": "43.6959105",
       "annual_dps_gbp": "1.9221075",
       "low_52w_gbp": "34.9994419",
@@ -10744,7 +10744,7 @@
       "annual_dps_native": "1.22",
       "low_52w_native": "14.31",
       "high_52w_native": "23.38",
-      "fx_rate_to_gbp": "0.52907",
+      "fx_rate_to_gbp": "0.52906",
       "live_price_gbp": "9.235317924",
       "annual_dps_gbp": "0.638723802",
       "low_52w_gbp": "7.491916071",
@@ -10777,7 +10777,7 @@
       "annual_dps_native": "4.24",
       "low_52w_native": "54.7",
       "high_52w_native": "74.56",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "48.57132672",
       "annual_dps_gbp": "3.134587904",
       "low_52w_gbp": "40.43914112",
@@ -10810,7 +10810,7 @@
       "annual_dps_native": "0.49",
       "low_52w_native": "7.575",
       "high_52w_native": "10.31",
-      "fx_rate_to_gbp": "0.855805",
+      "fx_rate_to_gbp": "0.855825",
       "live_price_gbp": "8.1070223",
       "annual_dps_gbp": "0.4185923",
       "low_52w_gbp": "6.47109525",
@@ -10843,7 +10843,7 @@
       "annual_dps_native": "4.48",
       "low_52w_native": "95.52",
       "high_52w_native": "164.74",
-      "fx_rate_to_gbp": "0.531385",
+      "fx_rate_to_gbp": "0.531405",
       "live_price_gbp": "66.246572",
       "annual_dps_gbp": "2.386496",
       "low_52w_gbp": "50.883504",
@@ -10876,7 +10876,7 @@
       "annual_dps_native": "3.7",
       "low_52w_native": "91.2",
       "high_52w_native": "131",
-      "fx_rate_to_gbp": "0.912965",
+      "fx_rate_to_gbp": "0.912835",
       "live_price_gbp": "111.233679",
       "annual_dps_gbp": "3.3613575",
       "low_52w_gbp": "82.85292",
@@ -10909,7 +10909,7 @@
       "annual_dps_native": "2.82",
       "low_52w_native": "43.59",
       "high_52w_native": "58.45",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "37.63723354",
       "annual_dps_gbp": "2.084796672",
       "low_52w_gbp": "32.22563366",
@@ -10942,7 +10942,7 @@
       "annual_dps_native": "3.4",
       "low_52w_native": "49.24",
       "high_52w_native": "81.34",
-      "fx_rate_to_gbp": "0.855805",
+      "fx_rate_to_gbp": "0.855825",
       "live_price_gbp": "64.7365806",
       "annual_dps_gbp": "2.904518",
       "low_52w_gbp": "42.0642548",
@@ -10975,7 +10975,7 @@
       "annual_dps_native": "5.36",
       "low_52w_native": "149.04",
       "high_52w_native": "251.71",
-      "fx_rate_to_gbp": "0.738729754",
+      "fx_rate_to_gbp": "0.738735",
       "live_price_gbp": "192.4740474",
       "annual_dps_gbp": "3.962592256",
       "low_52w_gbp": "110.183722",
@@ -11008,7 +11008,7 @@
       "annual_dps_native": "5.89",
       "low_52w_native": "100.75",
       "high_52w_native": "195.84",
-      "fx_rate_to_gbp": "0.52907",
+      "fx_rate_to_gbp": "0.52906",
       "live_price_gbp": "87.74075572",
       "annual_dps_gbp": "3.083674749",
       "low_52w_gbp": "52.74706808",
@@ -11041,7 +11041,7 @@
       "annual_dps_native": "1.95",
       "low_52w_native": "35.52",
       "high_52w_native": "65.04",
-      "fx_rate_to_gbp": "0.52907",
+      "fx_rate_to_gbp": "0.52906",
       "live_price_gbp": "32.11943054",
       "annual_dps_gbp": "1.020910995",
       "low_52w_gbp": "18.59628643",
@@ -19846,7 +19846,7 @@
     {
       "Name": "Ares Capital",
       "Symbol": "ARCC",
-      "Price": "14.73765859",
+      "Price": "14.73776325",
       "Day Change %": "0.35",
       "Trade Time": "46262.66668"
     },
@@ -19902,7 +19902,7 @@
     {
       "Name": "Vanguard FTSE All-World",
       "Symbol": "LON:VWRA",
-      "Price": "143.8676196",
+      "Price": "143.8686413",
       "Day Change %": "-0.01",
       "Trade Time": "46262.7906"
     },
@@ -28022,23 +28022,23 @@
     },
     {
       "Currency": "USD",
-      "Rate_to_GBP": "0.738729754"
+      "Rate_to_GBP": "0.738735"
     },
     {
       "Currency": "AUD",
-      "Rate_to_GBP": "0.52907"
+      "Rate_to_GBP": "0.52906"
     },
     {
       "Currency": "CAD",
-      "Rate_to_GBP": "0.531385"
+      "Rate_to_GBP": "0.531405"
     },
     {
       "Currency": "EUR",
-      "Rate_to_GBP": "0.855805"
+      "Rate_to_GBP": "0.855825"
     },
     {
       "Currency": "CHF",
-      "Rate_to_GBP": "0.912965"
+      "Rate_to_GBP": "0.912835"
     },
     {
       "Currency": "JPY",
@@ -28049,167 +28049,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "30/08/2026 23:44:46": "Balance Note"
+      "31/08/2026 00:14:49": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "Concentration Watch",
-      "30/08/2026 23:44:46": "Good candidate, but check sector concentration before buying."
+      "31/08/2026 00:14:49": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "30/08/2026 23:44:46": "No major chemistry issue."
+      "31/08/2026 00:14:49": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "30/08/2026 23:44:46": "Good candidate, but check sector concentration before buying."
+      "31/08/2026 00:14:49": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LEGAL & GENERAL",
       "Last updated": "Cyclical / Financial Watch",
-      "30/08/2026 23:44:46": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
+      "31/08/2026 00:14:49": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "Balance Booster",
-      "30/08/2026 23:44:46": "Could improve balance if promoted."
+      "31/08/2026 00:14:49": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "30/08/2026 23:44:46": "Good candidate, but check sector concentration before buying."
+      "31/08/2026 00:14:49": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "30/08/2026 23:44:46": "Good candidate, but check sector concentration before buying."
+      "31/08/2026 00:14:49": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "30/08/2026 23:44:46": "Could improve balance if promoted."
+      "31/08/2026 00:14:49": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "30/08/2026 23:44:46": "Balance Note"
+      "31/08/2026 00:14:49": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SUPERMARKET INCOME REIT",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "30/08/2026 23:44:46": "#REF!"
+      "31/08/2026 00:14:49": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "30/08/2026 23:44:46": ""
+      "31/08/2026 00:14:49": ""
     }
   ],
   "AuroraTimes": [
@@ -50834,13 +50834,13 @@
       "sector": "BUSINESS DEVELOPMENT COMPANY",
       "role": "HIGH-YIELD CREDIT INCOME",
       "shares": "615",
-      "live_price": "14.73765859",
-      "current_value": "9063.660034",
-      "book_cost": "8539.065874",
-      "average_price": "13.88465996",
-      "profit_loss": "524.5941602",
-      "annual_dps": "1.418361128",
-      "annual_dps_total": "872.2920935",
+      "live_price": "14.73776325",
+      "current_value": "9063.724399",
+      "book_cost": "8539.126513",
+      "average_price": "13.88475856",
+      "profit_loss": "524.5978856",
+      "annual_dps": "1.4183712",
+      "annual_dps_total": "872.298288",
       "yield_pct": "0.09662808254",
       "annual_target": "1500",
       "low_52w": "13.151355",
@@ -51326,7 +51326,7 @@
       "sector": "GLOBAL EQUINITY ETF",
       "role": "GLOBAL GROWTH ENGINE",
       "shares": "0",
-      "live_price": "143.8676196",
+      "live_price": "143.8686413",
       "current_value": "0",
       "book_cost": "0",
       "average_price": "",
@@ -51788,7 +51788,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q1",
-      "days_to_ex": "31/05/1899",
+      "days_to_ex": "30/05/1899",
       "days_to_pay": "-156",
       "payment_stage": "PAID",
       "income_month": "Mar",
@@ -51814,7 +51814,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q1",
-      "days_to_ex": "31/05/1899",
+      "days_to_ex": "30/05/1899",
       "days_to_pay": "-177",
       "payment_stage": "PAID",
       "income_month": "Feb",
@@ -51840,7 +51840,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q1",
-      "days_to_ex": "01/06/1899",
+      "days_to_ex": "31/05/1899",
       "days_to_pay": "-171",
       "payment_stage": "PAID",
       "income_month": "Feb",
@@ -51866,7 +51866,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Final",
-      "days_to_ex": "19/07/1899",
+      "days_to_ex": "18/07/1899",
       "days_to_pay": "-108",
       "payment_stage": "PAID",
       "income_month": "Apr",
@@ -51892,7 +51892,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q2",
-      "days_to_ex": "26/07/1899",
+      "days_to_ex": "25/07/1899",
       "days_to_pay": "-100",
       "payment_stage": "PAID",
       "income_month": "May",
@@ -51918,7 +51918,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Final",
-      "days_to_ex": "09/08/1899",
+      "days_to_ex": "08/08/1899",
       "days_to_pay": "-88",
       "payment_stage": "PAID",
       "income_month": "May",
@@ -51944,7 +51944,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q2",
-      "days_to_ex": "23/08/1899",
+      "days_to_ex": "22/08/1899",
       "days_to_pay": "-86",
       "payment_stage": "PAID",
       "income_month": "May",
@@ -51970,7 +51970,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Final",
-      "days_to_ex": "23/08/1899",
+      "days_to_ex": "22/08/1899",
       "days_to_pay": "-73",
       "payment_stage": "PAID",
       "income_month": "Jun",
@@ -51996,7 +51996,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q2",
-      "days_to_ex": "06/09/1899",
+      "days_to_ex": "05/09/1899",
       "days_to_pay": "-79",
       "payment_stage": "PAID",
       "income_month": "May",
@@ -52022,7 +52022,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q2",
-      "days_to_ex": "04/10/1899",
+      "days_to_ex": "03/10/1899",
       "days_to_pay": "-51",
       "payment_stage": "PAID",
       "income_month": "Jun",
@@ -52074,7 +52074,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "02/11/1899",
+      "days_to_ex": "01/11/1899",
       "days_to_pay": "-2",
       "payment_stage": "OVERDUE / CHECK RECEIVED",
       "income_month": "Aug",
@@ -52100,7 +52100,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "02/11/1899",
+      "days_to_ex": "01/11/1899",
       "days_to_pay": "-2",
       "payment_stage": "OVERDUE / CHECK RECEIVED",
       "income_month": "Aug",
@@ -52126,7 +52126,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "22/11/1899",
+      "days_to_ex": "21/11/1899",
       "days_to_pay": "5",
       "payment_stage": "LOCKED IN",
       "income_month": "Aug",
@@ -52152,7 +52152,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "23/11/1899",
+      "days_to_ex": "22/11/1899",
       "days_to_pay": "5",
       "payment_stage": "LOCKED IN",
       "income_month": "Aug",
@@ -52178,7 +52178,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Interim",
-      "days_to_ex": "20/12/1899",
+      "days_to_ex": "19/12/1899",
       "days_to_pay": "40",
       "payment_stage": "NOT ELIGIBLE ? SOLD",
       "income_month": "Sep",
@@ -52204,7 +52204,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "04/01/1900",
+      "days_to_ex": "03/01/1900",
       "days_to_pay": "40",
       "payment_stage": "UPCOMING EX-DIV",
       "income_month": "Sep",
@@ -52230,7 +52230,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Interim",
-      "days_to_ex": "11/01/1900",
+      "days_to_ex": "10/01/1900",
       "days_to_pay": "61",
       "payment_stage": "NOT ELIGIBLE ? SOLD",
       "income_month": "Oct",
@@ -52256,7 +52256,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Interim",
-      "days_to_ex": "25/01/1900",
+      "days_to_ex": "24/01/1900",
       "days_to_pay": "75",
       "payment_stage": "NOT ELIGIBLE ? SOLD",
       "income_month": "Oct",
@@ -52282,7 +52282,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q4",
-      "days_to_ex": "08/02/1900",
+      "days_to_ex": "07/02/1900",
       "days_to_pay": "96",
       "payment_stage": "UPCOMING EX-DIV",
       "income_month": "Nov",
@@ -52308,7 +52308,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q4",
-      "days_to_ex": "22/02/1900",
+      "days_to_ex": "21/02/1900",
       "days_to_pay": "96",
       "payment_stage": "UPCOMING EX-DIV",
       "income_month": "Nov",
@@ -52334,7 +52334,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q4",
-      "days_to_ex": "01/03/1900",
+      "days_to_ex": "28/02/1900",
       "days_to_pay": "100",
       "payment_stage": "UPCOMING EX-DIV",
       "income_month": "Nov",
@@ -52360,7 +52360,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q4",
-      "days_to_ex": "08/02/1900",
+      "days_to_ex": "07/02/1900",
       "days_to_pay": "96",
       "payment_stage": "UPCOMING EX-DIV",
       "income_month": "Nov",
@@ -52386,7 +52386,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "13/12/1899",
+      "days_to_ex": "12/12/1899",
       "days_to_pay": "45",
       "payment_stage": "LOCKED IN",
       "income_month": "Sep",
@@ -52412,7 +52412,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "27/12/1899",
+      "days_to_ex": "26/12/1899",
       "days_to_pay": "45",
       "payment_stage": "UPCOMING EX-DIV",
       "income_month": "Sep",
@@ -52438,7 +52438,7 @@
       "dps_change_pct": "",
       "dividend_trend": "",
       "dividend_period": "Q3",
-      "days_to_ex": "15/01/1900",
+      "days_to_ex": "14/01/1900",
       "days_to_pay": "45",
       "payment_stage": "UPCOMING EX-DIV",
       "income_month": "Sep",
