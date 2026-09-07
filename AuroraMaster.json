@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-09-07T17:14:43.642Z",
+    "generated_at": "2026-09-07T17:44:43.165Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -4188,7 +4188,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "07/09/2026",
-      "last_updated": "07/09/2026 18:13:07",
+      "last_updated": "07/09/2026 18:37:04",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -8036,7 +8036,7 @@
       "scout_rating": "?",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "07/09/2026",
-      "last_updated": "07/09/2026 18:13:07",
+      "last_updated": "07/09/2026 18:37:04",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -8938,20 +8938,20 @@
   ],
   "AuroraIntelligence": [
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "IMB",
       "company": "IMPERIAL BRANDS",
       "account": "IG",
       "sector": "OTHER",
       "role": "Scout Monitor",
       "shares": "26",
-      "current_value": "?646.88",
+      "current_value": "?646.65",
       "book_cost": "?714.14",
-      "profit_loss": "-?67.26",
+      "profit_loss": "-?67.49",
       "annual_dps": "?1.64",
       "annual_income": "?42.64",
       "yield_pct": "6.59",
-      "live_price": "?24.8800",
+      "live_price": "?24.8711",
       "daily_change_pct": "0.66",
       "locked": "FALSE",
       "lock_reason": "",
@@ -8981,20 +8981,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "BATS",
       "company": "BRITISH AMERICAN TOBACCO",
       "account": "IG",
       "sector": "CONSUMER DEFENCE",
       "role": "INCOME ANCHOR",
       "shares": "39",
-      "current_value": "?1,598.22",
+      "current_value": "?1,589.25",
       "book_cost": "?1,733.93",
-      "profit_loss": "-?135.71",
+      "profit_loss": "-?144.68",
       "annual_dps": "?2.45",
       "annual_income": "?95.57",
-      "yield_pct": "5.98",
-      "live_price": "?40.9800",
+      "yield_pct": "6.01",
+      "live_price": "?40.7500",
       "daily_change_pct": "0.80",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9024,20 +9024,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "TW",
       "company": "TAYLOR WIMPEY",
       "account": "IG",
       "sector": "HOUSEBUILDERS",
       "role": "INCOME ACCELERATOR",
       "shares": "3",
-      "current_value": "?2.46",
+      "current_value": "?2.45",
       "book_cost": "?2.29",
-      "profit_loss": "?0.17",
+      "profit_loss": "?0.16",
       "annual_dps": "?0.08",
       "annual_income": "?0.23",
-      "yield_pct": "9.36",
-      "live_price": "?0.8194",
+      "yield_pct": "9.38",
+      "live_price": "?0.8170",
       "daily_change_pct": "0.10",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9067,7 +9067,7 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "ARCC",
       "company": "ARES CAPITAL",
       "account": "IG",
@@ -9110,20 +9110,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "LMP",
       "company": "LONDONMETRIC PROPERTY",
       "account": "IG",
       "sector": "REIT",
       "role": "INCOME STABILISER",
       "shares": "814",
-      "current_value": "?1,490.43",
+      "current_value": "?1,489.62",
       "book_cost": "?1,621.96",
-      "profit_loss": "-?131.53",
+      "profit_loss": "-?132.34",
       "annual_dps": "?0.12",
       "annual_income": "?97.68",
-      "yield_pct": "6.55",
-      "live_price": "?1.8310",
+      "yield_pct": "6.56",
+      "live_price": "?1.8300",
       "daily_change_pct": "4.61",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9153,20 +9153,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "SBRY",
       "company": "SAINSBURY'S",
       "account": "IG",
       "sector": "CONSUMER DEFENCE",
       "role": "CORE BUILDER",
       "shares": "736",
-      "current_value": "?2,531.84",
+      "current_value": "?2,513.44",
       "book_cost": "?2,619.08",
-      "profit_loss": "-?87.24",
+      "profit_loss": "-?105.64",
       "annual_dps": "?0.25",
       "annual_income": "?184.00",
-      "yield_pct": "7.27",
-      "live_price": "?3.4400",
+      "yield_pct": "7.32",
+      "live_price": "?3.4150",
       "daily_change_pct": "-2.17",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9196,20 +9196,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "AV",
       "company": "AVIVA",
       "account": "IG",
       "sector": "FINANCIALS",
       "role": "INCOME GENERATOR",
       "shares": "39",
-      "current_value": "?282.36",
+      "current_value": "?283.37",
       "book_cost": "?273.54",
-      "profit_loss": "?8.82",
+      "profit_loss": "?9.83",
       "annual_dps": "?0.39",
       "annual_income": "?15.33",
-      "yield_pct": "5.43",
-      "live_price": "?7.2400",
+      "yield_pct": "5.41",
+      "live_price": "?7.2660",
       "daily_change_pct": "-1.73",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9239,20 +9239,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "PHP",
       "company": "PRIMARY HEALTH PROPERTIES",
       "account": "IG + T212",
       "sector": "REIT",
       "role": "HEALTHCARE REIT",
       "shares": "6363.256106",
-      "current_value": "?5,981.46",
+      "current_value": "?5,956.01",
       "book_cost": "?6,087.94",
-      "profit_loss": "-?106.48",
+      "profit_loss": "-?131.93",
       "annual_dps": "?0.07",
       "annual_income": "?458.16",
-      "yield_pct": "7.66",
-      "live_price": "?0.9400",
+      "yield_pct": "7.69",
+      "live_price": "?0.9360",
       "daily_change_pct": "1.90",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9282,20 +9282,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "FGEN",
       "company": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "account": "IG",
       "sector": "INFRASTRUCTURE",
       "role": "INFRASTRUCTURE INCOME",
       "shares": "12336",
-      "current_value": "?10,742.19",
+      "current_value": "?10,633.63",
       "book_cost": "?10,327.28",
-      "profit_loss": "?414.91",
+      "profit_loss": "?306.35",
       "annual_dps": "?0.08",
       "annual_income": "?981.95",
-      "yield_pct": "9.14",
-      "live_price": "?0.8708",
+      "yield_pct": "9.23",
+      "live_price": "?0.8620",
       "daily_change_pct": "4.14",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9325,20 +9325,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "TRIG",
       "company": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "account": "T212",
       "sector": "INFRASTRUCTURE",
       "role": "RENEWABLE INCOME",
       "shares": "4453.312808",
-      "current_value": "?3,388.97",
+      "current_value": "?3,384.52",
       "book_cost": "?3,478.14",
-      "profit_loss": "-?89.17",
+      "profit_loss": "-?93.62",
       "annual_dps": "?0.08",
       "annual_income": "?336.23",
-      "yield_pct": "9.92",
-      "live_price": "?0.7610",
+      "yield_pct": "9.93",
+      "live_price": "?0.7600",
       "daily_change_pct": "1.32",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9368,20 +9368,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "RGL",
       "company": "REGIONAL REIT",
       "account": "T212",
       "sector": "REIT",
       "role": "HIGH-YIELD PROPERTY INCOME",
       "shares": "2639.81299",
-      "current_value": "?2,557.98",
+      "current_value": "?2,491.98",
       "book_cost": "?2,580.95",
-      "profit_loss": "-?22.97",
+      "profit_loss": "-?88.97",
       "annual_dps": "?0.10",
       "annual_income": "?250.78",
-      "yield_pct": "9.80",
-      "live_price": "?0.9690",
+      "yield_pct": "10.06",
+      "live_price": "?0.9440",
       "daily_change_pct": "2.15",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9411,20 +9411,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "HICL",
       "company": "HICL INFRASTRUCTURE",
       "account": "IG",
       "sector": "INFRASTRUCTURE",
       "role": "INFRASTRUCTURE INCOME",
       "shares": "1008",
-      "current_value": "?1,367.05",
+      "current_value": "?1,366.85",
       "book_cost": "?1,396.48",
-      "profit_loss": "-?29.43",
+      "profit_loss": "-?29.63",
       "annual_dps": "?0.08",
       "annual_income": "?84.27",
-      "yield_pct": "6.16",
-      "live_price": "?1.3562",
+      "yield_pct": "6.17",
+      "live_price": "?1.3560",
       "daily_change_pct": "3.85",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9454,20 +9454,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "LAND",
       "company": "LAND SECURITIES",
       "account": "IG",
       "sector": "REIT",
       "role": "INCOME STABILISER",
       "shares": "87",
-      "current_value": "?574.81",
+      "current_value": "?576.38",
       "book_cost": "?631.75",
-      "profit_loss": "-?56.94",
+      "profit_loss": "-?55.38",
       "annual_dps": "?0.41",
       "annual_income": "?35.84",
-      "yield_pct": "6.24",
-      "live_price": "?6.6070",
+      "yield_pct": "6.22",
+      "live_price": "?6.6250",
       "daily_change_pct": "3.62",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9497,20 +9497,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "UKW",
       "company": "GREENCOAT WIND",
       "account": "IG",
       "sector": "INFRASTRUCTURE",
       "role": "",
       "shares": "206",
-      "current_value": "?228.25",
+      "current_value": "?227.01",
       "book_cost": "?229.65",
-      "profit_loss": "-?1.40",
+      "profit_loss": "-?2.64",
       "annual_dps": "?0.11",
       "annual_income": "?22.04",
-      "yield_pct": "9.66",
-      "live_price": "?1.1080",
+      "yield_pct": "9.71",
+      "live_price": "?1.1020",
       "daily_change_pct": "-0.36",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9540,20 +9540,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "FSFL",
       "company": "FORESIGHT SOLAR FUND",
       "account": "T212",
       "sector": "INFRASTRUCTURE",
       "role": "RENEWABLE INCOME",
       "shares": "4592.094447",
-      "current_value": "?3,211.25",
+      "current_value": "?3,205.28",
       "book_cost": "?3,288.17",
-      "profit_loss": "-?76.92",
+      "profit_loss": "-?82.89",
       "annual_dps": "?0.08",
       "annual_income": "?371.96",
-      "yield_pct": "11.58",
-      "live_price": "?0.6993",
+      "yield_pct": "11.60",
+      "live_price": "?0.6980",
       "daily_change_pct": "0.57",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9583,20 +9583,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "GCP",
       "company": "GCP INFRASTRUCTURE",
       "account": "T212",
       "sector": "INFRASTRUCTURE",
       "role": "Rotation / Watchlist Candidate",
       "shares": "1341.142801",
-      "current_value": "?1,124.68",
+      "current_value": "?1,130.58",
       "book_cost": "?1,100.00",
-      "profit_loss": "?24.68",
+      "profit_loss": "?30.58",
       "annual_dps": "?0.07",
       "annual_income": "?93.89",
-      "yield_pct": "8.35",
-      "live_price": "?0.8386",
+      "yield_pct": "8.30",
+      "live_price": "?0.8430",
       "daily_change_pct": "-1.67",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9626,20 +9626,20 @@
       "source": "Aurora Intelligence Engine 2.0"
     },
     {
-      "generated_at": "07/09/2026 12:31",
+      "generated_at": "07/09/2026 18:31",
       "ticker": "SUPR",
       "company": "SUPERMARKET INCOME REIT",
       "account": "IG",
       "sector": "REIT",
       "role": "INCOME STABILISER",
       "shares": "21268",
-      "current_value": "?17,854.49",
+      "current_value": "?17,843.85",
       "book_cost": "?17,541.79",
-      "profit_loss": "?312.70",
+      "profit_loss": "?302.06",
       "annual_dps": "?0.06",
       "annual_income": "?1,314.36",
-      "yield_pct": "7.36",
-      "live_price": "?0.8395",
+      "yield_pct": "7.37",
+      "live_price": "?0.8390",
       "daily_change_pct": "1.61",
       "locked": "FALSE",
       "lock_reason": "",
@@ -9672,7 +9672,7 @@
   "ManagerBriefing": [
     {
       "Aurora Intelligence Engine": "Generated",
-      "Manager Briefing 2.0": "07/09/2026 12:31"
+      "Manager Briefing 2.0": "07/09/2026 18:31"
     },
     {
       "Aurora Intelligence Engine": "Market regime",
@@ -9692,7 +9692,7 @@
     },
     {
       "Aurora Intelligence Engine": "Portfolio value",
-      "Manager Briefing 2.0": "?62,865.08"
+      "Manager Briefing 2.0": "?62,622.64"
     },
     {
       "Aurora Intelligence Engine": "Locked legacy value",
@@ -29149,167 +29149,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "07/09/2026 18:13:07": "Balance Note"
+      "07/09/2026 18:37:04": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "Concentration Watch",
-      "07/09/2026 18:13:07": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 18:37:04": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "07/09/2026 18:13:07": "No major chemistry issue."
+      "07/09/2026 18:37:04": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "07/09/2026 18:13:07": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 18:37:04": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LEGAL & GENERAL",
       "Last updated": "Cyclical / Financial Watch",
-      "07/09/2026 18:13:07": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
+      "07/09/2026 18:37:04": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "Balance Booster",
-      "07/09/2026 18:13:07": "Could improve balance if promoted."
+      "07/09/2026 18:37:04": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "07/09/2026 18:13:07": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 18:37:04": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "07/09/2026 18:13:07": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 18:37:04": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "07/09/2026 18:13:07": "Could improve balance if promoted."
+      "07/09/2026 18:37:04": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "07/09/2026 18:13:07": "Balance Note"
+      "07/09/2026 18:37:04": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SUPERMARKET INCOME REIT",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "07/09/2026 18:13:07": "#REF!"
+      "07/09/2026 18:37:04": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 18:13:07": ""
+      "07/09/2026 18:37:04": ""
     }
   ],
   "AuroraTimes": [
@@ -29875,7 +29875,7 @@
     {
       "Section": "System",
       "Field": "Last update",
-      "Value": "07/09/2026 17:37:02",
+      "Value": "07/09/2026 18:37:03",
       "Rule / Formula": "updateMarketRegime()",
       "Notes": "Preferred: REITs, infrastructure, renewables, quality income | Avoid: large new punts, uncovered high yield, overconcentration, overvalued low-yield positions"
     }
