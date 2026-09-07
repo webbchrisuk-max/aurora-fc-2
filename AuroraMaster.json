@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-09-07T16:14:43.310Z",
+    "generated_at": "2026-09-07T16:44:42.958Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -2293,7 +2293,7 @@
       "quote_currency": "GBX",
       "fx_to_gbp": "0.01",
       "price_gbp": "7.266",
-      "trade_time": "46272.70186",
+      "trade_time": "46272.71875",
       "data_delay_minutes": "0",
       "status": "UPDATED",
       "last_checked_at": "2026-08-16T17:32:58.382Z",
@@ -2305,11 +2305,11 @@
       "google_symbol": "LON:BATS",
       "quote_unit": "PENCE",
       "enabled": "TRUE",
-      "native_price": "4096.29",
+      "native_price": "4075",
       "quote_currency": "GBX",
       "fx_to_gbp": "0.01",
-      "price_gbp": "40.9629",
-      "trade_time": "46272.69939",
+      "price_gbp": "40.75",
+      "trade_time": "46272.72527",
       "data_delay_minutes": "0",
       "status": "UPDATED",
       "last_checked_at": "2026-08-16T17:32:58.382Z",
@@ -4100,7 +4100,7 @@
       "sector": "Tobacco",
       "role": "Defensive Quality",
       "benchmark": "FTSE 100",
-      "live_price": "40.9629",
+      "live_price": "40.75",
       "dividend_yield": "0.05750762732",
       "annual_dps": "2.4504",
       "low_52w": "36.77",
@@ -4188,7 +4188,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "07/09/2026",
-      "last_updated": "07/09/2026 17:14:43",
+      "last_updated": "07/09/2026 17:38:09",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -4470,7 +4470,7 @@
       "sector": "Media",
       "role": "Growth / Data",
       "benchmark": "FTSE 100",
-      "live_price": "25.7554",
+      "live_price": "25.63",
       "dividend_yield": "0.02639058853",
       "annual_dps": "0.675",
       "low_52w": "19.91",
@@ -4544,7 +4544,7 @@
       "sector": "Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "3.417",
+      "live_price": "3.4403",
       "dividend_yield": "0.02607954545",
       "annual_dps": "0.0918",
       "low_52w": "3.296",
@@ -4692,7 +4692,7 @@
       "sector": "Mining",
       "role": "Commodity Scout",
       "benchmark": "FTSE 250",
-      "live_price": "1.351",
+      "live_price": "1.3532",
       "dividend_yield": "0.02007366483",
       "annual_dps": "0.0218",
       "low_52w": "0.698",
@@ -4840,7 +4840,7 @@
       "sector": "Financial services",
       "role": "Financial Scout",
       "benchmark": "FTSE 100",
-      "live_price": "11.4162",
+      "live_price": "11.615",
       "dividend_yield": "0.01525423729",
       "annual_dps": "0.18",
       "low_52w": "10.3875",
@@ -4951,7 +4951,7 @@
       "sector": "Aerospace & defence",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "4.965",
+      "live_price": "5.0188",
       "dividend_yield": "0.014566053",
       "annual_dps": "0.072",
       "low_52w": "4.099",
@@ -5025,7 +5025,7 @@
       "sector": "Mining",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "76.4254",
+      "live_price": "76.38",
       "dividend_yield": "0.04239836251",
       "annual_dps": "3.0035",
       "low_52w": "45.28",
@@ -5284,7 +5284,7 @@
       "sector": "Leisure Goods",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 100",
-      "live_price": "184.589",
+      "live_price": "184.4715",
       "dividend_yield": "0.02537938252",
       "annual_dps": "4.85",
       "low_52w": "140.7",
@@ -5580,7 +5580,7 @@
       "sector": "Pharmaceuticals & biotechnology",
       "role": "Healthcare Quality",
       "benchmark": "FTSE 100",
-      "live_price": "3.433",
+      "live_price": "3.446",
       "dividend_yield": "0.01996625422",
       "annual_dps": "0.071",
       "low_52w": "2.744",
@@ -6320,7 +6320,7 @@
       "sector": "Chemicals",
       "role": "Industrial Quality",
       "benchmark": "FTSE 250",
-      "live_price": "23.0563",
+      "live_price": "22.92",
       "dividend_yield": "0.03493647913",
       "annual_dps": "0.77",
       "low_52w": "17.3183",
@@ -7060,7 +7060,7 @@
       "sector": "Mining",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "6.038",
+      "live_price": "5.9888",
       "dividend_yield": "0.02262589928",
       "annual_dps": "0.1258",
       "low_52w": "2.84",
@@ -7319,7 +7319,7 @@
       "sector": "Non-life Insurance",
       "role": "Financial Scout",
       "benchmark": "FTSE 100",
-      "live_price": "18.58",
+      "live_price": "18.75",
       "dividend_yield": "0.02085793872",
       "annual_dps": "0.3744",
       "low_52w": "12.79",
@@ -7393,7 +7393,7 @@
       "sector": "Investment trusts",
       "role": "Investment Trust",
       "benchmark": "FTSE 250",
-      "live_price": "15.6613",
+      "live_price": "15.66",
       "dividend_yield": "0.0162627551",
       "annual_dps": "0.255",
       "low_52w": "13.36",
@@ -7541,7 +7541,7 @@
       "sector": "Travel & leisure",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 100",
-      "live_price": "4.284",
+      "live_price": "4.3001",
       "dividend_yield": "0.01546530393",
       "annual_dps": "0.069",
       "low_52w": "3.327",
@@ -7615,7 +7615,7 @@
       "sector": "General retailers",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 100",
-      "live_price": "0.8271",
+      "live_price": "0.823",
       "dividend_yield": "0.01298420255",
       "annual_dps": "0.012",
       "low_52w": "0.6398",
@@ -7800,7 +7800,7 @@
       "sector": "Industrial engineering",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "30.68",
+      "live_price": "30.34",
       "dividend_yield": "0.0111328125",
       "annual_dps": "0.342",
       "low_52w": "22.24",
@@ -7837,7 +7837,7 @@
       "sector": "Industrial Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "71.95",
+      "live_price": "71.15",
       "dividend_yield": "0.008568097394",
       "annual_dps": "0.632",
       "low_52w": "49.7",
@@ -8022,21 +8022,21 @@
       "sector": "Mining",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "41.9",
-      "dividend_yield": "0.004061365251",
+      "live_price": "41.7692",
+      "dividend_yield": "0.004074083392",
       "annual_dps": "0.170171204",
       "low_52w": "22.6411",
       "high_52w": "43.21",
       "fair_value": "32.92555",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
-      "income_from_500": "2.030682625",
-      "income_from_2000": "8.122730501",
+      "income_from_500": "2.037041696",
+      "income_from_2000": "8.148166783",
       "watchlist_status": "SCOUT",
       "scout_rating": "?",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "07/09/2026",
-      "last_updated": "07/09/2026 17:14:43",
+      "last_updated": "07/09/2026 17:38:09",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -9941,7 +9941,7 @@
       "buy_strength": "65",
       "ticker": "LON:BATS",
       "name": "BRITISH AMERICAN TOBACCO",
-      "live_price": "40.9629",
+      "live_price": "40.75",
       "annual_dps": "2.4504",
       "low_52w": "33.948",
       "high_52w": "50.037",
@@ -19958,14 +19958,14 @@
       "Symbol": "LON:AV",
       "Price": "7.2660",
       "Day Change %": "-0.44",
-      "Trade Time": "46272.70186"
+      "Trade Time": "46272.71875"
     },
     {
       "Name": "British American Tobacco",
       "Symbol": "LON:BATS",
-      "Price": "40.9629",
-      "Day Change %": "-0.7",
-      "Trade Time": "46272.69939"
+      "Price": "40.7500",
+      "Day Change %": "-1.21",
+      "Trade Time": "46272.72527"
     },
     {
       "Name": "Land Securities",
@@ -29149,167 +29149,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "07/09/2026 17:14:43": "Balance Note"
+      "07/09/2026 17:38:09": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "Concentration Watch",
-      "07/09/2026 17:14:43": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 17:38:09": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "07/09/2026 17:14:43": "No major chemistry issue."
+      "07/09/2026 17:38:09": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "07/09/2026 17:14:43": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 17:38:09": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LEGAL & GENERAL",
       "Last updated": "Cyclical / Financial Watch",
-      "07/09/2026 17:14:43": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
+      "07/09/2026 17:38:09": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "Balance Booster",
-      "07/09/2026 17:14:43": "Could improve balance if promoted."
+      "07/09/2026 17:38:09": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "07/09/2026 17:14:43": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 17:38:09": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "07/09/2026 17:14:43": "Good candidate, but check sector concentration before buying."
+      "07/09/2026 17:38:09": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "07/09/2026 17:14:43": "Could improve balance if promoted."
+      "07/09/2026 17:38:09": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "07/09/2026 17:14:43": "Balance Note"
+      "07/09/2026 17:38:09": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SUPERMARKET INCOME REIT",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "07/09/2026 17:14:43": "#REF!"
+      "07/09/2026 17:38:09": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "07/09/2026 17:14:43": ""
+      "07/09/2026 17:38:09": ""
     }
   ],
   "AuroraTimes": [
@@ -29875,7 +29875,7 @@
     {
       "Section": "System",
       "Field": "Last update",
-      "Value": "07/09/2026 16:37:01",
+      "Value": "07/09/2026 17:37:02",
       "Rule / Formula": "updateMarketRegime()",
       "Notes": "Preferred: REITs, infrastructure, renewables, quality income | Avoid: large new punts, uncovered high yield, overconcentration, overvalued low-yield positions"
     }
@@ -56521,7 +56521,7 @@
       "sector": "CONSUMER DEFENCE",
       "role": "INCOME ANCHOR",
       "shares": "39",
-      "live_price": "40.9629",
+      "live_price": "40.75",
       "current_value": "1661.79",
       "book_cost": "1733.933",
       "average_price": "44.45982051",
