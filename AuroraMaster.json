@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-09-08T16:45:38.554Z",
+    "generated_at": "2026-09-08T17:14:43.594Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -2273,11 +2273,11 @@
       "google_symbol": "NASDAQ:ARCC",
       "quote_unit": "MAJOR",
       "enabled": "TRUE",
-      "native_price": "19.73",
+      "native_price": "19.71",
       "quote_currency": "USD",
       "fx_to_gbp": "0.7398748",
-      "price_gbp": "14.5977298",
-      "trade_time": "46273.53116",
+      "price_gbp": "14.58293231",
+      "trade_time": "46273.55022",
       "data_delay_minutes": "0",
       "status": "UPDATED",
       "last_checked_at": "2026-08-16T17:32:58.382Z",
@@ -2609,11 +2609,11 @@
       "google_symbol": "LON:VWRA",
       "quote_unit": "MAJOR",
       "enabled": "TRUE",
-      "native_price": "195.28",
+      "native_price": "195.17",
       "quote_currency": "USD",
       "fx_to_gbp": "0.7398748",
-      "price_gbp": "144.4827509",
-      "trade_time": "46273.72333",
+      "price_gbp": "144.4013647",
+      "trade_time": "46273.7408",
       "data_delay_minutes": "0",
       "status": "",
       "last_checked_at": "",
@@ -4188,7 +4188,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "08/09/2026",
-      "last_updated": "08/09/2026 17:45:38",
+      "last_updated": "08/09/2026 18:13:38",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -6209,7 +6209,7 @@
       "sector": "Banks",
       "role": "Financial Scout",
       "benchmark": "FTSE 100",
-      "live_price": "15.748",
+      "live_price": "15.672",
       "dividend_yield": "0.0365427412",
       "annual_dps": "0.5583",
       "low_52w": "9.5929",
@@ -8036,7 +8036,7 @@
       "scout_rating": "?",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "08/09/2026",
-      "last_updated": "08/09/2026 17:45:38",
+      "last_updated": "08/09/2026 18:13:38",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -10290,7 +10290,7 @@
       "name": "BCE Inc",
       "market": "CANADA",
       "currency": "CAD",
-      "live_price_native": "23.57",
+      "live_price_native": "23.52",
       "annual_dps_native": "1.75",
       "low_52w_native": "29.68",
       "high_52w_native": "36.25",
@@ -10356,7 +10356,7 @@
       "name": "VICI Properties",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "25.47",
+      "live_price_native": "25.45",
       "annual_dps_native": "1.8",
       "low_52w_native": "26.55",
       "high_52w_native": "34.01",
@@ -10389,7 +10389,7 @@
       "name": "Amcor",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "44.64",
+      "live_price_native": "44.58",
       "annual_dps_native": "2.6",
       "low_52w_native": "36.25",
       "high_52w_native": "50.94",
@@ -10422,7 +10422,7 @@
       "name": "Pfizer",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "27.93",
+      "live_price_native": "27.92",
       "annual_dps_native": "1.72",
       "low_52w_native": "23.11",
       "high_52w_native": "28.75",
@@ -10455,7 +10455,7 @@
       "name": "REALTY INCOME",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "61.25",
+      "live_price_native": "61.23",
       "annual_dps_native": "3.24",
       "low_52w_native": "55.86",
       "high_52w_native": "67.94",
@@ -10488,7 +10488,7 @@
       "name": "United Parcel Service",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "100.93",
+      "live_price_native": "100.84",
       "annual_dps_native": "6.56",
       "low_52w_native": "82",
       "high_52w_native": "122.41",
@@ -10521,7 +10521,7 @@
       "name": "Coca-Cola",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "88.25",
+      "live_price_native": "88.23",
       "annual_dps_native": "4.53",
       "low_52w_native": "65.35",
       "high_52w_native": "84.04",
@@ -10554,7 +10554,7 @@
       "name": "Bank of Nova Scotia",
       "market": "CANADA",
       "currency": "CAD",
-      "live_price_native": "93.17",
+      "live_price_native": "93.06",
       "annual_dps_native": "4.56",
       "low_52w_native": "73.4",
       "high_52w_native": "117.63",
@@ -10620,7 +10620,7 @@
       "name": "VERIZON",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "50.16",
+      "live_price_native": "50.09",
       "annual_dps_native": "2.83",
       "low_52w_native": "38.39",
       "high_52w_native": "51.68",
@@ -10653,7 +10653,7 @@
       "name": "Procter & Gamble",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "145.13",
+      "live_price_native": "145.18",
       "annual_dps_native": "4.35",
       "low_52w_native": "137.62",
       "high_52w_native": "167.25",
@@ -10785,7 +10785,7 @@
       "name": "Altria",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "68.19",
+      "live_price_native": "68.03",
       "annual_dps_native": "4.24",
       "low_52w_native": "54.7",
       "high_52w_native": "74.56",
@@ -10851,7 +10851,7 @@
       "name": "Toronto-Dominion Bank",
       "market": "CANADA",
       "currency": "CAD",
-      "live_price_native": "120.87",
+      "live_price_native": "121.01",
       "annual_dps_native": "4.48",
       "low_52w_native": "95.52",
       "high_52w_native": "164.74",
@@ -10917,7 +10917,7 @@
       "name": "ENBRIDGE",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "50.19",
+      "live_price_native": "50.21",
       "annual_dps_native": "2.82",
       "low_52w_native": "43.59",
       "high_52w_native": "58.45",
@@ -10983,7 +10983,7 @@
       "name": "Johnson & Johnson",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "269.13",
+      "live_price_native": "268.8",
       "annual_dps_native": "5.36",
       "low_52w_native": "149.04",
       "high_52w_native": "251.71",
@@ -19858,9 +19858,9 @@
     {
       "Name": "Ares Capital",
       "Symbol": "ARCC",
-      "Price": "14.5977",
-      "Day Change %": "-1.57",
-      "Trade Time": "46273.53116"
+      "Price": "14.5829",
+      "Day Change %": "-1.65",
+      "Trade Time": "46273.55022"
     },
     {
       "Name": "Foresight Solar Fund",
@@ -19914,9 +19914,9 @@
     {
       "Name": "Vanguard FTSE All-World",
       "Symbol": "LON:VWRA",
-      "Price": "144.4828",
-      "Day Change %": "0.09",
-      "Trade Time": "46273.72333"
+      "Price": "144.4014",
+      "Day Change %": "0.04",
+      "Trade Time": "46273.7408"
     },
     {
       "Name": "iShares S&P 500 Information Technology",
@@ -29285,167 +29285,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "08/09/2026 17:45:38": "Balance Note"
+      "08/09/2026 18:13:38": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "Concentration Watch",
-      "08/09/2026 17:45:38": "Good candidate, but check sector concentration before buying."
+      "08/09/2026 18:13:38": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "08/09/2026 17:45:38": "No major chemistry issue."
+      "08/09/2026 18:13:38": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "08/09/2026 17:45:38": "Good candidate, but check sector concentration before buying."
+      "08/09/2026 18:13:38": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LEGAL & GENERAL",
       "Last updated": "Cyclical / Financial Watch",
-      "08/09/2026 17:45:38": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
+      "08/09/2026 18:13:38": "Former holding: re-entry is evidence-gated and never bypasses Scouting or Transfer."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "Balance Booster",
-      "08/09/2026 17:45:38": "Could improve balance if promoted."
+      "08/09/2026 18:13:38": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "08/09/2026 17:45:38": "Good candidate, but check sector concentration before buying."
+      "08/09/2026 18:13:38": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "08/09/2026 17:45:38": "Good candidate, but check sector concentration before buying."
+      "08/09/2026 18:13:38": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "08/09/2026 17:45:38": "Could improve balance if promoted."
+      "08/09/2026 18:13:38": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "08/09/2026 17:45:38": "Balance Note"
+      "08/09/2026 18:13:38": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SUPERMARKET INCOME REIT",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "08/09/2026 17:45:38": "#REF!"
+      "08/09/2026 18:13:38": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "08/09/2026 17:45:38": ""
+      "08/09/2026 18:13:38": ""
     }
   ],
   "AuroraTimes": [
@@ -34648,7 +34648,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34680,7 +34680,7 @@
       "outcome_90d_pct": "",
       "decision_result": "STRONG SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34712,7 +34712,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34744,7 +34744,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34776,7 +34776,7 @@
       "outcome_90d_pct": "",
       "decision_result": "STRONG SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34808,7 +34808,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34840,7 +34840,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34872,7 +34872,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -34968,7 +34968,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35032,7 +35032,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35064,7 +35064,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35096,7 +35096,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35128,7 +35128,7 @@
       "outcome_90d_pct": "",
       "decision_result": "STRONG SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35160,7 +35160,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35192,7 +35192,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35224,7 +35224,7 @@
       "outcome_90d_pct": "",
       "decision_result": "STRONG SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35256,7 +35256,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35288,7 +35288,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35320,7 +35320,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35416,7 +35416,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35480,7 +35480,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35512,7 +35512,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35544,7 +35544,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35576,7 +35576,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35608,7 +35608,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35640,7 +35640,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35672,7 +35672,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35704,7 +35704,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35736,7 +35736,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35768,7 +35768,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35864,7 +35864,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35928,7 +35928,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35960,7 +35960,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -35992,7 +35992,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36024,7 +36024,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36056,7 +36056,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36088,7 +36088,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36120,7 +36120,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36152,7 +36152,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36184,7 +36184,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36216,7 +36216,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36312,7 +36312,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36376,7 +36376,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36408,7 +36408,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36440,7 +36440,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36472,7 +36472,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36504,7 +36504,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36536,7 +36536,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36568,7 +36568,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36600,7 +36600,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36632,7 +36632,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36664,7 +36664,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36696,7 +36696,7 @@
       "outcome_90d_pct": "",
       "decision_result": "STRONG SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36728,7 +36728,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36760,7 +36760,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36792,7 +36792,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36824,7 +36824,7 @@
       "outcome_90d_pct": "",
       "decision_result": "STRONG SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36856,7 +36856,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36888,7 +36888,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36920,7 +36920,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36952,7 +36952,7 @@
       "outcome_90d_pct": "",
       "decision_result": "STRONG SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -36984,7 +36984,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37016,7 +37016,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37048,7 +37048,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37080,7 +37080,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37112,7 +37112,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37144,7 +37144,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37176,7 +37176,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37208,7 +37208,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37240,7 +37240,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37272,7 +37272,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37304,7 +37304,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37336,7 +37336,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37368,7 +37368,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37400,7 +37400,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37432,7 +37432,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37464,7 +37464,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37496,7 +37496,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37528,7 +37528,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37560,7 +37560,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37592,7 +37592,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37624,7 +37624,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37656,7 +37656,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37688,7 +37688,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37720,7 +37720,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37752,7 +37752,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37784,7 +37784,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37816,7 +37816,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37848,7 +37848,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37880,7 +37880,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37912,7 +37912,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MISS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37944,7 +37944,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -37976,7 +37976,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38008,7 +38008,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38040,7 +38040,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38072,7 +38072,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38104,7 +38104,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38136,7 +38136,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38168,7 +38168,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38200,7 +38200,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38232,7 +38232,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38296,7 +38296,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38328,7 +38328,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38360,7 +38360,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38392,7 +38392,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38424,7 +38424,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38520,7 +38520,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38552,7 +38552,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38584,7 +38584,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38616,7 +38616,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38648,7 +38648,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38680,7 +38680,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -38712,7 +38712,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "4.0-learning-v1",
       "source": "Holdings / Aurora Learning Engine"
     },
@@ -43800,7 +43800,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -43832,7 +43832,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -43864,7 +43864,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -43896,7 +43896,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -43928,7 +43928,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -43960,7 +43960,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -43992,7 +43992,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44024,7 +44024,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44056,7 +44056,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44088,7 +44088,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44120,7 +44120,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44152,7 +44152,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44184,7 +44184,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44216,7 +44216,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44248,7 +44248,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44280,7 +44280,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44312,7 +44312,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44344,7 +44344,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44376,7 +44376,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44408,7 +44408,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44440,7 +44440,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44472,7 +44472,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44504,7 +44504,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44536,7 +44536,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44568,7 +44568,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44600,7 +44600,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44632,7 +44632,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44664,7 +44664,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44696,7 +44696,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44728,7 +44728,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44760,7 +44760,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44792,7 +44792,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44824,7 +44824,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44856,7 +44856,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44888,7 +44888,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44920,7 +44920,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44952,7 +44952,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -44984,7 +44984,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45016,7 +45016,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45048,7 +45048,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45080,7 +45080,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45112,7 +45112,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45144,7 +45144,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45176,7 +45176,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45208,7 +45208,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45240,7 +45240,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45272,7 +45272,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45304,7 +45304,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45336,7 +45336,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45368,7 +45368,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45400,7 +45400,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45432,7 +45432,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45464,7 +45464,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45496,7 +45496,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45528,7 +45528,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45560,7 +45560,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45592,7 +45592,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45624,7 +45624,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45656,7 +45656,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45688,7 +45688,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45720,7 +45720,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45752,7 +45752,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45784,7 +45784,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45816,7 +45816,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45848,7 +45848,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45880,7 +45880,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45912,7 +45912,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45944,7 +45944,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -45976,7 +45976,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46008,7 +46008,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46040,7 +46040,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46072,7 +46072,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46104,7 +46104,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46136,7 +46136,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46168,7 +46168,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46200,7 +46200,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46232,7 +46232,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46264,7 +46264,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46296,7 +46296,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46328,7 +46328,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46360,7 +46360,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46392,7 +46392,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46424,7 +46424,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46456,7 +46456,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46488,7 +46488,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46520,7 +46520,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46552,7 +46552,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46584,7 +46584,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46616,7 +46616,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46648,7 +46648,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46680,7 +46680,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46712,7 +46712,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46744,7 +46744,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46776,7 +46776,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46808,7 +46808,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46840,7 +46840,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46872,7 +46872,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46904,7 +46904,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46936,7 +46936,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -46968,7 +46968,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47000,7 +47000,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47032,7 +47032,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47064,7 +47064,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47096,7 +47096,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47128,7 +47128,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47160,7 +47160,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47192,7 +47192,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47224,7 +47224,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47256,7 +47256,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47288,7 +47288,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47320,7 +47320,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47352,7 +47352,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47384,7 +47384,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47416,7 +47416,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47448,7 +47448,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47480,7 +47480,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47512,7 +47512,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47544,7 +47544,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47576,7 +47576,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47608,7 +47608,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47640,7 +47640,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47672,7 +47672,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47704,7 +47704,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47736,7 +47736,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47768,7 +47768,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47800,7 +47800,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47832,7 +47832,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47864,7 +47864,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47896,7 +47896,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47928,7 +47928,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47960,7 +47960,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -47992,7 +47992,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48024,7 +48024,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48056,7 +48056,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48088,7 +48088,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48120,7 +48120,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48152,7 +48152,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48184,7 +48184,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48216,7 +48216,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48248,7 +48248,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48280,7 +48280,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48312,7 +48312,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48344,7 +48344,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48376,7 +48376,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48408,7 +48408,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48440,7 +48440,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48472,7 +48472,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48504,7 +48504,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48536,7 +48536,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48568,7 +48568,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48600,7 +48600,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48632,7 +48632,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48664,7 +48664,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48696,7 +48696,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48728,7 +48728,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48760,7 +48760,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48792,7 +48792,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48824,7 +48824,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48856,7 +48856,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48888,7 +48888,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48920,7 +48920,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48952,7 +48952,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -48984,7 +48984,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49016,7 +49016,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49048,7 +49048,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49080,7 +49080,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49112,7 +49112,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49144,7 +49144,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49176,7 +49176,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49208,7 +49208,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49240,7 +49240,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49272,7 +49272,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49304,7 +49304,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49336,7 +49336,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49368,7 +49368,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49400,7 +49400,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49432,7 +49432,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49464,7 +49464,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49496,7 +49496,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49528,7 +49528,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49560,7 +49560,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49592,7 +49592,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49624,7 +49624,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49656,7 +49656,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49688,7 +49688,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49720,7 +49720,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49752,7 +49752,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49784,7 +49784,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49816,7 +49816,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49848,7 +49848,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49880,7 +49880,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49912,7 +49912,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49944,7 +49944,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -49976,7 +49976,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50008,7 +50008,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50040,7 +50040,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50072,7 +50072,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50104,7 +50104,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50136,7 +50136,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50168,7 +50168,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50200,7 +50200,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50232,7 +50232,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50264,7 +50264,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50296,7 +50296,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50328,7 +50328,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50360,7 +50360,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50392,7 +50392,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50424,7 +50424,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50456,7 +50456,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50488,7 +50488,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50520,7 +50520,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50552,7 +50552,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50584,7 +50584,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50616,7 +50616,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50648,7 +50648,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50680,7 +50680,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50712,7 +50712,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50744,7 +50744,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50776,7 +50776,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50808,7 +50808,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50840,7 +50840,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50872,7 +50872,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50904,7 +50904,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50936,7 +50936,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -50968,7 +50968,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51000,7 +51000,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51032,7 +51032,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51064,7 +51064,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51096,7 +51096,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51128,7 +51128,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51160,7 +51160,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51192,7 +51192,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51224,7 +51224,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51256,7 +51256,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51288,7 +51288,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51320,7 +51320,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51352,7 +51352,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51384,7 +51384,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51416,7 +51416,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51448,7 +51448,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51480,7 +51480,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51512,7 +51512,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51544,7 +51544,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51576,7 +51576,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51608,7 +51608,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51640,7 +51640,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51672,7 +51672,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51704,7 +51704,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51736,7 +51736,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51768,7 +51768,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51800,7 +51800,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51832,7 +51832,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51864,7 +51864,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51896,7 +51896,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51928,7 +51928,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51960,7 +51960,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -51992,7 +51992,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52024,7 +52024,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52056,7 +52056,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52088,7 +52088,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52120,7 +52120,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52152,7 +52152,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52184,7 +52184,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52216,7 +52216,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52248,7 +52248,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52280,7 +52280,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52312,7 +52312,7 @@
       "outcome_90d_pct": "",
       "decision_result": "MIXED",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52344,7 +52344,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52376,7 +52376,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52408,7 +52408,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52440,7 +52440,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52472,7 +52472,7 @@
       "outcome_90d_pct": "",
       "decision_result": "SUCCESS",
       "review_status": "REVIEWED 7D",
-      "last_reviewed_at": "07/09/2026",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52496,15 +52496,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "SELECTIVE BUY at 72/100 ? Undervalued ? Normal fit ? OK ? OK ? OK ? Buy permission: YES ? Normal fit | OK | OK | OK | YES | Medium ? Monitor / buy if budget",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "25.0544",
+      "outcome_7d_pct": "-0.01048973144",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52528,15 +52528,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "MEDIUM",
       "reason": "HOLD / ACCUMULATE at 69/100 ? Undervalued ? Normal fit ? OK ? OK ? OK ? Buy permission: YES ? Normal fit | OK | OK | OK | YES | Medium ? Monitor / buy if budget",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "41.5814",
+      "outcome_7d_pct": "0.007057398886",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52560,15 +52560,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "CYCLICAL CHECK",
       "reason": "HOLD / ACCUMULATE at 66/100 ? No fair value ? Normal fit ? OK ? OK ? OK ? Buy permission: YES ? Normal fit | OK | OK | OK | YES | Medium ? Monitor / buy if budget",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.8282",
+      "outcome_7d_pct": "0.007542579075",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52592,15 +52592,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "MONITOR / SMALL BUY ONLY at 63/100 ? Over fair value ? Normal fit ? OK ? OK ? OK ? Buy permission: CAUTION ? Price above fair value ? Normal fit | OK | OK | OK | CAUTION | Medium ? Monitor / small buy only",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "3.335",
+      "outcome_7d_pct": "-0.005308995466",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52624,15 +52624,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "CASHFLOW CHECK",
       "reason": "MONITOR / SMALL BUY ONLY at 62/100 ? No fair value ? Normal fit ? OK ? Caution - USD/global income limit ? OK ? Buy permission: CAUTION ? Payout / cashflow risk needs review ? Normal fit | OK | Caution - USD/global income limit | OK | CAUTION | Medium ? Monitor / small buy only",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "14.60303527",
+      "outcome_7d_pct": "-0.01501276496",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52656,15 +52656,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 60/100 ? Fair / close ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "1.93",
+      "outcome_7d_pct": "0.04954048616",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52688,15 +52688,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "MONITOR / SMALL BUY ONLY at 59/100 ? Over fair value ? Normal fit ? OK ? OK ? OK ? Buy permission: CAUTION ? Price above fair value ? Normal fit | OK | OK | OK | CAUTION | Medium ? Monitor / small buy only",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "7.172",
+      "outcome_7d_pct": "-0.01510574018",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52720,15 +52720,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 58/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.906",
+      "outcome_7d_pct": "0.008571746633",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52752,15 +52752,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 57/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.9635",
+      "outcome_7d_pct": "0.03048128342",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52784,15 +52784,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 56/100 ? Fair / close ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.77",
+      "outcome_7d_pct": "0.02067868505",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52816,15 +52816,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 56/100 ? Fair / close ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.825",
+      "outcome_7d_pct": "0.002430133657",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52848,15 +52848,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "HIGH-YIELD CHECK",
       "reason": "HOLD / NO NEW MONEY at 55/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.95",
+      "outcome_7d_pct": "0.00105374078",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52880,15 +52880,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 54/100 ? Over fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "1.404",
+      "outcome_7d_pct": "0.0340256297",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52912,15 +52912,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 54/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "1.1",
+      "outcome_7d_pct": "0.005576378097",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52944,15 +52944,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "HIGH-YIELD CHECK",
       "reason": "HOLD / NO NEW MONEY at 53/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.704",
+      "outcome_7d_pct": "0.00384999287",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -52976,15 +52976,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "MEDIUM",
       "reason": "HOLD / NO NEW MONEY at 53/100 ? Over fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "6.87",
+      "outcome_7d_pct": "0.02308265078",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "MIXED",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -53008,15 +53008,15 @@
       "buy_mode": "Selective accumulation",
       "risk_level": "UNASSESSED",
       "reason": "HOLD / NO NEW MONEY at 52/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? Blocked - single holding too large ? Buy permission: NO ? Blocked - REIT/property limit / Blocked - single holding too large ? Rate tailwind fit | OK | Blocked - REIT/property limit | Blocked - single holding too large | NO | Low ? Do not buy",
-      "outcome_7d_price": "",
-      "outcome_7d_pct": "",
+      "outcome_7d_price": "0.851",
+      "outcome_7d_pct": "0.01490757305",
       "outcome_30d_price": "",
       "outcome_30d_pct": "",
       "outcome_90d_price": "",
       "outcome_90d_pct": "",
-      "decision_result": "PENDING",
-      "review_status": "AWAITING 7-DAY REVIEW",
-      "last_reviewed_at": "",
+      "decision_result": "SUCCESS",
+      "review_status": "REVIEWED 7D",
+      "last_reviewed_at": "08/09/2026",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     },
@@ -56283,6 +56283,550 @@
       "last_reviewed_at": "",
       "brain_version": "5.0-learning-v2-consolidated",
       "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "eb13fe1f-fd8d-4a2e-bab7-00299ba4a0e1",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "IMB",
+      "company": "IMPERIAL BRANDS",
+      "account": "IG",
+      "asset_type": "Scout Monitor",
+      "action": "SELECTIVE BUY",
+      "confidence_score": "74",
+      "confidence_band": "Good",
+      "price_at_decision": "24.75",
+      "fair_value": "31.29",
+      "yield_pct": "0.06626262626",
+      "annual_income": "42.64",
+      "market_value": "643.5",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "SELECTIVE BUY at 74/100 ? Undervalued ? Normal fit ? OK ? OK ? OK ? Buy permission: YES ? Normal fit | OK | OK | OK | YES | Medium ? Monitor / buy if budget",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "8bde3c1a-3362-4fb9-a1bd-b79e5ca755ea",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "BATS",
+      "company": "BRITISH AMERICAN TOBACCO",
+      "account": "IG",
+      "asset_type": "INCOME ANCHOR",
+      "action": "HOLD / ACCUMULATE",
+      "confidence_score": "70",
+      "confidence_band": "Good",
+      "price_at_decision": "41.09",
+      "fair_value": "45.225",
+      "yield_pct": "0.05963494768",
+      "annual_income": "95.5656",
+      "market_value": "1602.51",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "MEDIUM",
+      "reason": "HOLD / ACCUMULATE at 70/100 ? Undervalued ? Normal fit ? OK ? OK ? OK ? Buy permission: YES ? Normal fit | OK | OK | OK | YES | Medium ? Monitor / buy if budget",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "87198be9-fe1e-4360-b570-85e6973ea52b",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "TW",
+      "company": "TAYLOR WIMPEY",
+      "account": "IG",
+      "asset_type": "INCOME ACCELERATOR",
+      "action": "HOLD / ACCUMULATE",
+      "confidence_score": "67",
+      "confidence_band": "Good",
+      "price_at_decision": "0.8182",
+      "fair_value": "",
+      "yield_pct": "0.09370162145",
+      "annual_income": "0.23",
+      "market_value": "2.4546",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "CYCLICAL CHECK",
+      "reason": "HOLD / ACCUMULATE at 67/100 ? No fair value ? Normal fit ? OK ? OK ? OK ? Buy permission: YES ? Normal fit | OK | OK | OK | YES | Medium ? Monitor / buy if budget",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "05ae5c24-124f-422b-a8f6-424a380d666e",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "ARCC",
+      "company": "ARES CAPITAL",
+      "account": "IG",
+      "asset_type": "HIGH-YIELD CREDIT INCOME",
+      "action": "MONITOR / SMALL BUY ONLY",
+      "confidence_score": "62",
+      "confidence_band": "Watch",
+      "price_at_decision": "14.82709099",
+      "fair_value": "",
+      "yield_pct": "0.09587855102",
+      "annual_income": "889.9216",
+      "market_value": "9281.75896",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "CASHFLOW CHECK",
+      "reason": "MONITOR / SMALL BUY ONLY at 62/100 ? No fair value ? Normal fit ? OK ? Caution - USD/global income limit ? OK ? Buy permission: CAUTION ? Payout / cashflow risk needs review ? Normal fit | OK | Caution - USD/global income limit | OK | CAUTION | Medium ? Monitor / small buy only",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "a5421500-8043-4888-87a2-3b19beeee204",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "LMP",
+      "company": "LONDONMETRIC PROPERTY",
+      "account": "IG",
+      "asset_type": "INCOME STABILISER",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "60",
+      "confidence_band": "Watch",
+      "price_at_decision": "1.825",
+      "fair_value": "1.9575",
+      "yield_pct": "0.06575342466",
+      "annual_income": "97.68",
+      "market_value": "1485.55",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 60/100 ? Fair / close ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "dda1f0d1-aa9d-4eb3-95ad-76c75234e3ed",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "SBRY",
+      "company": "SAINSBURY'S",
+      "account": "IG",
+      "asset_type": "CORE BUILDER",
+      "action": "MONITOR / SMALL BUY ONLY",
+      "confidence_score": "59",
+      "confidence_band": "Watch",
+      "price_at_decision": "3.44",
+      "fair_value": "3.23265",
+      "yield_pct": "0.0726744186",
+      "annual_income": "184",
+      "market_value": "2531.84",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "MONITOR / SMALL BUY ONLY at 59/100 ? Over fair value ? Normal fit ? OK ? OK ? OK ? Buy permission: CAUTION ? Price above fair value ? Normal fit | OK | OK | OK | CAUTION | Medium ? Monitor / small buy only",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "10554608-4d51-4b04-b52f-f5348e3f18e5",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "AV",
+      "company": "AVIVA",
+      "account": "IG",
+      "asset_type": "INCOME GENERATOR",
+      "action": "MONITOR / SMALL BUY ONLY",
+      "confidence_score": "59",
+      "confidence_band": "Watch",
+      "price_at_decision": "7.186",
+      "fair_value": "6.4545",
+      "yield_pct": "0.05468967437",
+      "annual_income": "15.327",
+      "market_value": "280.254",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "MONITOR / SMALL BUY ONLY at 59/100 ? Over fair value ? Normal fit ? OK ? OK ? OK ? Buy permission: CAUTION ? Price above fair value ? Normal fit | OK | OK | OK | CAUTION | Medium ? Monitor / small buy only",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "42560190-6864-44c8-ab51-05eb1daf22fa",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "PHP",
+      "company": "PRIMARY HEALTH PROPERTIES",
+      "account": "IG + T212",
+      "asset_type": "HEALTHCARE REIT",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "57",
+      "confidence_band": "Watch",
+      "price_at_decision": "0.937",
+      "fair_value": "",
+      "yield_pct": "0.0768413173",
+      "annual_income": "458.1564396",
+      "market_value": "5962.370971",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 57/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "e75c1135-7695-4346-8486-544d708e434e",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "FGEN",
+      "company": "FORESIGHT ENVIRONMENTAL INFRASTRUCTURE",
+      "account": "IG",
+      "asset_type": "INFRASTRUCTURE INCOME",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "57",
+      "confidence_band": "Watch",
+      "price_at_decision": "0.8609",
+      "fair_value": "",
+      "yield_pct": "0.09246179194",
+      "annual_income": "981.95",
+      "market_value": "10620.0624",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 57/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "cd692232-0ddd-464f-bf8d-5c88cbe68399",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "TRIG",
+      "company": "THE RENEWABLES INFRASTRUCTURE GROUP",
+      "account": "T212",
+      "asset_type": "RENEWABLE INCOME",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "56",
+      "confidence_band": "Watch",
+      "price_at_decision": "0.762",
+      "fair_value": "0.7675",
+      "yield_pct": "0.09908136483",
+      "annual_income": "336.225117",
+      "market_value": "3393.42436",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 56/100 ? Fair / close ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "cbe7c9fb-4623-4c75-b53b-8dec3959ed47",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "RGL",
+      "company": "REGIONAL REIT",
+      "account": "T212",
+      "asset_type": "HIGH-YIELD PROPERTY INCOME",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "55",
+      "confidence_band": "Watch",
+      "price_at_decision": "0.9585",
+      "fair_value": "",
+      "yield_pct": "0.0991131977",
+      "annual_income": "250.7822341",
+      "market_value": "2530.260751",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "HIGH-YIELD CHECK",
+      "reason": "HOLD / NO NEW MONEY at 55/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "99588098-2881-45c6-bc33-2829d46feb40",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "HICL",
+      "company": "HICL INFRASTRUCTURE",
+      "account": "IG",
+      "asset_type": "INFRASTRUCTURE INCOME",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "54",
+      "confidence_band": "Watch",
+      "price_at_decision": "1.3506",
+      "fair_value": "1.214",
+      "yield_pct": "0.06189841552",
+      "annual_income": "84.2688",
+      "market_value": "1361.4048",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 54/100 ? Over fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "956b0438-dc9f-46ef-9a13-0493ea1dd452",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "LAND",
+      "company": "LAND SECURITIES",
+      "account": "IG",
+      "asset_type": "INCOME STABILISER",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "54",
+      "confidence_band": "Watch",
+      "price_at_decision": "6.6125",
+      "fair_value": "6.2425",
+      "yield_pct": "0.06230623819",
+      "annual_income": "35.844",
+      "market_value": "575.2875",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "MEDIUM",
+      "reason": "HOLD / NO NEW MONEY at 54/100 ? Over fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? OK ? Buy permission: NO ? Blocked - REIT/property limit ? Rate tailwind fit | OK | Blocked - REIT/property limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "113290c7-d180-435e-b9f9-602da93f2ede",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "UKW",
+      "company": "GREENCOAT WIND",
+      "account": "IG",
+      "asset_type": "INFRASTRUCTURE",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "54",
+      "confidence_band": "Watch",
+      "price_at_decision": "1.1",
+      "fair_value": "",
+      "yield_pct": "0.09727272727",
+      "annual_income": "22.042",
+      "market_value": "226.6",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 54/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "d17bd54c-1cae-4d72-b515-6eb87c803349",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "FSFL",
+      "company": "FORESIGHT SOLAR FUND",
+      "account": "T212",
+      "asset_type": "RENEWABLE INCOME",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "53",
+      "confidence_band": "Watch",
+      "price_at_decision": "0.7005",
+      "fair_value": "",
+      "yield_pct": "0.1156316916",
+      "annual_income": "371.9596502",
+      "market_value": "3216.76216",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "HIGH-YIELD CHECK",
+      "reason": "HOLD / NO NEW MONEY at 53/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "e1bfb950-3c8d-4f89-ba85-2e79a972bdeb",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "GCP",
+      "company": "GCP INFRASTRUCTURE",
+      "account": "T212",
+      "asset_type": "Rotation / Watchlist Candidate",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "53",
+      "confidence_band": "Watch",
+      "price_at_decision": "0.845",
+      "fair_value": "0.793",
+      "yield_pct": "0.08284509755",
+      "annual_income": "93.88550472",
+      "market_value": "1133.265667",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 53/100 ? Fair / close ? Rate tailwind fit ? OK ? Blocked - infrastructure limit ? OK ? Buy permission: NO ? Blocked - infrastructure limit ? Rate tailwind fit | OK | Blocked - infrastructure limit | OK | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
+    },
+    {
+      "decision_id": "4c6a7f56-4c30-4f63-a0db-ebb0d8159e1d",
+      "logged_at": "08/09/2026",
+      "decision_date": "08/09/2026",
+      "ticker": "SUPR",
+      "company": "SUPERMARKET INCOME REIT",
+      "account": "IG",
+      "asset_type": "INCOME STABILISER",
+      "action": "HOLD / NO NEW MONEY",
+      "confidence_score": "52",
+      "confidence_band": "Watch",
+      "price_at_decision": "0.8315",
+      "fair_value": "",
+      "yield_pct": "0.07432337601",
+      "annual_income": "1314.36",
+      "market_value": "17684.342",
+      "market_regime": "Falling-rate income support",
+      "buy_mode": "Selective accumulation",
+      "risk_level": "UNASSESSED",
+      "reason": "HOLD / NO NEW MONEY at 52/100 ? No fair value ? Rate tailwind fit ? OK ? Blocked - REIT/property limit ? Blocked - single holding too large ? Buy permission: NO ? Blocked - REIT/property limit / Blocked - single holding too large ? Rate tailwind fit | OK | Blocked - REIT/property limit | Blocked - single holding too large | NO | Low ? Do not buy",
+      "outcome_7d_price": "",
+      "outcome_7d_pct": "",
+      "outcome_30d_price": "",
+      "outcome_30d_pct": "",
+      "outcome_90d_price": "",
+      "outcome_90d_pct": "",
+      "decision_result": "PENDING",
+      "review_status": "AWAITING 7-DAY REVIEW",
+      "last_reviewed_at": "",
+      "brain_version": "5.0-learning-v2-consolidated",
+      "source": "AuroraIntelligence / DecisionEngine / Aurora Learning Engine 2.0"
     }
   ],
   "MigrationMap": [
@@ -56422,11 +56966,11 @@
       "sector": "BUSINESS DEVELOPMENT COMPANY",
       "role": "HIGH-YIELD CREDIT INCOME",
       "shares": "615",
-      "live_price": "14.5977298",
-      "current_value": "8977.603829",
+      "live_price": "14.58293231",
+      "current_value": "8968.503369",
       "book_cost": "8552.301598",
       "average_price": "13.90618146",
-      "profit_loss": "425.3022313",
+      "profit_loss": "416.2017712",
       "annual_dps": "1.420559616",
       "annual_dps_total": "873.6441638",
       "yield_pct": "0.09662808254",
@@ -56914,7 +57458,7 @@
       "sector": "GLOBAL EQUINITY ETF",
       "role": "GLOBAL GROWTH ENGINE",
       "shares": "0",
-      "live_price": "144.4827509",
+      "live_price": "144.4013647",
       "current_value": "0",
       "book_cost": "0",
       "average_price": "",
