@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="aurora.css?v=finance-base">
 <link rel="stylesheet" href="aurora-shell.css?v=20260819-clean-shell-1">
 <link rel="stylesheet" href="finance-ui.css?v=318-payday-move-list">
+<link rel="stylesheet" href="finance-isa.css?v=20260924-1">
 <link rel="stylesheet" href="immersive-departments.css?v=120-shared-hero-art">
 <link rel="stylesheet" href="aurora-department-cards.css?v=20260815-1">
 <link rel="stylesheet" href="aurora-motion.css?v=20260816-2">
@@ -73,6 +74,7 @@
         <button class="tab" data-tab="paydayPanel"><i>£</i><span><b>Payday Control</b><small>Protect • fund • release</small></span></button>
         <button class="tab" data-tab="potsPanel"><i>▰</i><span><b>Pots & Bills</b><small>Progress & next five</small></span></button>
         <button class="tab" data-tab="housePanel"><i>⌂</i><span><b>House Projects</b><small>Renovation ledger</small></span></button>
+        <button class="tab" data-tab="isaPanel"><i>£</i><span><b>ISA Allowance</b><small>2026/27 limits & flexibility</small></span></button>
       </div>
 
       <section id="overviewPanel" class="tab-panel active">
@@ -458,6 +460,74 @@
         </section>
       </section>
 
+
+      <section id="isaPanel" class="tab-panel">
+        <section class="isa-control-head">
+          <div>
+            <span class="finance-panel-kicker">2026/27 Tax Year • 6 Apr 2026 – 5 Apr 2027</span>
+            <h3>ISA Allowance Control</h3>
+            <p>One combined view across Monzo, Trading 212 and IG. This tracks ISA subscriptions and flexible replacement capacity — not the market value of your investments.</p>
+          </div>
+          <span class="isa-status-pill" id="isaStatusPill">ON TRACK</span>
+        </section>
+
+        <section class="isa-scoreboard">
+          <article class="isa-score cyan"><small>Annual allowance</small><strong id="isaAnnualOut">£20,000.00</strong><span>Shared across all your ISAs</span></article>
+          <article class="isa-score gold"><small>Used / counting now</small><strong id="isaUsedOut">£15,393.04</strong><span>Net current-year subscriptions</span></article>
+          <article class="isa-score green"><small>New allowance left</small><strong id="isaNormalLeftOut">£4,606.96</strong><span>Fresh money that can go to any ISA</span></article>
+          <article class="isa-score blue"><small>IG flexible replacement</small><strong id="isaIgFlexibleOut">£50,510.31</strong><span>Replacement capacity tied to IG</span></article>
+          <article class="isa-score purple"><small>Max additional into IG</small><strong id="isaIgMaxOut">£55,117.27</strong><span>If no more normal allowance is used elsewhere</span></article>
+        </section>
+
+        <section class="isa-grid">
+          <article class="finance-panel">
+            <div class="finance-panel-head">
+              <div><span class="finance-panel-kicker">Allowance Inputs</span><h3>Provider Position</h3></div>
+              <span class="finance-panel-note">Editable • saved locally</span>
+            </div>
+
+            <table class="isa-input-table">
+              <thead><tr><th>Provider / account</th><th>Counts toward 2026/27</th><th>Flexible replacement</th></tr></thead>
+              <tbody>
+                <tr><td><b>Monzo Cash ISA</b><small>Current-year net contribution</small></td><td><input id="isaMonzoCashInput" type="number" min="0" step="0.01" value="753.04"></td><td>—</td></tr>
+                <tr><td><b>Monzo Stocks & Shares ISA</b><small>Current-year net contribution</small></td><td><input id="isaMonzoStocksInput" type="number" min="0" step="0.01" value="5200.00"></td><td>—</td></tr>
+                <tr><td><b>Trading 212 Stocks ISA</b><small>Current-year amount shown by T212</small></td><td><input id="isaT212Input" type="number" min="0" step="0.01" value="9440.00"></td><td>—</td></tr>
+                <tr><td><b>IG Stocks & Shares ISA</b><small>Net current-year amount after flexible withdrawals</small></td><td><input id="isaIgCurrentInput" type="number" min="0" step="0.01" value="0.00"></td><td><input id="isaIgFlexibleInput" type="number" min="0" step="0.01" value="50510.31"></td></tr>
+              </tbody>
+            </table>
+
+            <div class="field-grid finance-field-grid" style="margin-top:12px">
+              <div class="field">
+                <label>Annual ISA allowance</label>
+                <div class="money-wrap"><input id="isaAnnualInput" type="number" min="0" step="0.01" value="20000.00"></div>
+                <small>2026/27 overall ISA limit.</small>
+              </div>
+            </div>
+
+            <div class="isa-actions">
+              <button class="finance-btn primary" id="isaSaveBtn" type="button">Save ISA Figures</button>
+              <button class="finance-btn secondary" id="isaResetBtn" type="button">Reset 24 Sep Snapshot</button>
+            </div>
+            <div class="isa-save-meta" id="isaSavedMeta">Snapshot: 24 Sep 2026</div>
+          </article>
+
+          <article class="finance-panel">
+            <div class="finance-panel-head">
+              <div><span class="finance-panel-kicker">Live Guardrail</span><h3>What You Can Add</h3></div>
+              <span class="finance-panel-note">Calculated from the figures entered</span>
+            </div>
+
+            <div class="isa-rule green"><b>✅ Fresh money to any ISA</b><strong id="isaAnyOut">£4,606.96</strong><span>Your remaining normal 2026/27 allowance across all providers.</span></div>
+            <div class="isa-rule blue"><b>🔁 IG replacement capacity</b><strong id="isaReplaceOut">£50,510.31</strong><span>Flexible replacement for previous-year money withdrawn from IG. This is separate from the normal £20,000 allowance and is tied to the IG account it came from.</span></div>
+            <div class="isa-rule purple"><b>💷 Maximum additional into IG</b><strong id="isaIgCombinedOut">£55,117.27</strong><span>IG replacement capacity plus your currently unused normal allowance, assuming you do not use that normal allowance elsewhere first.</span></div>
+            <div class="isa-rule red" id="isaOverBox" hidden><b>⚠ Normal allowance exceeded</b><strong id="isaOverOut">£0.00</strong><span>Check the provider figures before making another normal ISA subscription.</span></div>
+
+            <div class="isa-note"><b>Do not add together each provider's “allowance left”.</b> Monzo, Trading 212 and IG may each show only what they know about their own account. Aurora uses the combined current-year figures above.</div>
+            <div class="isa-note"><b>Flexible ISA rule:</b> a current-year withdrawal reduces that year's net subscription. Previous-year money withdrawn from a flexible ISA can be replaced without using the normal allowance, but it must be replaced into the same flexible ISA during the same tax year.</div>
+          </article>
+        </section>
+      </section>
+
       <p class="finance-last-update">Last Aurora 2 state update: <span id="lastUpdated">—</span></p>
     </main>
   </div>
@@ -502,6 +572,7 @@
 <script src="aurora-hero-art.js?v=20260815-1"></script>
 <script src="aurora-page-shell.js?v=20260819-nav-stable-2"></script>
 <script src="finance-ui.js?v=320-pots-bills-ownership"></script>
+<script src="finance-isa.js?v=20260924-1"></script>
 <script src="finance-bill-actions-fix.js?v=20260824-pots-bills-2"></script>
 <script src="aurora-motion.js?v=20260824-finance-loader-2"></script>
 </body>
