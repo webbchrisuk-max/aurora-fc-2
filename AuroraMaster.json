@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-10-26T17:14:48.335Z",
+    "generated_at": "2026-10-26T17:44:42.688Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -2455,9 +2455,9 @@
       "enabled": "TRUE",
       "native_price": "18.55",
       "quote_currency": "USD",
-      "fx_to_gbp": "0.749075",
-      "price_gbp": "13.89534125",
-      "trade_time": "46321.55133",
+      "fx_to_gbp": "0.74865",
+      "price_gbp": "13.8874575",
+      "trade_time": "46321.56583",
       "data_delay_minutes": "0",
       "status": "UPDATED",
       "last_checked_at": "2026-08-16T17:32:58.382Z",
@@ -2709,11 +2709,11 @@
       "google_symbol": "LON:UKW",
       "quote_unit": "PENCE",
       "enabled": "TRUE",
-      "native_price": "117.2",
+      "native_price": "116.6",
       "quote_currency": "GBX",
       "fx_to_gbp": "0.01",
-      "price_gbp": "1.172",
-      "trade_time": "46321.70369",
+      "price_gbp": "1.166",
+      "trade_time": "46321.70837",
       "data_delay_minutes": "0",
       "status": "UPDATED",
       "last_checked_at": "2026-08-16T17:32:58.382Z",
@@ -2789,11 +2789,11 @@
       "google_symbol": "LON:VWRA",
       "quote_unit": "MAJOR",
       "enabled": "TRUE",
-      "native_price": "190.26",
+      "native_price": "190.95",
       "quote_currency": "USD",
-      "fx_to_gbp": "0.749075",
-      "price_gbp": "142.5190095",
-      "trade_time": "46321.71623",
+      "fx_to_gbp": "0.74865",
+      "price_gbp": "142.9547175",
+      "trade_time": "46321.73181",
       "data_delay_minutes": "0",
       "status": "",
       "last_checked_at": "",
@@ -5008,7 +5008,7 @@
       "sector": "Multiline utilities",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "1.4962",
+      "live_price": "1.5",
       "dividend_yield": "0.05450464893",
       "annual_dps": "0.085",
       "low_52w": "1.44",
@@ -5082,7 +5082,7 @@
       "sector": "Health care equipment & supplies",
       "role": "Healthcare Quality",
       "benchmark": "FTSE 100",
-      "live_price": "11.365",
+      "live_price": "11.495",
       "dividend_yield": "0.02653969531",
       "annual_dps": "0.2904",
       "low_52w": "9.804",
@@ -5119,7 +5119,7 @@
       "sector": "Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "3.395",
+      "live_price": "3.4035",
       "dividend_yield": "0.02607954545",
       "annual_dps": "0.0918",
       "low_52w": "2.935",
@@ -5207,7 +5207,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "26/10/2026",
-      "last_updated": "26/10/2026 17:14:48",
+      "last_updated": "26/10/2026 17:44:10",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -6118,11 +6118,11 @@
       "sector": "Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "25.61087425",
+      "live_price": "25.5963435",
       "dividend_yield": "0.02055520898",
-      "annual_dps": "0.493640425",
-      "low_52w": "20.1018516",
-      "high_52w": "26.32502887",
+      "annual_dps": "0.49336035",
+      "low_52w": "20.09044649",
+      "high_52w": "26.31009293",
       "fair_value": "22.91019584",
       "valuation_status": "Neutral",
       "payout_risk": "LOW",
@@ -6157,7 +6157,7 @@
       "benchmark": "FTSE 100",
       "live_price": "8.8673",
       "dividend_yield": "0.01916676741",
-      "annual_dps": "0.19925395",
+      "annual_dps": "0.1991409",
       "low_52w": "8.674",
       "high_52w": "12.38",
       "fair_value": "10.741",
@@ -6192,7 +6192,7 @@
       "sector": "Pharmaceuticals & biotechnology",
       "role": "Healthcare Quality",
       "benchmark": "FTSE 100",
-      "live_price": "3.811",
+      "live_price": "3.808",
       "dividend_yield": "0.01996625422",
       "annual_dps": "0.071",
       "low_52w": "3.178",
@@ -6266,7 +6266,7 @@
       "sector": "Financial services",
       "role": "Financial Scout",
       "benchmark": "FTSE 100",
-      "live_price": "95.4774",
+      "live_price": "95",
       "dividend_yield": "0.01757263355",
       "annual_dps": "1.5",
       "low_52w": "66.84",
@@ -6305,7 +6305,7 @@
       "benchmark": "FTSE 100",
       "live_price": "2.764",
       "dividend_yield": "0.01607594303",
-      "annual_dps": "0.053184325",
+      "annual_dps": "0.05315415",
       "low_52w": "2.278",
       "high_52w": "4.362",
       "fair_value": "3.239",
@@ -6488,21 +6488,21 @@
       "sector": "Mining",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "37.3638",
-      "dividend_yield": "0.004611074088",
-      "annual_dps": "0.17228725",
+      "live_price": "36.67",
+      "dividend_yield": "0.004695650395",
+      "annual_dps": "0.1721895",
       "low_52w": "26.39",
       "high_52w": "46.438",
       "fair_value": "36.414",
       "valuation_status": "Neutral",
       "payout_risk": "LOW",
-      "income_from_500": "2.305537044",
-      "income_from_2000": "9.222148176",
+      "income_from_500": "2.347825198",
+      "income_from_2000": "9.391300791",
       "watchlist_status": "SCOUT",
       "scout_rating": "??",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "26/10/2026",
-      "last_updated": "26/10/2026 17:14:48",
+      "last_updated": "26/10/2026 17:44:10",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -6710,7 +6710,7 @@
       "sector": "General retailers",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 100",
-      "live_price": "151.4",
+      "live_price": "151.1502",
       "dividend_yield": "0.04116683055",
       "annual_dps": "6.28",
       "low_52w": "116.95",
@@ -6784,7 +6784,7 @@
       "sector": "Retailers",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 100",
-      "live_price": "3.5281",
+      "live_price": "3.488",
       "dividend_yield": "0.03787300327",
       "annual_dps": "0.124",
       "low_52w": "2.664",
@@ -6858,7 +6858,7 @@
       "sector": "Banks",
       "role": "Financial Scout",
       "benchmark": "FTSE 100",
-      "live_price": "13.5882",
+      "live_price": "13.649",
       "dividend_yield": "0.0365427412",
       "annual_dps": "0.5583",
       "low_52w": "9.798",
@@ -7006,7 +7006,7 @@
       "sector": "Oil & gas producers",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "39.995",
+      "live_price": "40.195",
       "dividend_yield": "0.03325",
       "annual_dps": "1.1039",
       "low_52w": "25.5377",
@@ -7080,7 +7080,7 @@
       "sector": "Mobile telecommunications",
       "role": "Growth / Data",
       "benchmark": "FTSE 100",
-      "live_price": "1.174",
+      "live_price": "1.1834",
       "dividend_yield": "0.0332361516",
       "annual_dps": "0.0399",
       "low_52w": "0.8524",
@@ -7302,7 +7302,7 @@
       "sector": "Electrical utilities & independent power producers",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "24.9843",
+      "live_price": "25.29",
       "dividend_yield": "0.02838842975",
       "annual_dps": "0.687",
       "low_52w": "18.43",
@@ -7450,7 +7450,7 @@
       "sector": "Banking Services",
       "role": "Financial Scout",
       "benchmark": "FTSE 100",
-      "live_price": "122.6",
+      "live_price": "122.8325",
       "dividend_yield": "0.02730748063",
       "annual_dps": "3.6866",
       "low_52w": "75.25",
@@ -7672,7 +7672,7 @@
       "sector": "Media",
       "role": "Growth / Data",
       "benchmark": "FTSE 100",
-      "live_price": "8.2843",
+      "live_price": "8.387",
       "dividend_yield": "0.02363126631",
       "annual_dps": "0.22",
       "low_52w": "7.19",
@@ -7709,7 +7709,7 @@
       "sector": "Mining",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "5.4131",
+      "live_price": "5.355",
       "dividend_yield": "0.02262589928",
       "annual_dps": "0.1258",
       "low_52w": "3.322",
@@ -8116,7 +8116,7 @@
       "sector": "General industrials",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "26.66",
+      "live_price": "26.5873",
       "dividend_yield": "0.0178989667",
       "annual_dps": "0.4677",
       "low_52w": "20.88",
@@ -8227,7 +8227,7 @@
       "sector": "Travel & leisure",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 250",
-      "live_price": "10.31",
+      "live_price": "10.24",
       "dividend_yield": "0.01470588235",
       "annual_dps": "0.12",
       "low_52w": "5.305",
@@ -8338,7 +8338,7 @@
       "sector": "Mining",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "31.74",
+      "live_price": "30.64",
       "dividend_yield": "0.01330264993",
       "annual_dps": "0.4769",
       "low_52w": "24.96",
@@ -8412,11 +8412,11 @@
       "sector": "Travel & leisure",
       "role": "Cyclical Scout",
       "benchmark": "FTSE 100",
-      "live_price": "125.3202475",
+      "live_price": "125.249145",
       "dividend_yield": "0.01161473088",
-      "annual_dps": "1.382043375",
-      "low_52w": "85.274698",
-      "high_52w": "131.6124775",
+      "annual_dps": "1.38125925",
+      "low_52w": "85.226316",
+      "high_52w": "131.537805",
       "fair_value": "107.0269554",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -10704,7 +10704,7 @@
       "buy_strength": "66",
       "ticker": "LON:SEQI",
       "name": "SEQUOIA ECONOMIC INFRASTRUCTURE",
-      "live_price": "0.8035",
+      "live_price": "0.8024",
       "annual_dps": "0.0687",
       "low_52w": "0.7",
       "high_52w": "0.804",
@@ -10992,7 +10992,7 @@
       "buy_strength": "53",
       "ticker": "LON:KGF",
       "name": "KINGFISHER PLC",
-      "live_price": "3.5281",
+      "live_price": "3.488",
       "annual_dps": "0.12",
       "low_52w": "2.4",
       "high_52w": "3.72",
@@ -11024,12 +11024,12 @@
       "annual_dps_native": "4.12",
       "low_52w_native": "71.73",
       "high_52w_native": "91.15",
-      "fx_rate_to_gbp": "0.83805",
-      "live_price_gbp": "62.501769",
-      "annual_dps_gbp": "3.452766",
-      "low_52w_gbp": "60.1133265",
-      "high_52w_gbp": "76.3882575",
-      "fair_value_gbp": "68.250792",
+      "fx_rate_to_gbp": "0.83808",
+      "live_price_gbp": "62.5040064",
+      "annual_dps_gbp": "3.4528896",
+      "low_52w_gbp": "60.1154784",
+      "high_52w_gbp": "76.390992",
+      "fair_value_gbp": "68.2532352",
       "sector": "HEALTHCARE",
       "role": "EUROPEAN HEALTHCARE INCOME",
       "yield_pct": "0.05524269241",
@@ -11053,11 +11053,11 @@
       "name": "BCE Inc",
       "market": "CANADA",
       "currency": "CAD",
-      "live_price_native": "20.29",
+      "live_price_native": "20.35",
       "annual_dps_native": "1.75",
       "low_52w_native": "29.68",
       "high_52w_native": "36.25",
-      "fx_rate_to_gbp": "0.534395",
+      "fx_rate_to_gbp": "0.5344",
       "live_price_gbp": "12.502469",
       "annual_dps_gbp": "0.932225",
       "low_52w_gbp": "15.810536",
@@ -11090,7 +11090,7 @@
       "annual_dps_native": "30",
       "low_52w_native": "521",
       "high_52w_native": "606.8",
-      "fx_rate_to_gbp": "0.905635",
+      "fx_rate_to_gbp": "0.905935",
       "live_price_gbp": "538.54398",
       "annual_dps_gbp": "27.25425",
       "low_52w_gbp": "473.315475",
@@ -11119,11 +11119,11 @@
       "name": "VICI Properties",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "23.93",
+      "live_price_native": "23.92",
       "annual_dps_native": "1.8",
       "low_52w_native": "26.55",
       "high_52w_native": "34.01",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "19.48767386",
       "annual_dps_gbp": "1.33072128",
       "low_52w_gbp": "19.62813888",
@@ -11152,11 +11152,11 @@
       "name": "Amcor",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "45.99",
+      "live_price_native": "46.03",
       "annual_dps_native": "2.6",
       "low_52w_native": "36.25",
       "high_52w_native": "50.94",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "34.02950029",
       "annual_dps_gbp": "1.92215296",
       "low_52w_gbp": "26.799248",
@@ -11185,11 +11185,11 @@
       "name": "Pfizer",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "29.77",
+      "live_price_native": "29.79",
       "annual_dps_native": "1.72",
       "low_52w_native": "23.11",
       "high_52w_native": "28.75",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "19.80556838",
       "annual_dps_gbp": "1.271578112",
       "low_52w_gbp": "17.08498266",
@@ -11218,11 +11218,11 @@
       "name": "REALTY INCOME",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "56.86",
+      "live_price_native": "56.85",
       "annual_dps_native": "3.24",
       "low_52w_native": "55.86",
       "high_52w_native": "67.94",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "46.3830295",
       "annual_dps_gbp": "2.395298304",
       "low_52w_gbp": "41.29671706",
@@ -11251,11 +11251,11 @@
       "name": "United Parcel Service",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "100.16",
+      "live_price_native": "100.13",
       "annual_dps_native": "6.56",
       "low_52w_native": "82",
       "high_52w_native": "122.41",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "77.2557632",
       "annual_dps_gbp": "4.849739776",
       "low_52w_gbp": "60.6217472",
@@ -11284,11 +11284,11 @@
       "name": "Coca-Cola",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "92.59",
+      "live_price_native": "92.68",
       "annual_dps_native": "4.53",
       "low_52w_native": "65.35",
       "high_52w_native": "84.04",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "64.84309082",
       "annual_dps_gbp": "3.348981888",
       "low_52w_gbp": "48.31257536",
@@ -11317,11 +11317,11 @@
       "name": "Bank of Nova Scotia",
       "market": "CANADA",
       "currency": "CAD",
-      "live_price_native": "93.69",
+      "live_price_native": "93.78",
       "annual_dps_native": "4.56",
       "low_52w_native": "73.4",
       "high_52w_native": "117.63",
-      "fx_rate_to_gbp": "0.534395",
+      "fx_rate_to_gbp": "0.5344",
       "live_price_gbp": "48.763358",
       "annual_dps_gbp": "2.429112",
       "low_52w_gbp": "39.10018",
@@ -11354,7 +11354,7 @@
       "annual_dps_native": "3.63",
       "low_52w_native": "70.8",
       "high_52w_native": "95.175",
-      "fx_rate_to_gbp": "0.5261",
+      "fx_rate_to_gbp": "0.52601",
       "live_price_gbp": "46.43836167",
       "annual_dps_gbp": "1.900465083",
       "low_52w_gbp": "37.06692228",
@@ -11383,11 +11383,11 @@
       "name": "VERIZON",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "43.43",
+      "live_price_native": "43.44",
       "annual_dps_native": "2.83",
       "low_52w_native": "38.39",
       "high_52w_native": "51.68",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "35.84075981",
       "annual_dps_gbp": "2.092189568",
       "low_52w_gbp": "28.38132774",
@@ -11416,11 +11416,11 @@
       "name": "Procter & Gamble",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "159.7",
+      "live_price_native": "159.71",
       "annual_dps_native": "4.35",
       "low_52w_native": "137.62",
       "high_52w_native": "167.25",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "106.8643117",
       "annual_dps_gbp": "3.21590976",
       "low_52w_gbp": "101.7410348",
@@ -11453,7 +11453,7 @@
       "annual_dps_native": "3.1",
       "low_52w_native": "69.9",
       "high_52w_native": "85.075",
-      "fx_rate_to_gbp": "0.905635",
+      "fx_rate_to_gbp": "0.905935",
       "live_price_gbp": "73.59555975",
       "annual_dps_gbp": "2.8162725",
       "low_52w_gbp": "63.5024025",
@@ -11486,7 +11486,7 @@
       "annual_dps_native": "2.25",
       "low_52w_native": "40.97",
       "high_52w_native": "55.05",
-      "fx_rate_to_gbp": "0.83805",
+      "fx_rate_to_gbp": "0.83808",
       "live_price_gbp": "43.6959105",
       "annual_dps_gbp": "1.9221075",
       "low_52w_gbp": "34.9994419",
@@ -11519,7 +11519,7 @@
       "annual_dps_native": "1.22",
       "low_52w_native": "14.31",
       "high_52w_native": "23.38",
-      "fx_rate_to_gbp": "0.5261",
+      "fx_rate_to_gbp": "0.52601",
       "live_price_gbp": "9.235317924",
       "annual_dps_gbp": "0.638723802",
       "low_52w_gbp": "7.491916071",
@@ -11548,11 +11548,11 @@
       "name": "Altria",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "73.81",
+      "live_price_native": "73.77",
       "annual_dps_native": "4.24",
       "low_52w_native": "54.7",
       "high_52w_native": "74.56",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "48.57132672",
       "annual_dps_gbp": "3.134587904",
       "low_52w_gbp": "40.43914112",
@@ -11585,7 +11585,7 @@
       "annual_dps_native": "0.49",
       "low_52w_native": "7.575",
       "high_52w_native": "10.31",
-      "fx_rate_to_gbp": "0.83805",
+      "fx_rate_to_gbp": "0.83808",
       "live_price_gbp": "8.1070223",
       "annual_dps_gbp": "0.4185923",
       "low_52w_gbp": "6.47109525",
@@ -11614,11 +11614,11 @@
       "name": "Toronto-Dominion Bank",
       "market": "CANADA",
       "currency": "CAD",
-      "live_price_native": "125.38",
+      "live_price_native": "125.73",
       "annual_dps_native": "4.48",
       "low_52w_native": "95.52",
       "high_52w_native": "164.74",
-      "fx_rate_to_gbp": "0.534395",
+      "fx_rate_to_gbp": "0.5344",
       "live_price_gbp": "66.246572",
       "annual_dps_gbp": "2.386496",
       "low_52w_gbp": "50.883504",
@@ -11651,7 +11651,7 @@
       "annual_dps_native": "3.7",
       "low_52w_native": "91.2",
       "high_52w_native": "131",
-      "fx_rate_to_gbp": "0.905635",
+      "fx_rate_to_gbp": "0.905935",
       "live_price_gbp": "111.233679",
       "annual_dps_gbp": "3.3613575",
       "low_52w_gbp": "82.85292",
@@ -11680,11 +11680,11 @@
       "name": "ENBRIDGE",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "48.26",
+      "live_price_native": "48.25",
       "annual_dps_native": "2.82",
       "low_52w_native": "43.59",
       "high_52w_native": "58.45",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "37.63723354",
       "annual_dps_gbp": "2.084796672",
       "low_52w_gbp": "32.22563366",
@@ -11717,7 +11717,7 @@
       "annual_dps_native": "3.4",
       "low_52w_native": "49.24",
       "high_52w_native": "81.34",
-      "fx_rate_to_gbp": "0.83805",
+      "fx_rate_to_gbp": "0.83808",
       "live_price_gbp": "64.7365806",
       "annual_dps_gbp": "2.904518",
       "low_52w_gbp": "42.0642548",
@@ -11746,11 +11746,11 @@
       "name": "Johnson & Johnson",
       "market": "USA",
       "currency": "USD",
-      "live_price_native": "265.13",
+      "live_price_native": "265.23",
       "annual_dps_native": "5.36",
       "low_52w_native": "149.04",
       "high_52w_native": "251.71",
-      "fx_rate_to_gbp": "0.749075",
+      "fx_rate_to_gbp": "0.74865",
       "live_price_gbp": "192.4740474",
       "annual_dps_gbp": "3.962592256",
       "low_52w_gbp": "110.183722",
@@ -11783,7 +11783,7 @@
       "annual_dps_native": "5.89",
       "low_52w_native": "100.75",
       "high_52w_native": "195.84",
-      "fx_rate_to_gbp": "0.5261",
+      "fx_rate_to_gbp": "0.52601",
       "live_price_gbp": "87.74075572",
       "annual_dps_gbp": "3.083674749",
       "low_52w_gbp": "52.74706808",
@@ -11816,7 +11816,7 @@
       "annual_dps_native": "1.95",
       "low_52w_native": "35.52",
       "high_52w_native": "65.04",
-      "fx_rate_to_gbp": "0.5261",
+      "fx_rate_to_gbp": "0.52601",
       "live_price_gbp": "32.11943054",
       "annual_dps_gbp": "1.020910995",
       "low_52w_gbp": "18.59628643",
@@ -20621,9 +20621,9 @@
     {
       "Name": "Ares Capital",
       "Symbol": "ARCC",
-      "Price": "13.8953",
-      "Day Change %": "-0.51",
-      "Trade Time": "46321.55133"
+      "Price": "13.8949",
+      "Day Change %": "-0.46",
+      "Trade Time": "46321.56802"
     },
     {
       "Name": "Foresight Solar Fund",
@@ -20635,9 +20635,9 @@
     {
       "Name": "Greencoat UK Wind",
       "Symbol": "LON:UKW",
-      "Price": "1.1720",
-      "Day Change %": "0.77",
-      "Trade Time": "46321.70369"
+      "Price": "1.1660",
+      "Day Change %": "0.26",
+      "Trade Time": "46321.70837"
     },
     {
       "Name": "Taylor Wimpey",
@@ -20670,16 +20670,16 @@
     {
       "Name": "Tesco",
       "Symbol": "LON:TSCO",
-      "Price": "5.3280",
-      "Day Change %": "-0.89",
-      "Trade Time": "46321.71156"
+      "Price": "5.3300",
+      "Day Change %": "-0.86",
+      "Trade Time": "46321.72778"
     },
     {
       "Name": "Vanguard FTSE All-World",
       "Symbol": "LON:VWRA",
-      "Price": "142.5190",
-      "Day Change %": "0.35",
-      "Trade Time": "46321.71623"
+      "Price": "142.9547",
+      "Day Change %": "0.71",
+      "Trade Time": "46321.73181"
     },
     {
       "Name": "iShares S&P 500 Information Technology",
@@ -20768,14 +20768,14 @@
     {
       "Name": "CENTRICA",
       "Symbol": "LON:CNA",
-      "Price": "1.4962",
-      "Day Change %": "-0.62",
-      "Trade Time": "46321.7084"
+      "Price": "1.5000",
+      "Day Change %": "-0.37",
+      "Trade Time": "46321.72545"
     },
     {
       "Name": "FORTESCUE",
       "Symbol": "FVJ",
-      "Price": "7.7184",
+      "Price": "7.7187",
       "Day Change %": "2.45",
       "Trade Time": "46321.72572"
     }
@@ -36577,194 +36577,194 @@
     },
     {
       "Currency": "USD",
-      "Rate_to_GBP": "0.749075"
+      "Rate_to_GBP": "0.74865"
     },
     {
       "Currency": "AUD",
-      "Rate_to_GBP": "0.5261"
+      "Rate_to_GBP": "0.52601"
     },
     {
       "Currency": "CAD",
-      "Rate_to_GBP": "0.534395"
+      "Rate_to_GBP": "0.5344"
     },
     {
       "Currency": "EUR",
-      "Rate_to_GBP": "0.83805"
+      "Rate_to_GBP": "0.83808"
     },
     {
       "Currency": "CHF",
-      "Rate_to_GBP": "0.905635"
+      "Rate_to_GBP": "0.905935"
     },
     {
       "Currency": "JPY",
-      "Rate_to_GBP": "0.004758"
+      "Rate_to_GBP": "0.004757"
     }
   ],
   "PreSeasonReport": [
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "26/10/2026 17:14:48": "Balance Note"
+      "26/10/2026 17:44:10": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "26/10/2026 17:14:48": "No major chemistry issue."
+      "26/10/2026 17:44:10": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "26/10/2026 17:14:48": "Good candidate, but check sector concentration before buying."
+      "26/10/2026 17:44:10": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "26/10/2026 17:14:48": "Good candidate, but check sector concentration before buying."
+      "26/10/2026 17:44:10": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "26/10/2026 17:14:48": "Good candidate, but check sector concentration before buying."
+      "26/10/2026 17:44:10": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "26/10/2026 17:14:48": "Could improve balance if promoted."
+      "26/10/2026 17:44:10": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BRITISH AMERICAN TOBACCO",
       "Last updated": "Balance Booster",
-      "26/10/2026 17:14:48": "Helps squad quality and balances the income engine."
+      "26/10/2026 17:44:10": "Helps squad quality and balances the income engine."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "RECKITT",
       "Last updated": "Balance Booster",
-      "26/10/2026 17:14:48": "Helps squad quality and balances the income engine."
+      "26/10/2026 17:44:10": "Helps squad quality and balances the income engine."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "UNILEVER",
       "Last updated": "Balance Booster",
-      "26/10/2026 17:14:48": "Helps squad quality and balances the income engine."
+      "26/10/2026 17:44:10": "Helps squad quality and balances the income engine."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "26/10/2026 17:14:48": "Balance Note"
+      "26/10/2026 17:44:10": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "#REF!",
-      "26/10/2026 17:14:48": "#REF!"
+      "26/10/2026 17:44:10": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "26/10/2026 17:14:48": ""
+      "26/10/2026 17:44:10": ""
     }
   ],
   "AuroraTimes": [
@@ -37330,7 +37330,7 @@
     {
       "Section": "System",
       "Field": "Last update",
-      "Value": "26/10/2026 16:37:03",
+      "Value": "26/10/2026 17:37:00",
       "Rule / Formula": "updateMarketRegime()",
       "Notes": "Preferred: captains, defensive income, existing strong holdings | Avoid: large new punts, uncovered high yield, overconcentration, overvalued low-yield positions"
     }
@@ -92767,13 +92767,13 @@
       "sector": "BUSINESS DEVELOPMENT COMPANY",
       "role": "HIGH-YIELD CREDIT INCOME",
       "shares": "615",
-      "live_price": "13.89534125",
-      "current_value": "8545.634869",
-      "book_cost": "8658.647814",
-      "average_price": "14.07910214",
-      "profit_loss": "-113.0129453",
-      "annual_dps": "1.438224",
-      "annual_dps_total": "884.50776",
+      "live_price": "13.894944",
+      "current_value": "8545.39056",
+      "book_cost": "8653.735188",
+      "average_price": "14.07111413",
+      "profit_loss": "-108.344628",
+      "annual_dps": "1.437408",
+      "annual_dps_total": "884.00592",
       "yield_pct": "0.09662808254",
       "annual_target": "1500",
       "low_52w": "13.151355",
@@ -92849,7 +92849,7 @@
       "sector": "RENEWABLE ENERGY",
       "role": "INCOME GENERATOR",
       "shares": "0",
-      "live_price": "1.172",
+      "live_price": "1.166",
       "current_value": "0",
       "book_cost": "0",
       "average_price": "",
@@ -93177,11 +93177,11 @@
       "sector": "CONSUMER DEFENCE",
       "role": "GROWTH & DIVIDEND",
       "shares": "14363",
-      "live_price": "5.328",
-      "current_value": "76526.064",
+      "live_price": "5.33",
+      "current_value": "76554.79",
       "book_cost": "31598.6",
       "average_price": "2.2",
-      "profit_loss": "44927.464",
+      "profit_loss": "44956.19",
       "annual_dps": "0",
       "annual_dps_total": "0",
       "yield_pct": "0",
@@ -93259,7 +93259,7 @@
       "sector": "GLOBAL EQUINITY ETF",
       "role": "GLOBAL GROWTH ENGINE",
       "shares": "0",
-      "live_price": "142.5190095",
+      "live_price": "142.9547175",
       "current_value": "0",
       "book_cost": "0",
       "average_price": "",
