@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-11-01T06:14:45.911Z",
+    "generated_at": "2026-11-01T06:44:42.667Z",
     "spreadsheet_name": "AuroraData 2 ? Consolidated",
     "spreadsheet_id": "1ZDdYmyDrvNuz3utKmgsToKL7NqsibzbWyIo0vg-TjcA",
     "source": "AuroraData 2 ? Consolidated",
@@ -1913,13 +1913,13 @@
       "symbol": "LON:FGEN",
       "price_unit": "PENCE",
       "live_native": "90.6",
-      "previous_close_native": "",
+      "previous_close_native": "90.1",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
       "live_gbp": "0.906",
-      "previous_close_gbp": "",
-      "day_change_pct": "",
-      "day_change_gbp_per_share": "0.906",
+      "previous_close_gbp": "0.901",
+      "day_change_pct": "0.5549389567",
+      "day_change_gbp_per_share": "0.005",
       "updated_at": "2026-08-23T12:48:42.297Z",
       "status": "UPDATED"
     },
@@ -1929,13 +1929,13 @@
       "symbol": "LON:FSFL",
       "price_unit": "PENCE",
       "live_native": "70.4",
-      "previous_close_native": "",
+      "previous_close_native": "68.2",
       "currency": "GBX",
       "fx_to_gbp": "0.01",
       "live_gbp": "0.704",
-      "previous_close_gbp": "",
-      "day_change_pct": "",
-      "day_change_gbp_per_share": "0.704",
+      "previous_close_gbp": "0.682",
+      "day_change_pct": "3.225806452",
+      "day_change_gbp_per_share": "0.022",
       "updated_at": "2026-08-23T12:48:42.297Z",
       "status": "UPDATED"
     },
@@ -2489,7 +2489,7 @@
       "quote_currency": "GBX",
       "fx_to_gbp": "0.01",
       "price_gbp": "45.9172",
-      "trade_time": "",
+      "trade_time": "46325.69166",
       "data_delay_minutes": "0",
       "status": "UPDATED",
       "last_checked_at": "2026-08-16T17:32:58.382Z",
@@ -2501,12 +2501,12 @@
       "google_symbol": "LON:FGEN",
       "quote_unit": "PENCE",
       "enabled": "TRUE",
-      "native_price": "",
-      "quote_currency": "",
-      "fx_to_gbp": "",
-      "price_gbp": "0",
-      "trade_time": "",
-      "data_delay_minutes": "",
+      "native_price": "89.9",
+      "quote_currency": "GBX",
+      "fx_to_gbp": "0.01",
+      "price_gbp": "0.899",
+      "trade_time": "46325.69131",
+      "data_delay_minutes": "0",
       "status": "UPDATED",
       "last_checked_at": "2026-08-16T17:32:58.382Z",
       "last_applied_at": "2026-08-16T17:32:58.382Z",
@@ -2517,10 +2517,10 @@
       "google_symbol": "LON:FSFL",
       "quote_unit": "PENCE",
       "enabled": "TRUE",
-      "native_price": "",
-      "quote_currency": "",
-      "fx_to_gbp": "",
-      "price_gbp": "0",
+      "native_price": "67.4",
+      "quote_currency": "GBX",
+      "fx_to_gbp": "0.01",
+      "price_gbp": "0.674",
       "trade_time": "46325.73293",
       "data_delay_minutes": "0",
       "status": "UPDATED",
@@ -4860,11 +4860,11 @@
       "sector": "Mining",
       "role": "Commodity / Utility Scout",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "22.35",
       "dividend_yield": "0.03375798439",
       "annual_dps": "0.9513",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "21.02",
+      "high_52w": "44.72",
       "fair_value": "30.445",
       "valuation_status": "Undervalued",
       "payout_risk": "LOW",
@@ -5207,7 +5207,7 @@
       "scout_rating": "???",
       "notes": "FTSE 250 scout pool ? not currently held.",
       "date_checked": "01/11/2026",
-      "last_updated": "01/11/2026 06:14:46",
+      "last_updated": "01/11/2026 06:44:37",
       "squad_role": "Financial Scout",
       "promotion_impact_score": "64",
       "trial_status": "Scout Candidate",
@@ -5674,11 +5674,11 @@
       "sector": "Telecommunications services",
       "role": "Growth / Data",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "2.273",
       "dividend_yield": "0.04155844156",
       "annual_dps": "0.0832",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "1.73",
+      "high_52w": "2.4209",
       "fair_value": "2.07545",
       "valuation_status": "Neutral",
       "payout_risk": "LOW",
@@ -5970,11 +5970,11 @@
       "sector": "Real Estate Investment Trusts",
       "role": "Property Income",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "1.455",
       "dividend_yield": "0.05029567383",
       "annual_dps": "0.0808",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "1.385",
+      "high_52w": "1.75",
       "fair_value": "1.536",
       "valuation_status": "Neutral",
       "payout_risk": "MEDIUM",
@@ -6007,11 +6007,11 @@
       "sector": "Health care equipment & supplies",
       "role": "Healthcare Quality",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "2.462",
       "dividend_yield": "0.02338850174",
       "annual_dps": "0.0537",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "1.93",
+      "high_52w": "2.593",
       "fair_value": "2.2615",
       "valuation_status": "Neutral",
       "payout_risk": "LOW",
@@ -6229,11 +6229,11 @@
       "sector": "Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "29.9433",
       "dividend_yield": "0.01731197062",
       "annual_dps": "0.5167",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "22.03",
+      "high_52w": "36.16",
       "fair_value": "30.95",
       "valuation_status": "Neutral",
       "payout_risk": "LOW",
@@ -6502,7 +6502,7 @@
       "scout_rating": "??",
       "notes": "AUDITED 23/07/2026 ? Anglo American regular FY2025 dividend corrected to 23 US cents and converted to GBP through FXRates. Prospective merger-related special distributions are excluded from recurring annual income.",
       "date_checked": "01/11/2026",
-      "last_updated": "01/11/2026 06:14:46",
+      "last_updated": "01/11/2026 06:44:37",
       "squad_role": "Former Player",
       "promotion_impact_score": "23",
       "trial_status": "Former Player Review",
@@ -6673,11 +6673,11 @@
       "sector": "Beverages",
       "role": "Defensive Quality",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "85.1",
       "dividend_yield": "0.0228594833",
       "annual_dps": "1.8139",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "62.8",
+      "high_52w": "85.5",
       "fair_value": "74.125",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -7043,11 +7043,11 @@
       "sector": "Chemicals",
       "role": "FTSE 100 Scout",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "36.44",
       "dividend_yield": "0.03376939458",
       "annual_dps": "1.11",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "24.88",
+      "high_52w": "36.74",
       "fair_value": "28.945",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -7376,11 +7376,11 @@
       "sector": "Real estate",
       "role": "Property Income",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "4.218",
       "dividend_yield": "0.05268314914",
       "annual_dps": "0.2312",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "3.354",
+      "high_52w": "4.516",
       "fair_value": "3.851",
       "valuation_status": "Overvalued",
       "payout_risk": "MEDIUM",
@@ -7450,11 +7450,11 @@
       "sector": "Banking Services",
       "role": "Financial Scout",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "120.3",
       "dividend_yield": "0.02730748063",
       "annual_dps": "3.6866",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "75.25",
+      "high_52w": "148.2",
       "fair_value": "102.625",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -7487,11 +7487,11 @@
       "sector": "Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "28.6665",
       "dividend_yield": "0.02686729514",
       "annual_dps": "0.741",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "19.81",
+      "high_52w": "28.98",
       "fair_value": "24.335",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -7561,11 +7561,11 @@
       "sector": "Investment trusts",
       "role": "Commodity Scout",
       "benchmark": "FTSE 250",
-      "live_price": "",
+      "live_price": "8.482",
       "dividend_yield": "0.0252493372",
       "annual_dps": "0.24",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "6.34",
+      "high_52w": "10.76",
       "fair_value": "8.08005",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -8375,11 +8375,11 @@
       "sector": "Collective investments",
       "role": "Investment Trust",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "3.352",
       "dividend_yield": "0.01202090592",
       "annual_dps": "0.0414",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "2.9271",
+      "high_52w": "3.559",
       "fair_value": "3.21325",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -8486,11 +8486,11 @@
       "sector": "Industrial Support services",
       "role": "Industrial Quality",
       "benchmark": "FTSE 100",
-      "live_price": "",
+      "live_price": "71.95",
       "dividend_yield": "0.008568097394",
       "annual_dps": "0.632",
-      "low_52w": "",
-      "high_52w": "",
+      "low_52w": "49.7",
+      "high_52w": "79.8",
       "fair_value": "63.675",
       "valuation_status": "Overvalued",
       "payout_risk": "LOW",
@@ -10800,7 +10800,7 @@
       "buy_strength": "60",
       "ticker": "LON:BT.A",
       "name": "BT GROUP",
-      "live_price": "#N/A",
+      "live_price": "2.273",
       "annual_dps": "0.08",
       "low_52w": "1.73",
       "high_52w": "2.42",
@@ -20628,8 +20628,8 @@
     {
       "Name": "Foresight Solar Fund",
       "Symbol": "LON:FSFL",
-      "Price": "#N/A",
-      "Day Change %": "",
+      "Price": "0.6740",
+      "Day Change %": "-1.17",
       "Trade Time": "46325.73293"
     },
     {
@@ -20656,9 +20656,9 @@
     {
       "Name": "Foresight Environmental Infrastructure",
       "Symbol": "LON:FGEN",
-      "Price": "#N/A",
-      "Day Change %": "",
-      "Trade Time": ""
+      "Price": "0.8990",
+      "Day Change %": "-0.22",
+      "Trade Time": "46325.69131"
     },
     {
       "Name": "Supermarket Income REIT",
@@ -20728,7 +20728,7 @@
       "Symbol": "LON:BATS",
       "Price": "45.9172",
       "Day Change %": "1.68",
-      "Trade Time": ""
+      "Trade Time": "46325.69166"
     },
     {
       "Name": "Land Securities",
@@ -37284,167 +37284,167 @@
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "01/11/2026 06:14:46": "Balance Note"
+      "01/11/2026 06:44:37": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "IMPERIAL BRANDS",
       "Last updated": "Normal",
-      "01/11/2026 06:14:46": "No major chemistry issue."
+      "01/11/2026 06:44:37": "No major chemistry issue."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "GCP INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "01/11/2026 06:14:46": "Good candidate, but check sector concentration before buying."
+      "01/11/2026 06:44:37": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SEQUOIA ECONOMIC INFRASTRUCTURE",
       "Last updated": "Concentration Watch",
-      "01/11/2026 06:14:46": "Good candidate, but check sector concentration before buying."
+      "01/11/2026 06:44:37": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "Concentration Watch",
-      "01/11/2026 06:14:46": "Good candidate, but check sector concentration before buying."
+      "01/11/2026 06:44:37": "Good candidate, but check sector concentration before buying."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BT GROUP",
       "Last updated": "Balance Booster",
-      "01/11/2026 06:14:46": "Could improve balance if promoted."
+      "01/11/2026 06:44:37": "Could improve balance if promoted."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "BRITISH AMERICAN TOBACCO",
       "Last updated": "Balance Booster",
-      "01/11/2026 06:14:46": "Helps squad quality and balances the income engine."
+      "01/11/2026 06:44:37": "Helps squad quality and balances the income engine."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "RECKITT",
       "Last updated": "Balance Booster",
-      "01/11/2026 06:14:46": "Helps squad quality and balances the income engine."
+      "01/11/2026 06:44:37": "Helps squad quality and balances the income engine."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "UNILEVER",
       "Last updated": "Balance Booster",
-      "01/11/2026 06:14:46": "Helps squad quality and balances the income engine."
+      "01/11/2026 06:44:37": "Helps squad quality and balances the income engine."
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "Name",
       "Last updated": "Chemistry Risk",
-      "01/11/2026 06:14:46": "Balance Note"
+      "01/11/2026 06:44:37": "Balance Note"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "REGIONAL REIT",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "ARES CAPITAL",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "FORESIGHT SOLAR FUND",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "TAYLOR WIMPEY",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "PRIMARY HEALTH PROPERTIES",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "THE RENEWABLES INFRASTRUCTURE GROUP",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "SAINSBURY'S",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "LONDONMETRIC PROPERTY",
       "Last updated": "#REF!",
-      "01/11/2026 06:14:46": "#REF!"
+      "01/11/2026 06:44:37": "#REF!"
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     },
     {
       "Aurora City FC ? Weekly Pre-Season Report": "",
       "Last updated": "",
-      "01/11/2026 06:14:46": ""
+      "01/11/2026 06:44:37": ""
     }
   ],
   "AuroraTimes": [
@@ -38010,7 +38010,7 @@
     {
       "Section": "System",
       "Field": "Last update",
-      "Value": "01/11/2026 05:37:00",
+      "Value": "01/11/2026 06:37:01",
       "Rule / Formula": "updateMarketRegime()",
       "Notes": "Preferred: captains, defensive income, existing strong holdings | Avoid: large new punts, uncovered high yield, overconcentration, overvalued low-yield positions"
     }
@@ -97136,7 +97136,7 @@
       "sector": "INFRASTRUCTURE",
       "role": "RENEWABLE INCOME",
       "shares": "4301.572943",
-      "live_price": "",
+      "live_price": "0.674",
       "current_value": "3144.449821",
       "book_cost": "3083.63",
       "average_price": "0.7168610276",
@@ -97341,11 +97341,11 @@
       "sector": "INFRASTRUCTURE",
       "role": "INFRASTRUCTURE INCOME",
       "shares": "12336",
-      "live_price": "",
-      "current_value": "",
+      "live_price": "0.899",
+      "current_value": "11090.064",
       "book_cost": "10327.28407",
       "average_price": "0.8371663481",
-      "profit_loss": "-10327.28407",
+      "profit_loss": "762.77993",
       "annual_dps": "0.0796",
       "annual_dps_total": "981.9456",
       "yield_pct": "0.08903803132",
